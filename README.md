@@ -43,7 +43,7 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64
 
 ### GitHub Actions 自动发布
 1. 将准备好的代码合并到 `main`
-2. 仅在正式发布时修改 [`AzrngTools.csproj`](d:/GitHub/AzrngTool/AzrngTools/AzrngTools.csproj) 中的 `Version`
+2. 仅在正式发布时修改 [`AzrngTools.csproj`]() 中的 `Version`
 3. 推送 `main`
 4. 工作流会在检测到 `Version` 发生变化时自动：
    - 创建 `v版本号` tag
