@@ -2,11 +2,15 @@ name: release-win-x64
 
 on:
   push:
-    tags:
-      - "v*"
+    branches:
+      - main
 
 permissions:
   contents: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
 
 env:
   PROJECT_PATH: AzrngTools/AzrngTools.csproj
@@ -29,42 +33,82 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Verify tag commit is on main
-        shell: pwsh
-        run: |
-          git fetch origin main --force
-          $branches = git branch -r --contains $env:GITHUB_SHA
-
-          if (-not ($branches | Select-String -SimpleMatch "origin/main")) {
-            throw "当前 tag 对应的提交不在 main 分支上，已拒绝发布。"
-          }
-
       - name: Resolve release metadata
         id: meta
         shell: pwsh
         run: |
           [xml]$project = Get-Content "${{ env.PROJECT_PATH }}"
           $projectVersion = ($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
-          $tagName = "${{ github.ref_name }}"
-          $releaseVersion = if ($tagName.StartsWith("v")) { $tagName.Substring(1) } else { $tagName }
 
           if ([string]::IsNullOrWhiteSpace($projectVersion)) {
             throw "未在项目文件中找到 Version。"
           }
 
-          if ($releaseVersion -ne $projectVersion) {
-            throw "Tag 版本 $releaseVersion 与项目 Version $projectVersion 不一致，请先同步版本号。"
+          $beforeSha = "${{ github.event.before }}"
+          $zeroSha = "0000000000000000000000000000000000000000"
+          $previousVersion = ""
+
+          if ($beforeSha -and $beforeSha -ne $zeroSha) {
+            git cat-file -e "${beforeSha}:${{ env.PROJECT_PATH }}" 2>$null
+            if ($LASTEXITCODE -eq 0) {
+              [xml]$previousProject = git show "${beforeSha}:${{ env.PROJECT_PATH }}"
+              $previousVersion = ($previousProject.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+            }
+          }
+
+          $versionChanged = $projectVersion -ne $previousVersion
+          $tagName = "v$projectVersion"
+          git fetch origin --tags --force
+
+          $tagSha = ""
+          git rev-parse -q --verify "refs/tags/$tagName" *> $null
+          if ($LASTEXITCODE -eq 0) {
+            $tagSha = (git rev-list -n 1 $tagName).Trim()
+          }
+
+          $createTagNeeded = $false
+          $releaseNeeded = $false
+
+          if ($versionChanged) {
+            if ($tagSha -and $tagSha -ne "${{ github.sha }}") {
+              throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 Version。"
+            }
+
+            $createTagNeeded = -not $tagSha
+            $releaseNeeded = $true
           }
 
           $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_DIR }}\\${{ env.PACKAGE_NAME }}"
 
           "project_version=$projectVersion" >> $env:GITHUB_OUTPUT
+          "previous_version=$previousVersion" >> $env:GITHUB_OUTPUT
+          "tag_name=$tagName" >> $env:GITHUB_OUTPUT
+          "version_changed=$($versionChanged.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "create_tag_needed=$($createTagNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "release_needed=$($releaseNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "package_path=$packagePath" >> $env:GITHUB_OUTPUT
 
+      - name: Skip when version is unchanged
+        if: steps.meta.outputs.release_needed != 'true'
+        shell: pwsh
+        run: |
+          Write-Host "Version 未变化，跳过自动打 tag 与发布。当前版本: ${{ steps.meta.outputs.project_version }}"
+
+      - name: Create and push version tag
+        if: steps.meta.outputs.create_tag_needed == 'true'
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "${{ steps.meta.outputs.tag_name }}" "${{ github.sha }}"
+          git push origin "${{ steps.meta.outputs.tag_name }}"
+
       - name: Restore
+        if: steps.meta.outputs.release_needed == 'true'
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
       - name: Publish win-x64 package
+        if: steps.meta.outputs.release_needed == 'true'
         shell: pwsh
         run: |
           dotnet publish "${{ env.PROJECT_PATH }}" `
@@ -74,6 +118,7 @@ jobs:
             -o "${{ env.PUBLISH_DIR }}"
 
       - name: Compress portable package
+        if: steps.meta.outputs.release_needed == 'true'
         shell: pwsh
         run: |
           $publishDir = Join-Path "${{ github.workspace }}" "${{ env.PUBLISH_DIR }}"
@@ -91,14 +136,18 @@ jobs:
           Compress-Archive -Path (Join-Path $publishDir '*') -DestinationPath $packagePath -Force
 
       - name: Upload workflow artifact
+        if: steps.meta.outputs.release_needed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: AzrngTools-win-x64-portable
           path: ${{ steps.meta.outputs.package_path }}
 
       - name: Publish GitHub release
+        if: steps.meta.outputs.release_needed == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.meta.outputs.tag_name }}
+          target_commitish: ${{ github.sha }}
           name: AzrngTools ${{ steps.meta.outputs.project_version }}
           generate_release_notes: true
           files: ${{ steps.meta.outputs.package_path }}
