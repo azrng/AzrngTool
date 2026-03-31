@@ -79,12 +79,13 @@ jobs:
             $tagSha = (git rev-list -n 1 $tagName).Trim()
           }
 
+          $initialReleaseNeeded = [string]::IsNullOrWhiteSpace($tagSha)
           $createTagNeeded = $false
           $releaseNeeded = $false
 
-          if ($versionChanged) {
+          if ($versionChanged -or $initialReleaseNeeded) {
             if ($tagSha -and $tagSha -ne "${{ github.sha }}") {
-              throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 Version。"
+              throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 VERSION。"
             }
 
             $createTagNeeded = -not $tagSha
@@ -97,15 +98,16 @@ jobs:
           "previous_version=$previousVersion" >> $env:GITHUB_OUTPUT
           "tag_name=$tagName" >> $env:GITHUB_OUTPUT
           "version_changed=$($versionChanged.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "initial_release_needed=$($initialReleaseNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "create_tag_needed=$($createTagNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "release_needed=$($releaseNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "package_path=$packagePath" >> $env:GITHUB_OUTPUT
 
-      - name: Skip when version is unchanged
+      - name: Skip when no release is needed
         if: steps.meta.outputs.release_needed != 'true'
         shell: pwsh
         run: |
-          Write-Host "Version 未变化，跳过自动打 tag 与发布。当前版本: ${{ steps.meta.outputs.project_version }}"
+          Write-Host "当前版本无需发布，跳过自动打 tag 与发布。当前版本: ${{ steps.meta.outputs.project_version }}"
 
       - name: Create and push version tag
         if: steps.meta.outputs.create_tag_needed == 'true'
