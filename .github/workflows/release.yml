@@ -62,8 +62,8 @@ jobs:
           $previousVersion = ""
 
           if ($beforeSha -and $beforeSha -ne $zeroSha) {
-            git cat-file -e "${beforeSha}:${{ env.VERSION_FILE }}" 2>$null
-            if ($LASTEXITCODE -eq 0) {
+            $previousVersionFile = git ls-tree -r --name-only $beforeSha -- "${{ env.VERSION_FILE }}" | Out-String
+            if ($previousVersionFile.Trim() -eq "${{ env.VERSION_FILE }}") {
               $previousVersionContent = git show "${beforeSha}:${{ env.VERSION_FILE }}" | Out-String
               $previousVersion = Get-VersionFromContent $previousVersionContent
             }
@@ -74,8 +74,8 @@ jobs:
           git fetch origin --tags --force
 
           $tagSha = ""
-          git rev-parse -q --verify "refs/tags/$tagName" *> $null
-          if ($LASTEXITCODE -eq 0) {
+          $matchedTag = git tag --list $tagName | Select-Object -First 1
+          if (-not [string]::IsNullOrWhiteSpace($matchedTag)) {
             $tagSha = (git rev-list -n 1 $tagName).Trim()
           }
 
