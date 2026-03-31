@@ -351,3 +351,5 @@ docs/
 .dotnet-cli
 
 NUL
+!AzrngTools/Roots.xml
+!AzrngTools/FodyWeavers.xml
