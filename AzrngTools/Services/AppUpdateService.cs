@@ -26,6 +26,11 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
         var requestUri = $"https://api.github.com/repos/{_appInfoService.RepositoryOwner}/{_appInfoService.RepositoryName}/releases/latest";
 
         using var response = await client.GetAsync(requestUri, cancellationToken);
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            throw new InvalidOperationException("当前仓库还没有正式发布的 GitHub Release，暂时无法检查更新。");
+        }
+
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
