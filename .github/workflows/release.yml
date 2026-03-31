@@ -1,0 +1,94 @@
+name: release-win-x64
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_PATH: AzrngTools/AzrngTools.csproj
+  PUBLISH_DIR: artifacts/publish/win-x64
+  PACKAGE_DIR: artifacts/package
+  PACKAGE_NAME: AzrngTools-win-x64-portable.zip
+
+jobs:
+  publish-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Resolve release metadata
+        id: meta
+        shell: pwsh
+        run: |
+          [xml]$project = Get-Content "${{ env.PROJECT_PATH }}"
+          $projectVersion = ($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          $tagName = "${{ github.ref_name }}"
+          $releaseVersion = if ($tagName.StartsWith("v")) { $tagName.Substring(1) } else { $tagName }
+
+          if ([string]::IsNullOrWhiteSpace($projectVersion)) {
+            throw "未在项目文件中找到 Version。"
+          }
+
+          if ($releaseVersion -ne $projectVersion) {
+            throw "Tag 版本 $releaseVersion 与项目 Version $projectVersion 不一致，请先同步版本号。"
+          }
+
+          $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_DIR }}\\${{ env.PACKAGE_NAME }}"
+
+          "project_version=$projectVersion" >> $env:GITHUB_OUTPUT
+          "package_path=$packagePath" >> $env:GITHUB_OUTPUT
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Publish win-x64 package
+        shell: pwsh
+        run: |
+          dotnet publish "${{ env.PROJECT_PATH }}" `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o "${{ env.PUBLISH_DIR }}"
+
+      - name: Compress portable package
+        shell: pwsh
+        run: |
+          $publishDir = Join-Path "${{ github.workspace }}" "${{ env.PUBLISH_DIR }}"
+          $packagePath = "${{ steps.meta.outputs.package_path }}"
+          $packageDirectory = Split-Path -Parent $packagePath
+
+          if (-not (Test-Path $packageDirectory)) {
+            New-Item -ItemType Directory -Path $packageDirectory | Out-Null
+          }
+
+          if (Test-Path $packagePath) {
+            Remove-Item $packagePath -Force
+          }
+
+          Compress-Archive -Path (Join-Path $publishDir '*') -DestinationPath $packagePath -Force
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AzrngTools-win-x64-portable
+          path: ${{ steps.meta.outputs.package_path }}
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: AzrngTools ${{ steps.meta.outputs.project_version }}
+          generate_release_notes: true
+          files: ${{ steps.meta.outputs.package_path }}
