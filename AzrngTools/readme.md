@@ -42,10 +42,25 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64
 ```
 
 ### GitHub Actions 发布
-1. 先更新 `AzrngTools/AzrngTools.csproj` 中的 `Version`
-2. 创建并推送对应 tag，例如 `v2026.3.31.1000`
-3. GitHub Actions 会自动执行发布工作流，生成 `AzrngTools-win-x64-portable.zip`
-4. 工作流会同时上传 Actions artifact，并创建对应的 GitHub Release 资产
+1. 先合并代码到 `main`
+2. 更新 `AzrngTools/AzrngTools.csproj` 中的 `Version`
+3. 基于 `main` 当前提交创建并推送对应 tag，例如 `v2026.4.1.1`
+4. GitHub Actions 仅在 tag 对应提交属于 `main` 分支时执行正式发布
+5. 工作流会生成 `AzrngTools-win-x64-portable.zip`，同时上传 Actions artifact 并创建 GitHub Release 资产
+
+## 版本号规则
+- 采用四段纯数字版本：`主年.月.日.序号`
+- 推荐格式：`YYYY.M.D.N`
+- 对应 tag 格式：`vYYYY.M.D.N`
+- 同一天第一次发布可用 `N=1`，当天第二次修复发布递增为 `2`、`3`
+- 示例：
+  - 项目文件版本：`2026.4.1.1`
+  - Git tag：`v2026.4.1.1`
+  - 同日热修复：`2026.4.1.2`
+- 这样做的原因：
+  - 与你项目当前日期型版本风格一致
+  - 保持 .NET `Version` 可直接比较
+  - 关于页检查更新时可以稳定按数字大小判断新旧版本
 
 ## 自动更新
 - 关于页提供“检查更新”和“立即更新”入口
