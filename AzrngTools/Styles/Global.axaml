@@ -1,0 +1,311 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource Brush.App.Background}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily.App}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+
+    <Style Selector="UserControl">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+
+    <Style Selector="TextBox.Standard">
+        <Setter Property="Margin" Value="{StaticResource Thickness.10.5}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10}" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xxl}" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="Border.tool-card">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10}" />
+    </Style>
+
+    <Style Selector="Border.tool-card-subtle">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10}" />
+    </Style>
+
+    <Style Selector="Border.tool-card-accent">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.15}" />
+    </Style>
+
+    <Style Selector="Border.tool-card-roomy">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.15}" />
+    </Style>
+
+    <Style Selector="Border.tool-card-soft">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.shell-panel">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.shell-sidebar">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.page-header">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.15}" />
+    </Style>
+
+    <Style Selector="Border.dashboard-hero">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Hero}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.20}" />
+        <Setter Property="MinHeight" Value="{StaticResource Layout.Dashboard.HeroMinHeight}" />
+    </Style>
+
+    <Style Selector="Border.dashboard-stat">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.15}" />
+    </Style>
+
+    <Style Selector="Border.dashboard-note">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Lg}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.15}" />
+    </Style>
+
+    <Style Selector="Border.badge-pill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Pill}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10.4}" />
+    </Style>
+
+    <Style Selector="Border.badge-pill.compact">
+        <Setter Property="Padding" Value="{StaticResource Thickness.12.4}" />
+    </Style>
+
+    <Style Selector="TextBlock.app-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Md}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.app-subtitle">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.page-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Lg}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.page-subtitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.sidebar-section-caption">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Tertiary}" />
+    </Style>
+
+    <Style Selector="TextBlock.nav-group-title">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.nav-item-text">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="TextBlock.section-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.section-copy">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-value">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
+        <Setter Property="FontFamily" Value="Consolas,monospace" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-value.compact">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Md}" />
+    </Style>
+
+    <Style Selector="TextBlock.code-output">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontFamily" Value="Consolas,monospace" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.hero-eyebrow">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="TextBlock.hero-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Hero}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.hero-copy">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.stat-value">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Lg}" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="TextBlock.stat-label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.badge-text">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="TextBlock.chip-count">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBox.flat-readonly">
+        <Setter Property="Background" Value="{StaticResource Brush.Surface.Transparent}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="WrapPanel.tool-actions">
+        <Setter Property="ItemSpacing" Value="{StaticResource Space.10}" />
+        <Setter Property="LineSpacing" Value="{StaticResource Space.8}" />
+    </Style>
+
+    <Style Selector="WrapPanel.filter-chip-panel">
+        <Setter Property="ItemSpacing" Value="{StaticResource Space.8}" />
+        <Setter Property="LineSpacing" Value="{StaticResource Space.8}" />
+    </Style>
+
+    <Style Selector="ListBox.shell-nav">
+        <Setter Property="Background" Value="{StaticResource Brush.Surface.Transparent}" />
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style Selector="ListBox.shell-nav ListBoxItem">
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Transparent}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Surface.Transparent}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10}" />
+        <Setter Property="Margin" Value="{StaticResource Thickness.Top.2}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="ListBox.shell-nav ListBoxItem:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+    </Style>
+
+    <Style Selector="ListBox.shell-nav ListBoxItem:selected">
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.SelectedBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+    </Style>
+
+    <Style Selector="Border.sidebar-stats">
+        <Setter Property="Padding" Value="{StaticResource Thickness.14}" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+    </Style>
+
+    <Style Selector="Button.filter-chip">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Pill}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12.4}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
+
+    <Style Selector="Button.filter-chip:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+    </Style>
+
+    <Style Selector="Button.filter-chip.selected">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="Button.filter-chip.selected TextBlock.chip-count">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="StackPanel.page-stack">
+        <Setter Property="Margin" Value="{StaticResource Thickness.10}" />
+        <Setter Property="Spacing" Value="{StaticResource Space.10}" />
+    </Style>
+
+    <Style Selector="StackPanel.section-stack">
+        <Setter Property="Spacing" Value="{StaticResource Space.12}" />
+    </Style>
+</Styles>

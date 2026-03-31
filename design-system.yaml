@@ -1,0 +1,143 @@
+﻿meta:
+  name: "AzrngTools Design System"
+  version: "1.0.0"
+  status: "active"
+  platform: "Desktop"
+  product_type: "Developer Toolbox"
+  tech_stack:
+    runtime: ".NET 10"
+    ui_framework: "Avalonia 11.3.x"
+    component_library: "Avalonia Fluent + Semi.Avalonia"
+    mvvm: "CommunityToolkit.Mvvm"
+    optional_component_library: "Ursa.Avalonia"
+
+product:
+  style_keywords:
+    - "高效"
+    - "克制"
+    - "清晰"
+    - "代码友好"
+    - "轻量专业"
+  intent:
+    - "让用户在最短路径内完成编码、转换、格式化、加密等工具操作"
+    - "强调输入区、结果区、操作区的结构清晰度"
+    - "兼顾桌面端高信息密度与可读性"
+
+resources:
+  structure:
+    tokens: "AzrngTools/Styles/DesignTokens.axaml"
+    global: "AzrngTools/Styles/Global.axaml"
+    themes: "AzrngTools/Themes/*.axaml"
+  rules:
+    - "所有被修改过的 XAML 页面必须优先引用资源，而不是继续写硬编码样式"
+    - "颜色使用 DynamicResource，间距、圆角、字号优先使用 StaticResource"
+    - "公共视觉规则通过 Styles 或 ControlTheme 复用"
+
+component_policy:
+  default_stack:
+    - "Avalonia 原生控件"
+    - "Avalonia Fluent 主题底座"
+    - "Semi.Avalonia 兼容主题资源"
+  ursa_policy:
+    - "只有在需要更复杂的导航、抽屉、对话框或工作台容器时才评估引入 Ursa.Avalonia"
+    - "引入前要确认不会破坏现有视觉一致性"
+
+spacing:
+  tokens:
+    2: "Space.2"
+    4: "Space.4"
+    5: "Space.5"
+    6: "Space.6"
+    8: "Space.8"
+    10: "Space.10"
+    12: "Space.12"
+    14: "Space.14"
+    15: "Space.15"
+    16: "Space.16"
+    18: "Space.18"
+    20: "Space.20"
+    24: "Space.24"
+    28: "Space.28"
+    30: "Space.30"
+  guidance:
+    - "工具页根容器默认使用 10 或 20 级别间距"
+    - "操作按钮组优先使用 8 或 10 级别间距"
+    - "卡片内边距优先使用 10、12、15"
+
+radius:
+  tokens:
+    xs: "Radius.Xs"
+    sm: "Radius.Sm"
+    md: "Radius.Md"
+    lg: "Radius.Lg"
+    xl: "Radius.Xl"
+    xxl: "Radius.Xxl"
+    display: "Radius.Display"
+    hero: "Radius.Hero"
+    pill: "Radius.Pill"
+  guidance:
+    - "常规工具卡片使用 Radius.Sm"
+    - "主壳或强调容器可使用 Radius.Lg 到 Radius.Hero"
+    - "徽标、徽章、头像容器使用 Radius.Pill"
+
+color:
+  semantic:
+    border_muted: "Brush.Border.Muted"
+    border_divider: "Brush.Border.Divider"
+    text_on_accent: "Brush.Text.OnAccent"
+    surface_transparent: "Brush.Surface.Transparent"
+  guidance:
+    - "主题色、卡片底色、边框色优先沿用 Semi/Avalonia 提供的 DynamicResource"
+    - "禁止在页面里直接写十六进制颜色值"
+
+layout:
+  shell:
+    main_window_width: "Layout.MainWindow.Width"
+    main_window_height: "Layout.MainWindow.Height"
+    icon_small: "Layout.Icon.Sm"
+  page_rules:
+    - "页面默认分为输入区、操作区、结果区或说明区"
+    - "长内容页面优先使用 ScrollViewer 包裹"
+    - "主窗口保留左侧导航和右侧内容区结构"
+  sizing_exceptions:
+    - "允许对编辑器、高度受控的预览区、图片头像、主窗口初始尺寸保留显式 Width/Height"
+    - "这类尺寸也应优先抽取到资源键，避免散落在页面中"
+
+typography:
+  tokens:
+    title_sm: "FontSize.Title.Sm"
+    title_md: "FontSize.Title.Md"
+    title_lg: "FontSize.Title.Lg"
+    hero: "FontSize.Hero"
+  guidance:
+    - "标题只在少量强调文本上使用显式字号 token"
+    - "普通正文优先沿用控件默认字号和现有类样式"
+
+page_patterns:
+  shell:
+    - "顶部窗口栏允许保留窗口拖拽、最小化、关闭等平台行为"
+  tool_page:
+    - "至少具备清晰的输入、操作、输出三个层次"
+    - "错误或空结果时要有用户可见反馈"
+  info_page:
+    - "信息展示页优先使用卡片容器和只读文本区"
+
+state_rules:
+  required:
+    - "涉及外部请求的页面需要考虑 loading、success、error、empty 四类反馈"
+    - "纯本地算法页至少要有输入为空或参数错误的反馈"
+
+mvvm_rules:
+  - "ViewModel 使用 ObservableProperty 和 RelayCommand"
+  - "新代码不要在 View 中直接 new ViewModel"
+  - "外部请求优先放在 Service 层，不要直接塞进页面逻辑"
+
+do:
+  - "优先复用 Styles/Global.axaml 和现有资源键"
+  - "触达页面时顺手消除硬编码样式"
+  - "让工具页在深色和浅色主题下都保持足够对比度"
+
+dont:
+  - "不要在 XAML 中继续新增硬编码 Margin/Padding/CornerRadius/FontSize/颜色"
+  - "不要为了引入新组件库而打断现有视觉体系"
+  - "不要把业务系统的表单规范生搬硬套到工具页"

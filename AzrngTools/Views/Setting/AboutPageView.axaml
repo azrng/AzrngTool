@@ -1,0 +1,90 @@
+<UserControl
+    d:DesignHeight="700"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Setting.AboutPageView"
+    x:DataType="vm:AboutPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AzrngTools.ViewModels.Setting"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="page-header">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.15}">
+                    <Border
+                        Background="{DynamicResource Brush.Panel.Background}"
+                        BorderBrush="{DynamicResource Brush.Accent.Border}"
+                        BorderThickness="1"
+                        CornerRadius="{StaticResource Radius.Pill}"
+                        Padding="{StaticResource Thickness.8}">
+                        <Border ClipToBounds="True" CornerRadius="{StaticResource Radius.Display}">
+                            <Image
+                                Height="{StaticResource Layout.Avatar.Md}"
+                                Source="avares://AzrngTools/Assets/user.jpg"
+                                Stretch="UniformToFill"
+                                Width="{StaticResource Layout.Avatar.Md}" />
+                        </Border>
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Spacing="{StaticResource Space.6}" VerticalAlignment="Center">
+                        <Border Classes="badge-pill" HorizontalAlignment="Left">
+                            <TextBlock Classes="badge-text" Text="ABOUT" />
+                        </Border>
+                        <TextBlock Classes="page-title" Text="AZRNG" />
+                        <TextBlock Classes="page-subtitle" Text="让日常工具保持效率，也保留一点质感。" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="0.9*,1.1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <StackPanel Spacing="{StaticResource Space.12}">
+                        <TextBlock Classes="section-title" Text="项目印象" />
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="一句话" />
+                                <TextBlock
+                                    FontSize="{StaticResource FontSize.Title.Md}"
+                                    FontWeight="SemiBold"
+                                    Text="万物皆空 · 无欲无求"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="English Tagline" />
+                                <TextBlock Classes="section-copy" Text="Simple · Sharp · Useful" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="版本信息" />
+                                <TextBlock Classes="metric-value compact" Text="{Binding Version}" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <StackPanel Spacing="{StaticResource Space.12}">
+                        <TextBlock Classes="section-title" Text="页面寄语" />
+
+                        <Border Classes="tool-card-soft">
+                            <TextBlock
+                                FontSize="{StaticResource FontSize.Title.Lg}"
+                                FontWeight="Medium"
+                                Text="人生一场虚空大梦，韶华白首，不过转瞬。唯有天道恒在，循环往复，不曾更改。"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

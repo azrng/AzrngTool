@@ -1,0 +1,66 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.TextHandle.MarkdownPageView"
+    x:DataType="textHandle:MarkdownPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
+    xmlns:textHandle="clr-namespace:AzrngTools.ViewModels.TextHandle"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="Markdown 预览工作台" />
+                        <TextBlock Classes="section-copy" Text="保持左侧编辑、右侧预览的即时联动模式，适合边写边查看渲染结果。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Markdown" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="预览" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="0.95*,1.05*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="Markdown 输入" />
+                            <TextBlock Classes="section-copy" Text="在这里直接编写或粘贴 Markdown 内容，右侧预览区域会继续跟随当前文本实时刷新。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="520"
+                            Text="{Binding MdText}"
+                            Watermark="请输入 Markdown 内容" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="实时预览" />
+                            <TextBlock Classes="section-copy" Text="预览区继续使用现有 Markdown 组件，只调整外层容器样式，避免旧页面的黑色硬编码边框。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft" Height="520">
+                            <md:MarkdownScrollViewer Markdown="{Binding MdText}" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

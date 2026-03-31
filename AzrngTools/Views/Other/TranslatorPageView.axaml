@@ -1,0 +1,101 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Other.TranslatorPageView"
+    x:DataType="vm:TranslatorPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:AzrngTools.ViewModels.Other"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="文本翻译工作台" />
+                        <TextBlock Classes="section-copy" Text="保留当前翻译服务和方向切换能力，把输入、设置和结果拆成清晰区域，方便在中英之间快速往返。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Yandex" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="中英互译" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="在这里输入待翻译文本，点击翻译后结果会显示到右侧结果区。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="320"
+                            Text="{Binding OriginText}"
+                            Watermark="请输入要转换的内容" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="翻译设置" />
+                            <TextBlock Classes="section-copy" Text="服务来源和翻译方向继续沿用现有绑定，不新增新的服务切换逻辑。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                <TextBlock Classes="metric-label" Text="翻译服务" VerticalAlignment="Center" />
+                                <ComboBox Grid.Column="1" SelectedIndex="0">
+                                    <ComboBoxItem Content="Yandex 翻译" />
+                                </ComboBox>
+
+                                <TextBlock Grid.Row="1" Classes="metric-label" Text="翻译方向" VerticalAlignment="Center" />
+                                <ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="{Binding TranslatorTypeIndex}">
+                                    <ComboBoxItem>中译英</ComboBoxItem>
+                                    <ComboBoxItem>英译中</ComboBoxItem>
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Button
+                                Command="{Binding HandlerCommand}"
+                                Content="翻译"
+                                Theme="{DynamicResource SolidButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="翻译结果" />
+                        <TextBlock Classes="section-copy" Text="结果区保持只读展示，方便继续复制使用；错误反馈仍由现有消息提示处理。" />
+                    </StackPanel>
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        Height="260"
+                        IsReadOnly="True"
+                        Text="{Binding ResultText}"
+                        Watermark="输出的结果" />
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

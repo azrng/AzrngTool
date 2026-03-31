@@ -1,0 +1,172 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.TextHandle.JsonToCsharpPageView"
+    x:DataType="textHandle:JsonToCsharpPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:textHandle="clr-namespace:AzrngTools.ViewModels.TextHandle"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="JSON 转 C# 实体类" />
+                        <TextBlock Classes="section-copy" Text="围绕配置、输入和输出三块区域重新组织布局，适合在调试接口结构时连续完成格式化、转换和复制。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="格式化" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="代码生成" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="复制结果" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.08*,0.92*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="生成配置" />
+                            <TextBlock Classes="section-copy" Text="在开始转换前先确认根类名、命名空间和输出风格，避免生成后再手动调整代码结构。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.12}" RowSpacing="{StaticResource Space.10}">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Classes="metric-label" VerticalAlignment="Center" Text="根类名" />
+                                <TextBox
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Classes="Standard"
+                                    Text="{Binding RootClassName}"
+                                    Watermark="请输入根类名" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Classes="metric-label" VerticalAlignment="Center" Text="命名空间" />
+                                <TextBox
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Classes="Standard"
+                                    Text="{Binding NameSpace}"
+                                    Watermark="请输入命名空间" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.16}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                <CheckBox Content="使用可空类型" IsChecked="{Binding UseNullableTypes}" />
+                                <CheckBox Grid.Column="1" Content="使用帕斯卡命名法" IsChecked="{Binding UsePascalCase}" />
+                                <CheckBox Grid.Row="1" Grid.ColumnSpan="2" Content="生成属性" IsChecked="{Binding GenerateProperties}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="快捷操作" />
+                            <TextBlock Classes="section-copy" Text="保持原有操作不变，把常用按钮集中到同一区域，便于边检查 JSON 边完成实体类生成。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Row="1" Classes="tool-actions">
+                            <Button
+                                Command="{Binding FormatJsonCommand}"
+                                Content="格式化 JSON"
+                                Theme="{DynamicResource OutlineButton}" />
+                            <Button
+                                Command="{Binding ConvertToCsharpCommand}"
+                                Content="转换为 C# 实体类"
+                                Theme="{DynamicResource SolidButton}" />
+                            <Button
+                                Command="{Binding CopyResultCommand}"
+                                Content="复制结果"
+                                Theme="{DynamicResource OutlineButton}" />
+                            <Button
+                                Command="{Binding ClearCommand}"
+                                Content="清空"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="操作提示" />
+                                <TextBlock Classes="Small" Text="先格式化 JSON，通常更容易发现缺失逗号或层级错误。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="根节点需要是对象，数组或简单值不会生成预期的实体类结构。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="输出区保留只读模式，适合直接复制到项目中继续整理。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="JSON 输入" />
+                                <TextBlock Classes="section-copy" Text="在这里粘贴待转换的 JSON 内容，建议先完成格式化，再执行实体类生成。" />
+                            </StackPanel>
+
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding FormatJsonCommand}"
+                                Content="格式化 JSON"
+                                Theme="{DynamicResource OutlineButton}"
+                                VerticalAlignment="Top" />
+                        </Grid>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            Text="{Binding JsonInput}"
+                            TextWrapping="Wrap"
+                            Watermark="请输入 JSON 内容" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="C# 代码输出" />
+                            <TextBlock Classes="section-copy" Text="转换后的实体类代码会按命名空间和类定义完整输出，方便直接复制到现有项目中。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            FontFamily="Consolas,monospace"
+                            Height="360"
+                            IsReadOnly="True"
+                            Text="{Binding CsharpOutput}"
+                            TextWrapping="Wrap"
+                            Watermark="生成的 C# 实体类代码将显示在这里" />
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
+                            <Button
+                                Command="{Binding ConvertToCsharpCommand}"
+                                Content="开始转换"
+                                Theme="{DynamicResource SolidButton}" />
+                            <Button
+                                Command="{Binding CopyResultCommand}"
+                                Content="复制结果"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

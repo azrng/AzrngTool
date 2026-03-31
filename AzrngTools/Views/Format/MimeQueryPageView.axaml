@@ -1,0 +1,114 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Format.MimeQueryPageView"
+    x:DataType="format:MimeQueryPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:format="clr-namespace:AzrngTools.ViewModels.Format"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="MIME 类型查询工作台" />
+                        <TextBlock Classes="section-copy" Text="支持按扩展名、按 MIME 类型和查看全部类型三种模式，结果统一落到下方结果区。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button
+                            Command="{Binding CopyResultCommand}"
+                            Content="复制结果"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="查询输入" />
+                            <TextBlock Classes="section-copy" Text="可以输入文件扩展名，如 `.jpg`，也可以输入 MIME 片段，如 `image/` 进行模糊搜索。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            Classes="Standard"
+                            Text="{Binding SearchText}"
+                            Watermark="请输入文件扩展名或 MIME 类型" />
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Button
+                                Command="{Binding QueryByExtensionCommand}"
+                                Content="按扩展名查询"
+                                Theme="{DynamicResource SolidButton}" />
+                            <Button
+                                Command="{Binding QueryByMimeTypeCommand}"
+                                Content="按MIME类型查询"
+                                Theme="{DynamicResource SolidButton}" />
+                            <Button
+                                Command="{Binding ShowAllMimeTypesCommand}"
+                                Content="显示所有类型"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="操作说明" />
+                            <TextBlock Classes="section-copy" Text="页页合合查扩展名和类型之间的映射关系，也合合快速浏览内置的常见 MIME 数据。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="Small" Text="• 按扩展名：输入 `.jpg`、`png` 等查询 MIME" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 按MIME类型：输入 `image/`、`application/json` 等查询扩展名" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 显示所有类型：列出内置数据库中的全部记录" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.2*,0.8*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="section-title" Text="查询结果" />
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <ScrollViewer MaxHeight="420">
+                                <TextBlock
+                                    Classes="code-output"
+                                    FontFamily="Consolas,monospace"
+                                    Text="{Binding QueryResult}"
+                                    TextWrapping="Wrap" />
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="section-title" Text="结果说明" />
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="Small" Text="• 查询结果会保留多行格式，便于直接复制" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 按 MIME 类型查询支持部分匹配" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 数据库内置了文本、图片、音频、视频和文档等常见类型" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

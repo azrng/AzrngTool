@@ -1,0 +1,140 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Format.JsonPageView"
+    x:DataType="vm:JsonPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+    xmlns:behaviors="clr-namespace:AzrngTools.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:vm="using:AzrngTools.ViewModels.Format"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="JSON 格式化工作台" />
+                        <TextBlock Classes="section-copy" Text="把格式化、压缩、转义和去除转义收敛到同一个编辑区，避免在多个输入框之间来回切换。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="格式化" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="压缩" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="转义" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.35*,0.85*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="编辑区" />
+                            <TextBlock Classes="section-copy" Text="在一里直接粘贴原始 JSON、被转义的 JSON 字符串，或需要压缩的内容。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <avaloniaEdit:TextEditor
+                                FontFamily="Consolas,monospace"
+                                HorizontalScrollBarVisibility="Auto"
+                                MinHeight="420"
+                                Name="JsonText"
+                                Padding="{StaticResource Thickness.8}"
+                                ShowLineNumbers="True"
+                                SyntaxHighlighting="Json"
+                                VerticalScrollBarVisibility="Visible"
+                                WordWrap="True">
+                                <avaloniaEdit:TextEditor.Options>
+                                    <avaloniaEdit:TextEditorOptions ShowSpaces="False">
+                                        <avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                                            <system:Int32>10</system:Int32>
+                                        </avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                                    </avaloniaEdit:TextEditorOptions>
+                                </avaloniaEdit:TextEditor.Options>
+                                <i:Interaction.Behaviors>
+                                    <behaviors:DocumentTextBindingBehavior Text="{Binding Original, Mode=TwoWay}" />
+                                </i:Interaction.Behaviors>
+                            </avaloniaEdit:TextEditor>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="操作说明" />
+                            <TextBlock Classes="section-copy" Text="所有按钮都直接作用于当前编辑区内容，理理后的结果会原位回写，适合反复微调。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="常用流程" />
+                                <TextBlock Classes="Small" Text="• 先点“格式化”，快速检查结构和层级" />
+                                <TextBlock Classes="Small" Text="• 再点“压缩”，得到适合接口传输的单行结果" />
+                                <TextBlock Classes="Small" Text="• 被双引号包住的文本可直接点“去除转义”" />
+                                <TextBlock Classes="Small" Text="• 需要嵌入字符串时再用“转义”或“压缩并转义”" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="提示" />
+                                <TextBlock Classes="section-copy" Text="如果输入不是合法 JSON，命令会保持当前内容不变，并通过通知提示解析失败。" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="快捷操作" />
+                        <TextBlock Classes="section-copy" Text="按你当前内容选择对应动作即可，不需要切换输入或结果区域。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                        <Button
+                            Command="{Binding FormatJsonCommand}"
+                            Content="格式化"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding CompressJsonCommand}"
+                            Content="压缩"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding EscapeJsonCommand}"
+                            Content="转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding CompressEscapeJsonCommand}"
+                            Content="压缩并转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ReplaceEscapeCommand}"
+                            Content="去除转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="3" Classes="tool-card-soft">
+                <TextBlock
+                    Classes="section-copy"
+                    Text="一一页沿用单编辑区模式，理理结果直接回写原文，方便连续清洗和多次整理。"
+                    TextWrapping="Wrap" />
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

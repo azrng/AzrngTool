@@ -1,0 +1,110 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Encrypts.Sm4EncryptPageView"
+    x:DataType="vm:Sm4EncryptPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="clr-namespace:AzrngTools.Utils"
+    xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="SM4 加解密工作台" />
+                        <TextBlock Classes="section-copy" Text="支持 SM4 加密解密，并可按不同内容格式查看处理结果。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="SM4" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Base64 / Hex" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.0*,1.15*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="输入待加密或待解密的内容，输出格式选择会决定结果与解密输入的解释方式。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="260"
+                            Text="{Binding Original}"
+                            Watermark="请输入要加密或解密的内容" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <Border Grid.Row="0" Classes="tool-card-roomy">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="密钥与结果" />
+                                <TextBlock Classes="section-copy" Text="密钥区和结果区拆开展示，方便在不同密钥之间快速切换验证。" />
+                            </StackPanel>
+
+                            <TextBox
+                                Grid.Row="1"
+                                Classes="Standard"
+                                Text="{Binding Secret}"
+                                Watermark="请输入密钥" />
+
+                            <TextBox
+                                Grid.Row="2"
+                                AcceptsReturn="True"
+                                Classes="Standard"
+                                Height="220"
+                                IsReadOnly="True"
+                                Text="{Binding Ciphertext}"
+                                Watermark="处理后的内容将显示在这里" />
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Classes="tool-card-roomy" VerticalAlignment="Top">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="格式与操作" />
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Classes="tool-card-soft">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                    <TextBlock Classes="metric-label" Text="内容类型" VerticalAlignment="Center" />
+                                    <ComboBox
+                                        Grid.Column="1"
+                                        ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                                        SelectedIndex="{Binding OutTypeValue}" />
+                                </Grid>
+                            </Border>
+
+                            <WrapPanel Grid.Row="2" Classes="tool-actions">
+                                <Button
+                                    Command="{Binding Sm4HandlerCommand}"
+                                    CommandParameter="true"
+                                    Content="加密"
+                                    Theme="{DynamicResource SolidButton}" />
+                                <Button
+                                    Command="{Binding Sm4HandlerCommand}"
+                                    CommandParameter="false"
+                                    Content="解密"
+                                    Theme="{DynamicResource OutlineButton}" />
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

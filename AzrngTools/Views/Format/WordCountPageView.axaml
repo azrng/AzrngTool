@@ -1,0 +1,147 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Format.WordCountPageView"
+    x:DataType="format:WordCountPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:format="clr-namespace:AzrngTools.ViewModels.Format"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="字数统计工作台" />
+                        <TextBlock Classes="section-copy" Text="适合一次性查看字符、词数、段落和格式信息，输入与统计概览分区后更容易对照。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button
+                            Command="{Binding CountWordsCommand}"
+                            Content="统计字数"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding CopyResultCommand}"
+                            Content="复制统计结果"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入文本" />
+                            <TextBlock Classes="section-copy" Text="粘贴待统计文本后点击右上角的统计按钮，结果会刷新到右侧统计区。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="320"
+                            Text="{Binding InputText}"
+                            TextWrapping="Wrap"
+                            Watermark="请输入要统计的文本..." />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="统计说明" />
+                            <TextBlock Classes="section-copy" Text="右侧分为基础统计和格式统计两组，便于分别查看内容量与结构信息。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="Small" Text="• 支持中文字符、英文字符、数字与标点统计" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 支持空格、行数、段落数和英文词数统计" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 可将当前统计结果一键复制到剪贴板" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.0*,1.0*,0.85*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="section-title" Text="基础统计" />
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="总字符数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding TotalCharacters}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="中文字符数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding ChineseCharacters}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="英文字符数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding EnglishCharacters}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="数字数量" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Numbers}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="标点符号" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Punctuation}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="section-title" Text="格式统计" />
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="空格数量" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Spaces}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="行数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Lines}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="英文词数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Words}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="section-copy" Text="段落数" />
+                                    <TextBlock Grid.Column="1" Classes="metric-value" Text="{Binding Paragraphs}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="section-title" Text="使用提示" />
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="Small" Text="• 空文本会重置统计结果" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 英文词数按空白和标点分割" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 复制结果会导出完整统计摘要" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

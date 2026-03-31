@@ -1,0 +1,131 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Encode.Base64ToImagePageView"
+    x:DataType="encode:Base64ToImagePageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:encode="clr-namespace:AzrngTools.ViewModels.Encode"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="Base64 转图片工作台" />
+                        <TextBlock Classes="section-copy" Text="支持 Base64 输入、图片预览和保存，适合快速确认转换结果。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="粘贴" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="预览" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="保存" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="0.95*,1.05*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="Base64 输入" />
+                            <TextBlock Classes="section-copy" Text="支持直接输入纯 Base64，或带有 data URI 前缀的完整内容；较长文本也可以先从剪贴板导入再执行转换。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="300"
+                            Text="{Binding Base64String, UpdateSourceTrigger=LostFocus}"
+                            Watermark="请输入 Base64 字符串（支持带或不带 data:image/...;base64, 前缀）" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入提示" />
+                                <TextBlock Classes="Small" Text="• 超长内容优先用“从剪贴板粘贴”，可减少直接输入时的界面卡顿。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 转换仅影响当前页状态，不会新增网络请求或额外处理流程。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <Border Grid.Row="0" Classes="tool-card-roomy">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="section-title" Text="图片预览" />
+                                    <TextBlock Classes="section-copy" Text="转换成功后在这里直接查看结果，预览区保留固定尺寸，方便不同图片之间快速对照。" />
+                                </StackPanel>
+
+                                <Border Grid.Column="1" Classes="badge-pill compact" IsVisible="{Binding HasImage}" VerticalAlignment="Top">
+                                    <TextBlock Classes="badge-text" Text="{Binding ImageBytes.Length, StringFormat='大小 {0} 字节'}" />
+                                </Border>
+                            </Grid>
+
+                            <Border
+                                Grid.Row="1"
+                                Classes="tool-card-soft"
+                                Height="420"
+                                HorizontalAlignment="Stretch"
+                                Padding="{StaticResource Thickness.12}">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                    <Grid Height="396" Width="736">
+                                        <Image
+                                            HorizontalAlignment="Center"
+                                            IsVisible="{Binding HasImage}"
+                                            Source="{Binding PreviewImage}"
+                                            Stretch="Uniform"
+                                            VerticalAlignment="Center" />
+                                        <StackPanel HorizontalAlignment="Center" IsVisible="{Binding !HasImage}" Spacing="{StaticResource Space.6}" VerticalAlignment="Center">
+                                            <TextBlock Classes="section-title" HorizontalAlignment="Center" Text="等待图片预览" />
+                                            <TextBlock Classes="section-copy" HorizontalAlignment="Center" Text="完成转换后会在这里显示图片内容。" TextAlignment="Center" />
+                                        </StackPanel>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Classes="tool-card-roomy">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="快捷操作" />
+                                <TextBlock Classes="section-copy" Text="保留原有四个动作，先导入或粘贴 Base64，再执行转换；只有成功生成图片后才允许保存。" />
+                            </StackPanel>
+
+                            <WrapPanel Grid.Row="1" Classes="tool-actions">
+                                <Button
+                                    Command="{Binding PasteFromClipboardCommand}"
+                                    Content="从剪贴板粘贴"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <Button
+                                    Command="{Binding ConvertToImageCommand}"
+                                    Content="转换为图片"
+                                    Theme="{DynamicResource SolidButton}" />
+                                <Button
+                                    Command="{Binding SaveImageCommand}"
+                                    Content="保存图片"
+                                    IsEnabled="{Binding HasImage}"
+                                    Theme="{DynamicResource SolidButton}" />
+                                <Button
+                                    Command="{Binding ClearCommand}"
+                                    Content="清空"
+                                    Theme="{DynamicResource OutlineButton}" />
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

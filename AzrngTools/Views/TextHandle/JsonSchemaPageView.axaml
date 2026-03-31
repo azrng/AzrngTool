@@ -1,0 +1,96 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.TextHandle.JsonSchemaPageView"
+    x:DataType="textHandle:JsonSchemaPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:textHandle="clr-namespace:AzrngTools.ViewModels.TextHandle"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="JSON Schema 生成工作台" />
+                        <TextBlock Classes="section-copy" Text="从示例 JSON 直接推导结构定义，适合快速确认字段层级、类型分布和接口入参格式。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Sample JSON" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Schema 输出" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="JSON 输入" />
+                            <TextBlock Classes="section-copy" Text="粘贴一段具有代表性的 JSON 示例，生成器会按当前结构推导对应的 Schema。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="320"
+                            Text="{Binding OriginText}"
+                            Watermark="请输入 JSON 内容" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="生成操作" />
+                            <TextBlock Classes="section-copy" Text="当前页面只保留一个核心动作，输入 JSON 后即可直接生成标准化 Schema 结果。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Row="1" Classes="tool-actions">
+                            <Button
+                                Command="{Binding SchemaGenHandleCommand}"
+                                CommandParameter="false"
+                                Content="生成 Schema"
+                                Theme="{DynamicResource SolidButton}" />
+                        </WrapPanel>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="使用说明" />
+                                <TextBlock Classes="Small" Text="建议提供完整示例，以便生成更准确的字段层级。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="数组中的首个有效元素会影响集合项结构推导。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="生成结果会自动格式化，便于继续审阅和复制。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="Schema 输出" />
+                        <TextBlock Classes="section-copy" Text="生成后的 JSON Schema 会完整展示在这里，保持只读查看和选择复制的使用方式。" />
+                    </StackPanel>
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        Height="360"
+                        IsReadOnly="True"
+                        Text="{Binding SchemaData}"
+                        Watermark="生成的 JSON Schema 将显示在这里" />
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

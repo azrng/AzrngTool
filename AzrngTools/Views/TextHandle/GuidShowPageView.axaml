@@ -1,0 +1,135 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.TextHandle.GuidShowPageView"
+    x:DataType="vm:GuidShowPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AzrngTools.ViewModels.TextHandle"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="GUID 格式生成工作台" />
+                        <TextBlock Classes="section-copy" Text="一次生成同一个 GUID 的多种常见表示形式，右侧预览区改为可直接选中文本复制，不再保留底部重复结果区。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="N / D" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="B / P / X" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="0.64*,1.36*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="生成操作" />
+                            <TextBlock Classes="section-copy" Text="点击按钮会重新生成一组新的 GUID，并同步刷新右侧所有格式内容。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Row="1" Classes="tool-actions">
+                            <Button
+                                Command="{Binding GenerateGuidCommand}"
+                                Content="重新生成 GUID"
+                                Theme="{DynamicResource SolidButton}" />
+                        </WrapPanel>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="格式说明" />
+                                <TextBlock Classes="Small" Text="• N：32 位紧凑格式，不带连接符。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• D：标准格式，包含 4 个连接符。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• B / P：分别在标准格式外层包上大括号或圆括号。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• X：结构化十六进制表示，适合部分历史格式场景。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="快速预览" />
+                            <TextBlock Classes="section-copy" Text="右侧预览区直接使用只读文本框展示，每种格式单独占一行，便于直接选中并复制。" />
+                        </StackPanel>
+
+                        <Grid
+                            Grid.Row="1"
+                            RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                            RowSpacing="{StaticResource Space.10}">
+                            <Border Grid.Row="0" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                                    <TextBlock Classes="metric-label" Text="N 格式" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Classes="Standard flat-readonly"
+                                        IsReadOnly="True"
+                                        Text="{Binding GuidN}"
+                                        TextWrapping="NoWrap" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                                    <TextBlock Classes="metric-label" Text="D 格式" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Classes="Standard flat-readonly"
+                                        IsReadOnly="True"
+                                        Text="{Binding GuidD}"
+                                        TextWrapping="NoWrap" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="2" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                                    <TextBlock Classes="metric-label" Text="B 格式" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Classes="Standard flat-readonly"
+                                        IsReadOnly="True"
+                                        Text="{Binding GuidB}"
+                                        TextWrapping="NoWrap" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="3" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                                    <TextBlock Classes="metric-label" Text="P 格式" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Classes="Standard flat-readonly"
+                                        IsReadOnly="True"
+                                        Text="{Binding GuidP}"
+                                        TextWrapping="NoWrap" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="4" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                                    <TextBlock Classes="metric-label" Text="X 格式" />
+                                    <TextBox
+                                        Grid.Row="1"
+                                        Classes="Standard flat-readonly"
+                                        IsReadOnly="True"
+                                        Text="{Binding GuidX}"
+                                        TextWrapping="NoWrap" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

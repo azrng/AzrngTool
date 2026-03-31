@@ -1,0 +1,98 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Encrypts.HashPageView"
+    x:DataType="vm:HashPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="clr-namespace:AzrngTools.Utils"
+    xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="Hash 工作台" />
+                        <TextBlock Classes="section-copy" Text="把常用散列算法集中到同一页，方便按不同算法快速计算和对比结果。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="MD5" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="SHA / SM3" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="在这里输入待散列的原始文本，右侧选择输出格式和算法后即可得到结果。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="260"
+                            Text="{Binding Original}"
+                            Watermark="请输入要进行哈希的内容" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="算法与输出格式" />
+                            <TextBlock Classes="section-copy" Text="保留现有输出类型下拉框和五种算法按钮，适合快速横向比对不同散列结果。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <TextBlock Classes="metric-label" Text="输出类型" VerticalAlignment="Center" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                                    SelectedIndex="{Binding OutTypeValue}" />
+                            </Grid>
+                        </Border>
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="0" Content="MD5" Theme="{DynamicResource SolidButton}" />
+                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="1" Content="SHA1" Theme="{DynamicResource OutlineButton}" />
+                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="2" Content="SHA256" Theme="{DynamicResource OutlineButton}" />
+                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="3" Content="SHA512" Theme="{DynamicResource OutlineButton}" />
+                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="4" Content="SM3" Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="散列结果" />
+                        <TextBlock Classes="section-copy" Text="结果区保留只读展示，适合直接复制当前算法输出。" />
+                    </StackPanel>
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        Height="220"
+                        IsReadOnly="True"
+                        Text="{Binding Ciphertext}"
+                        Watermark="哈希后的内容" />
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

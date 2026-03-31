@@ -1,0 +1,120 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="Brush.App.Background">#F4F7FB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.Background">#FFFFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.SubtleBackground">#FFF0F4FA</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.HeroBackground">#FFEAF2FF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.Stroke">#FFD8E1EE</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Primary">#FF162033</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Secondary">#FF5D6980</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Tertiary">#FF7D8798</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Soft">#FFDCEBFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Strong">#FF1D4ED8</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Border">#FFB7D2FF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Nav.SelectedBackground">#FFDCEBFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Nav.HoverBackground">#FFF0F4FA</SolidColorBrush>
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="Brush.App.Background">#FF0E1726</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.Background">#FF131D2D</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.SubtleBackground">#FF1A2638</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.HeroBackground">#FF132743</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Panel.Stroke">#FF253247</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Primary">#FFF4F7FB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Secondary">#FFB2C0D4</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.Tertiary">#FF8A97AB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Soft">#FF183B72</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Strong">#FF7FB3FF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Accent.Border">#FF2C5B9B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Nav.SelectedBackground">#FF183B72</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Nav.HoverBackground">#FF1A2638</SolidColorBrush>
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <x:Double x:Key="Space.2">2</x:Double>
+    <x:Double x:Key="Space.4">4</x:Double>
+    <x:Double x:Key="Space.5">5</x:Double>
+    <x:Double x:Key="Space.6">6</x:Double>
+    <x:Double x:Key="Space.8">8</x:Double>
+    <x:Double x:Key="Space.10">10</x:Double>
+    <x:Double x:Key="Space.12">12</x:Double>
+    <x:Double x:Key="Space.14">14</x:Double>
+    <x:Double x:Key="Space.15">15</x:Double>
+    <x:Double x:Key="Space.16">16</x:Double>
+    <x:Double x:Key="Space.18">18</x:Double>
+    <x:Double x:Key="Space.20">20</x:Double>
+    <x:Double x:Key="Space.24">24</x:Double>
+    <x:Double x:Key="Space.28">28</x:Double>
+    <x:Double x:Key="Space.30">30</x:Double>
+
+    <x:Double x:Key="FontSize.Title.Sm">18</x:Double>
+    <x:Double x:Key="FontSize.Title.Md">20</x:Double>
+    <x:Double x:Key="FontSize.Title.Lg">22</x:Double>
+    <x:Double x:Key="FontSize.Hero">28</x:Double>
+
+    <x:Double x:Key="Layout.MainWindow.Width">1360</x:Double>
+    <x:Double x:Key="Layout.MainWindow.Height">860</x:Double>
+    <x:Double x:Key="Layout.Icon.Sm">16</x:Double>
+    <x:Double x:Key="Layout.Avatar.Md">120</x:Double>
+    <x:Double x:Key="Layout.Badge.Bar">72</x:Double>
+    <x:Double x:Key="Layout.Badge.BarHeight">4</x:Double>
+    <GridLength x:Key="Layout.Shell.SidebarWidth">248</GridLength>
+    <x:Double x:Key="Layout.Shell.ContentMaxWidth">1024</x:Double>
+    <x:Double x:Key="Layout.Dashboard.HeroMinHeight">204</x:Double>
+
+    <Thickness x:Key="Thickness.4">4</Thickness>
+    <Thickness x:Key="Thickness.8">8</Thickness>
+    <Thickness x:Key="Thickness.10">10</Thickness>
+    <Thickness x:Key="Thickness.12">12</Thickness>
+    <Thickness x:Key="Thickness.14">14</Thickness>
+    <Thickness x:Key="Thickness.15">15</Thickness>
+    <Thickness x:Key="Thickness.16">16</Thickness>
+    <Thickness x:Key="Thickness.20">20</Thickness>
+    <Thickness x:Key="Thickness.24">24</Thickness>
+    <Thickness x:Key="Thickness.28.24">28,24</Thickness>
+    <Thickness x:Key="Thickness.12.4">12,4</Thickness>
+    <Thickness x:Key="Thickness.14.4">14,4</Thickness>
+    <Thickness x:Key="Thickness.10.4">10,4</Thickness>
+    <Thickness x:Key="Thickness.0.8">0,8</Thickness>
+    <Thickness x:Key="Thickness.0.10">0,10</Thickness>
+    <Thickness x:Key="Thickness.0.20">0,20</Thickness>
+    <Thickness x:Key="Thickness.5.0">5,0</Thickness>
+    <Thickness x:Key="Thickness.10.0">10,0</Thickness>
+    <Thickness x:Key="Thickness.20.0">20,0</Thickness>
+    <Thickness x:Key="Thickness.Top.2">0,2,0,0</Thickness>
+    <Thickness x:Key="Thickness.Top.5">0,5,0,0</Thickness>
+    <Thickness x:Key="Thickness.Top.8">0,8,0,0</Thickness>
+    <Thickness x:Key="Thickness.Top.10">0,10,0,0</Thickness>
+    <Thickness x:Key="Thickness.Top.15">0,15,0,0</Thickness>
+    <Thickness x:Key="Thickness.Top.20">0,20,0,0</Thickness>
+    <Thickness x:Key="Thickness.Bottom.10">0,0,0,10</Thickness>
+    <Thickness x:Key="Thickness.Right.10">0,0,10,0</Thickness>
+    <Thickness x:Key="Thickness.Right.16">0,0,16,0</Thickness>
+    <Thickness x:Key="Thickness.Right.30">0,0,30,0</Thickness>
+    <Thickness x:Key="Thickness.10.0.10.10">10,0,10,10</Thickness>
+    <Thickness x:Key="Thickness.10.5">10,5</Thickness>
+    <Thickness x:Key="Thickness.10.2">10,2</Thickness>
+    <Thickness x:Key="Thickness.15.10.10.5">15,10,10,5</Thickness>
+    <Thickness x:Key="Thickness.10.0.0.0">10,0,0,0</Thickness>
+    <Thickness x:Key="Thickness.20.0.0.0">20,0,0,0</Thickness>
+    <Thickness x:Key="Thickness.0.5.5.5">0,5,5,5</Thickness>
+
+    <CornerRadius x:Key="Radius.Xs">3</CornerRadius>
+    <CornerRadius x:Key="Radius.Sm">5</CornerRadius>
+    <CornerRadius x:Key="Radius.Md">6</CornerRadius>
+    <CornerRadius x:Key="Radius.Lg">8</CornerRadius>
+    <CornerRadius x:Key="Radius.Xl">10</CornerRadius>
+    <CornerRadius x:Key="Radius.Xxl">15</CornerRadius>
+    <CornerRadius x:Key="Radius.Display">18</CornerRadius>
+    <CornerRadius x:Key="Radius.Hero">20</CornerRadius>
+    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+
+    <FontFamily x:Key="FontFamily.App">avares://Avalonia.Fonts.Inter#Inter</FontFamily>
+
+    <SolidColorBrush x:Key="Brush.Border.Muted">#FFAAAAAA</SolidColorBrush>
+    <SolidColorBrush x:Key="Brush.Border.Divider">#22000000</SolidColorBrush>
+    <SolidColorBrush x:Key="Brush.Text.OnAccent">#FFFFFFFF</SolidColorBrush>
+    <SolidColorBrush x:Key="Brush.Surface.Transparent">Transparent</SolidColorBrush>
+</ResourceDictionary>

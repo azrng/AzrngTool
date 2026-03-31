@@ -1,0 +1,132 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Format.SqlFormatPageView"
+    x:DataType="vm:SqlFormatPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+    xmlns:behaviors="clr-namespace:AzrngTools.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:vm="using:AzrngTools.ViewModels.Format"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="SQL 整理工作台" />
+                        <TextBlock Classes="section-copy" Text="留留单编辑区的原有处理方式，把格式化、压缩和转义相关操作集中整理成统一工作台，便于连续调整同一段 SQL。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="格式化" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="压缩" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="转义" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1.35*,0.85*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="编辑区" />
+                            <TextBlock Classes="section-copy" Text="直接粘贴原始 SQL 或已转义文本，所有处理结果都会回写到当前编辑区，不新增额外结果面板。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <avaloniaEdit:TextEditor
+                                FontFamily="Consolas,monospace"
+                                HorizontalScrollBarVisibility="Auto"
+                                MinHeight="460"
+                                Name="JsonText"
+                                Padding="{StaticResource Thickness.8}"
+                                ShowLineNumbers="True"
+                                SyntaxHighlighting="SQL"
+                                VerticalScrollBarVisibility="Visible"
+                                WordWrap="True">
+                                <avaloniaEdit:TextEditor.Options>
+                                    <avaloniaEdit:TextEditorOptions ShowSpaces="False">
+                                        <avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                                            <system:Int32>10</system:Int32>
+                                        </avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                                    </avaloniaEdit:TextEditorOptions>
+                                </avaloniaEdit:TextEditor.Options>
+                                <i:Interaction.Behaviors>
+                                    <behaviors:DocumentTextBindingBehavior Text="{Binding OriginText, Mode=TwoWay}" />
+                                </i:Interaction.Behaviors>
+                            </avaloniaEdit:TextEditor>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="操作说明" />
+                            <TextBlock Classes="section-copy" Text="页页沿用原来的单文本区模式，更适合对同一段 SQL 连续做格式整理、压缩和字符串转义处理。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="常用流程" />
+                                <TextBlock Classes="Small" Text="• 先执行“SQL 格式化”，快速梳理关键字、缩进和层次结构。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 需要嵌入代码或配置时，再执行“转义”或“去除转义”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 面向接口或日志场景时，可以最后执行“SQL 压缩”得到单行结果。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="提示" />
+                                <TextBlock Classes="section-copy" Text="所有按钮都继续直接作用于当前编辑器内容；如果输入为空，仍通过原有消息提示告知用户。" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="快捷操作" />
+                        <TextBlock Classes="section-copy" Text="处理结果会原位回写，不会新增第二份输出内容；下面留留原有四个命令入口。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                        <Button
+                            Command="{Binding EscapeJsonCommand}"
+                            CommandParameter="false"
+                            Content="转义"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding ReplaceEscapeCommand}"
+                            CommandParameter="0"
+                            Content="去除转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding SqlCompressCommand}"
+                            CommandParameter="0"
+                            Content="SQL 压缩"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding SqlFormatCommand}"
+                            CommandParameter="0"
+                            Content="SQL 格式化"
+                            Theme="{DynamicResource SolidButton}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,204 @@
+<UserControl
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Encrypts.RsaEncryptPageView"
+    x:DataType="vm:RsaEncryptPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:utils="clr-namespace:AzrngTools.Utils"
+    xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="tool-card-roomy">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="RSA 工作台" />
+                        <TextBlock Classes="section-copy" Text="保留“加解密”和“生成密钥”两个标签页，把每个页签里的输入、参数和结果区域重新整理成统一卡片样式。" />
+                    </StackPanel>
+
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="加解密" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="生成密钥" />
+                        </Border>
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" Classes="tool-card-roomy">
+                <TabControl>
+                    <TabItem Header="加解密">
+                        <Grid Margin="{StaticResource Thickness.10}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                            <Grid ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+                                <Border Grid.Column="0" Classes="tool-card-roomy">
+                                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                            <TextBlock Classes="section-title" Text="输入内容" />
+                                            <TextBlock Classes="section-copy" Text="输入待加密或待解密的文本，当前输出格式设置会同时影响加密输出和解密输入的解释方式。" />
+                                        </StackPanel>
+
+                                        <TextBox
+                                            Grid.Row="1"
+                                            AcceptsReturn="True"
+                                            Classes="Standard"
+                                            Height="220"
+                                            Text="{Binding Original}"
+                                            Watermark="请输入要加密或解密的内容" />
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Column="1" Classes="tool-card-roomy">
+                                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                            <TextBlock Classes="section-title" Text="参数设置" />
+                                            <TextBlock Classes="section-copy" Text="密钥类型和输入输出格式都沿用现有绑定，不改动 RSA 处理逻辑。" />
+                                        </StackPanel>
+
+                                        <Border Grid.Row="1" Classes="tool-card-soft">
+                                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                                <TextBlock Classes="metric-label" Text="密钥类型" VerticalAlignment="Center" />
+                                                <ComboBox
+                                                    Grid.Column="1"
+                                                    ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.RSAKeyTypeValues}}"
+                                                    SelectedIndex="{Binding RsaKeyTypeValue}" />
+
+                                                <TextBlock Grid.Row="1" Classes="metric-label" Text="输入输出类型" VerticalAlignment="Center" />
+                                                <ComboBox
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                                                    SelectedIndex="{Binding OutTypeValue}" />
+                                            </Grid>
+                                        </Border>
+
+                                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                                            <Button Command="{Binding EncryptHandlerCommand}" CommandParameter="0" Content="加密" Theme="{DynamicResource SolidButton}" />
+                                            <Button Command="{Binding EncryptHandlerCommand}" CommandParameter="1" Content="解密" Theme="{DynamicResource OutlineButton}" />
+                                        </WrapPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+                                <Border Grid.Column="0" Classes="tool-card-roomy">
+                                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                            <TextBlock Classes="section-title" Text="公钥" />
+                                            <TextBlock Classes="section-copy" Text="加密时需要公钥，支持当前所选密钥类型。" />
+                                        </StackPanel>
+
+                                        <TextBox
+                                            Grid.Row="1"
+                                            AcceptsReturn="True"
+                                            Classes="Standard"
+                                            Height="220"
+                                            Text="{Binding PublicKey}"
+                                            Watermark="请输入公钥" />
+                                    </Grid>
+                                </Border>
+
+                                <Border Grid.Column="1" Classes="tool-card-roomy">
+                                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                            <TextBlock Classes="section-title" Text="私钥" />
+                                            <TextBlock Classes="section-copy" Text="解密时需要私钥，保持原有输入方式不变。" />
+                                        </StackPanel>
+
+                                        <TextBox
+                                            Grid.Row="1"
+                                            AcceptsReturn="True"
+                                            Classes="Standard"
+                                            Height="220"
+                                            Text="{Binding PrivateKey}"
+                                            Watermark="请输入私钥" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <Border Grid.Row="2" Classes="tool-card-roomy">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="section-title" Text="处理结果" />
+                                        <TextBlock Classes="section-copy" Text="加密或解密结果统一显示在这里，便于继续复制或验证。" />
+                                    </StackPanel>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="220"
+                                        IsReadOnly="True"
+                                        Text="{Binding Ciphertext}"
+                                        Watermark="加密或解密的结果" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="生成密钥">
+                        <Grid Margin="{StaticResource Thickness.10}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                            <Border Grid.Row="0" Classes="tool-card-roomy">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="section-title" Text="生成操作" />
+                                        <TextBlock Classes="section-copy" Text="选择目标密钥类型后直接生成公私钥，结果会回写到下方两个密钥区。" />
+                                    </StackPanel>
+
+                                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                                        <ComboBox
+                                            ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.RSAKeyTypeValues}}"
+                                            MinWidth="140"
+                                            SelectedIndex="{Binding RsaKeyTypeValue}" />
+                                        <Button
+                                            Command="{Binding GenerateSecretCommand}"
+                                            Content="生成公私钥"
+                                            Theme="{DynamicResource SolidButton}" />
+                                    </WrapPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="1" Classes="tool-card-roomy">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="section-title" Text="公钥输出" />
+                                        <TextBlock Classes="section-copy" Text="生成后的公钥会显示在这里，也可继续复用于“加解密”页签。" />
+                                    </StackPanel>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="180"
+                                        Text="{Binding PublicKey}"
+                                        Watermark="公钥" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="2" Classes="tool-card-roomy">
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="section-title" Text="私钥输出" />
+                                        <TextBlock Classes="section-copy" Text="生成后的私钥会显示在这里，布局调整不影响原有生成逻辑。" />
+                                    </StackPanel>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="220"
+                                        Text="{Binding PrivateKey}"
+                                        Watermark="私钥" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

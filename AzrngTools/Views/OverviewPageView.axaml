@@ -1,0 +1,92 @@
+<UserControl
+    x:Class="AzrngTools.Views.OverviewPageView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:AzrngTools.ViewModels"
+    d:DesignHeight="760"
+    d:DesignWidth="1100"
+    x:DataType="vm:OverviewPageViewModel"
+    mc:Ignorable="d">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Border Grid.Row="0" Classes="dashboard-hero">
+                <StackPanel Spacing="{StaticResource Space.10}">
+                    <TextBlock Classes="hero-eyebrow" Text="开发工作台" />
+                    <TextBlock Classes="hero-title" Text="更清晰的导航，更稳定的亮色主题，更现代的 Fluent 视觉底座" />
+                    <TextBlock
+                        Classes="hero-copy"
+                        Text="现在首页、壳层和工具页的层次关系已经被重新整理，输入区、操作区和结果区会更容易区分，浅色模式下的文字对比度也更可读。" />
+
+                    <WrapPanel Classes="tool-actions">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text=".NET 10" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="Avalonia 11.3" />
+                        </Border>
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="FluentAvalonia + Semi" />
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="dashboard-stat">
+                    <StackPanel Spacing="{StaticResource Space.6}">
+                        <TextBlock Classes="stat-value" Text="34" />
+                        <TextBlock Classes="stat-label" Text="可用工具入口" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="dashboard-stat">
+                    <StackPanel Spacing="{StaticResource Space.6}">
+                        <TextBlock Classes="stat-value" Text="5" />
+                        <TextBlock Classes="stat-label" Text="功能分组" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Classes="dashboard-stat">
+                    <StackPanel Spacing="{StaticResource Space.6}">
+                        <TextBlock Classes="stat-value" Text="Light / Dark" />
+                        <TextBlock Classes="stat-label" Text="主题切换可用" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <StackPanel Spacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="如何开始使用" />
+                            <TextBlock Classes="section-copy" Text="先从左侧导航找到工具，再按输入区、操作区、结果区的顺序完成操作。" />
+                        </StackPanel>
+
+                        <Border Classes="dashboard-note">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="1. 搜索入口" />
+                                <TextBlock Classes="section-copy" Text="左侧顶部搜索框支持按名称筛选工具，快速定位功能。" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="dashboard-note">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="2. 常用入口" />
+                                <TextBlock Classes="section-copy" Text="侧栏常用入口会优先显示更常访问的工具，首页入口单独保留在统计卡中。" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="dashboard-note">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="3. 结果归位" />
+                                <TextBlock Classes="section-copy" Text="每个工具页面都会尽量把结果区集中到单一位置，避免信息散落。" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
