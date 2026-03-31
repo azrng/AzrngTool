@@ -37,15 +37,22 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          function Get-ProjectVersionFromXml([string]$xmlContent) {
-            if ([string]::IsNullOrWhiteSpace($xmlContent)) {
+          function Get-ProjectVersionFromContent([string]$content) {
+            if ([string]::IsNullOrWhiteSpace($content)) {
               return ""
             }
 
-            $project = New-Object System.Xml.XmlDocument
-            $project.LoadXml($xmlContent)
-            $propertyGroups = @($project.Project.PropertyGroup)
-            return ($propertyGroups | Where-Object { $_.Version } | Select-Object -First 1).Version
+            $match = [System.Text.RegularExpressions.Regex]::Match(
+              $content,
+              '<Version>\s*([^<]+?)\s*</Version>',
+              [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
+            )
+
+            if ($match.Success) {
+              return $match.Groups[1].Value.Trim()
+            }
+
+            return ""
           }
 
           $projectPath = Join-Path "${{ github.workspace }}" "${{ env.PROJECT_PATH }}"
@@ -53,8 +60,8 @@ jobs:
             throw "项目文件不存在：$projectPath"
           }
 
-          $projectXml = Get-Content -LiteralPath $projectPath -Raw -Encoding UTF8
-          $projectVersion = Get-ProjectVersionFromXml $projectXml
+          $projectContent = Get-Content -LiteralPath $projectPath -Raw -Encoding UTF8
+          $projectVersion = Get-ProjectVersionFromContent $projectContent
 
           if ([string]::IsNullOrWhiteSpace($projectVersion)) {
             throw "未在项目文件中找到 Version：$projectPath"
@@ -68,7 +75,7 @@ jobs:
             git cat-file -e "${beforeSha}:${{ env.PROJECT_PATH }}" 2>$null
             if ($LASTEXITCODE -eq 0) {
               $previousProjectXml = git show "${beforeSha}:${{ env.PROJECT_PATH }}" | Out-String
-              $previousVersion = Get-ProjectVersionFromXml $previousProjectXml
+              $previousVersion = Get-ProjectVersionFromContent $previousProjectXml
             }
           }
 
