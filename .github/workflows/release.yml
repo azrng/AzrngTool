@@ -37,11 +37,27 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          [xml]$project = Get-Content "${{ env.PROJECT_PATH }}"
-          $projectVersion = ($project.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          function Get-ProjectVersionFromXml([string]$xmlContent) {
+            if ([string]::IsNullOrWhiteSpace($xmlContent)) {
+              return ""
+            }
+
+            $project = New-Object System.Xml.XmlDocument
+            $project.LoadXml($xmlContent)
+            $propertyGroups = @($project.Project.PropertyGroup)
+            return ($propertyGroups | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+
+          $projectPath = Join-Path "${{ github.workspace }}" "${{ env.PROJECT_PATH }}"
+          if (-not (Test-Path -LiteralPath $projectPath)) {
+            throw "项目文件不存在：$projectPath"
+          }
+
+          $projectXml = Get-Content -LiteralPath $projectPath -Raw -Encoding UTF8
+          $projectVersion = Get-ProjectVersionFromXml $projectXml
 
           if ([string]::IsNullOrWhiteSpace($projectVersion)) {
-            throw "未在项目文件中找到 Version。"
+            throw "未在项目文件中找到 Version：$projectPath"
           }
 
           $beforeSha = "${{ github.event.before }}"
@@ -51,8 +67,8 @@ jobs:
           if ($beforeSha -and $beforeSha -ne $zeroSha) {
             git cat-file -e "${beforeSha}:${{ env.PROJECT_PATH }}" 2>$null
             if ($LASTEXITCODE -eq 0) {
-              [xml]$previousProject = git show "${beforeSha}:${{ env.PROJECT_PATH }}"
-              $previousVersion = ($previousProject.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+              $previousProjectXml = git show "${beforeSha}:${{ env.PROJECT_PATH }}" | Out-String
+              $previousVersion = Get-ProjectVersionFromXml $previousProjectXml
             }
           }
 
