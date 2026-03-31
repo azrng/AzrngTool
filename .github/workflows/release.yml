@@ -13,6 +13,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
+  VERSION_FILE: VERSION
   PROJECT_PATH: AzrngTools/AzrngTools.csproj
   PUBLISH_DIR: artifacts/publish/win-x64
   PACKAGE_DIR: artifacts/package
@@ -37,34 +38,23 @@ jobs:
         id: meta
         shell: pwsh
         run: |
-          function Get-ProjectVersionFromContent([string]$content) {
+          function Get-VersionFromContent([string]$content) {
             if ([string]::IsNullOrWhiteSpace($content)) {
               return ""
             }
 
-            $match = [System.Text.RegularExpressions.Regex]::Match(
-              $content,
-              '<Version>\s*([^<]+?)\s*</Version>',
-              [System.Text.RegularExpressions.RegexOptions]::IgnoreCase
-            )
-
-            if ($match.Success) {
-              return $match.Groups[1].Value.Trim()
-            }
-
-            return ""
+            return $content.Trim()
           }
 
-          $projectPath = Join-Path "${{ github.workspace }}" "${{ env.PROJECT_PATH }}"
-          if (-not (Test-Path -LiteralPath $projectPath)) {
-            throw "项目文件不存在：$projectPath"
+          $versionFilePath = Join-Path "${{ github.workspace }}" "${{ env.VERSION_FILE }}"
+          if (-not (Test-Path -LiteralPath $versionFilePath)) {
+            throw "版本文件不存在：$versionFilePath"
           }
 
-          $projectContent = Get-Content -LiteralPath $projectPath -Raw -Encoding UTF8
-          $projectVersion = Get-ProjectVersionFromContent $projectContent
+          $projectVersion = Get-VersionFromContent (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8)
 
           if ([string]::IsNullOrWhiteSpace($projectVersion)) {
-            throw "未在项目文件中找到 Version：$projectPath"
+            throw "版本文件内容为空：$versionFilePath"
           }
 
           $beforeSha = "${{ github.event.before }}"
@@ -72,10 +62,10 @@ jobs:
           $previousVersion = ""
 
           if ($beforeSha -and $beforeSha -ne $zeroSha) {
-            git cat-file -e "${beforeSha}:${{ env.PROJECT_PATH }}" 2>$null
+            git cat-file -e "${beforeSha}:${{ env.VERSION_FILE }}" 2>$null
             if ($LASTEXITCODE -eq 0) {
-              $previousProjectXml = git show "${beforeSha}:${{ env.PROJECT_PATH }}" | Out-String
-              $previousVersion = Get-ProjectVersionFromContent $previousProjectXml
+              $previousVersionContent = git show "${beforeSha}:${{ env.VERSION_FILE }}" | Out-String
+              $previousVersion = Get-VersionFromContent $previousVersionContent
             }
           }
 

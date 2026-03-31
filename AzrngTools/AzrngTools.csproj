@@ -2,7 +2,8 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
-        <Version>2026.3.30.2256</Version>
+        <VersionFilePath>$(MSBuildThisFileDirectory)..\VERSION</VersionFilePath>
+        <Version>$([System.IO.File]::ReadAllText('$(VersionFilePath)').Trim())</Version>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>

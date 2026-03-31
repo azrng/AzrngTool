@@ -43,15 +43,15 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64
 
 ### GitHub Actions 自动发布
 1. 将准备好的代码合并到 `main`
-2. 仅在正式发布时修改 [`AzrngTools.csproj`]() 中的 `Version`
+2. 仅在正式发布时修改根目录 `VERSION`
 3. 推送 `main`
-4. 工作流会在检测到 `Version` 发生变化时自动：
+4. 工作流会在检测到 `VERSION` 发生变化时自动：
    - 创建 `v版本号` tag
    - 执行 `dotnet publish`
    - 生成 `AzrngTools-win-x64-portable.zip`
    - 上传 Actions artifact
    - 创建 GitHub Release
-5. 如果 `Version` 未变化，工作流会直接跳过发布
+5. 如果 `VERSION` 未变化，工作流会直接跳过发布
 
 ## 版本号规则
 - 采用四段纯数字版本：`YYYY.M.D.N`
@@ -59,8 +59,9 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64
 - `YYYY` 为年份，`M` 为月份，`D` 为日期，`N` 为当天第几次正式发布
 - 同一天第一次发布建议使用 `N=1`
 - 同一天有热修复时，递增为 `N=2`、`N=3`
+- 版本单一事实来源：根目录 `VERSION`
 - 示例：
-  - 项目版本：`2026.4.1.1`
+  - `VERSION`：`2026.4.1.1`
   - 自动生成 tag：`v2026.4.1.1`
   - 同日第二次发布：`2026.4.1.2`
 
