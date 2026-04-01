@@ -119,7 +119,7 @@ public partial class App : Application
         services.AddHttpClient();
         services.AddHttpClient(nameof(AppUpdateService), client =>
         {
-            client.Timeout = TimeSpan.FromSeconds(30);
+            client.Timeout = TimeSpan.FromSeconds(100);
             client.DefaultRequestVersion = HttpVersion.Version11;
             client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
         }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
