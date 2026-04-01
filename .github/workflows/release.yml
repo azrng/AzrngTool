@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-main
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -57,19 +60,8 @@ jobs:
             throw "版本文件内容为空：$versionFilePath"
           }
 
-          $beforeSha = "${{ github.event.before }}"
-          $zeroSha = "0000000000000000000000000000000000000000"
-          $previousVersion = ""
-
-          if ($beforeSha -and $beforeSha -ne $zeroSha) {
-            $previousVersionFile = git ls-tree -r --name-only $beforeSha -- "${{ env.VERSION_FILE }}" | Out-String
-            if ($previousVersionFile.Trim() -eq "${{ env.VERSION_FILE }}") {
-              $previousVersionContent = git show "${beforeSha}:${{ env.VERSION_FILE }}" | Out-String
-              $previousVersion = Get-VersionFromContent $previousVersionContent
-            }
-          }
-
-          $versionChanged = $projectVersion -ne $previousVersion
+          $refType = "${{ github.ref_type }}"
+          $refName = "${{ github.ref_name }}"
           $tagName = "v$projectVersion"
           git fetch origin --tags --force
 
@@ -82,14 +74,46 @@ jobs:
           $initialReleaseNeeded = [string]::IsNullOrWhiteSpace($tagSha)
           $createTagNeeded = $false
           $releaseNeeded = $false
+          $previousVersion = ""
+          $versionChanged = $false
+          $skipMessage = ""
 
-          if ($versionChanged -or $initialReleaseNeeded) {
-            if ($tagSha -and $tagSha -ne "${{ github.sha }}") {
-              throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 VERSION。"
+          if ($refType -eq "tag") {
+            if ($refName -ne $tagName) {
+              throw "当前触发 tag 为 $refName，但 VERSION 对应的 tag 应为 $tagName，请保持两者一致。"
             }
 
-            $createTagNeeded = -not $tagSha
             $releaseNeeded = $true
+          }
+          else {
+            $beforeSha = "${{ github.event.before }}"
+            $zeroSha = "0000000000000000000000000000000000000000"
+
+            if ($beforeSha -and $beforeSha -ne $zeroSha) {
+              $previousVersionFile = git ls-tree -r --name-only $beforeSha -- "${{ env.VERSION_FILE }}" | Out-String
+              if ($previousVersionFile.Trim() -eq "${{ env.VERSION_FILE }}") {
+                $previousVersionContent = git show "${beforeSha}:${{ env.VERSION_FILE }}" | Out-String
+                $previousVersion = Get-VersionFromContent $previousVersionContent
+              }
+            }
+
+            $versionChanged = $projectVersion -ne $previousVersion
+
+            if ($versionChanged -or $initialReleaseNeeded) {
+              if ($tagSha -and $tagSha -ne "${{ github.sha }}") {
+                throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 VERSION。"
+              }
+
+              $createTagNeeded = -not $tagSha
+
+              if ($createTagNeeded) {
+                $skipMessage = "已创建或即将创建版本 tag，等待 tag 工作流生成 GitHub Release。"
+              }
+            }
+
+            if (-not $createTagNeeded -and -not $releaseNeeded) {
+              $skipMessage = "当前版本无需发布，跳过自动打 tag 与发布。当前版本: $projectVersion"
+            }
           }
 
           $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_DIR }}\\${{ env.PACKAGE_NAME }}"
@@ -102,12 +126,13 @@ jobs:
           "create_tag_needed=$($createTagNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "release_needed=$($releaseNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
           "package_path=$packagePath" >> $env:GITHUB_OUTPUT
+          "skip_message=$skipMessage" >> $env:GITHUB_OUTPUT
 
-      - name: Skip when no release is needed
-        if: steps.meta.outputs.release_needed != 'true'
+      - name: Skip when no tag or release is needed
+        if: steps.meta.outputs.create_tag_needed != 'true' && steps.meta.outputs.release_needed != 'true'
         shell: pwsh
         run: |
-          Write-Host "当前版本无需发布，跳过自动打 tag 与发布。当前版本: ${{ steps.meta.outputs.project_version }}"
+          Write-Host "${{ steps.meta.outputs.skip_message }}"
 
       - name: Create and push version tag
         if: steps.meta.outputs.create_tag_needed == 'true'
