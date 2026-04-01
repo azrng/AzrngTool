@@ -38,85 +38,77 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="0.95*,1.05*" ColumnSpacing="{StaticResource Space.12}">
-                <StackPanel Grid.Column="0" Spacing="{StaticResource Space.12}">
-                    <Border Classes="tool-card-roomy">
-                        <StackPanel Spacing="{StaticResource Space.12}">
-                            <TextBlock Classes="section-title" Text="项目信息" />
-
-                            <Border Classes="tool-card-soft">
-                                <StackPanel Spacing="{StaticResource Space.8}">
-                                    <TextBlock Classes="metric-label" Text="一句话" />
-                                    <TextBlock Classes="section-copy" Text="Simple · Sharp · Useful" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Classes="tool-card-soft">
-                                <StackPanel Spacing="{StaticResource Space.8}">
-                                    <TextBlock Classes="metric-label" Text="当前版本" />
-                                    <TextBlock Classes="metric-value compact" Text="{Binding Version}" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Classes="tool-card-soft">
-                                <StackPanel Spacing="{StaticResource Space.8}">
-                                    <TextBlock Classes="metric-label" Text="发布仓库" />
-                                    <TextBox
-                                        Classes="Standard flat-readonly"
-                                        IsReadOnly="True"
-                                        Text="{Binding RepositoryUrl}"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Classes="tool-card-roomy">
-                        <StackPanel Spacing="{StaticResource Space.12}">
-                            <TextBlock Classes="section-title" Text="更新中心" />
-
-                            <Border Classes="tool-card-soft">
-                                <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                                    <StackPanel Grid.Row="0" Grid.Column="0" Spacing="{StaticResource Space.8}">
-                                        <TextBlock Classes="metric-label" Text="最新版本" />
-                                        <TextBlock Classes="metric-value" Text="{Binding LatestVersion}" />
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Spacing="{StaticResource Space.8}">
-                                        <TextBlock Classes="metric-label" Text="发布时间" />
-                                        <TextBlock Classes="section-copy" Text="{Binding ReleasePublishedAt}" />
-                                    </StackPanel>
-
-                                    <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="{StaticResource Space.8}">
-                                        <TextBlock Classes="metric-label" Text="检查状态" />
-                                        <TextBlock Classes="section-copy" Text="{Binding UpdateStatus}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-
-                            <WrapPanel Classes="tool-actions">
-                                <Button
-                                    Command="{Binding CheckForUpdatesCommand}"
-                                    IsEnabled="{Binding CanCheckForUpdates}">
-                                    检查更新
-                                </Button>
-                                <Button
-                                    Command="{Binding StartUpdateCommand}"
-                                    IsEnabled="{Binding CanStartUpdate}">
-                                    立即更新
-                                </Button>
-                            </WrapPanel>
-                        </StackPanel>
-                    </Border>
-                </StackPanel>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
+            <Grid Grid.Row="1" ColumnDefinitions="0.92*,1.08*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
                     <StackPanel Spacing="{StaticResource Space.12}">
-                        <TextBlock Classes="section-title" Text="更新提示" />
+                        <TextBlock Classes="section-title" Text="项目信息" />
 
                         <Border Classes="tool-card-soft">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="更新说明" />
+                                <TextBlock Classes="metric-label" Text="一句话" />
+                                <TextBlock Classes="section-copy" Text="Simple · Sharp · Useful" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="当前版本" />
+                                <TextBlock Classes="metric-value compact" Text="{Binding Version}" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="发布仓库" />
+                                <TextBox
+                                    Classes="Standard flat-readonly"
+                                    IsReadOnly="True"
+                                    Text="{Binding RepositoryUrl}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <StackPanel Spacing="{StaticResource Space.12}">
+                        <TextBlock Classes="section-title" Text="更新中心" />
+
+                        <Border Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                                <StackPanel Grid.Row="0" Grid.Column="0" Spacing="{StaticResource Space.8}">
+                                    <TextBlock Classes="metric-label" Text="最新版本" />
+                                    <TextBlock Classes="metric-value" Text="{Binding LatestVersion}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.Column="1" Spacing="{StaticResource Space.8}">
+                                    <TextBlock Classes="metric-label" Text="发布时间" />
+                                    <TextBlock Classes="section-copy" Text="{Binding ReleasePublishedAt}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="{StaticResource Space.8}">
+                                    <TextBlock Classes="metric-label" Text="检查状态" />
+                                    <TextBlock Classes="section-copy" Text="{Binding UpdateStatus}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <WrapPanel Classes="tool-actions">
+                            <Button
+                                Command="{Binding CheckForUpdatesCommand}"
+                                IsEnabled="{Binding CanCheckForUpdates}">
+                                检查更新
+                            </Button>
+                            <Button
+                                Command="{Binding StartUpdateCommand}"
+                                IsEnabled="{Binding CanStartUpdate}">
+                                立即更新
+                            </Button>
+                        </WrapPanel>
+
+                        <Border Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="更新提示" />
                                 <TextBlock
                                     Classes="section-copy"
                                     Text="自动更新会下载 GitHub Release 中的便携包 zip。点击“立即更新”后，应用会在关闭后自动覆盖当前目录并重新启动；如果安装目录没有写入权限，请改为手动下载覆盖。" />
