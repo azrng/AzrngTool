@@ -112,22 +112,14 @@
 
                 <Border Grid.Column="1" Classes="tool-card-roomy">
                     <StackPanel Spacing="{StaticResource Space.12}">
-                        <TextBlock Classes="section-title" Text="发布说明" />
-
-                        <Border Classes="tool-card-soft">
-                            <TextBox
-                                Classes="Standard flat-readonly"
-                                IsReadOnly="True"
-                                Text="{Binding ReleaseNotes}"
-                                TextWrapping="Wrap" />
-                        </Border>
+                        <TextBlock Classes="section-title" Text="更新提示" />
 
                         <Border Classes="tool-card-soft">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="更新提示" />
+                                <TextBlock Classes="metric-label" Text="更新说明" />
                                 <TextBlock
                                     Classes="section-copy"
-                                    Text="自动更新会下载 GitHub Release 中的便携版 zip。点击“立即更新”后，应用会在关闭后自动覆盖当前目录并重新启动；如果安装目录没有写入权限，请改为手动下载覆盖。" />
+                                    Text="自动更新会下载 GitHub Release 中的便携包 zip。点击“立即更新”后，应用会在关闭后自动覆盖当前目录并重新启动；如果安装目录没有写入权限，请改为手动下载覆盖。" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

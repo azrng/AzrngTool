@@ -28,7 +28,6 @@ public partial class AboutPageViewModel : ViewModelBase
         LatestVersion = "未检查";
         ReleasePublishedAt = "未检查";
         UpdateStatus = "点击“检查更新”获取最新发布。";
-        ReleaseNotes = "暂无更新说明。";
     }
 
     public string Version { get; }
@@ -47,9 +46,6 @@ public partial class AboutPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _updateStatus;
-
-    [ObservableProperty]
-    private string _releaseNotes;
 
     [ObservableProperty]
     private bool _hasUpdate;
@@ -81,7 +77,6 @@ public partial class AboutPageViewModel : ViewModelBase
             ReleasePublishedAt = _latestUpdateInfo.PublishedAt == DateTimeOffset.MinValue
                 ? "未知"
                 : _latestUpdateInfo.PublishedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
-            ReleaseNotes = _latestUpdateInfo.ReleaseNotes;
             HasUpdate = _latestUpdateInfo.HasUpdate;
             UpdateStatus = HasUpdate
                 ? $"发现新版本 {_latestUpdateInfo.LatestVersion}，可以立即更新。"
