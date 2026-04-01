@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using AzrngTools.Models;
 
 namespace AzrngTools.Services;
@@ -26,7 +28,7 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
         var requestUri = $"https://api.github.com/repos/{_appInfoService.RepositoryOwner}/{_appInfoService.RepositoryName}/releases/latest";
 
         using var response = await client.GetAsync(requestUri, cancellationToken);
-        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
             throw new InvalidOperationException("当前仓库还没有正式发布的 GitHub Release，暂时无法检查更新。");
         }
@@ -51,14 +53,16 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
             throw new InvalidOperationException("最新发布中未找到可下载的 zip 更新包。");
         }
 
-        var currentVersion = NormalizeVersion(_appInfoService.Version);
-        var latestVersion = NormalizeVersion(release.TagName);
+        var currentVersion = ExtractComparableVersion(_appInfoService.Version);
+        var currentBuildId = ExtractBuildId(_appInfoService.InformationalVersion);
+        var latestVersion = ExtractComparableVersion(release.TagName);
+        var latestBuildId = ExtractBuildId(release.TagName);
 
         return new AppUpdateInfo
         {
             CurrentVersion = currentVersion,
             LatestVersion = latestVersion,
-            HasUpdate = CompareVersions(latestVersion, currentVersion) > 0,
+            HasUpdate = HasNewerRelease(currentVersion, currentBuildId, latestVersion, latestBuildId),
             DownloadUrl = asset.DownloadUrl,
             ReleasePageUrl = string.IsNullOrWhiteSpace(release.HtmlUrl)
                 ? _appInfoService.RepositoryUrl
@@ -144,7 +148,7 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
     {
         var client = _httpClientFactory.CreateClient(nameof(AppUpdateService));
         client.DefaultRequestHeaders.UserAgent.Clear();
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AzrngTools", NormalizeVersion(_appInfoService.Version)));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AzrngTools", ExtractComparableVersion(_appInfoService.Version)));
         client.DefaultRequestHeaders.Accept.Clear();
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         return client;
@@ -207,34 +211,73 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
         return extractDirectory;
     }
 
-    private static int CompareVersions(string left, string right)
+    private static bool HasNewerRelease(string currentVersion,
+                                        string currentBuildId,
+                                        string latestVersion,
+                                        string latestBuildId)
     {
-        var leftVersion = ParseVersion(left);
-        var rightVersion = ParseVersion(right);
-        return leftVersion.CompareTo(rightVersion);
+        var versionCompare = ParseVersion(latestVersion).CompareTo(ParseVersion(currentVersion));
+        if (versionCompare > 0)
+        {
+            return true;
+        }
+
+        if (versionCompare < 0)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentBuildId) || string.IsNullOrWhiteSpace(latestBuildId))
+        {
+            return false;
+        }
+
+        return !string.Equals(currentBuildId, latestBuildId, StringComparison.OrdinalIgnoreCase);
     }
 
     private static Version ParseVersion(string value)
     {
-        return Version.TryParse(NormalizeVersion(value), out var version)
+        return Version.TryParse(ExtractComparableVersion(value), out var version)
             ? version
             : new Version(0, 0);
     }
 
-    private static string NormalizeVersion(string value)
+    private static string ExtractComparableVersion(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return "0.0.0";
         }
 
-        var normalized = value.Trim();
-        if (normalized.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+        var match = Regex.Match(value, @"\d+\.\d+\.\d+\.\d+");
+        if (match.Success)
         {
-            normalized = normalized[1..];
+            return match.Value;
         }
 
-        return normalized;
+        return value.Trim().TrimStart('v', 'V');
+    }
+
+    private static string ExtractBuildId(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var plusIndex = value.IndexOf('+');
+        if (plusIndex >= 0 && plusIndex < value.Length - 1)
+        {
+            return value[(plusIndex + 1)..].Trim();
+        }
+
+        var buildMarkerIndex = value.LastIndexOf("-build-", StringComparison.OrdinalIgnoreCase);
+        if (buildMarkerIndex >= 0 && buildMarkerIndex < value.Length - 7)
+        {
+            return value[(buildMarkerIndex + 7)..].Trim();
+        }
+
+        return string.Empty;
     }
 
     private static string EscapePowerShellString(string value)

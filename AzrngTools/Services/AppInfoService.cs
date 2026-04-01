@@ -1,10 +1,13 @@
 using System.Diagnostics;
+using System.Reflection;
 
 namespace AzrngTools.Services;
 
 public sealed class AppInfoService : IAppInfoService
 {
     public string Version { get; } = ResolveVersion();
+
+    public string InformationalVersion { get; } = ResolveInformationalVersion();
 
     public string RepositoryOwner { get; } = "azrng";
 
@@ -20,8 +23,19 @@ public sealed class AppInfoService : IAppInfoService
 
     private static string ResolveVersion()
     {
-        var assembly = System.Reflection.Assembly.GetEntryAssembly() ?? typeof(AppInfoService).Assembly;
+        var assembly = Assembly.GetEntryAssembly() ?? typeof(AppInfoService).Assembly;
         return assembly.GetName().Version?.ToString() ?? "未知版本";
+    }
+
+    private static string ResolveInformationalVersion()
+    {
+        var assembly = Assembly.GetEntryAssembly() ?? typeof(AppInfoService).Assembly;
+        var attribute = assembly.GetCustomAttributes<AssemblyInformationalVersionAttribute>()
+                                .FirstOrDefault();
+
+        return string.IsNullOrWhiteSpace(attribute?.InformationalVersion)
+            ? ResolveVersion()
+            : attribute.InformationalVersion;
     }
 
     private static string ResolveExecutablePath()

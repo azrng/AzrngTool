@@ -4,6 +4,8 @@ public interface IAppInfoService
 {
     string Version { get; }
 
+    string InformationalVersion { get; }
+
     string RepositoryOwner { get; }
 
     string RepositoryName { get; }
