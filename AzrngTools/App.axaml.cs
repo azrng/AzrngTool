@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Http;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
 using Avalonia.Data.Core.Plugins;
@@ -115,6 +117,15 @@ public partial class App : Application
         services.AddSingleton<IAppInfoService, AppInfoService>();
         services.AddSingleton<ITranslator, YandexTranslator>();
         services.AddHttpClient();
+        services.AddHttpClient(nameof(AppUpdateService), client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(30);
+            client.DefaultRequestVersion = HttpVersion.Version11;
+            client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
+        }).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
+        });
 
         var assembly = AssemblyHelper.GetEntryAssembly();
         services.RegisterBusinessServices(assembly);
