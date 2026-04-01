@@ -81,6 +81,12 @@ jobs:
         shell: pwsh
         run: |
           $packagePath = "${{ steps.release_meta.outputs.package_path }}"
+          $pdbPath = Join-Path "${{ env.PUBLISH_DIR }}" "AzrngTools.pdb"
+
+          if (Test-Path $pdbPath) {
+            Remove-Item $pdbPath -Force
+          }
+
           if (Test-Path $packagePath) {
             Remove-Item $packagePath -Force
           }
