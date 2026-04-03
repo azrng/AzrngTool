@@ -15,6 +15,7 @@ public partial class ViewDetailViewModel : ViewModelBase
 
     public bool HasSelectedView => SelectedView != null;
     public bool HasViewDefinition => !string.IsNullOrWhiteSpace(ViewDefinition);
+    public string ViewCommentDisplay => string.IsNullOrWhiteSpace(ViewComment) ? "暂无备注" : ViewComment!;
     public string ViewDefinitionDisplay => HasViewDefinition
         ? ViewDefinition!
         : "-- 暂无 DDL 定义";
@@ -238,5 +239,10 @@ public partial class ViewDetailViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(HasViewDefinition));
         OnPropertyChanged(nameof(ViewDefinitionDisplay));
+    }
+
+    partial void OnViewCommentChanged(string? value)
+    {
+        OnPropertyChanged(nameof(ViewCommentDisplay));
     }
 }

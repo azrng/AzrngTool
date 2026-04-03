@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,12 +15,10 @@
 
     <Grid RowDefinitions="Auto,*">
         <Border Grid.Row="0"
-                Padding="12"
-                BorderBrush="{DynamicResource BorderLight}"
-                BorderThickness="0,0,0,1"
+                Classes="toolbarStrip"
                 IsVisible="{Binding IsLoading}">
             <StackPanel Orientation="Horizontal"
-                        Spacing="10">
+                        Spacing="{StaticResource Space.10}">
                 <ProgressBar Width="24"
                              Height="18"
                              IsIndeterminate="True" />
@@ -30,191 +28,338 @@
         </Border>
 
         <Border Grid.Row="1"
-                Padding="40"
+                Classes="workspaceSurface"
                 IsVisible="{Binding ShowEmptyState}">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Spacing="12">
-                <TextBlock Text="暂无存储过程"
-                           FontSize="24"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="请先在左侧对象树中选择一个架构，以加载该架构下的存储过程工作区。"
-                           Foreground="{DynamicResource TextSecondary}"
-                           HorizontalAlignment="Center"
-                           MaxWidth="420"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap" />
-            </StackPanel>
+            <Grid Margin="{StaticResource Thickness.20}">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="460"
+                            Spacing="{StaticResource Space.12}">
+                    <TextBlock Text="暂无存储过程"
+                               Classes="heading"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="请先在左侧对象树中选择一个架构，以加载该架构下的存储过程工作区。"
+                               Classes="caption"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
         </Border>
 
         <Grid Grid.Row="1"
               ColumnDefinitions="320,16,*"
               IsVisible="{Binding ShowSplitWorkspace}">
             <Border Grid.Column="0"
-                    Classes="card"
-                    Padding="0">
-                <DataGrid ItemsSource="{Binding Procedures}"
-                          SelectedItem="{Binding SelectedProcedure}"
-                          AutoGenerateColumns="False"
-                          IsReadOnly="True"
-                          CanUserResizeColumns="True"
-                          CanUserSortColumns="True"
-                          GridLinesVisibility="Horizontal"
-                          BorderThickness="0">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="名称"
-                                            Binding="{Binding Name}"
-                                            Width="180" />
-                        <DataGridTextColumn Header="备注"
-                                            Binding="{Binding Comment}"
-                                            Width="*" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                    Classes="browserPanel">
+                <Grid RowDefinitions="Auto,*">
+                    <Border Grid.Row="0"
+                            Classes="browserCompactSection">
+                        <StackPanel Spacing="{StaticResource Space.12}">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="{StaticResource Space.12}">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="存储过程列表"
+                                               Classes="subheading" />
+                                    <TextBlock Text="左侧保留当前架构下的存储过程清单，便于快速切换对象并连续查看定义。"
+                                               Classes="caption"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <Border Grid.Column="1"
+                                        Classes="statusPill"
+                                        VerticalAlignment="Top">
+                                    <TextBlock Text="过程定义"
+                                               Classes="statusPillText" />
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Row="1"
+                            Classes="browserTreeSurface">
+                        <DataGrid ItemsSource="{Binding Procedures}"
+                                  SelectedItem="{Binding SelectedProcedure}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  CanUserSortColumns="True"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="名称"
+                                                    Binding="{Binding Name}"
+                                                    Width="180" />
+                                <DataGridTextColumn Header="备注"
+                                                    Binding="{Binding Comment}"
+                                                    Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+                </Grid>
             </Border>
 
             <Border Grid.Column="2"
-                    Classes="card"
-                    Padding="0">
+                    Classes="workspaceSurface">
                 <Grid>
-                    <Border Padding="0"
-                            IsVisible="{Binding HasSelectedProcedure, Converter={StaticResource InvertedBoolConverter}}">
-                        <Grid>
-                            <StackPanel HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        MaxWidth="460"
-                                        Spacing="12">
-                                <TextBlock Text="请选择存储过程"
-                                           FontSize="24"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center" />
-                                <TextBlock Text="请在左侧选择一个存储过程，右侧仅展示该存储过程的 DDL 定义。"
-                                           Foreground="{DynamicResource TextSecondary}"
-                                           HorizontalAlignment="Center"
-                                           TextAlignment="Center"
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <Grid RowDefinitions="Auto,*"
-                          IsVisible="{Binding HasSelectedProcedure}">
-                        <Border Grid.Row="0"
-                                Padding="20"
-                                BorderBrush="{DynamicResource BorderLight}"
-                                BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="*,Auto"
-                                  RowDefinitions="Auto,Auto"
-                                  RowSpacing="6">
-                                <TextBlock Text="{Binding SelectedProcedure.Name}"
-                                           FontSize="26"
-                                           FontWeight="SemiBold" />
-                                <TextBlock Grid.Row="1"
-                                           Text="{Binding SelectedProcedure.Schema, StringFormat=架构: {0}}"
-                                           Foreground="{DynamicResource TextSecondary}" />
-                                <Button Grid.Column="1"
-                                        Command="{Binding RefreshCommand}"
-                                        Classes="modern"
-                                        Padding="16,10"
-                                        VerticalAlignment="Top">
-                                    <TextBlock Text="重新加载" />
-                                </Button>
-                            </Grid>
-                        </Border>
-
-                        <Grid Grid.Row="1"
-                              RowDefinitions="Auto,*">
-                            <Border Grid.Row="0"
-                                    Padding="12,8,12,0"
-                                    BorderBrush="{DynamicResource BorderLight}"
-                                    BorderThickness="0,0,0,1">
-                                <TextBlock Text="DDL 定义"
-                                           FontSize="{DynamicResource Font.Size.TitleSmall}"
-                                           FontWeight="SemiBold" />
-                            </Border>
-
-                            <TextBox Grid.Row="1"
-                                     Text="{Binding ProcedureDefinitionDisplay}"
-                                     IsReadOnly="True"
-                                     AcceptsReturn="True"
-                                     TextWrapping="NoWrap"
-                                     FontFamily="Consolas"
-                                     Padding="16" />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Border>
-        </Grid>
-
-        <Border Grid.Row="1"
-                Padding="0"
-                IsVisible="{Binding ShowDetailOnly}">
-            <Grid>
-                <Border Padding="0"
-                        IsVisible="{Binding HasSelectedProcedure, Converter={StaticResource InvertedBoolConverter}}">
-                    <Grid>
+                    <Grid IsVisible="{Binding HasSelectedProcedure, Converter={StaticResource InvertedBoolConverter}}">
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     MaxWidth="460"
-                                    Spacing="12">
+                                    Spacing="{StaticResource Space.12}">
                             <TextBlock Text="请选择存储过程"
-                                       FontSize="24"
-                                       FontWeight="SemiBold"
+                                       Classes="heading"
                                        HorizontalAlignment="Center" />
-                            <TextBlock Text="请在左侧选择一个存储过程，右侧仅展示该存储过程的 DDL 定义。"
-                                       Foreground="{DynamicResource TextSecondary}"
+                            <TextBlock Text="请在左侧列表中选择一个存储过程，右侧会展示其备注、时间信息、参数与 DDL 定义。"
+                                       Classes="caption"
                                        HorizontalAlignment="Center"
                                        TextAlignment="Center"
                                        TextWrapping="Wrap" />
                         </StackPanel>
                     </Grid>
-                </Border>
 
-                <Grid RowDefinitions="Auto,*"
-                      IsVisible="{Binding HasSelectedProcedure}">
-                    <Border Grid.Row="0"
-                            Padding="20"
-                            BorderBrush="{DynamicResource BorderLight}"
-                            BorderThickness="0,0,0,1">
-                        <Grid ColumnDefinitions="*,Auto"
-                              RowDefinitions="Auto,Auto"
-                              RowSpacing="6">
-                            <TextBlock Text="{Binding SelectedProcedure.Name}"
-                                       FontSize="26"
-                                       FontWeight="SemiBold" />
-                            <TextBlock Grid.Row="1"
-                                       Text="{Binding SelectedProcedure.Schema, StringFormat=架构: {0}}"
-                                       Foreground="{DynamicResource TextSecondary}" />
-                            <Button Grid.Column="1"
-                                    Command="{Binding RefreshCommand}"
-                                    Classes="modern"
-                                    Padding="16,10"
-                                    VerticalAlignment="Top">
-                                <TextBlock Text="重新加载" />
-                            </Button>
-                        </Grid>
-                    </Border>
+                    <ScrollViewer Padding="{StaticResource Thickness.20}"
+                                  IsVisible="{Binding HasSelectedProcedure}">
+                        <StackPanel Spacing="{StaticResource Space.16}">
+                            <Border Classes="toolbarCommandBar">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{StaticResource Space.12}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Text="{Binding SelectedProcedure.Name}"
+                                                   Classes="heading" />
+                                        <TextBlock Text="{Binding SelectedProcedure.Schema, StringFormat=架构: {0}}"
+                                                   Classes="caption" />
+                                    </StackPanel>
 
-                    <Grid Grid.Row="1"
-                          RowDefinitions="Auto,*">
-                        <Border Grid.Row="0"
-                                Padding="12,8,12,0"
-                                BorderBrush="{DynamicResource BorderLight}"
-                                BorderThickness="0,0,0,1">
-                            <TextBlock Text="DDL 定义"
-                                       FontSize="{DynamicResource Font.Size.TitleSmall}"
-                                       FontWeight="SemiBold" />
+                                    <Button Grid.Column="1"
+                                            Command="{Binding RefreshCommand}"
+                                            Classes="toolbarAction"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="重新加载"
+                                                   FontWeight="Medium" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <Grid ColumnDefinitions="*,*,*"
+                                  ColumnSpacing="{StaticResource Space.12}">
+                                <Border Grid.Column="0"
+                                        Classes="schemaMetricCard">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Text="备注"
+                                                   Classes="schemaMetricLabel" />
+                                        <TextBlock Text="{Binding ProcedureCommentDisplay}"
+                                                   Classes="schemaMetricValue" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="1"
+                                        Classes="schemaMetricCard">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Text="创建时间"
+                                                   Classes="schemaMetricLabel" />
+                                        <TextBlock Text="{Binding CreateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                                   Classes="schemaMetricValue" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2"
+                                        Classes="schemaMetricCard">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Text="更新时间"
+                                                   Classes="schemaMetricLabel" />
+                                        <TextBlock Text="{Binding ModifyTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                                   Classes="schemaMetricValue" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Border Classes="detailGridShell">
+                                <Grid RowDefinitions="Auto,*">
+                                    <Border Grid.Row="0"
+                                            Classes="detailGridHeader">
+                                        <Grid RowDefinitions="Auto,Auto"
+                                              RowSpacing="{StaticResource Space.4}">
+                                            <TextBlock Text="参数信息"
+                                                       Classes="subheading" />
+                                            <TextBlock Grid.Row="1"
+                                                       Text="当前存储过程的参数定义会展示在这里，便于快速确认输入输出约束。"
+                                                       Classes="caption" />
+                                        </Grid>
+                                    </Border>
+
+                                    <TextBox Grid.Row="1"
+                                             Text="{Binding ParametersDisplay}"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             IsReadOnly="True"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"
+                                             FontFamily="{DynamicResource Font.Family.Monospace}"
+                                             Padding="{StaticResource Thickness.16}" />
+                                </Grid>
+                            </Border>
+
+                            <Border Classes="detailGridShell">
+                                <Grid RowDefinitions="Auto,*">
+                                    <Border Grid.Row="0"
+                                            Classes="detailGridHeader">
+                                        <Grid RowDefinitions="Auto,Auto"
+                                              RowSpacing="{StaticResource Space.4}">
+                                            <TextBlock Text="DDL 定义"
+                                                       Classes="subheading" />
+                                            <TextBlock Grid.Row="1"
+                                                       Text="展示当前存储过程的结构定义，便于直接查看与复制。"
+                                                       Classes="caption" />
+                                        </Grid>
+                                    </Border>
+
+                                    <TextBox Grid.Row="1"
+                                             Text="{Binding ProcedureDefinitionDisplay}"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             IsReadOnly="True"
+                                             AcceptsReturn="True"
+                                             TextWrapping="NoWrap"
+                                             FontFamily="{DynamicResource Font.Family.Monospace}"
+                                             Padding="{StaticResource Thickness.16}" />
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Classes="workspaceSurface"
+                IsVisible="{Binding ShowDetailOnly}">
+            <Grid>
+                <Grid IsVisible="{Binding HasSelectedProcedure, Converter={StaticResource InvertedBoolConverter}}">
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                MaxWidth="460"
+                                Spacing="{StaticResource Space.12}">
+                        <TextBlock Text="请选择存储过程"
+                                   Classes="heading"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="请在左侧对象树中选择一个存储过程，右侧会展示其备注、时间信息、参数与 DDL 定义。"
+                                   Classes="caption"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer Padding="{StaticResource Thickness.20}"
+                              IsVisible="{Binding HasSelectedProcedure}">
+                    <StackPanel Spacing="{StaticResource Space.16}">
+                        <Border Classes="toolbarCommandBar">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="{StaticResource Space.12}">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="{Binding SelectedProcedure.Name}"
+                                               Classes="heading" />
+                                    <TextBlock Text="{Binding SelectedProcedure.Schema, StringFormat=架构: {0}}"
+                                               Classes="caption" />
+                                </StackPanel>
+
+                                <Button Grid.Column="1"
+                                        Command="{Binding RefreshCommand}"
+                                        Classes="toolbarAction"
+                                        VerticalAlignment="Top">
+                                    <TextBlock Text="重新加载"
+                                               FontWeight="Medium" />
+                                </Button>
+                            </Grid>
                         </Border>
 
-                        <TextBox Grid.Row="1"
-                                 Text="{Binding ProcedureDefinitionDisplay}"
-                                 IsReadOnly="True"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 FontFamily="Consolas"
-                                 Padding="16" />
-                    </Grid>
-                </Grid>
+                        <Grid ColumnDefinitions="*,*,*"
+                              ColumnSpacing="{StaticResource Space.12}">
+                            <Border Grid.Column="0"
+                                    Classes="schemaMetricCard">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="备注"
+                                               Classes="schemaMetricLabel" />
+                                    <TextBlock Text="{Binding ProcedureCommentDisplay}"
+                                               Classes="schemaMetricValue" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1"
+                                    Classes="schemaMetricCard">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="创建时间"
+                                               Classes="schemaMetricLabel" />
+                                    <TextBlock Text="{Binding CreateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                               Classes="schemaMetricValue" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2"
+                                    Classes="schemaMetricCard">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="更新时间"
+                                               Classes="schemaMetricLabel" />
+                                    <TextBlock Text="{Binding ModifyTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                               Classes="schemaMetricValue" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Border Classes="detailGridShell">
+                            <Grid RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        Classes="detailGridHeader">
+                                    <Grid RowDefinitions="Auto,Auto"
+                                          RowSpacing="{StaticResource Space.4}">
+                                        <TextBlock Text="参数信息"
+                                                   Classes="subheading" />
+                                        <TextBlock Grid.Row="1"
+                                                   Text="当前存储过程的参数定义会展示在这里，便于快速确认输入输出约束。"
+                                                   Classes="caption" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBox Grid.Row="1"
+                                         Text="{Binding ParametersDisplay}"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         IsReadOnly="True"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         FontFamily="{DynamicResource Font.Family.Monospace}"
+                                         Padding="{StaticResource Thickness.16}" />
+                            </Grid>
+                        </Border>
+
+                        <Border Classes="detailGridShell">
+                            <Grid RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        Classes="detailGridHeader">
+                                    <Grid RowDefinitions="Auto,Auto"
+                                          RowSpacing="{StaticResource Space.4}">
+                                        <TextBlock Text="DDL 定义"
+                                                   Classes="subheading" />
+                                        <TextBlock Grid.Row="1"
+                                                   Text="展示当前存储过程的结构定义，便于直接查看与复制。"
+                                                   Classes="caption" />
+                                    </Grid>
+                                </Border>
+
+                                <TextBox Grid.Row="1"
+                                         Text="{Binding ProcedureDefinitionDisplay}"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         IsReadOnly="True"
+                                         AcceptsReturn="True"
+                                         TextWrapping="NoWrap"
+                                         FontFamily="{DynamicResource Font.Family.Monospace}"
+                                         Padding="{StaticResource Thickness.16}" />
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
         </Border>
     </Grid>

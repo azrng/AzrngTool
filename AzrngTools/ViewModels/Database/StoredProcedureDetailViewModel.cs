@@ -15,6 +15,9 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
 
     public bool HasSelectedProcedure => SelectedProcedure != null;
     public bool HasProcedureDefinition => !string.IsNullOrWhiteSpace(ProcedureDefinition);
+    public bool HasParameters => !string.IsNullOrWhiteSpace(Parameters);
+    public string ProcedureCommentDisplay => string.IsNullOrWhiteSpace(ProcedureComment) ? "暂无备注" : ProcedureComment!;
+    public string ParametersDisplay => string.IsNullOrWhiteSpace(Parameters) ? "未读取到参数信息" : Parameters!;
     public string ProcedureDefinitionDisplay => HasProcedureDefinition
         ? ProcedureDefinition!
         : "-- 暂无 DDL 定义";
@@ -238,5 +241,16 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(HasProcedureDefinition));
         OnPropertyChanged(nameof(ProcedureDefinitionDisplay));
+    }
+
+    partial void OnProcedureCommentChanged(string? value)
+    {
+        OnPropertyChanged(nameof(ProcedureCommentDisplay));
+    }
+
+    partial void OnParametersChanged(string? value)
+    {
+        OnPropertyChanged(nameof(HasParameters));
+        OnPropertyChanged(nameof(ParametersDisplay));
     }
 }
