@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
              xmlns:local="using:AzrngTools.Views.Database.Workbench"
@@ -15,14 +15,11 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,*">
-        <!-- Loading bar -->
         <Border Grid.Row="0"
-                Padding="12"
-                BorderBrush="{DynamicResource BorderLight}"
-                BorderThickness="0,0,0,1"
+                Classes="toolbarStrip"
                 IsVisible="{Binding IsLoading}">
             <StackPanel Orientation="Horizontal"
-                        Spacing="10">
+                        Spacing="{StaticResource Space.10}">
                 <ProgressBar Width="24"
                              Height="18"
                              IsIndeterminate="True" />
@@ -31,99 +28,111 @@
             </StackPanel>
         </Border>
 
-        <!-- Empty state -->
         <Border Grid.Row="1"
-                Padding="40"
+                Classes="workspaceSurface"
                 IsVisible="{Binding ShowEmptyState}">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Spacing="12">
-                <TextBlock Text="暂无表数据"
-                           FontSize="24"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="请先在左侧对象树中选择一个架构，以加载该架构下的数据表工作区。"
-                           Foreground="{DynamicResource TextSecondary}"
-                           HorizontalAlignment="Center"
-                           MaxWidth="420"
-                           TextAlignment="Center"
-                           TextWrapping="Wrap" />
-            </StackPanel>
+            <Grid Margin="{StaticResource Thickness.20}">
+                <StackPanel HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            MaxWidth="460"
+                            Spacing="{StaticResource Space.12}">
+                    <TextBlock Text="暂无表数据"
+                               Classes="heading"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="请先在左侧对象树中选择一个架构，以加载该架构下的数据表工作区。"
+                               Classes="caption"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
         </Border>
 
-        <!-- Split workspace: table list + detail -->
         <Grid Grid.Row="1"
               ColumnDefinitions="320,16,*"
               IsVisible="{Binding ShowSplitWorkspace}">
-            <!-- Table list panel -->
             <Border Grid.Column="0"
-                    Classes="card"
-                    Padding="0">
+                    Classes="browserPanel">
                 <Grid RowDefinitions="Auto,*,Auto">
                     <Border Grid.Row="0"
-                            Padding="16"
-                            BorderBrush="{DynamicResource BorderLight}"
-                            BorderThickness="0,0,0,1">
-                        <StackPanel Spacing="6">
-                            <TextBlock Text="数据表"
-                                       Classes="subheading" />
-                            <TextBlock Text="{Binding SchemaName, StringFormat=架构: {0}}"
-                                       Foreground="{DynamicResource TextSecondary}" />
+                            Classes="browserCompactSection">
+                        <StackPanel Spacing="{StaticResource Space.12}">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="{StaticResource Space.12}">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Text="数据表列表"
+                                               Classes="subheading" />
+                                    <TextBlock Text="左侧保留当前架构下的数据表清单，方便快速切换并连续查看字段、索引和 DDL。"
+                                               Classes="caption"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <Border Grid.Column="1"
+                                        Classes="statusPill"
+                                        VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding SchemaName, StringFormat=架构: {0}, TargetNullValue=当前架构}"
+                                               Classes="statusPillText" />
+                                </Border>
+                            </Grid>
                         </StackPanel>
                     </Border>
 
-                    <DataGrid Grid.Row="1"
-                              ItemsSource="{Binding Tables}"
-                              SelectedItem="{Binding SelectedTable}"
-                              AutoGenerateColumns="False"
-                              IsReadOnly="True"
-                              CanUserResizeColumns="True"
-                              CanUserSortColumns="True"
-                              GridLinesVisibility="Horizontal"
-                              BorderThickness="0">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="名称"
-                                                Binding="{Binding Name}"
-                                                Width="180" />
-                            <DataGridTextColumn Header="备注"
-                                                Binding="{Binding Comment}"
-                                                Width="*" />
-                        </DataGrid.Columns>
-                    </DataGrid>
+                    <Border Grid.Row="1"
+                            Classes="browserTreeSurface">
+                        <DataGrid ItemsSource="{Binding Tables}"
+                                  SelectedItem="{Binding SelectedTable}"
+                                  AutoGenerateColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserResizeColumns="True"
+                                  CanUserSortColumns="True"
+                                  GridLinesVisibility="Horizontal"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="名称"
+                                                    Binding="{Binding Name}"
+                                                    Width="180" />
+                                <DataGridTextColumn Header="备注"
+                                                    Binding="{Binding Comment}"
+                                                    Width="*" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
 
                     <Border Grid.Row="2"
-                            Padding="16"
-                            BorderBrush="{DynamicResource BorderLight}"
+                            Padding="{StaticResource Thickness.12}"
+                            BorderBrush="{DynamicResource Brush.Panel.Stroke}"
                             BorderThickness="0,1,0,0">
-                        <StackPanel Orientation="Horizontal"
-                                    Spacing="10">
-                            <Button Command="{Binding RefreshCommand}"
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="{StaticResource Space.10}">
+                            <Button Grid.Column="0"
+                                    Command="{Binding RefreshCommand}"
                                     IsEnabled="{Binding SelectedTable, Converter={StaticResource NullToBoolConverter}}"
-                                    Classes="modern"
+                                    Classes="workbenchSidebarAction"
                                     HorizontalAlignment="Stretch">
-                                <TextBlock Text="刷新详情" />
+                                <TextBlock Text="刷新详情"
+                                           FontWeight="Medium" />
                             </Button>
-                            <Button Command="{Binding ClearCommand}"
-                                    Classes="secondary"
+
+                            <Button Grid.Column="1"
+                                    Command="{Binding ClearCommand}"
+                                    Classes="workbenchSidebarAction"
                                     HorizontalAlignment="Stretch">
-                                <TextBlock Text="清空" />
+                                <TextBlock Text="清空"
+                                           FontWeight="Medium" />
                             </Button>
-                        </StackPanel>
+                        </Grid>
                     </Border>
                 </Grid>
             </Border>
 
-            <!-- Shared detail content (split mode) -->
             <Border Grid.Column="2"
-                    Classes="card"
-                    Padding="0">
+                    Classes="workspaceSurface">
                 <local:TableDetailContent />
             </Border>
         </Grid>
 
-        <!-- Detail-only mode: full-width shared content -->
         <Border Grid.Row="1"
-                Padding="0"
+                Classes="workspaceSurface"
                 IsVisible="{Binding ShowDetailOnly}">
             <local:TableDetailContent />
         </Border>

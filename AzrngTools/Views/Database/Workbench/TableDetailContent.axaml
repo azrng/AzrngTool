@@ -15,97 +15,151 @@
     </Design.DataContext>
 
     <Grid>
-        <Border Padding="40"
-                IsVisible="{Binding HasSelectedTable, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid IsVisible="{Binding HasSelectedTable, Converter={StaticResource InvertedBoolConverter}}">
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Spacing="12">
+                        MaxWidth="460"
+                        Spacing="{StaticResource Space.12}">
                 <TextBlock Text="请选择数据表"
-                           FontSize="24"
-                           FontWeight="SemiBold"
+                           Classes="heading"
                            HorizontalAlignment="Center" />
-                <TextBlock Text="请在左侧选择一个数据表，查看字段、索引以及生成的 DDL。"
-                           Foreground="{DynamicResource TextSecondary}"
+                <TextBlock Text="请在左侧选择一个数据表，右侧会展示该表的备注、规模信息、字段、索引以及生成的 DDL。"
+                           Classes="caption"
                            HorizontalAlignment="Center"
                            MaxWidth="460"
                            TextAlignment="Center"
                            TextWrapping="Wrap" />
             </StackPanel>
-        </Border>
+        </Grid>
 
-        <Grid RowDefinitions="Auto,*"
-              IsVisible="{Binding HasSelectedTable}">
-            <Border Grid.Row="0"
-                    Classes="toolbarStrip">
-                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
-                      ColumnSpacing="12">
-                    <TextBlock Text="{Binding SelectedTable.Name}"
-                               FontSize="20"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1"
-                               Classes="caption"
-                               Text="{Binding SelectedTable.Schema, StringFormat=架构: {0}}"
-                               VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="2"
-                               Classes="caption"
-                               Text="{Binding TableCommentDisplayText, StringFormat=备注: {0}}"
-                               VerticalAlignment="Center" />
-                    <Button Grid.Column="3"
-                            Click="OnEditTableCommentClick"
-                            Classes="toolbarAction"
-                            IsVisible="{Binding CanEditComments}"
-                            VerticalAlignment="Center">
-                        <TextBlock Text="编辑备注" />
-                    </Button>
-                    <Button Grid.Column="5"
-                            Command="{Binding RefreshCommand}"
-                            Classes="toolbarAction"
-                            VerticalAlignment="Center">
-                        <TextBlock Text="重新加载" />
-                    </Button>
-                </Grid>
-            </Border>
+        <ScrollViewer Padding="{StaticResource Thickness.20}"
+                      IsVisible="{Binding HasSelectedTable}">
+            <StackPanel Spacing="{StaticResource Space.16}">
+                <Border Classes="toolbarCommandBar">
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="{Binding SelectedTable.Name}"
+                                       Classes="heading" />
+                            <TextBlock Text="{Binding SelectedTable.Schema, StringFormat=架构: {0}}"
+                                       Classes="caption" />
+                        </StackPanel>
 
-            <Grid Grid.Row="1"
-                  RowDefinitions="Auto,*">
-                <Border Grid.Row="0"
-                        Padding="12,8,12,0"
-                        BorderBrush="{DynamicResource BorderLight}"
-                        BorderThickness="0,0,0,1">
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="4">
-                        <Button x:Name="TabColumnsButton"
-                                Command="{Binding SelectTabCommand}"
-                                CommandParameter="columns"
-                                Classes="tabButton">
-                            <TextBlock Text="字段" />
-                        </Button>
-                        <Button x:Name="TabIndexesButton"
-                                Command="{Binding SelectTabCommand}"
-                                CommandParameter="indexes"
-                                Classes="tabButton">
-                            <TextBlock Text="索引" />
-                        </Button>
-                        <Button x:Name="TabDdlButton"
-                                Command="{Binding SelectTabCommand}"
-                                CommandParameter="ddl"
-                                Classes="tabButton">
-                            <TextBlock Text="DDL" />
-                        </Button>
-                    </StackPanel>
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="{StaticResource Space.10}"
+                                    VerticalAlignment="Top">
+                            <Button Click="OnEditTableCommentClick"
+                                    Classes="toolbarAction"
+                                    IsVisible="{Binding CanEditComments}">
+                                <TextBlock Text="编辑备注" />
+                            </Button>
+                            <Button Command="{Binding RefreshCommand}"
+                                    Classes="toolbarAction">
+                                <TextBlock Text="重新加载" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
                 </Border>
 
-                <Grid Grid.Row="1">
-                    <Grid IsVisible="{Binding ShowColumnsTab}"
-                          RowDefinitions="Auto,*">
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="{StaticResource Space.12}">
+                    <Border Grid.Column="0"
+                            Classes="schemaMetricCard">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="备注"
+                                       Classes="schemaMetricLabel" />
+                            <TextBlock Text="{Binding TableCommentDisplayText}"
+                                       Classes="schemaMetricValue" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Classes="schemaMetricCard">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="行数"
+                                       Classes="schemaMetricLabel" />
+                            <TextBlock Text="{Binding RowCountDisplay}"
+                                       Classes="schemaMetricValue prominent" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2"
+                            Classes="schemaMetricCard">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="创建时间"
+                                       Classes="schemaMetricLabel" />
+                            <TextBlock Text="{Binding CreateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                       Classes="schemaMetricValue" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="3"
+                            Classes="schemaMetricCard">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="更新时间"
+                                       Classes="schemaMetricLabel" />
+                            <TextBlock Text="{Binding ModifyTime, StringFormat={}{0:yyyy-MM-dd HH:mm}, TargetNullValue=-}"
+                                       Classes="schemaMetricValue" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Classes="detailGridShell">
+                    <Grid RowDefinitions="Auto,*">
                         <Border Grid.Row="0"
-                                Padding="12,6"
-                                IsVisible="{Binding ShowColumnsInfoBanner}"
-                                Background="{DynamicResource Brush.Info.50}"
-                                BorderBrush="{DynamicResource Brush.Info.100}"
-                                BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="*,Auto">
+                                Classes="detailGridHeader">
+                            <StackPanel Spacing="{StaticResource Space.10}">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="{StaticResource Space.12}">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Text="数据表详情"
+                                                   Classes="subheading" />
+                                        <TextBlock Text="在字段、索引和 DDL 之间切换查看当前数据表的结构信息。"
+                                                   Classes="caption" />
+                                    </StackPanel>
+
+                                    <Border Grid.Column="1"
+                                            Classes="statusPill"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="{Binding SelectedTable.Name}"
+                                                   Classes="statusPillText" />
+                                    </Border>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="{StaticResource Space.4}">
+                                    <Button x:Name="TabColumnsButton"
+                                            Command="{Binding SelectTabCommand}"
+                                            CommandParameter="columns"
+                                            Classes="tabButton">
+                                        <TextBlock Text="字段" />
+                                    </Button>
+                                    <Button x:Name="TabIndexesButton"
+                                            Command="{Binding SelectTabCommand}"
+                                            CommandParameter="indexes"
+                                            Classes="tabButton">
+                                        <TextBlock Text="索引" />
+                                    </Button>
+                                    <Button x:Name="TabDdlButton"
+                                            Command="{Binding SelectTabCommand}"
+                                            CommandParameter="ddl"
+                                            Classes="tabButton">
+                                        <TextBlock Text="DDL" />
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid IsVisible="{Binding ShowColumnsTab}"
+                                  RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        Margin="{StaticResource Thickness.12}"
+                                        Classes="toolbarStatCard"
+                                        IsVisible="{Binding ShowColumnsInfoBanner}">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{StaticResource Space.10}">
                                 <TextBlock Text="当前字段信息为按元数据生成的只读文本视图。"
                                            Classes="caption"
                                            VerticalAlignment="Center" />
@@ -113,17 +167,16 @@
                                         Command="{Binding DismissColumnsBannerCommand}"
                                         Background="Transparent"
                                         BorderThickness="0"
-                                        Padding="6,2"
+                                        Padding="{StaticResource Thickness.10.2}"
                                         VerticalAlignment="Center">
                                     <TextBlock Text="×"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                               Classes="caption" />
                                 </Button>
-                            </Grid>
-                        </Border>
+                                    </Grid>
+                                </Border>
 
-                        <Grid Grid.Row="1"
-                              Margin="12,10,12,12">
+                                <Grid Grid.Row="1"
+                                      Margin="{StaticResource Thickness.12}">
                             <Border Classes="detailGridShell"
                                     IsVisible="{Binding HasColumns}">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
@@ -132,7 +185,7 @@
                                         <Border Grid.Row="0"
                                                 Classes="detailGridHeader">
                                             <Grid ColumnDefinitions="44,150,190,160,72,64,64,74,120,92"
-                                                  ColumnSpacing="12">
+                                                  ColumnSpacing="{StaticResource Space.12}">
                                                 <TextBlock Grid.Column="0" Text="#" Classes="detailGridHeaderText" />
                                                 <TextBlock Grid.Column="1" Text="列名" Classes="detailGridHeaderText" />
                                                 <TextBlock Grid.Column="2" Text="数据类型" Classes="detailGridHeaderText" />
@@ -154,7 +207,7 @@
                                                     <DataTemplate>
                                                         <Border Classes="detailGridRow">
                                                             <Grid ColumnDefinitions="44,150,190,160,72,64,64,74,120,92"
-                                                                  ColumnSpacing="12">
+                                                                  ColumnSpacing="{StaticResource Space.12}">
                                                                 <TextBlock Grid.Column="0"
                                                                            Text="{Binding OrdinalPosition}"
                                                                            Classes="detailGridCell secondary center" />
@@ -248,18 +301,17 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        IsVisible="{Binding ShowColumnsEmptyState}" />
-                        </Grid>
-                    </Grid>
+                                </Grid>
+                            </Grid>
 
-                    <Grid IsVisible="{Binding ShowIndexesTab}"
-                          RowDefinitions="Auto,*">
-                        <Border Grid.Row="0"
-                                Padding="12,6"
-                                IsVisible="{Binding ShowIndexesInfoBanner}"
-                                Background="{DynamicResource Brush.Info.50}"
-                                BorderBrush="{DynamicResource Brush.Info.100}"
-                                BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="*,Auto">
+                            <Grid IsVisible="{Binding ShowIndexesTab}"
+                                  RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        Margin="{StaticResource Thickness.12}"
+                                        Classes="toolbarStatCard"
+                                        IsVisible="{Binding ShowIndexesInfoBanner}">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{StaticResource Space.10}">
                                 <TextBlock Text="当前索引信息为按元数据生成的只读文本视图。"
                                            Classes="caption"
                                            VerticalAlignment="Center" />
@@ -267,17 +319,16 @@
                                         Command="{Binding DismissIndexesBannerCommand}"
                                         Background="Transparent"
                                         BorderThickness="0"
-                                        Padding="6,2"
+                                        Padding="{StaticResource Thickness.10.2}"
                                         VerticalAlignment="Center">
                                     <TextBlock Text="×"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                               Classes="caption" />
                                 </Button>
-                            </Grid>
-                        </Border>
+                                    </Grid>
+                                </Border>
 
-                        <Grid Grid.Row="1"
-                              Margin="12,10,12,12">
+                                <Grid Grid.Row="1"
+                                      Margin="{StaticResource Thickness.12}">
                             <Border Classes="detailGridShell"
                                     IsVisible="{Binding HasIndexes}">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
@@ -286,7 +337,7 @@
                                         <Border Grid.Row="0"
                                                 Classes="detailGridHeader">
                                             <Grid ColumnDefinitions="220,160,70,70,70,320"
-                                                  ColumnSpacing="12">
+                                                  ColumnSpacing="{StaticResource Space.12}">
                                                 <TextBlock Grid.Column="0" Text="索引名" Classes="detailGridHeaderText" />
                                                 <TextBlock Grid.Column="1" Text="类型" Classes="detailGridHeaderText" />
                                                 <TextBlock Grid.Column="2" Text="唯一" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
@@ -304,7 +355,7 @@
                                                     <DataTemplate>
                                                         <Border Classes="detailGridRow">
                                                             <Grid ColumnDefinitions="220,160,70,70,70,320"
-                                                                  ColumnSpacing="12">
+                                                                  ColumnSpacing="{StaticResource Space.12}">
                                                                 <TextBlock Grid.Column="0"
                                                                            Text="{Binding Name}"
                                                                            Classes="detailGridCell primary"
@@ -372,18 +423,17 @@
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        IsVisible="{Binding ShowIndexesEmptyState}" />
-                        </Grid>
-                    </Grid>
+                                </Grid>
+                            </Grid>
 
-                    <Grid IsVisible="{Binding ShowDdlTab}"
-                          RowDefinitions="Auto,*">
-                        <Border Grid.Row="0"
-                                Padding="12,6"
-                                IsVisible="{Binding ShowDdlInfoBanner}"
-                                Background="{DynamicResource Brush.Info.50}"
-                                BorderBrush="{DynamicResource Brush.Info.100}"
-                                BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="*,Auto">
+                            <Grid IsVisible="{Binding ShowDdlTab}"
+                                  RowDefinitions="Auto,*">
+                                <Border Grid.Row="0"
+                                        Margin="{StaticResource Thickness.12}"
+                                        Classes="toolbarStatCard"
+                                        IsVisible="{Binding ShowDdlInfoBanner}">
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="{StaticResource Space.10}">
                                 <TextBlock Text="当前 DDL 为基于已加载元数据生成的回退脚本。"
                                            Classes="caption"
                                            VerticalAlignment="Center" />
@@ -391,25 +441,29 @@
                                         Command="{Binding DismissDdlBannerCommand}"
                                         Background="Transparent"
                                         BorderThickness="0"
-                                        Padding="6,2"
+                                        Padding="{StaticResource Thickness.10.2}"
                                         VerticalAlignment="Center">
                                     <TextBlock Text="×"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                               Classes="caption" />
                                 </Button>
-                            </Grid>
-                        </Border>
+                                    </Grid>
+                                </Border>
 
-                        <TextBox Grid.Row="1"
-                                 Text="{Binding TableDefinition}"
+                                <TextBox Grid.Row="1"
+                                 Margin="{StaticResource Thickness.12}"
+                                 Text="{Binding TableDefinitionDisplay}"
+                                 Background="Transparent"
+                                 BorderThickness="0"
                                  IsReadOnly="True"
                                  AcceptsReturn="True"
                                  TextWrapping="NoWrap"
-                                 FontFamily="Consolas"
-                                 Padding="16" />
+                                 FontFamily="{DynamicResource Font.Family.Monospace}"
+                                 Padding="{StaticResource Thickness.16}" />
+                            </Grid>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </UserControl>

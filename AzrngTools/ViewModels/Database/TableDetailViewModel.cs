@@ -17,6 +17,10 @@ public partial class TableDetailViewModel : ViewModelBase
     private readonly DatabaseService _databaseService = new();
 
     public bool HasSelectedTable => SelectedTable != null;
+    public string RowCountDisplay => RowCount <= 0 ? "0" : RowCount.ToString("N0");
+    public string TableDefinitionDisplay => string.IsNullOrWhiteSpace(TableDefinition)
+        ? "-- 暂无 DDL 定义"
+        : TableDefinition;
 
     [ObservableProperty]
     private TableModel? _selectedTable;
@@ -450,6 +454,11 @@ public partial class TableDetailViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowIndexesTabEmptyState));
     }
 
+    partial void OnRowCountChanged(long value)
+    {
+        OnPropertyChanged(nameof(RowCountDisplay));
+    }
+
     partial void OnTableCommentChanged(string? value)
     {
         OnPropertyChanged(nameof(TableCommentDisplayText));
@@ -499,6 +508,8 @@ public partial class TableDetailViewModel : ViewModelBase
         IndexesText = "暂无索引数据";
         TableDefinition = string.Empty;
         SelectedTabIndex = 0;
+        OnPropertyChanged(nameof(RowCountDisplay));
+        OnPropertyChanged(nameof(TableDefinitionDisplay));
     }
 
     private string ResolveSchemaName(string? schemaName)
@@ -660,5 +671,10 @@ public partial class TableDetailViewModel : ViewModelBase
         }
 
         return builder.ToString();
+    }
+
+    partial void OnTableDefinitionChanged(string value)
+    {
+        OnPropertyChanged(nameof(TableDefinitionDisplay));
     }
 }
