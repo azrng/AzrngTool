@@ -6,9 +6,9 @@
 
     <!-- Modern TextBox -->
     <Style Selector="TextBox.modern">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
@@ -17,11 +17,11 @@
     </Style>
 
     <Style Selector="TextBox.modern:pointerover">
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
     </Style>
 
     <Style Selector="TextBox.modern:focus">
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Strong}"/>
         <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
@@ -32,9 +32,9 @@
 
     <!-- Modern NumericUpDown -->
     <Style Selector="NumericUpDown.modern">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
@@ -44,23 +44,27 @@
     </Style>
 
     <Style Selector="NumericUpDown.modern:focus">
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Strong}"/>
         <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
     <!-- Modern ComboBox -->
     <Style Selector="ComboBox.modern">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
     </Style>
 
+    <Style Selector="ComboBox.modern:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+    </Style>
+
     <Style Selector="ComboBox.modern:focus">
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Strong}"/>
         <Setter Property="BorderThickness" Value="2"/>
     </Style>
 
