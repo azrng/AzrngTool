@@ -8,6 +8,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ImplicitUsings>true</ImplicitUsings>
+        <NoWarn>$(NoWarn);8632</NoWarn>
         <!--不需要特定于全球化的代码和数据，使用固定模式-->
         <InvariantGlobalization>false</InvariantGlobalization>
     </PropertyGroup>
@@ -66,21 +67,6 @@
         <PackageReference Include="GTranslate" Version="2.3.1" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
         <PackageReference Include="NPOI" Version="2.7.6" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Include="..\Modules\SmartSQL.UI\**\*.cs"
-                 Exclude="..\Modules\SmartSQL.UI\bin\**;..\Modules\SmartSQL.UI\obj\**;..\Modules\SmartSQL.UI\App.axaml.cs;..\Modules\SmartSQL.UI\Program.cs;..\Modules\SmartSQL.UI\ViewLocator.cs">
-            <Link>Modules\SmartSQL.UI\%(RecursiveDir)%(Filename)%(Extension)</Link>
-        </Compile>
-        <AvaloniaXaml Include="..\Modules\SmartSQL.UI\**\*.axaml"
-                      Exclude="..\Modules\SmartSQL.UI\bin\**;..\Modules\SmartSQL.UI\obj\**;..\Modules\SmartSQL.UI\App.axaml">
-            <Link>Modules\SmartSQL.UI\%(RecursiveDir)%(Filename)%(Extension)</Link>
-            <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
-        </AvaloniaXaml>
-        <AvaloniaResource Include="..\Modules\SmartSQL.UI\Assets\Styles\**">
-            <Link>Assets\Styles\%(RecursiveDir)%(Filename)%(Extension)</Link>
-        </AvaloniaResource>
     </ItemGroup>
 
 </Project>
