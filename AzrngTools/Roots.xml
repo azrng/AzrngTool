@@ -1,0 +1,6 @@
+﻿<linker>
+    <!-- 可以删除，如果编译绑定和没有反射使用 -->
+    <assembly fullname="AzrngTools" preserve="All"/>
+    <assembly fullname="System.Net.Http" preserve="All"/>
+    <assembly fullname="Semi.Avalonia" preserve="All"/>
+</linker>

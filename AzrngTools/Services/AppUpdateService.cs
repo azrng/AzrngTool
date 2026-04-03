@@ -1,10 +1,15 @@
 using System.Diagnostics;
 using System.IO.Compression;
+using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using AzrngTools.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AzrngTools.Services;
 
@@ -13,28 +18,23 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
     private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
     private readonly IAppInfoService _appInfoService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<AppUpdateService> _logger;
 
-    public AppUpdateService(IHttpClientFactory httpClientFactory, IAppInfoService appInfoService)
+    public AppUpdateService(IHttpClientFactory httpClientFactory,
+                            IAppInfoService appInfoService,
+                            ILogger<AppUpdateService> logger)
     {
         _httpClientFactory = httpClientFactory;
         _appInfoService = appInfoService;
+        _logger = logger;
     }
 
     public async Task<AppUpdateInfo> CheckForUpdateAsync(CancellationToken cancellationToken = default)
     {
-        using var client = CreateClient();
         var requestUri = $"https://api.github.com/repos/{_appInfoService.RepositoryOwner}/{_appInfoService.RepositoryName}/releases/latest";
-
-        using var response = await client.GetAsync(requestUri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var release = await JsonSerializer.DeserializeAsync<GithubReleaseResponse>(stream, SerializerOptions, cancellationToken);
-
-        if (release is null)
-        {
-            throw new InvalidOperationException("未能解析 GitHub 发布信息。");
-        }
+        var release = await ExecuteWithCompatibilityRetryAsync(
+            client => FetchLatestReleaseAsync(client, requestUri, cancellationToken),
+            cancellationToken);
 
         var asset = release.Assets.FirstOrDefault(item =>
                         string.Equals(item.Name, _appInfoService.UpdateAssetName, StringComparison.OrdinalIgnoreCase))
@@ -46,14 +46,16 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
             throw new InvalidOperationException("最新发布中未找到可下载的 zip 更新包。");
         }
 
-        var currentVersion = NormalizeVersion(_appInfoService.Version);
-        var latestVersion = NormalizeVersion(release.TagName);
+        var currentVersion = ExtractComparableVersion(_appInfoService.Version);
+        var currentBuildId = ExtractBuildId(_appInfoService.InformationalVersion);
+        var latestVersion = ExtractComparableVersion(release.TagName);
+        var latestBuildId = ExtractBuildId(release.TagName);
 
         return new AppUpdateInfo
         {
             CurrentVersion = currentVersion,
             LatestVersion = latestVersion,
-            HasUpdate = CompareVersions(latestVersion, currentVersion) > 0,
+            HasUpdate = HasNewerRelease(currentVersion, currentBuildId, latestVersion, latestBuildId),
             DownloadUrl = asset.DownloadUrl,
             ReleasePageUrl = string.IsNullOrWhiteSpace(release.HtmlUrl)
                 ? _appInfoService.RepositoryUrl
@@ -93,15 +95,18 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
 
         try
         {
-            using var client = CreateClient();
-            using var response = await client.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead,
-                cancellationToken);
-            response.EnsureSuccessStatusCode();
+            await ExecuteWithCompatibilityRetryAsync(
+                async client =>
+                {
+                    using var response = await client.GetAsync(updateInfo.DownloadUrl,
+                        HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                    response.EnsureSuccessStatusCode();
 
-            await using (var targetStream = File.Create(archivePath))
-            {
-                await response.Content.CopyToAsync(targetStream, cancellationToken);
-            }
+                    await using var targetStream = File.Create(archivePath);
+                    await response.Content.CopyToAsync(targetStream, cancellationToken);
+                    return true;
+                },
+                cancellationToken);
 
             ZipFile.ExtractToDirectory(archivePath, extractDirectory);
 
@@ -135,14 +140,104 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
         }
     }
 
-    private HttpClient CreateClient()
+    private async Task<T> ExecuteWithCompatibilityRetryAsync<T>(Func<HttpClient, Task<T>> operation,
+                                                                CancellationToken cancellationToken)
+    {
+        using var primaryClient = CreatePrimaryClient();
+
+        try
+        {
+            return await operation(primaryClient);
+        }
+        catch (Exception ex) when (ShouldRetryWithCompatibilityHandler(ex, cancellationToken))
+        {
+            _logger.LogWarning(ex, "GitHub 更新请求首次尝试失败，开始使用兼容模式重试。");
+
+            using var compatibilityClient = CreateCompatibilityClient();
+            try
+            {
+                return await operation(compatibilityClient);
+            }
+            catch (Exception retryEx) when (IsSslRelatedException(retryEx))
+            {
+                _logger.LogError(retryEx, "GitHub 更新请求兼容模式重试仍然失败。");
+                throw new InvalidOperationException("与 GitHub 建立安全连接失败，请检查系统时间、代理/VPN 或证书环境后重试。", retryEx);
+            }
+        }
+    }
+
+    private async Task<GithubReleaseResponse> FetchLatestReleaseAsync(HttpClient client,
+                                                                      string requestUri,
+                                                                      CancellationToken cancellationToken)
+    {
+        using var response = await client.GetAsync(requestUri, cancellationToken);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            throw new InvalidOperationException("当前仓库还没有正式发布的 GitHub Release，暂时无法检查更新。");
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var release = await JsonSerializer.DeserializeAsync<GithubReleaseResponse>(stream, SerializerOptions, cancellationToken);
+
+        if (release is null)
+        {
+            throw new InvalidOperationException("未能解析 GitHub 发布信息。");
+        }
+
+        return release;
+    }
+
+    private HttpClient CreatePrimaryClient()
     {
         var client = _httpClientFactory.CreateClient(nameof(AppUpdateService));
+        ApplyDefaultHeaders(client);
+        return client;
+    }
+
+    private HttpClient CreateCompatibilityClient()
+    {
+        var handler = new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
+            CheckCertificateRevocationList = false,
+            SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
+        };
+
+        var client = new HttpClient(handler, disposeHandler: true)
+        {
+            Timeout = TimeSpan.FromSeconds(30),
+            DefaultRequestVersion = HttpVersion.Version11,
+            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower
+        };
+
+        ApplyDefaultHeaders(client);
+        return client;
+    }
+
+    private void ApplyDefaultHeaders(HttpClient client)
+    {
         client.DefaultRequestHeaders.UserAgent.Clear();
-        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AzrngTools", NormalizeVersion(_appInfoService.Version)));
+        client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AzrngTools",
+            ExtractComparableVersion(_appInfoService.Version)));
         client.DefaultRequestHeaders.Accept.Clear();
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
-        return client;
+    }
+
+    private static bool ShouldRetryWithCompatibilityHandler(Exception exception, CancellationToken cancellationToken)
+    {
+        return !cancellationToken.IsCancellationRequested && IsSslRelatedException(exception);
+    }
+
+    private static bool IsSslRelatedException(Exception exception)
+    {
+        return exception is AuthenticationException
+               || exception is IOException
+               || exception is HttpRequestException
+               || exception.InnerException is not null && IsSslRelatedException(exception.InnerException)
+               || exception is AggregateException aggregate && aggregate.InnerExceptions.Any(IsSslRelatedException)
+               || exception is not null && exception.Message.Contains("SSL", StringComparison.OrdinalIgnoreCase);
     }
 
     private string BuildUpdateScript(string sourceDirectory)
@@ -202,34 +297,73 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
         return extractDirectory;
     }
 
-    private static int CompareVersions(string left, string right)
+    private static bool HasNewerRelease(string currentVersion,
+                                        string currentBuildId,
+                                        string latestVersion,
+                                        string latestBuildId)
     {
-        var leftVersion = ParseVersion(left);
-        var rightVersion = ParseVersion(right);
-        return leftVersion.CompareTo(rightVersion);
+        var versionCompare = ParseVersion(latestVersion).CompareTo(ParseVersion(currentVersion));
+        if (versionCompare > 0)
+        {
+            return true;
+        }
+
+        if (versionCompare < 0)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(currentBuildId) || string.IsNullOrWhiteSpace(latestBuildId))
+        {
+            return false;
+        }
+
+        return !string.Equals(currentBuildId, latestBuildId, StringComparison.OrdinalIgnoreCase);
     }
 
     private static Version ParseVersion(string value)
     {
-        return Version.TryParse(NormalizeVersion(value), out var version)
+        return Version.TryParse(ExtractComparableVersion(value), out var version)
             ? version
             : new Version(0, 0);
     }
 
-    private static string NormalizeVersion(string value)
+    private static string ExtractComparableVersion(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
             return "0.0.0";
         }
 
-        var normalized = value.Trim();
-        if (normalized.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+        var match = Regex.Match(value, @"\d+\.\d+\.\d+\.\d+");
+        if (match.Success)
         {
-            normalized = normalized[1..];
+            return match.Value;
         }
 
-        return normalized;
+        return value.Trim().TrimStart('v', 'V');
+    }
+
+    private static string ExtractBuildId(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var plusIndex = value.IndexOf('+');
+        if (plusIndex >= 0 && plusIndex < value.Length - 1)
+        {
+            return value[(plusIndex + 1)..].Trim();
+        }
+
+        var buildMarkerIndex = value.LastIndexOf("-build-", StringComparison.OrdinalIgnoreCase);
+        if (buildMarkerIndex >= 0 && buildMarkerIndex < value.Length - 7)
+        {
+            return value[(buildMarkerIndex + 7)..].Trim();
+        }
+
+        return string.Empty;
     }
 
     private static string EscapePowerShellString(string value)

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -15,8 +16,7 @@ concurrency:
 env:
   VERSION_FILE: VERSION
   PROJECT_PATH: AzrngTools/AzrngTools.csproj
-  PUBLISH_DIR: artifacts/publish/win-x64
-  PACKAGE_DIR: artifacts/package
+  PUBLISH_DIR: publish/win-x64
   PACKAGE_NAME: AzrngTools-win-x64-portable.zip
 
 jobs:
@@ -35,132 +35,81 @@ jobs:
           dotnet-version: 10.0.x
 
       - name: Resolve release metadata
-        id: meta
+        id: release_meta
         shell: pwsh
         run: |
-          function Get-VersionFromContent([string]$content) {
-            if ([string]::IsNullOrWhiteSpace($content)) {
-              return ""
-            }
-
-            return $content.Trim()
-          }
-
           $versionFilePath = Join-Path "${{ github.workspace }}" "${{ env.VERSION_FILE }}"
           if (-not (Test-Path -LiteralPath $versionFilePath)) {
             throw "版本文件不存在：$versionFilePath"
           }
 
-          $projectVersion = Get-VersionFromContent (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8)
-
-          if ([string]::IsNullOrWhiteSpace($projectVersion)) {
+          $version = (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8).Trim()
+          if ([string]::IsNullOrWhiteSpace($version)) {
             throw "版本文件内容为空：$versionFilePath"
           }
 
-          $beforeSha = "${{ github.event.before }}"
-          $zeroSha = "0000000000000000000000000000000000000000"
-          $previousVersion = ""
+          $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+          $shortSha = "${{ github.sha }}".Substring(0, 7)
+          $tag = "v$version-build-$timestamp-$shortSha"
+          $releaseName = "AzrngTools $version ($timestamp)"
+          $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_NAME }}"
 
-          if ($beforeSha -and $beforeSha -ne $zeroSha) {
-            $previousVersionFile = git ls-tree -r --name-only $beforeSha -- "${{ env.VERSION_FILE }}" | Out-String
-            if ($previousVersionFile.Trim() -eq "${{ env.VERSION_FILE }}") {
-              $previousVersionContent = git show "${beforeSha}:${{ env.VERSION_FILE }}" | Out-String
-              $previousVersion = Get-VersionFromContent $previousVersionContent
-            }
-          }
-
-          $versionChanged = $projectVersion -ne $previousVersion
-          $tagName = "v$projectVersion"
-          git fetch origin --tags --force
-
-          $tagSha = ""
-          $matchedTag = git tag --list $tagName | Select-Object -First 1
-          if (-not [string]::IsNullOrWhiteSpace($matchedTag)) {
-            $tagSha = (git rev-list -n 1 $tagName).Trim()
-          }
-
-          $createTagNeeded = $false
-          $releaseNeeded = $false
-
-          if ($versionChanged) {
-            if ($tagSha -and $tagSha -ne "${{ github.sha }}") {
-              throw "版本 $projectVersion 对应的 tag 已存在，但不指向当前 main 提交，请先提升 Version。"
-            }
-
-            $createTagNeeded = -not $tagSha
-            $releaseNeeded = $true
-          }
-
-          $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_DIR }}\\${{ env.PACKAGE_NAME }}"
-
-          "project_version=$projectVersion" >> $env:GITHUB_OUTPUT
-          "previous_version=$previousVersion" >> $env:GITHUB_OUTPUT
-          "tag_name=$tagName" >> $env:GITHUB_OUTPUT
-          "version_changed=$($versionChanged.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
-          "create_tag_needed=$($createTagNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
-          "release_needed=$($releaseNeeded.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag_name=$tag" >> $env:GITHUB_OUTPUT
+          "release_name=$releaseName" >> $env:GITHUB_OUTPUT
           "package_path=$packagePath" >> $env:GITHUB_OUTPUT
 
-      - name: Skip when version is unchanged
-        if: steps.meta.outputs.release_needed != 'true'
-        shell: pwsh
-        run: |
-          Write-Host "Version 未变化，跳过自动打 tag 与发布。当前版本: ${{ steps.meta.outputs.project_version }}"
-
-      - name: Create and push version tag
-        if: steps.meta.outputs.create_tag_needed == 'true'
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag "${{ steps.meta.outputs.tag_name }}" "${{ github.sha }}"
-          git push origin "${{ steps.meta.outputs.tag_name }}"
-
       - name: Restore
-        if: steps.meta.outputs.release_needed == 'true'
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
       - name: Publish win-x64 package
-        if: steps.meta.outputs.release_needed == 'true'
         shell: pwsh
         run: |
+          $version = "${{ steps.release_meta.outputs.version }}"
+          $shortSha = "${{ github.sha }}".Substring(0, 7)
+          $informationalVersion = "$version+$shortSha"
+
           dotnet publish "${{ env.PROJECT_PATH }}" `
             -c Release `
             -r win-x64 `
             --self-contained true `
-            -o "${{ env.PUBLISH_DIR }}"
+            -o "${{ env.PUBLISH_DIR }}" `
+            -p:InformationalVersion=$informationalVersion `
+            -p:Version=$version
 
-      - name: Compress portable package
-        if: steps.meta.outputs.release_needed == 'true'
+      - name: Create ZIP package
         shell: pwsh
         run: |
-          $publishDir = Join-Path "${{ github.workspace }}" "${{ env.PUBLISH_DIR }}"
-          $packagePath = "${{ steps.meta.outputs.package_path }}"
-          $packageDirectory = Split-Path -Parent $packagePath
+          $packagePath = "${{ steps.release_meta.outputs.package_path }}"
+          $pdbPath = Join-Path "${{ env.PUBLISH_DIR }}" "AzrngTools.pdb"
 
-          if (-not (Test-Path $packageDirectory)) {
-            New-Item -ItemType Directory -Path $packageDirectory | Out-Null
+          if (Test-Path $pdbPath) {
+            Remove-Item $pdbPath -Force
           }
 
           if (Test-Path $packagePath) {
             Remove-Item $packagePath -Force
           }
 
-          Compress-Archive -Path (Join-Path $publishDir '*') -DestinationPath $packagePath -Force
+          Compress-Archive -Path "${{ env.PUBLISH_DIR }}/*" -DestinationPath $packagePath -Force
 
-      - name: Upload workflow artifact
-        if: steps.meta.outputs.release_needed == 'true'
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: AzrngTools-win-x64-portable
-          path: ${{ steps.meta.outputs.package_path }}
+          path: ${{ steps.release_meta.outputs.package_path }}
+          retention-days: 30
 
       - name: Publish GitHub release
-        if: steps.meta.outputs.release_needed == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.meta.outputs.tag_name }}
+          tag_name: ${{ steps.release_meta.outputs.tag_name }}
+          name: ${{ steps.release_meta.outputs.release_name }}
           target_commitish: ${{ github.sha }}
-          name: AzrngTools ${{ steps.meta.outputs.project_version }}
+          files: ${{ steps.release_meta.outputs.package_path }}
+          draft: false
+          prerelease: false
           generate_release_notes: true
-          files: ${{ steps.meta.outputs.package_path }}
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
