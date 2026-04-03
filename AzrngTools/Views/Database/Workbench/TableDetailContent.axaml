@@ -228,6 +228,7 @@
                                                                         Click="OnEditColumnCommentClick"
                                                                         Tag="{Binding}"
                                                                         Classes="inlineAction"
+                                                                        IsVisible="{Binding #RootContent.DataContext.CanEditComments}"
                                                                         HorizontalAlignment="Center"
                                                                         VerticalAlignment="Center">
                                                                     <TextBlock Text="编辑" />

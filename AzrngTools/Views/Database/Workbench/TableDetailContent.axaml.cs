@@ -1,6 +1,8 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
 using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
 using AzrngTools.ViewModels.Database;
 
 namespace AzrngTools.Views.Database.Workbench;
@@ -10,10 +12,12 @@ public partial class TableDetailContent : UserControl
     private Button? _tabColumnsButton;
     private Button? _tabIndexesButton;
     private Button? _tabDdlButton;
+    private TableDetailViewModel? _currentViewModel;
 
     public TableDetailContent()
     {
         InitializeComponent();
+        DataContextChanged += OnDataContextChanged;
     }
 
     protected override void OnLoaded(RoutedEventArgs e)
@@ -24,28 +28,30 @@ public partial class TableDetailContent : UserControl
         _tabIndexesButton = this.FindControl<Button>("TabIndexesButton");
         _tabDdlButton = this.FindControl<Button>("TabDdlButton");
 
-        if (DataContext is TableDetailViewModel vm)
-        {
-            vm.PropertyChanged += OnViewModelPropertyChanged;
-            UpdateTabClasses(vm.SelectedTabIndex);
-        }
+        AttachViewModel(DataContext as TableDetailViewModel);
+    }
 
-        DataContextChanged += OnDataContextChanged;
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        AttachViewModel(null);
+        base.OnDetachedFromVisualTree(e);
     }
 
     private void OnDataContextChanged(object? sender, System.EventArgs e)
     {
-        if (DataContext is TableDetailViewModel vm)
-        {
-            vm.PropertyChanged += OnViewModelPropertyChanged;
-            UpdateTabClasses(vm.SelectedTabIndex);
-        }
+        AttachViewModel(DataContext as TableDetailViewModel);
     }
 
     private async void OnEditTableCommentClick(object? sender, RoutedEventArgs e)
     {
         if (DataContext is not TableDetailViewModel viewModel || viewModel.SelectedTable == null)
         {
+            return;
+        }
+
+        if (!viewModel.CanEditComments)
+        {
+            ToastService.ShowWarning("当前数据库类型暂不支持编辑表备注。");
             return;
         }
 
@@ -81,6 +87,12 @@ public partial class TableDetailContent : UserControl
             return;
         }
 
+        if (!viewModel.CanEditComments)
+        {
+            ToastService.ShowWarning("当前数据库类型暂不支持编辑字段备注。");
+            return;
+        }
+
         if (TopLevel.GetTopLevel(this) is not Window owner)
         {
             return;
@@ -113,6 +125,27 @@ public partial class TableDetailContent : UserControl
             && DataContext is TableDetailViewModel vm)
         {
             UpdateTabClasses(vm.SelectedTabIndex);
+        }
+    }
+
+    private void AttachViewModel(TableDetailViewModel? viewModel)
+    {
+        if (ReferenceEquals(_currentViewModel, viewModel))
+        {
+            return;
+        }
+
+        if (_currentViewModel != null)
+        {
+            _currentViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        }
+
+        _currentViewModel = viewModel;
+
+        if (_currentViewModel != null)
+        {
+            _currentViewModel.PropertyChanged += OnViewModelPropertyChanged;
+            UpdateTabClasses(_currentViewModel.SelectedTabIndex);
         }
     }
 

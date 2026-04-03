@@ -140,5 +140,5 @@ public partial class CommentEditorDialogViewModel : ViewModelBase
 
     private bool CanCancel() => !IsSaving;
 
-    private static string NormalizeComment(string? comment) => comment ?? string.Empty;
+    private static string NormalizeComment(string? comment) => comment?.Trim() ?? string.Empty;
 }
