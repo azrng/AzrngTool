@@ -235,6 +235,12 @@
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="Padding" Value="4"/>
+        <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
+    <Style Selector="ScrollViewer.browserTreeScroll">
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="ClipToBounds" Value="True"/>
     </Style>
 
     <Style Selector="Border.workspaceSurface">

@@ -11,10 +11,11 @@
         <models:TreeNodeItem Name="Root" DisplayName="数据库对象" />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid RowDefinitions="*"
+          MinHeight="0">
         <TreeView x:Name="DatabaseTreeView"
                   ItemsSource="{Binding #RootControl.FilteredChildren}"
-                  MinHeight="200"
+                  MinHeight="0"
                   Background="Transparent"
                   BorderThickness="0">
             <TreeView.DataTemplates>
