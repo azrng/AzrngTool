@@ -449,16 +449,33 @@
                                     </Grid>
                                 </Border>
 
-                                <TextBox Grid.Row="1"
-                                 Margin="{StaticResource Thickness.12}"
-                                 Text="{Binding TableDefinitionDisplay}"
-                                 Background="Transparent"
-                                 BorderThickness="0"
-                                 IsReadOnly="True"
-                                 AcceptsReturn="True"
-                                 TextWrapping="NoWrap"
-                                 FontFamily="{DynamicResource Font.Family.Monospace}"
-                                 Padding="{StaticResource Thickness.16}" />
+                                <Border Grid.Row="1"
+                                        Margin="{StaticResource Thickness.12}"
+                                        Classes="detailGridShell">
+                                    <Grid RowDefinitions="Auto,*">
+                                        <Border Grid.Row="0"
+                                                Classes="detailGridHeader">
+                                            <Grid RowDefinitions="Auto,Auto"
+                                                  RowSpacing="{StaticResource Space.4}">
+                                                <TextBlock Text="DDL 定义"
+                                                           Classes="subheading" />
+                                                <TextBlock Grid.Row="1"
+                                                           Text="展示当前数据表的结构定义，便于直接查看与复制。"
+                                                           Classes="caption" />
+                                            </Grid>
+                                        </Border>
+
+                                        <TextBox Grid.Row="1"
+                                                 Text="{Binding TableDefinitionDisplay}"
+                                                 Background="Transparent"
+                                                 BorderThickness="0"
+                                                 IsReadOnly="True"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="NoWrap"
+                                                 FontFamily="{DynamicResource Font.Family.Monospace}"
+                                                 Padding="{StaticResource Thickness.16}" />
+                                    </Grid>
+                                </Border>
                             </Grid>
                         </Grid>
                     </Grid>
