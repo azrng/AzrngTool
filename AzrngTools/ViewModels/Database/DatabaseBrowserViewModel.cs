@@ -560,15 +560,4 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// 节点选中处理
-    /// </summary>
-    partial void OnSelectedNodeChanged(TreeNodeItem? value)
-    {
-        if (value != null)
-        {
-            System.Diagnostics.Debug.WriteLine($"选中节点：{value.Name} (类型：{value.NodeType})");
-            // TODO: 根据节点类型加载详情
-        }
-    }
 }
