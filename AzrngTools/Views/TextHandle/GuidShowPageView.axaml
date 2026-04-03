@@ -31,7 +31,7 @@
 
             <Grid Grid.Row="1" ColumnDefinitions="0.64*,1.36*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="生成操作" />
                             <TextBlock Classes="section-copy" Text="点击按钮会重新生成一组新的 GUID，并同步刷新右侧所有格式内容。" />
