@@ -1,0 +1,13 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Design Tokens - Shadows -->
+    <!-- Based on design-system.yaml shadow settings -->
+
+    <!-- Shadow Levels -->
+    <x:String x:Key="Shadow.None">none</x:String>
+    <x:String x:Key="Shadow.SM">0 1 3 0 #14000000</x:String>
+    <x:String x:Key="Shadow.MD">0 4 12 0 #18000000</x:String>
+    <x:String x:Key="Shadow.LG">0 10 24 0 #22000000</x:String>
+
+</ResourceDictionary>

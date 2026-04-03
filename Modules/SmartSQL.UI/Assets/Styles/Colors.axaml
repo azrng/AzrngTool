@@ -1,0 +1,107 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Design Tokens - Colors -->
+    <!-- Based on design-system.yaml color palette -->
+
+    <!-- Brand Colors -->
+    <SolidColorBrush x:Key="Brush.Brand.50" Color="#F4F8FF"/>
+    <SolidColorBrush x:Key="Brush.Brand.100" Color="#E8F0FF"/>
+    <SolidColorBrush x:Key="Brush.Brand.200" Color="#C9DDFF"/>
+    <SolidColorBrush x:Key="Brush.Brand.300" Color="#A7C7FF"/>
+    <SolidColorBrush x:Key="Brush.Brand.400" Color="#7AA7F8"/>
+    <SolidColorBrush x:Key="Brush.Brand.500" Color="#4C84F0"/>
+    <SolidColorBrush x:Key="Brush.Brand.600" Color="#3568D4"/>
+    <SolidColorBrush x:Key="Brush.Brand.700" Color="#264FB0"/>
+    <SolidColorBrush x:Key="Brush.Brand.800" Color="#1A387F"/>
+    <SolidColorBrush x:Key="Brush.Brand.900" Color="#122554"/>
+
+    <!-- Neutral Colors -->
+    <SolidColorBrush x:Key="Brush.Neutral.0" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Neutral.50" Color="#F8FAFC"/>
+    <SolidColorBrush x:Key="Brush.Neutral.100" Color="#F1F5F9"/>
+    <SolidColorBrush x:Key="Brush.Neutral.150" Color="#E9EEF5"/>
+    <SolidColorBrush x:Key="Brush.Neutral.200" Color="#DCE3EC"/>
+    <SolidColorBrush x:Key="Brush.Neutral.300" Color="#C2CDD9"/>
+    <SolidColorBrush x:Key="Brush.Neutral.400" Color="#94A3B8"/>
+    <SolidColorBrush x:Key="Brush.Neutral.500" Color="#64748B"/>
+    <SolidColorBrush x:Key="Brush.Neutral.600" Color="#475569"/>
+    <SolidColorBrush x:Key="Brush.Neutral.700" Color="#334155"/>
+    <SolidColorBrush x:Key="Brush.Neutral.800" Color="#1F2937"/>
+    <SolidColorBrush x:Key="Brush.Neutral.900" Color="#0F172A"/>
+
+    <!-- Success Colors -->
+    <SolidColorBrush x:Key="Brush.Success.50" Color="#F0FDF4"/>
+    <SolidColorBrush x:Key="Brush.Success.100" Color="#DCFCE7"/>
+    <SolidColorBrush x:Key="Brush.Success.500" Color="#22C55E"/>
+    <SolidColorBrush x:Key="Brush.Success.600" Color="#16A34A"/>
+    <SolidColorBrush x:Key="Brush.Success.700" Color="#15803D"/>
+
+    <!-- Warning Colors -->
+    <SolidColorBrush x:Key="Brush.Warning.50" Color="#FFF7ED"/>
+    <SolidColorBrush x:Key="Brush.Warning.100" Color="#FFEDD5"/>
+    <SolidColorBrush x:Key="Brush.Warning.500" Color="#F59E0B"/>
+    <SolidColorBrush x:Key="Brush.Warning.600" Color="#D97706"/>
+    <SolidColorBrush x:Key="Brush.Warning.700" Color="#B45309"/>
+
+    <!-- Error Colors -->
+    <SolidColorBrush x:Key="Brush.Error.50" Color="#FEF2F2"/>
+    <SolidColorBrush x:Key="Brush.Error.100" Color="#FEE2E2"/>
+    <SolidColorBrush x:Key="Brush.Error.500" Color="#EF4444"/>
+    <SolidColorBrush x:Key="Brush.Error.600" Color="#DC2626"/>
+    <SolidColorBrush x:Key="Brush.Error.700" Color="#B91C1C"/>
+
+    <!-- Info Colors -->
+    <SolidColorBrush x:Key="Brush.Info.50" Color="#EFF6FF"/>
+    <SolidColorBrush x:Key="Brush.Info.100" Color="#DBEAFE"/>
+    <SolidColorBrush x:Key="Brush.Info.500" Color="#3B82F6"/>
+    <SolidColorBrush x:Key="Brush.Info.600" Color="#2563EB"/>
+    <SolidColorBrush x:Key="Brush.Info.700" Color="#1D4ED8"/>
+
+    <!-- Semantic Colors - Text -->
+    <SolidColorBrush x:Key="Brush.Text.Primary" Color="#2C3E50"/>
+    <SolidColorBrush x:Key="Brush.Text.Secondary" Color="#7F8C8D"/>
+    <SolidColorBrush x:Key="Brush.Text.Tertiary" Color="#94A3B8"/>
+    <SolidColorBrush x:Key="Brush.Text.Inverse" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Text.Link" Color="#4A90E2"/>
+    <SolidColorBrush x:Key="Brush.Text.Danger" Color="#EF4444"/>
+
+    <!-- Semantic Colors - Background -->
+    <SolidColorBrush x:Key="Brush.Background.App" Color="#F0F4F8"/>
+    <SolidColorBrush x:Key="Brush.Background.Surface" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Background.Subtle" Color="#F8FAFB"/>
+    <SolidColorBrush x:Key="Brush.Background.Elevated" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="Brush.Background.Overlay" Color="#00000000"/>
+    <SolidColorBrush x:Key="Brush.Background.Selected" Color="#E3F2FD"/>
+    <SolidColorBrush x:Key="Brush.Background.Disabled" Color="#F1F5F9"/>
+
+    <!-- Semantic Colors - Border -->
+    <SolidColorBrush x:Key="Brush.Border.Default" Color="#E1E8ED"/>
+    <SolidColorBrush x:Key="Brush.Border.Strong" Color="#CBD5E1"/>
+    <SolidColorBrush x:Key="Brush.Border.Focus" Color="#4A90E2"/>
+    <SolidColorBrush x:Key="Brush.Border.Danger" Color="#EF4444"/>
+
+    <!-- Semantic Colors - Status -->
+    <SolidColorBrush x:Key="Brush.Status.Success.Background" Color="#DCFCE7"/>
+    <SolidColorBrush x:Key="Brush.Status.Success.Text" Color="#16A34A"/>
+    <SolidColorBrush x:Key="Brush.Status.Warning.Background" Color="#FFEDD5"/>
+    <SolidColorBrush x:Key="Brush.Status.Warning.Text" Color="#D97706"/>
+    <SolidColorBrush x:Key="Brush.Status.Error.Background" Color="#FEE2E2"/>
+    <SolidColorBrush x:Key="Brush.Status.Error.Text" Color="#DC2626"/>
+    <SolidColorBrush x:Key="Brush.Status.Info.Background" Color="#DBEAFE"/>
+    <SolidColorBrush x:Key="Brush.Status.Info.Text" Color="#2563EB"/>
+
+    <!-- Legacy Color Keys (for backward compatibility) -->
+    <SolidColorBrush x:Key="ThemeBackground" Color="#F0F4F8"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SidebarBackground" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SidebarSelected" Color="#2C3E50"/>
+    <SolidColorBrush x:Key="PrimaryColor" Color="#4A90E2"/>
+    <SolidColorBrush x:Key="PrimaryHover" Color="#357ABD"/>
+    <SolidColorBrush x:Key="AccentColor" Color="#50E3C2"/>
+    <SolidColorBrush x:Key="TextPrimary" Color="#2C3E50"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#7F8C8D"/>
+    <SolidColorBrush x:Key="BorderLight" Color="#E1E8ED"/>
+    <SolidColorBrush x:Key="RowAlternate" Color="#F8FAFB"/>
+
+</ResourceDictionary>

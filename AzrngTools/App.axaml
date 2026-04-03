@@ -2,6 +2,7 @@
     RequestedThemeVariant="Default"
     x:Class="AzrngTools.App"
     xmlns="https://github.com/avaloniaui"
+    xmlns:dbconv="clr-namespace:SmartSQL.UI.Converters;assembly=SmartSQL.UI"
     xmlns:local="using:AzrngTools"
     xmlns:semi="https://irihi.tech/semi"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -10,6 +11,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://AzrngTools/Styles/DesignTokens.axaml" />
+                <ResourceInclude Source="avares://SmartSQL.UI/Assets/Styles/DesignTokens.axaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <FontWeight x:Key="ButtonDefaultFontWeight">500</FontWeight>
@@ -21,6 +23,17 @@
             <FontWeight x:Key="TabItemSelectedFontWeight">500</FontWeight>
             <FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
             <FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
+            <dbconv:NullToBoolConverter x:Key="NullToBoolConverter" />
+            <dbconv:BoolToColorConverter x:Key="BoolToColorConverter" />
+            <dbconv:BoolToStringConverter x:Key="BoolToStringConverter" />
+            <dbconv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <dbconv:EnumToIndexConverter x:Key="EnumToIndexConverter" />
+            <dbconv:AllTrueConverter x:Key="AllTrueConverter" />
+            <dbconv:EqualToZeroConverter x:Key="EqualToZeroConverter" />
+            <dbconv:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+            <dbconv:DatabaseTypeIconConverter x:Key="DatabaseTypeIconConverter" />
+            <dbconv:DatabaseTypeToBoolConverter x:Key="DatabaseTypeToBoolConverter" />
+            <dbconv:BoolToGlyphConverter x:Key="BoolToGlyphConverter" />
         </ResourceDictionary>
     </Application.Resources>
 
@@ -32,6 +45,10 @@
         <FluentTheme />
         <semi:SemiTheme />
         <StyleInclude Source="avares://AzrngTools/Styles/Global.axaml" />
+        <StyleInclude Source="avares://SmartSQL.UI/Assets/Styles/Controls/Buttons.axaml" />
+        <StyleInclude Source="avares://SmartSQL.UI/Assets/Styles/Controls/Inputs.axaml" />
+        <StyleInclude Source="avares://SmartSQL.UI/Assets/Styles/Controls/DataGrid.axaml" />
+        <StyleInclude Source="avares://SmartSQL.UI/Assets/Styles/Controls/Misc.axaml" />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
     </Application.Styles>
 </Application>

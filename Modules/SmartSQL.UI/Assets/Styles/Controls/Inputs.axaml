@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Input Styles -->
+    <!-- Based on design-system.yaml form rules -->
+
+    <!-- Modern TextBox -->
+    <Style Selector="TextBox.modern">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="MinHeight" Value="40"/>
+    </Style>
+
+    <Style Selector="TextBox.modern:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+    </Style>
+
+    <Style Selector="TextBox.modern:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Watermark/Placeholder Text -->
+    <Style Selector="TextBox.watermark">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}"/>
+    </Style>
+
+    <!-- Modern NumericUpDown -->
+    <Style Selector="NumericUpDown.modern">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="NumericUpDown.modern:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Modern ComboBox -->
+    <Style Selector="ComboBox.modern">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+    </Style>
+
+    <Style Selector="ComboBox.modern:focus">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+</Styles>

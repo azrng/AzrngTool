@@ -12,6 +12,7 @@ using AzrngTools.ViewModels.TextHandle;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using DbWorkbenchViewModel = SmartSQL.UI.ViewModels.MainWindowViewModel;
 
 namespace AzrngTools.ViewModels;
 
@@ -68,7 +69,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private MenuBar _selectedListItem;
 
     [ObservableProperty]
-    private ViewModelBase _currentPage;
+    private object _currentPage;
 
     [ObservableProperty]
     private string _searchKeyword;
@@ -102,6 +103,14 @@ public partial class MainWindowViewModel : ViewModelBase
         var menus = new List<MenuBar>
         {
             new("首页", typeof(OverviewPageViewModel)),
+            new MenuBar
+            {
+                Title = "数据库工具",
+                Child =
+                [
+                    new MenuBar("数据库工作台", typeof(DbWorkbenchViewModel))
+                ]
+            },
             new MenuBar
             {
                 Title = "生成类工具",
@@ -275,9 +284,9 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         var service = _serviceProvider.GetService(value.MenuType);
-        if (service is ViewModelBase viewModel)
+        if (service is not null)
         {
-            CurrentPage = viewModel;
+            CurrentPage = service;
             UpdatePageHeader(value);
         }
 

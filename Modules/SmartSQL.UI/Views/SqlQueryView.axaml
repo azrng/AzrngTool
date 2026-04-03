@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SmartSQL.UI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1100"
+             d:DesignHeight="720"
+             x:Class="SmartSQL.UI.Views.SqlQueryView">
+
+    <Design.DataContext>
+        <vm:SqlQueryViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto,220,Auto,*">
+        <Border Grid.Row="0"
+                Padding="12"
+                BorderBrush="{DynamicResource BorderLight}"
+                BorderThickness="0,0,0,1"
+                IsVisible="{Binding IsLoading}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10">
+                <ProgressBar Width="24"
+                             Height="18"
+                             IsIndeterminate="True" />
+                <TextBlock Text="{Binding LoadingText}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Classes="card"
+                Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,*,Auto,Auto,Auto"
+                  RowDefinitions="Auto,Auto"
+                  ColumnSpacing="12"
+                  RowSpacing="10">
+                <StackPanel Grid.Column="0"
+                            Spacing="6">
+                    <TextBlock Text="Connection"
+                               Classes="caption" />
+                    <TextBlock Text="{Binding CurrentConnection.Name, FallbackValue=No connection selected}"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Spacing="6">
+                    <TextBlock Text="Schema"
+                               Classes="caption" />
+                    <TextBlock Text="{Binding CurrentSchemaName, FallbackValue=No schema selected}"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                        Command="{Binding ExecuteQueryCommand}"
+                        Classes="modern"
+                        Padding="16,10"
+                        VerticalAlignment="Bottom">
+                    <TextBlock Text="Execute" />
+                </Button>
+
+                <Button Grid.Column="3"
+                        Command="{Binding ClearResultsCommand}"
+                        Classes="secondary"
+                        Padding="16,10"
+                        VerticalAlignment="Bottom">
+                    <TextBlock Text="Clear Results" />
+                </Button>
+
+                <Button Grid.Column="4"
+                        Click="OnFormatSqlClick"
+                        Classes="secondary"
+                        Padding="16,10"
+                        VerticalAlignment="Bottom">
+                    <TextBlock Text="Format SQL" />
+                </Button>
+
+                <ComboBox Grid.Row="1"
+                          Grid.Column="0"
+                          ItemsSource="{Binding Templates}"
+                          SelectedItem="{Binding SelectedTemplate}"
+                          PlaceholderText="Choose a common template">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <Button Grid.Row="1"
+                        Grid.Column="2"
+                        Command="{Binding ApplyTemplateCommand}"
+                        CommandParameter="{Binding SelectedTemplate}"
+                        Classes="secondary"
+                        Padding="16,10">
+                    <TextBlock Text="Use Template" />
+                </Button>
+
+                <ComboBox Grid.Row="1"
+                          Grid.Column="1"
+                          ItemsSource="{Binding QueryHistory}"
+                          SelectedItem="{Binding SelectedHistoryItem}"
+                          PlaceholderText="Recent SQL history" />
+
+                <Button Grid.Row="1"
+                        Grid.Column="3"
+                        Command="{Binding LoadHistoryCommand}"
+                        CommandParameter="{Binding SelectedHistoryItem}"
+                        Classes="secondary"
+                        Padding="16,10">
+                    <TextBlock Text="Reuse SQL" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2"
+                Classes="card"
+                Margin="0,0,0,12">
+            <Grid RowDefinitions="Auto,*">
+                <Border Grid.Row="0"
+                        Padding="16"
+                        BorderBrush="{DynamicResource BorderLight}"
+                        BorderThickness="0,0,0,1">
+                    <TextBlock Text="SQL Editor"
+                               Classes="subheading" />
+                </Border>
+                <TextBox Grid.Row="1"
+                         x:Name="SqlEditor"
+                         Text="{Binding SqlText, Mode=TwoWay}"
+                         AcceptsReturn="True"
+                         TextWrapping="NoWrap"
+                         FontFamily="Consolas"
+                         Padding="16" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="3"
+                Classes="card"
+                Margin="0,0,0,12">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Execution Result"
+                               Classes="subheading" />
+                    <TextBlock Text="{Binding ResultMessage, FallbackValue=Run a SQL statement to see results.}"
+                               Foreground="{DynamicResource TextSecondary}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding AffectedRows, StringFormat=Affected Rows: {0}}"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextSecondary}" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="4"
+                Classes="card">
+            <Grid>
+                <Border Padding="40"
+                        IsVisible="{Binding HasResults, Converter={StaticResource InvertedBoolConverter}}">
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="12">
+                        <TextBlock Text="No result set yet"
+                                   FontSize="24"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="Execute a SELECT statement to populate the result grid. Non-query statements will report affected rows above."
+                                   Foreground="{DynamicResource TextSecondary}"
+                                   HorizontalAlignment="Center"
+                                   MaxWidth="520"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+
+                <DataGrid x:Name="ResultGrid"
+                          IsVisible="{Binding HasResults}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

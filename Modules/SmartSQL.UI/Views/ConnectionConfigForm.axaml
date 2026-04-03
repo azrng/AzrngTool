@@ -1,0 +1,192 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SmartSQL.UI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             x:Class="SmartSQL.UI.Views.ConnectionConfigForm"
+             x:DataType="vm:ConnectionDialogViewModel">
+
+    <Design.DataContext>
+        <vm:ConnectionDialogViewModel/>
+    </Design.DataContext>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto"
+                  Padding="24"
+                  VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch">
+        <StackPanel Spacing="24">
+            <!-- 连接名称 -->
+            <StackPanel Spacing="8">
+                <TextBlock Text="连接名称"
+                           Classes="label">
+                    <Run Text=" *" Foreground="#E74C3C"/>
+                </TextBlock>
+                <TextBox Watermark="请输入连接名称"
+                         Text="{Binding ConnectionConfig.Name, Mode=TwoWay}"
+                         Height="40"
+                         Classes="modern"/>
+            </StackPanel>
+
+            <!-- 主机和端口 -->
+            <Grid IsVisible="{Binding ShowServerFields}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="160"/>
+                </Grid.ColumnDefinitions>
+                <Grid.ColumnSpacing>16</Grid.ColumnSpacing>
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <TextBlock Text="服务器地址"
+                               Classes="label">
+                        <Run Text=" *" Foreground="#E74C3C"/>
+                    </TextBlock>
+                    <TextBox Watermark="请输入服务器地址"
+                             Text="{Binding ConnectionConfig.Host, Mode=TwoWay}"
+                             Height="40"
+                             Classes="modern"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                    <TextBlock Text="端口"
+                               Classes="label"/>
+                    <TextBox Watermark="5432"
+                             Text="{Binding ConnectionConfig.Port, Mode=TwoWay}"
+                             Height="40"
+                             Classes="modern"
+                             HorizontalContentAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 登录名和密码 -->
+            <Grid IsVisible="{Binding ShowCredentialFields}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.ColumnSpacing>16</Grid.ColumnSpacing>
+                <StackPanel Grid.Column="0" Spacing="8">
+                    <TextBlock Text="登录名"
+                               Classes="label">
+                        <Run Text=" *" Foreground="#E74C3C"/>
+                    </TextBlock>
+                    <TextBox Watermark="请输入登录名"
+                             Text="{Binding ConnectionConfig.Username, Mode=TwoWay}"
+                             Height="40"
+                             Classes="modern"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Spacing="8">
+                    <TextBlock Text="密码"
+                               Classes="label">
+                        <Run Text=" *" Foreground="#E74C3C"/>
+                    </TextBlock>
+                    <TextBox Text="{Binding ConnectionConfig.Password, Mode=TwoWay}"
+                             Watermark="请输入密码"
+                             Height="40"
+                             Classes="modern"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 数据库 -->
+            <StackPanel Spacing="8"
+                        IsVisible="{Binding ShowDatabaseSelector}">
+                <TextBlock Text="数据库"
+                           Classes="label"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="48"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.ColumnSpacing>8</Grid.ColumnSpacing>
+                    <ComboBox Grid.Column="0"
+                              ItemsSource="{Binding AvailableDatabases}"
+                              SelectedItem="{Binding ConnectionConfig.Database}"
+                              Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
+                              IsEditable="True"
+                              IsEnabled="{Binding IsDatabaseSelectionEnabled}"
+                              Height="40"
+                              Classes="modern"
+                              PlaceholderText="请输入或选择数据库"/>
+                    <Button Grid.Column="1"
+                            Content="🔄"
+                            ToolTip.Tip="刷新数据库列表"
+                            Command="{Binding RefreshDatabasesCommand}"
+                            Classes="secondary"
+                            Margin="8,0,0,0"
+                            IsVisible="{Binding ShowRefreshDatabaseButton}"/>
+                </Grid>
+                <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
+                        Background="#F5F7FA"
+                        Padding="12,10"
+                        CornerRadius="6"
+                        BorderBrush="#E0E6ED"
+                        BorderThickness="1">
+                    <TextBlock Text="{Binding DatabaseSelectionHint}"
+                               Foreground="#6B7280"
+                               FontSize="12"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Sqlite 数据库文件 -->
+            <StackPanel Spacing="8"
+                        IsVisible="{Binding ShowDatabaseFilePathInput}">
+                <TextBlock Text="数据库文件"
+                           Classes="label">
+                    <Run Text=" *" Foreground="#E74C3C"/>
+                </TextBlock>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="80"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.ColumnSpacing>8</Grid.ColumnSpacing>
+                    <TextBox Grid.Column="0"
+                             Watermark="{Binding DatabaseFilePathHint}"
+                             Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
+                             Height="40"
+                             Classes="modern"/>
+                    <Button Grid.Column="1"
+                            Content="浏览..."
+                            Click="BrowseSQLiteFile_Click"
+                            Classes="secondary"
+                            Margin="8,0,0,0"/>
+                </Grid>
+                <Border Background="#F5F7FA"
+                        Padding="12,10"
+                        CornerRadius="6"
+                        BorderBrush="#E0E6ED"
+                        BorderThickness="1">
+                    <TextBlock Text="{Binding SQLiteModeHint}"
+                               Foreground="#6B7280"
+                               FontSize="12"/>
+                </Border>
+            </StackPanel>
+
+            <!-- 验证错误显示 -->
+            <Border IsVisible="{Binding HasValidationErrors}"
+                    Background="#FDE8E8"
+                    Padding="12"
+                    CornerRadius="6"
+                    BorderBrush="#F5C6C6"
+                    BorderThickness="1">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="⚠ 请修正以下错误："
+                               FontWeight="SemiBold"
+                               Foreground="#C53030"
+                               FontSize="13"/>
+                    <ItemsControl ItemsSource="{Binding ValidationErrors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           Foreground="#C53030"
+                                           FontSize="12"
+                                           Margin="4,0,0,0"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

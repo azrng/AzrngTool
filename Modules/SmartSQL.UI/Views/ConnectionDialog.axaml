@@ -1,0 +1,763 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SmartSQL.UI.ViewModels"
+        xmlns:controls="using:SmartSQL.UI.Controls"
+        mc:Ignorable="d"
+        d:DesignWidth="1140"
+        d:DesignHeight="720"
+        x:Class="SmartSQL.UI.Views.ConnectionDialog"
+        x:DataType="vm:ConnectionDialogViewModel"
+        x:Name="MainWindow"
+        Title="连接管理"
+        Width="1140"
+        Height="720"
+        MinWidth="1040"
+        MinHeight="660"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/avalonia-logo.ico">
+
+    <Design.DataContext>
+        <vm:ConnectionDialogViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Button.connectionTypeCard">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="16" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:focus /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:focus-visible /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.connectionAction">
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections">
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:selected">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:selected:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="ListBox.savedConnections ListBoxItem:selected Border.connectionListCard">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#D8E4F2" />
+        </Style>
+    </Window.Styles>
+
+    <Grid Background="#F6F9FF">
+        <Panel IsHitTestVisible="False"
+               ZIndex="9999">
+            <StackPanel x:Name="ToastContainer"
+                        Margin="20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Spacing="8" />
+        </Panel>
+
+        <Grid Margin="10"
+              ColumnDefinitions="286,14,*">
+            <Border Grid.Column="0"
+                    Background="White"
+                    BorderBrush="#E7EDF7"
+                    BorderThickness="1"
+                    CornerRadius="18">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <Border Grid.Row="0"
+                            Padding="16"
+                            BorderBrush="#EEF3FA"
+                            BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="*,52"
+                              ColumnSpacing="10">
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding SearchText}"
+                                     Watermark="搜索连接"
+                                     Height="46"
+                                     Classes="modern" />
+                            <Button Grid.Column="1"
+                                    Width="52"
+                                    Height="46"
+                                    Command="{Binding CreateNewConnectionCommand}"
+                                    Classes="connectionAction"
+                                    Background="#3B6EF5"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    CornerRadius="12">
+                                <TextBlock Text="+"
+                                           FontSize="24"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Row="1">
+                        <ListBox ItemsSource="{Binding FilteredConnections}"
+                                 SelectedItem="{Binding SelectedSavedConnection}"
+                                 Classes="savedConnections"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Margin="8,10">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="connectionListCard"
+                                            Margin="6,4"
+                                            Padding="12"
+                                            Background="White"
+                                            BorderBrush="#EEF2F8"
+                                            BorderThickness="1"
+                                            CornerRadius="14">
+                                        <Grid ColumnDefinitions="42,*"
+                                              ColumnSpacing="12">
+                                            <Border Width="42"
+                                                    Height="42"
+                                                    CornerRadius="14"
+                                                    Background="{Binding DatabaseTypeBackgroundColor}"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Top">
+                                                <TextBlock Text="{Binding DatabaseTypeIcon}"
+                                                           FontSize="13"
+                                                           FontWeight="Bold"
+                                                           Foreground="#33516E"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1"
+                                                        Spacing="4">
+                                                <TextBlock Text="{Binding Name}"
+                                                           FontSize="17"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#3B4D66"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{Binding Host}"
+                                                           FontSize="12"
+                                                           Foreground="#9AA7B8"
+                                                           TextTrimming="CharacterEllipsis" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Border IsVisible="{Binding HasFilteredConnections, Converter={StaticResource InvertedBoolConverter}}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Padding="24">
+                            <StackPanel Spacing="12"
+                                        HorizontalAlignment="Center">
+                                <Border Width="56"
+                                        Height="56"
+                                        CornerRadius="18"
+                                        Background="#F2F6FD">
+                                    <TextBlock Text="DB"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#A5B3C6"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock Text="暂无连接"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           Foreground="#607089"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="点击右上角 + 新建连接"
+                                           FontSize="12"
+                                           Foreground="#A0ADBE"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Row="2"
+                            Padding="16"
+                            BorderBrush="#EEF3FA"
+                            BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="已保存连接"
+                                       VerticalAlignment="Center"
+                                       FontSize="12"
+                                       Foreground="#A0ADBE" />
+                            <Button Grid.Column="1"
+                                    Width="42"
+                                    Height="36"
+                                    Command="{Binding DeleteConnectionCommand}"
+                                    Classes="connectionAction"
+                                    Background="White"
+                                    BorderBrush="#E7EDF7"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                <TextBlock Text="🗑"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="2">
+                <Border IsVisible="{Binding ShowDatabaseTypeSelector}"
+                        Background="White"
+                        BorderBrush="#E7EDF7"
+                        BorderThickness="1"
+                        CornerRadius="18">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Padding="28,22"
+                                BorderBrush="#EEF3FA"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="选择数据库类型"
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="#51657E" />
+                                    <TextBlock Text="当前仅开放 PostgresSql 和 MySql，可按你的业务类型继续配置连接。"
+                                               FontSize="12"
+                                               Foreground="#A0ADBE" />
+                                </StackPanel>
+
+                                <Border Grid.Column="1"
+                                        Width="56"
+                                        Height="56"
+                                        CornerRadius="18"
+                                        Background="#F0F6FF"
+                                        BorderBrush="#DCE8FF"
+                                        BorderThickness="1">
+                                    <TextBlock Text="DB"
+                                               FontSize="15"
+                                               FontWeight="Bold"
+                                               Foreground="#4B79D8"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" />
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <ScrollViewer Grid.Row="1"
+                                      Padding="24">
+                            <ItemsControl ItemsSource="{Binding DatabaseTypeCards}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Width="176"
+                                                Height="118"
+                                                Margin="0,0,18,18"
+                                                Classes="connectionTypeCard"
+                                                Padding="0"
+                                                Background="Transparent"
+                                                BorderThickness="0"
+                                                IsEnabled="{Binding IsEnabled}"
+                                                Command="{Binding $parent[Window].DataContext.SelectDatabaseTypeCommand}"
+                                                CommandParameter="{Binding Type}">
+                                            <Border Background="White"
+                                                    BorderBrush="{Binding BorderColor}"
+                                                    BorderThickness="1"
+                                                    CornerRadius="16">
+                                                <Grid RowDefinitions="4,*">
+                                                    <Border Height="4"
+                                                            Background="{Binding AccentColor}"
+                                                            CornerRadius="16,16,0,0" />
+
+                                                    <StackPanel Grid.Row="1"
+                                                                Spacing="10"
+                                                                Margin="18,16"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center">
+                                                        <Border Width="44"
+                                                                Height="44"
+                                                                CornerRadius="14"
+                                                                Background="{Binding SoftColor}"
+                                                                BorderBrush="{Binding BorderColor}"
+                                                                BorderThickness="1">
+                                                            <TextBlock Text="{Binding Icon}"
+                                                                       FontSize="16"
+                                                                       FontWeight="Bold"
+                                                                       Foreground="{Binding IconForeground}"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center" />
+                                                        </Border>
+
+                                                        <TextBlock Text="{Binding Name}"
+                                                                   FontSize="15"
+                                                                   FontWeight="SemiBold"
+                                                                   Foreground="#405267"
+                                                                   HorizontalAlignment="Center" />
+
+                                                        <TextBlock Text="{Binding Hint}"
+                                                                   FontSize="11"
+                                                                   Foreground="#A0ADBE"
+                                                                   HorizontalAlignment="Center"
+                                                                   IsVisible="{Binding IsDisabled}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Border IsVisible="{Binding ShowEditor}"
+                        Background="White"
+                        BorderBrush="#E7EDF7"
+                        BorderThickness="1"
+                        CornerRadius="18">
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <Border Grid.Row="0"
+                                Padding="28,20"
+                                BorderBrush="#EEF3FA"
+                                BorderThickness="0,0,0,1">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0"
+                                                     EndPoint="1,0">
+                                    <GradientStop Color="#F8FBFF"
+                                                  Offset="0" />
+                                    <GradientStop Color="{Binding CurrentBrandSoftColor}"
+                                                  Offset="0.75" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="20">
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="{Binding CurrentEditorTitle}"
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="#4F647C" />
+                                    <TextBlock Text="{Binding CurrentEditorDescription}"
+                                               FontSize="12"
+                                               Foreground="#9EABBC"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <Border Grid.Column="1"
+                                        Width="56"
+                                        Height="56"
+                                        CornerRadius="16"
+                                        Background="{Binding CurrentBrandSoftColor}"
+                                        BorderBrush="{Binding CurrentBrandBorderColor}"
+                                        BorderThickness="1">
+                                    <StackPanel Spacing="2"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding CurrentBrandMonogram}"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"
+                                                   Foreground="{Binding CurrentBrandAccentColor}"
+                                                   HorizontalAlignment="Center" />
+                                        <TextBlock Text="{Binding CurrentBrandWordmark}"
+                                                   FontSize="8"
+                                                   Foreground="{Binding CurrentBrandAccentColor}"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <ScrollViewer Padding="28,24">
+                                <StackPanel Spacing="18">
+                                    <Border Background="White"
+                                            BorderBrush="#EEF2F8"
+                                            BorderThickness="1"
+                                            CornerRadius="16"
+                                            Padding="24">
+                                        <StackPanel Spacing="18">
+                                            <Grid ColumnDefinitions="120,*"
+                                                  ColumnSpacing="18">
+                                                <TextBlock Text="连接名称"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#5A6E85"
+                                                           VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="6">
+                                                    <TextBox Text="{Binding ConnectionConfig.Name, Mode=TwoWay}"
+                                                             Watermark="请输入连接名称"
+                                                             Height="42"
+                                                             Classes="modern"
+                                                             Classes.error="{Binding IsNameInvalid}" />
+                                                    <TextBlock Text="{Binding NameValidationMessage}"
+                                                               Classes="validationError"
+                                                               IsVisible="{Binding IsNameInvalid}" />
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <Grid IsVisible="{Binding ShowServerFields}"
+                                                  ColumnDefinitions="120,*"
+                                                  ColumnSpacing="18">
+                                                <TextBlock Text="服务器地址"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#5A6E85"
+                                                           VerticalAlignment="Center" />
+                                                <Grid Grid.Column="1"
+                                                      ColumnDefinitions="*,150"
+                                                      ColumnSpacing="16">
+                                                    <StackPanel Grid.Column="0"
+                                                                Spacing="6">
+                                                        <TextBox Text="{Binding ConnectionConfig.Host, Mode=TwoWay}"
+                                                                 Watermark="请输入服务器地址"
+                                                                 Height="42"
+                                                                 Classes="modern"
+                                                                 Classes.error="{Binding IsHostInvalid}" />
+                                                        <TextBlock Text="{Binding HostValidationMessage}"
+                                                                   Classes="validationError"
+                                                                   IsVisible="{Binding IsHostInvalid}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="1"
+                                                                Spacing="6">
+                                                        <NumericUpDown Value="{Binding ConnectionConfig.Port, Mode=TwoWay}"
+                                                                       Height="42"
+                                                                       Minimum="1"
+                                                                       Maximum="65535"
+                                                                       FormatString="0"
+                                                                       HorizontalContentAlignment="Center"
+                                                                       Classes="modern"
+                                                                       Classes.error="{Binding IsPortInvalid}" />
+                                                        <TextBlock Text="{Binding PortValidationMessage}"
+                                                                   Classes="validationError"
+                                                                   IsVisible="{Binding IsPortInvalid}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid IsVisible="{Binding ShowCredentialFields}"
+                                                  ColumnDefinitions="120,*"
+                                                  ColumnSpacing="18">
+                                                <TextBlock Text="登录凭据"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#5A6E85"
+                                                           VerticalAlignment="Center" />
+                                                <Grid Grid.Column="1"
+                                                      ColumnDefinitions="*,*"
+                                                      ColumnSpacing="16">
+                                                    <StackPanel Grid.Column="0"
+                                                                Spacing="6"
+                                                                IsVisible="{Binding ShowUsernameField}">
+                                                        <TextBox Text="{Binding ConnectionConfig.Username, Mode=TwoWay}"
+                                                                 Watermark="请输入登录名"
+                                                                 Height="42"
+                                                                 Classes="modern"
+                                                                 Classes.error="{Binding IsUsernameInvalid}"
+                                                                 IsEnabled="{Binding !ConnectionConfig.UseWindowsAuthentication}" />
+                                                        <TextBlock Text="{Binding UsernameValidationMessage}"
+                                                                   Classes="validationError"
+                                                                   IsVisible="{Binding IsUsernameInvalid}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="1"
+                                                                Spacing="6">
+                                                        <TextBox Text="{Binding ConnectionConfig.Password, Mode=TwoWay}"
+                                                                 Watermark="请输入密码"
+                                                                 Height="42"
+                                                                 Classes="modern"
+                                                                 Classes.error="{Binding IsPasswordInvalid}"
+                                                                 IsEnabled="{Binding !ConnectionConfig.UseWindowsAuthentication}" />
+                                                        <TextBlock Text="{Binding PasswordValidationMessage}"
+                                                                   Classes="validationError"
+                                                                   IsVisible="{Binding IsPasswordInvalid}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+
+                                            <Grid IsVisible="{Binding ShowDatabaseSelector}"
+                                                  ColumnDefinitions="120,*"
+                                                  ColumnSpacing="18">
+                                                <TextBlock Text="默认数据库"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#5A6E85"
+                                                           VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="6">
+                                                    <Grid ColumnDefinitions="*,92"
+                                                          ColumnSpacing="10">
+                                                        <ComboBox Grid.Column="0"
+                                                                  ItemsSource="{Binding AvailableDatabases}"
+                                                                  SelectedItem="{Binding ConnectionConfig.Database}"
+                                                                  Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
+                                                                  PlaceholderText="请选择默认数据库"
+                                                                  IsEditable="True"
+                                                                  IsEnabled="{Binding IsDatabaseSelectionEnabled}"
+                                                                  Height="42"
+                                                                  Classes="modern"
+                                                                  Classes.error="{Binding IsDatabaseInvalid}" />
+                                                        <Button Grid.Column="1"
+                                                                Command="{Binding RefreshDatabasesCommand}"
+                                                                IsVisible="{Binding ShowRefreshDatabaseButton}"
+                                                                Classes="connectionAction"
+                                                                Background="{Binding CurrentBrandAccentColor}"
+                                                                Foreground="White"
+                                                                BorderThickness="0"
+                                                                CornerRadius="12"
+                                                                Height="42">
+                                                            <TextBlock Text="刷新"
+                                                                       FontSize="13"
+                                                                       FontWeight="SemiBold"
+                                                                       HorizontalAlignment="Center"
+                                                                       VerticalAlignment="Center" />
+                                                        </Button>
+                                                    </Grid>
+
+                                                    <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
+                                                            Background="#F7FAFF"
+                                                            BorderBrush="#E8EEF7"
+                                                            BorderThickness="1"
+                                                            CornerRadius="10"
+                                                            Padding="12,10">
+                                                        <TextBlock Text="{Binding DatabaseSelectionHint}"
+                                                                   FontSize="12"
+                                                                   Foreground="#98A7B9" />
+                                                    </Border>
+
+                                                    <TextBlock Text="{Binding DatabaseValidationMessage}"
+                                                               Classes="validationError"
+                                                               IsVisible="{Binding IsDatabaseInvalid}" />
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <StackPanel IsVisible="{Binding ShowWindowsAuthenticationOption}"
+                                                        Spacing="8">
+                                                <CheckBox IsChecked="{Binding ConnectionConfig.UseWindowsAuthentication, Mode=TwoWay}"
+                                                          Content="使用 Windows 身份验证" />
+                                                <TextBlock Text="启用后将不再要求填写登录名和密码。"
+                                                           FontSize="12"
+                                                           Foreground="#A0ADBE" />
+                                            </StackPanel>
+
+                                            <Grid IsVisible="{Binding ShowDatabaseFilePathInput}"
+                                                  ColumnDefinitions="120,*"
+                                                  ColumnSpacing="18">
+                                                <TextBlock Text="数据库文件"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#5A6E85"
+                                                           VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="6">
+                                                    <Grid ColumnDefinitions="*,96"
+                                                          ColumnSpacing="10">
+                                                        <TextBox Grid.Column="0"
+                                                                 Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
+                                                                 Watermark="{Binding DatabaseFilePathHint}"
+                                                                 Height="42"
+                                                                 Classes="modern"
+                                                                 Classes.error="{Binding IsDatabaseInvalid}" />
+                                                        <Button Grid.Column="1"
+                                                                Click="OnBrowseSqliteFileClick"
+                                                                Classes="connectionAction secondary"
+                                                                Height="42">
+                                                            <TextBlock Text="浏览..."
+                                                                       FontWeight="Medium" />
+                                                        </Button>
+                                                    </Grid>
+                                                    <Border Background="#F7FAFF"
+                                                            BorderBrush="#E8EEF7"
+                                                            BorderThickness="1"
+                                                            CornerRadius="10"
+                                                            Padding="12,10">
+                                                        <TextBlock Text="{Binding SQLiteModeHint}"
+                                                                   FontSize="12"
+                                                                   Foreground="#98A7B9" />
+                                                    </Border>
+                                                    <TextBlock Text="{Binding DatabaseValidationMessage}"
+                                                               Classes="validationError"
+                                                               IsVisible="{Binding IsDatabaseInvalid}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border IsVisible="{Binding HasValidationErrors}"
+                                            Background="#FFF3F1"
+                                            BorderBrush="#FFD8D2"
+                                            BorderThickness="1"
+                                            CornerRadius="14"
+                                            Padding="16">
+                                        <StackPanel Spacing="8">
+                                            <TextBlock Text="请先修正以下问题"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#CE574B" />
+                                            <ItemsControl ItemsSource="{Binding ValidationErrors}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding}"
+                                                                   FontSize="12"
+                                                                   Foreground="#CE574B"
+                                                                   Margin="4,0,0,0" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+
+                        </Grid>
+                        <Border Grid.Row="2"
+                                Padding="24"
+                                BorderBrush="#EEF3FA"
+                                BorderThickness="0,1,0,0">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Button Grid.Column="0"
+                                        Command="{Binding TestConnectionCommand}"
+                                        IsVisible="{Binding ShowTestButton}"
+                                        Classes="connectionAction"
+                                        Background="White"
+                                        BorderBrush="#DCE6F4"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Padding="18,10">
+                                    <TextBlock Text="测试连接"
+                                               FontWeight="Medium"
+                                               Foreground="#5B6D86" />
+                                </Button>
+
+                                <StackPanel Grid.Column="2"
+                                            Orientation="Horizontal"
+                                            Spacing="12">
+                                    <Button Command="{Binding BackToTypeSelectorCommand}"
+                                            IsVisible="{Binding ShowBackButton}"
+                                            Classes="connectionAction"
+                                            Background="White"
+                                            BorderBrush="#DCE6F4"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="18,10">
+                                        <TextBlock Text="上一步"
+                                                   FontWeight="Medium"
+                                                   Foreground="#5B6D86" />
+                                    </Button>
+
+                                    <Button Command="{Binding ConnectCommand}"
+                                            Classes="connectionAction"
+                                            Background="{Binding CurrentBrandAccentColor}"
+                                            BorderThickness="0"
+                                            CornerRadius="12"
+                                            Padding="22,10">
+                                        <TextBlock Text="连接"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="White" />
+                                    </Button>
+
+                                    <Button Command="{Binding SaveCommand}"
+                                            Classes="connectionAction"
+                                            Background="White"
+                                            BorderBrush="#DCE6F4"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="22,10">
+                                        <TextBlock Text="保存"
+                                                   FontWeight="Medium"
+                                                   Foreground="#5B6D86" />
+                                    </Button>
+
+                                    <Button Command="{Binding CancelCommand}"
+                                            Classes="connectionAction"
+                                            Background="White"
+                                            BorderBrush="#DCE6F4"
+                                            BorderThickness="1"
+                                            CornerRadius="12"
+                                            Padding="22,10">
+                                        <TextBlock Text="取消"
+                                                   FontWeight="Medium"
+                                                   Foreground="#5B6D86" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

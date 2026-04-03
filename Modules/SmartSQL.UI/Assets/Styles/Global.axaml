@@ -1,0 +1,31 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Global Styles -->
+    <!-- Based on design-system.yaml global settings -->
+
+    <!-- Window and UserControl Base Styles -->
+    <Style Selector="Window">
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Family.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.App}"/>
+    </Style>
+
+    <Style Selector="UserControl">
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Family.Default}"/>
+    </Style>
+
+    <!-- ScrollBar Global Style -->
+    <Style Selector="ScrollBar">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style Selector="ScrollBar Thumb">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.300}"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.SM}"/>
+    </Style>
+
+    <Style Selector="ScrollBar Thumb:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.400}"/>
+    </Style>
+
+</Styles>

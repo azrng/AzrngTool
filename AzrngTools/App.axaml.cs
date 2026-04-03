@@ -13,6 +13,7 @@ using AzrngTools.ViewModels.Other;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
 using AzrngTools.Views;
+using AzrngTools.Views.Database;
 using AzrngTools.Views.Encode;
 using AzrngTools.Views.Encrypts;
 using AzrngTools.Views.Format;
@@ -22,6 +23,7 @@ using AzrngTools.Views.TextHandle;
 using GTranslate.Translators;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using DbWorkbenchViewModel = SmartSQL.UI.ViewModels.MainWindowViewModel;
 
 namespace AzrngTools;
 
@@ -38,6 +40,7 @@ public partial class App : Application
 
         ViewLocator.Register<MainWindowViewModel, MainWindow>();
         ViewLocator.Register<OverviewPageViewModel, OverviewPageView>();
+        ViewLocator.Register<DbWorkbenchViewModel, DatabaseWorkbenchPageView>();
 
         ViewLocator.Register<HashPageViewModel, HashPageView>();
         ViewLocator.Register<AesEncryptPageViewModel, AesEncryptPageView>();
@@ -133,6 +136,7 @@ public partial class App : Application
         // 注入ViewModels
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<OverviewPageViewModel>();
+        services.AddTransient<DbWorkbenchViewModel>();
 
         services.AddTransient<HashPageViewModel>();
         services.AddTransient<AesEncryptPageViewModel>();

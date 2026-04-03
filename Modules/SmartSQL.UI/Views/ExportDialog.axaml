@@ -1,0 +1,406 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:SmartSQL.UI.ViewModels"
+        xmlns:models="using:SmartSQL.UI.Models"
+        xmlns:dto="using:SmartSQL.UI.Models.DTOs"
+        mc:Ignorable="d"
+        x:Class="SmartSQL.UI.Views.ExportDialog"
+        x:DataType="vm:ExportDialogViewModel"
+        x:Name="ExportDialogWindow"
+        Title="导出文档"
+        Width="1080"
+        Height="700"
+        MinWidth="960"
+        MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/avalonia-logo.ico">
+
+    <Design.DataContext>
+        <vm:ExportDialogViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Border.exportDialogSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
+        </Style>
+
+        <Style Selector="Border.exportSectionCard">
+            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <Style Selector="Border.exportTag">
+            <Setter Property="Background" Value="{DynamicResource Brush.Info.50}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Info.100}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+
+        <Style Selector="TextBlock.exportTagText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportSectionTitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportSectionHint">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TreeView.exportTree">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="TreeView.exportTree TreeViewItem">
+            <Setter Property="Padding" Value="6,3" />
+            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+
+        <Style Selector="TreeView.exportTree TreeViewItem:pointerover">
+            <Setter Property="Background" Value="#F5F9FC" />
+        </Style>
+
+        <Style Selector="TreeView.exportTree TreeViewItem:selected">
+            <Setter Property="Background" Value="#EAF2FF" />
+        </Style>
+
+        <Style Selector="TreeView.exportTree TreeViewItem > Border">
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+
+        <Style Selector="Border.exportDocumentTypeCard">
+            <Setter Property="Background" Value="#F7FBF7" />
+            <Setter Property="BorderBrush" Value="#CFE3D4" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <Style Selector="Button.exportDocumentTypeButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+        </Style>
+
+        <Style Selector="Button.exportDocumentTypeButton /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+
+        <Style Selector="Border.exportDocumentTypeCard.markdown">
+            <Setter Property="Background" Value="#F7F8FD" />
+            <Setter Property="BorderBrush" Value="#D7DCF4" />
+        </Style>
+
+        <Style Selector="Border.exportDocumentTypeCard.selected">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.400}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+    </Window.Styles>
+
+    <Grid Background="{DynamicResource Brush.Background.App}">
+        <Panel IsHitTestVisible="False"
+               ZIndex="9999">
+            <StackPanel x:Name="ToastContainer"
+                        Margin="20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Spacing="8" />
+        </Panel>
+
+        <Border Margin="18"
+                Padding="18"
+                Classes="exportDialogSurface">
+            <Grid RowDefinitions="Auto,*,Auto"
+                  RowSpacing="18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="导出文档"
+                                   Classes="heading" />
+                        <TextBlock Text="选择要导出的表，然后配置文档名称和输出位置。"
+                                   Classes="caption" />
+                    </StackPanel>
+
+                    <Border Grid.Column="1"
+                            Classes="exportTag"
+                            VerticalAlignment="Top">
+                        <TextBlock Text="{Binding ConnectionSummary}"
+                                   Classes="exportTagText" />
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="1"
+                      ColumnDefinitions="1.25*,0.95*"
+                      ColumnSpacing="18">
+                    <Border Grid.Column="0"
+                            Classes="exportSectionCard">
+                        <Grid RowDefinitions="Auto,Auto,*"
+                              RowSpacing="14">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="导出对象"
+                                           Classes="exportSectionTitle" />
+                                <TextBlock Text="左侧对象树与对象浏览器中的表保持一致，在节点前勾选后即可导出。"
+                                           Classes="exportSectionHint" />
+                            </StackPanel>
+
+                            <Border Grid.Row="1"
+                                    Classes="toolbarStatCard">
+                                <Grid ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="10">
+                                    <Border Classes="metricIconBadge">
+                                        <TextBlock Text="DB"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource Brush.Status.Info.Text}"
+                                                   FontWeight="SemiBold" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="2">
+                                        <TextBlock Text="{Binding ConnectionName}"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource Brush.Text.Primary}" />
+                                        <TextBlock Text="{Binding DatabaseLabel}"
+                                                   Classes="caption" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Row="2"
+                                    Classes="browserTreeSurface"
+                                    Margin="0">
+                                <Grid>
+                                    <ScrollViewer IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                                        <StackPanel Margin="6"
+                                                    Spacing="10">
+                                            <Border Classes="exportSectionCard"
+                                                    IsVisible="{Binding HasLoadError}">
+                                                <StackPanel Spacing="10">
+                                                    <TextBlock Text="对象加载失败"
+                                                               Classes="exportSectionTitle" />
+                                                    <TextBlock Text="{Binding LoadErrorMessage}"
+                                                               Classes="exportSectionHint" />
+                                                    <Button Command="{Binding RetryLoadCommand}"
+                                                            Classes="modern"
+                                                            HorizontalAlignment="Left">
+                                                        <TextBlock Text="重新加载" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <Border Classes="exportSectionCard"
+                                                    IsVisible="{Binding HasObjects, Converter={StaticResource InvertedBoolConverter}}">
+                                                <StackPanel Spacing="8">
+                                                    <TextBlock Text="暂无可导出的对象"
+                                                               Classes="exportSectionTitle" />
+                                                    <TextBlock Text="当前连接下没有加载到可导出的表。"
+                                                               Classes="exportSectionHint" />
+                                                </StackPanel>
+                                            </Border>
+
+                                            <TreeView Classes="exportTree"
+                                                      ItemsSource="{Binding ExportRootChildren}"
+                                                      IsVisible="{Binding HasObjects}">
+                                                <TreeView.DataTemplates>
+                                                    <TreeDataTemplate DataType="models:TreeNodeItem"
+                                                                      ItemsSource="{Binding Children}">
+                                                        <Grid ColumnDefinitions="Auto,Auto,8,*"
+                                                              Margin="0,3">
+                                                            <CheckBox Grid.Column="0"
+                                                                      IsVisible="{Binding ShowExportCheckBox}"
+                                                                      IsThreeState="True"
+                                                                      IsChecked="{Binding IsExportChecked, Mode=TwoWay}"
+                                                                      VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding IconGlyph}"
+                                                                       FontSize="15"
+                                                                       VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Column="3"
+                                                                       Text="{Binding DisplayName}"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="14"
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{DynamicResource Brush.Text.Primary}"
+                                                                       TextWrapping="Wrap" />
+                                                        </Grid>
+                                                    </TreeDataTemplate>
+                                                </TreeView.DataTemplates>
+                                            </TreeView>
+                                        </StackPanel>
+                                    </ScrollViewer>
+
+                                    <StackPanel IsVisible="{Binding IsLoading}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Spacing="12">
+                                        <ProgressBar Width="220"
+                                                     IsIndeterminate="True" />
+                                        <TextBlock Text="{Binding LoadingText}"
+                                                   Classes="caption"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Classes="exportSectionCard">
+                        <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                              RowSpacing="14">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="导出参数"
+                                           Classes="exportSectionTitle" />
+                                <TextBlock Text="{Binding DocumentTypeHint}"
+                                           Classes="exportSectionHint" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1"
+                                        Spacing="8">
+                                <TextBlock Text="文档名称"
+                                           Classes="label" />
+                                <TextBox Text="{Binding DocumentName}"
+                                         Watermark="请输入文档名称"
+                                         Classes="modern" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2"
+                                        Spacing="8">
+                                <TextBlock Text="输出路径"
+                                           Classes="label" />
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="10">
+                                    <TextBox Text="{Binding OutputDirectory}"
+                                             IsReadOnly="True"
+                                             Classes="modern" />
+                                    <Button Grid.Column="1"
+                                            Click="OnBrowseOutputDirectoryClick"
+                                            Classes="secondary">
+                                        <TextBlock Text="浏览..."
+                                                   FontWeight="Medium" />
+                                    </Button>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3"
+                                        Spacing="8">
+                                <TextBlock Text="文档类型"
+                                           Classes="label" />
+                                <StackPanel Spacing="10">
+                                    <Button Command="{Binding SelectDocumentTypeCommand}"
+                                            CommandParameter="{x:Static dto:ExportDocumentType.Excel}"
+                                            Classes="exportDocumentTypeButton">
+                                        <Border Classes="exportDocumentTypeCard"
+                                                Classes.selected="{Binding IsExcelSelected}">
+                                            <Grid ColumnDefinitions="Auto,*"
+                                                  ColumnSpacing="12">
+                                                <Border Classes="excelIconBadge"
+                                                        VerticalAlignment="Top">
+                                                    <TextBlock Text="X"
+                                                               Classes="excelIconGlyph" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="4">
+                                                    <TextBlock Text="Excel"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#245A31" />
+                                                    <TextBlock Text="按勾选对象生成结构化 Excel 文档，适合整理和交付。"
+                                                               Foreground="#4A6A53"
+                                                               FontSize="{DynamicResource Font.Size.BodySmall}"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Button>
+
+                                    <Button Command="{Binding SelectDocumentTypeCommand}"
+                                            CommandParameter="{x:Static dto:ExportDocumentType.Markdown}"
+                                            Classes="exportDocumentTypeButton">
+                                        <Border Classes="exportDocumentTypeCard markdown"
+                                                Classes.selected="{Binding IsMarkdownSelected}">
+                                            <Grid ColumnDefinitions="Auto,*"
+                                                  ColumnSpacing="12">
+                                                <Border Width="36"
+                                                        Height="36"
+                                                        CornerRadius="12"
+                                                        Background="#EDF0FF"
+                                                        BorderBrush="#D7DCF4"
+                                                        BorderThickness="1"
+                                                        VerticalAlignment="Top">
+                                                    <TextBlock Text="MD"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"
+                                                               FontWeight="Bold"
+                                                               Foreground="#4654A3" />
+                                                </Border>
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="4">
+                                                    <TextBlock Text="Markdown"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#3E4A8A" />
+                                                    <TextBlock Text="输出轻量结构文档，便于阅读、提交仓库和二次编辑。"
+                                                               Foreground="#5F6895"
+                                                               FontSize="{DynamicResource Font.Size.BodySmall}"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="2"
+                        BorderBrush="{DynamicResource Brush.Border.Default}"
+                        BorderThickness="0,1,0,0"
+                        Padding="0,16,0,0">
+                    <Grid ColumnDefinitions="*,Auto,Auto"
+                          ColumnSpacing="12">
+                        <TextBlock Text="{Binding SelectionSummary}"
+                                   Classes="caption"
+                                   VerticalAlignment="Center" />
+
+                        <Button Grid.Column="1"
+                                Command="{Binding CancelCommand}"
+                                Classes="secondary"
+                                Padding="20,10">
+                            <TextBlock Text="取消"
+                                       FontWeight="Medium" />
+                        </Button>
+
+                        <Button Grid.Column="2"
+                                Command="{Binding ExportCommand}"
+                                Classes="modern"
+                                Padding="24,10">
+                            <TextBlock Text="导出"
+                                       FontWeight="SemiBold" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

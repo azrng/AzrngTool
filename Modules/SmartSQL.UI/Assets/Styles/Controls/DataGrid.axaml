@@ -1,0 +1,46 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- DataGrid Styles -->
+    <!-- Based on design-system.yaml table rules -->
+
+    <Style Selector="DataGrid.modern">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+        <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="RowBackground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="HeadersVisibility" Value="Column"/>
+        <Setter Property="AutoGenerateColumns" Value="False"/>
+    </Style>
+
+    <Style Selector="DataGrid.modern > DataGridColumnHeader">
+        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.50}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+
+    <Style Selector="DataGrid.modern DataGridCell">
+        <Setter Property="Padding" Value="{DynamicResource Space.MD}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <Style Selector="DataGrid.modern DataGridRow:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Info.50}"/>
+    </Style>
+
+    <Style Selector="DataGrid.modern DataGridRow:selected">
+        <Setter Property="Background" Value="{DynamicResource Brush.Background.Selected}"/>
+    </Style>
+
+    <Style Selector="DataGrid.modern DataGridRow.alternating">
+        <Setter Property="Background" Value="{DynamicResource RowAlternate}"/>
+    </Style>
+
+</Styles>

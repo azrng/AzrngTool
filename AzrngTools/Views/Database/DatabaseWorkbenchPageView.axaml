@@ -1,0 +1,454 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SmartSQL.UI.ViewModels;assembly=SmartSQL.UI"
+             xmlns:controls="clr-namespace:SmartSQL.UI.Controls;assembly=SmartSQL.UI"
+             xmlns:view="clr-namespace:SmartSQL.UI.Views;assembly=SmartSQL.UI"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="AzrngTools.Views.Database.DatabaseWorkbenchPageView"
+             x:DataType="vm:MainWindowViewModel"
+             x:Name="WorkbenchPage"
+             d:DesignWidth="1400"
+             d:DesignHeight="900">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
+        <Grid Background="{DynamicResource ThemeBackground}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+                <Border
+                    Grid.Row="0"
+                    Background="White"
+                    BorderBrush="{DynamicResource BorderLight}"
+                    BorderThickness="0,0,0,1"
+                    Padding="20,12">
+                <Border Classes="toolbarCommandBar">
+                    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*"
+                          ColumnSpacing="12">
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Horizontal"
+                                    Spacing="12"
+                                    Margin="0,0,8,0">
+                            <Border Width="40"
+                                    Height="40"
+                                    CornerRadius="10"
+                                    Background="{DynamicResource PrimaryColor}">
+                                <TextBlock Text="DB"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel VerticalAlignment="Center"
+                                        Spacing="2">
+                                <TextBlock Text="SmartSQL"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource TextPrimary}" />
+                                <TextBlock Text="数据库浏览与文档生成"
+                                           FontSize="11"
+                                           Foreground="{DynamicResource TextSecondary}" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <ComboBox Grid.Column="1"
+                                  Width="240"
+                                  ItemsSource="{Binding Connections}"
+                                  SelectedItem="{Binding SelectedConnection}"
+                                  PlaceholderText="选择连接"
+                                  Classes="modern"
+                                  MinHeight="36">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayName}"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource TextPrimary}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <Button Grid.Column="2"
+                                Command="{Binding ShowAddConnectionDialogCommand}"
+                                Classes="toolbarAction"
+                                ToolTip.Tip="连接管理">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="?"
+                                           FontSize="12" />
+                                <TextBlock Text="连接管理"
+                                           FontWeight="Medium" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="3"
+                                Command="{Binding OpenExportDialogCommand}"
+                                Classes="excelExportButton"
+                                ToolTip.Tip="导出">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="0"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="导出"
+                                           FontWeight="Medium"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <Border Grid.Column="4"
+                                Classes="statusPill"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="6">
+                                <TextBlock Text="●"
+                                           Classes="statusPillText" />
+                                <TextBlock Text="{Binding CompactConnectionLabel}"
+                                           Classes="statusPillText"
+                                           MaxWidth="140"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Border>
+
+            <Grid Grid.Row="1"
+                  Margin="20"
+                  ClipToBounds="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="320" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Classes="browserPanel">
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <Border Grid.Row="0"
+                                Classes="browserCompactSection">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      ColumnSpacing="12">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="对象浏览器"
+                                                   Classes="subheading" />
+                                        <TextBlock Text="保留更多树区空间，便于浏览大量表对象。"
+                                                   Classes="caption"
+                                                   TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <Border Grid.Column="1"
+                                            Classes="statusPill"
+                                            VerticalAlignment="Top">
+                                        <TextBlock Text="实时浏览"
+                                                   Classes="statusPillText" />
+                                    </Border>
+                                </Grid>
+
+                                <Grid RowDefinitions="Auto,Auto"
+                                      RowSpacing="12">
+                                    <ComboBox ItemsSource="{Binding AvailableDatabases}"
+                                              SelectedItem="{Binding SelectedDatabaseName}"
+                                              PlaceholderText="请选择数据库"
+                                              IsEnabled="{Binding SelectedConnection, Converter={StaticResource NullToBoolConverter}}"
+                                              Classes="modern"
+                                              HorizontalAlignment="Stretch"
+                                              MinHeight="36" />
+                                    <TextBox Grid.Row="1"
+                                             Text="{Binding #DatabaseTree.SearchText, Mode=TwoWay}"
+                                             Watermark="搜索表、视图、存储过程..."
+                                             HorizontalAlignment="Stretch"
+                                             Classes="modern" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Row="1"
+                                Classes="browserTreeSurface">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <controls:DatabaseTree x:Name="DatabaseTree"
+                                                       Margin="6"
+                                                       RootNode="{Binding BrowserViewModel.FirstRootNode}"
+                                                       IsLoading="{Binding BrowserViewModel.IsLoading}"
+                                                       LoadingText="{Binding BrowserViewModel.LoadingText}" />
+                            </ScrollViewer>
+                        </Border>
+
+                        <Border Grid.Row="2"
+                                Padding="12"
+                                BorderBrush="{DynamicResource BorderLight}"
+                                BorderThickness="0,1,0,0">
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="10">
+                                <Button Grid.Column="0"
+                                        Classes="sidebarAction"
+                                        Command="{Binding RefreshBrowserCommand}"
+                                        HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="6">
+                                        <TextBlock Text="?"
+                                                   FontSize="12" />
+                                        <TextBlock Text="刷新"
+                                                   FontWeight="Medium" />
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Grid.Column="1"
+                                        Classes="sidebarAction"
+                                        Click="OnClearBrowserSearchClick"
+                                        HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal"
+                                                Spacing="6">
+                                        <TextBlock Text="?"
+                                                   FontSize="12" />
+                                        <TextBlock Text="清空"
+                                                   FontWeight="Medium" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="2"
+                      Margin="0,0,4,0"
+                      MinWidth="0"
+                      MinHeight="0"
+                      ClipToBounds="True">
+                    <Border Classes="workspaceSurface"
+                            Margin="0"
+                            MinWidth="0"
+                            MinHeight="0"
+                            ClipToBounds="True"
+                            IsVisible="{Binding ShowOverviewPage}">
+                        <ScrollViewer Padding="20,20,30,20"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="18">
+                                <Border Classes="overviewHeroCard">
+                                    <Grid ColumnDefinitions="*,170"
+                                          ColumnSpacing="18">
+                                        <StackPanel Spacing="12">
+                                            <Border Classes="overviewHeroPill"
+                                                    HorizontalAlignment="Left">
+                                                <TextBlock Text="DATABASE WORKSPACE"
+                                                           Classes="overviewHeroPillText" />
+                                            </Border>
+
+                                            <TextBlock Text="把连接、浏览、导出整合到一个工作台里"
+                                                       FontSize="24"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="{DynamicResource Brush.Neutral.0}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Text="选择左侧对象后即可在右侧继续查看架构、表、视图和存储过程详情；未选择对象时，这里会展示当前连接概览与快捷操作。"
+                                                       Foreground="{DynamicResource Brush.Neutral.0}"
+                                                       Opacity="0.88"
+                                                       TextWrapping="Wrap"
+                                                       MaxWidth="500" />
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="12">
+                                                <Button Classes="overviewAction"
+                                                        Command="{Binding ShowAddConnectionDialogCommand}">
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="8">
+                                                        <TextBlock Text="?" />
+                                                        <TextBlock Text="打开连接管理" />
+                                                    </StackPanel>
+                                                </Button>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="1"
+                                                Classes="overviewIconTile"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                            <StackPanel HorizontalAlignment="Center"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="8">
+                                                <TextBlock Text="DB"
+                                                           FontSize="34"
+                                                           FontWeight="Bold"
+                                                           Foreground="{DynamicResource Brush.Neutral.0}"
+                                                           HorizontalAlignment="Center" />
+                                                <TextBlock Text="{Binding SelectedConnection.Name, FallbackValue=未连接}"
+                                                           Foreground="{DynamicResource Brush.Neutral.0}"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Center"
+                                                           TextWrapping="Wrap"
+                                                           TextAlignment="Center"
+                                                           MaxWidth="120" />
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <Grid ColumnDefinitions="*,*,*"
+                                      MinWidth="0"
+                                      ColumnSpacing="14">
+                                    <Border Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            MinWidth="0"
+                                            HorizontalAlignment="Stretch"
+                                            Classes="overviewQuickCard">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="对象浏览建议"
+                                                       Classes="subheading" />
+                                            <TextBlock Text="先在左侧选择数据库，再展开表、视图或存储过程节点；树上的搜索会帮助你快速定位目标对象。"
+                                                       Classes="caption"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2"
+                                            MinWidth="0"
+                                            HorizontalAlignment="Stretch"
+                                            Classes="overviewQuickCard">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="文档输出"
+                                                       Classes="subheading" />
+                                            <TextBlock Text="当前工作台支持从头部直接导出文档；进入对象详情后，还可以继续查看字段、索引和 DDL。"
+                                                       Classes="caption"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Border Classes="workspaceSurface"
+                            Margin="0"
+                            MinWidth="0"
+                            MinHeight="0"
+                            ClipToBounds="True"
+                            IsVisible="{Binding ShowSchemaWorkspace}">
+                        <ScrollViewer Classes="schemaWorkspaceScroll">
+                            <StackPanel Spacing="14">
+                                <Grid ColumnDefinitions="*,Auto"
+                                      RowDefinitions="Auto,Auto"
+                                      RowSpacing="4">
+                                    <TextBlock Text="{Binding CurrentSchema.Name, FallbackValue=架构}"
+                                               Classes="schemaWorkspaceTitle" />
+                                    <TextBlock Grid.Row="1"
+                                               Text="{Binding CurrentConnectionLabel}"
+                                               Classes="schemaWorkspaceSubtitle" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*,*"
+                                      ColumnSpacing="12">
+                                    <Border Grid.Column="0"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="所有者"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding CurrentSchema.Owner, FallbackValue=-}"
+                                                       Classes="schemaMetricValue" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="1"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="默认架构"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding CurrentSchema.IsDefault, StringFormat={}{0}}"
+                                                       Classes="schemaMetricValue" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="架构名称"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding CurrentSchema.Name, FallbackValue=-}"
+                                                       Classes="schemaMetricValue" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,*,*"
+                                      ColumnSpacing="12">
+                                    <Border Grid.Column="0"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="数据表"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding TableDetailViewModel.Tables.Count}"
+                                                       Classes="schemaMetricValue prominent" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="1"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="视图"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding ViewDetailViewModel.Views.Count}"
+                                                       Classes="schemaMetricValue prominent" />
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2"
+                                            Classes="schemaMetricCard">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="存储过程"
+                                                       Classes="schemaMetricLabel" />
+                                            <TextBlock Text="{Binding StoredProcedureDetailViewModel.Procedures.Count}"
+                                                       Classes="schemaMetricValue prominent" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+
+                    <Border Classes="workspaceSurface"
+                            Margin="0"
+                            MinWidth="0"
+                            MinHeight="0"
+                            ClipToBounds="True"
+                            IsVisible="{Binding ShowTableWorkspace}">
+                        <view:TableDetailView DataContext="{Binding TableDetailViewModel}" />
+                    </Border>
+
+                    <Border Classes="workspaceSurface"
+                            Margin="0"
+                            MinWidth="0"
+                            MinHeight="0"
+                            ClipToBounds="True"
+                            IsVisible="{Binding ShowViewWorkspace}">
+                        <view:ViewDetailView DataContext="{Binding ViewDetailViewModel}" />
+                    </Border>
+
+                    <Border Classes="workspaceSurface"
+                            Margin="0"
+                            MinWidth="0"
+                            MinHeight="0"
+                            ClipToBounds="True"
+                            IsVisible="{Binding ShowProcedureWorkspace}">
+                        <view:StoredProcedureDetailView DataContext="{Binding StoredProcedureDetailViewModel}" />
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <StackPanel x:Name="ToastContainer"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="20"
+                    Spacing="8" />
+    </Panel>
+</UserControl>
+
+
+
+
+

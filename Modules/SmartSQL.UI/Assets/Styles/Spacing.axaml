@@ -1,0 +1,41 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+    <!-- Design Tokens - Spacing -->
+    <!-- Based on design-system.yaml spacing settings -->
+
+    <!-- Base Unit: 4px -->
+    <sys:Double x:Key="Space.BaseUnit">4</sys:Double>
+
+    <!-- Spacing Scale -->
+    <Thickness x:Key="Space.XS">4</Thickness>
+    <Thickness x:Key="Space.SM">8</Thickness>
+    <Thickness x:Key="Space.MD">12</Thickness>
+    <Thickness x:Key="Space.LG">16</Thickness>
+    <Thickness x:Key="Space.XL">20</Thickness>
+    <Thickness x:Key="Space.2XL">24</Thickness>
+    <Thickness x:Key="Space.3XL">32</Thickness>
+    <Thickness x:Key="Space.4XL">40</Thickness>
+    <Thickness x:Key="Space.5XL">48</Thickness>
+
+    <!-- Padding Values -->
+    <Thickness x:Key="Space.Padding.Compact">8,8,8,8</Thickness>
+    <Thickness x:Key="Space.Padding.Regular">16,16,16,16</Thickness>
+    <Thickness x:Key="Space.Padding.Spacious">24,24,24,24</Thickness>
+
+    <!-- Margin Values -->
+    <Thickness x:Key="Space.Margin.Compact">8,8,8,8</Thickness>
+    <Thickness x:Key="Space.Margin.Regular">16,16,16,16</Thickness>
+    <Thickness x:Key="Space.Margin.Spacious">24,24,24,24</Thickness>
+
+    <!-- Corner Radius -->
+    <CornerRadius x:Key="Radius.XS">2</CornerRadius>
+    <CornerRadius x:Key="Radius.SM">4</CornerRadius>
+    <CornerRadius x:Key="Radius.MD">6</CornerRadius>
+    <CornerRadius x:Key="Radius.LG">8</CornerRadius>
+    <CornerRadius x:Key="Radius.XL">12</CornerRadius>
+    <CornerRadius x:Key="Radius.2XL">16</CornerRadius>
+    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
+
+</ResourceDictionary>

@@ -65,5 +65,9 @@
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Modules\SmartSQL.UI\SmartSQL.UI.csproj" />
+    </ItemGroup>
+
 </Project>
 

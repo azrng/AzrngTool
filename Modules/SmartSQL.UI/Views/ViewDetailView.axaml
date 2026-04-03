@@ -1,0 +1,220 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SmartSQL.UI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1100"
+             d:DesignHeight="720"
+             x:Class="SmartSQL.UI.Views.ViewDetailView">
+
+    <Design.DataContext>
+        <vm:ViewDetailViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <Border Grid.Row="0"
+                Padding="12"
+                BorderBrush="{DynamicResource BorderLight}"
+                BorderThickness="0,0,0,1"
+                IsVisible="{Binding IsLoading}">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10">
+                <ProgressBar Width="24"
+                             Height="18"
+                             IsIndeterminate="True" />
+                <TextBlock Text="{Binding LoadingText}"
+                           VerticalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1"
+                Padding="40"
+                IsVisible="{Binding ShowEmptyState}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+                <TextBlock Text="暂无视图"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="请先在左侧对象树中选择一个架构，以加载该架构下的视图工作区。"
+                           Foreground="{DynamicResource TextSecondary}"
+                           HorizontalAlignment="Center"
+                           MaxWidth="420"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="320,16,*"
+              IsVisible="{Binding ShowSplitWorkspace}">
+            <Border Grid.Column="0"
+                    Classes="card"
+                    Padding="0">
+                <DataGrid ItemsSource="{Binding Views}"
+                          SelectedItem="{Binding SelectedView}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserResizeColumns="True"
+                          CanUserSortColumns="True"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="名称"
+                                            Binding="{Binding Name}"
+                                            Width="180" />
+                        <DataGridTextColumn Header="备注"
+                                            Binding="{Binding Comment}"
+                                            Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Classes="card"
+                    Padding="0">
+                <Grid>
+                    <Border Padding="0"
+                            IsVisible="{Binding HasSelectedView, Converter={StaticResource InvertedBoolConverter}}">
+                        <Grid>
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        MaxWidth="460"
+                                        Spacing="12">
+                                <TextBlock Text="请选择视图"
+                                           FontSize="24"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="请在左侧选择一个视图，右侧仅展示该视图的 DDL 定义。"
+                                           Foreground="{DynamicResource TextSecondary}"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Grid RowDefinitions="Auto,*"
+                          IsVisible="{Binding HasSelectedView}">
+                        <Border Grid.Row="0"
+                                Padding="20"
+                                BorderBrush="{DynamicResource BorderLight}"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto"
+                                  RowDefinitions="Auto,Auto"
+                                  RowSpacing="6">
+                                <TextBlock Text="{Binding SelectedView.Name}"
+                                           FontSize="26"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Grid.Row="1"
+                                           Text="{Binding SelectedView.Schema, StringFormat=架构: {0}}"
+                                           Foreground="{DynamicResource TextSecondary}" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding RefreshCommand}"
+                                        Classes="modern"
+                                        Padding="16,10"
+                                        VerticalAlignment="Top">
+                                    <TextBlock Text="重新加载" />
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1"
+                              RowDefinitions="Auto,*">
+                            <Border Grid.Row="0"
+                                    Padding="12,8,12,0"
+                                    BorderBrush="{DynamicResource BorderLight}"
+                                    BorderThickness="0,0,0,1">
+                                <TextBlock Text="DDL 定义"
+                                           FontSize="{DynamicResource Font.Size.TitleSmall}"
+                                           FontWeight="SemiBold" />
+                            </Border>
+
+                            <TextBox Grid.Row="1"
+                                     Text="{Binding ViewDefinitionDisplay}"
+                                     IsReadOnly="True"
+                                     AcceptsReturn="True"
+                                     TextWrapping="NoWrap"
+                                     FontFamily="Consolas"
+                                     Padding="16" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="1"
+                Padding="0"
+                IsVisible="{Binding ShowDetailOnly}">
+            <Grid>
+                <Border Padding="0"
+                        IsVisible="{Binding HasSelectedView, Converter={StaticResource InvertedBoolConverter}}">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    MaxWidth="460"
+                                    Spacing="12">
+                            <TextBlock Text="请选择视图"
+                                       FontSize="24"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="请在左侧选择一个视图，右侧仅展示该视图的 DDL 定义。"
+                                       Foreground="{DynamicResource TextSecondary}"
+                                       HorizontalAlignment="Center"
+                                       TextAlignment="Center"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Grid RowDefinitions="Auto,*"
+                      IsVisible="{Binding HasSelectedView}">
+                    <Border Grid.Row="0"
+                            Padding="20"
+                            BorderBrush="{DynamicResource BorderLight}"
+                            BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="*,Auto"
+                              RowDefinitions="Auto,Auto"
+                              RowSpacing="6">
+                            <TextBlock Text="{Binding SelectedView.Name}"
+                                       FontSize="26"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Grid.Row="1"
+                                       Text="{Binding SelectedView.Schema, StringFormat=架构: {0}}"
+                                       Foreground="{DynamicResource TextSecondary}" />
+                            <Button Grid.Column="1"
+                                    Command="{Binding RefreshCommand}"
+                                    Classes="modern"
+                                    Padding="16,10"
+                                    VerticalAlignment="Top">
+                                <TextBlock Text="重新加载" />
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Row="1"
+                          RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Padding="12,8,12,0"
+                                BorderBrush="{DynamicResource BorderLight}"
+                                BorderThickness="0,0,0,1">
+                            <TextBlock Text="DDL 定义"
+                                       FontSize="{DynamicResource Font.Size.TitleSmall}"
+                                       FontWeight="SemiBold" />
+                        </Border>
+
+                        <TextBox Grid.Row="1"
+                                 Text="{Binding ViewDefinitionDisplay}"
+                                 IsReadOnly="True"
+                                 AcceptsReturn="True"
+                                 TextWrapping="NoWrap"
+                                 FontFamily="Consolas"
+                                 Padding="16" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

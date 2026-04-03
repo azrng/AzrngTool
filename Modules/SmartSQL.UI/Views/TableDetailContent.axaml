@@ -1,0 +1,413 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:SmartSQL.UI.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="600"
+             x:Class="SmartSQL.UI.Views.TableDetailContent"
+             x:Name="RootContent">
+
+    <Design.DataContext>
+        <vm:TableDetailViewModel />
+    </Design.DataContext>
+
+    <Grid>
+        <Border Padding="40"
+                IsVisible="{Binding HasSelectedTable, Converter={StaticResource InvertedBoolConverter}}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="12">
+                <TextBlock Text="请选择数据表"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="请在左侧选择一个数据表，查看字段、索引以及生成的 DDL。"
+                           Foreground="{DynamicResource TextSecondary}"
+                           HorizontalAlignment="Center"
+                           MaxWidth="460"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+
+        <Grid RowDefinitions="Auto,*"
+              IsVisible="{Binding HasSelectedTable}">
+            <Border Grid.Row="0"
+                    Classes="toolbarStrip">
+                <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+                      ColumnSpacing="12">
+                    <TextBlock Text="{Binding SelectedTable.Name}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1"
+                               Classes="caption"
+                               Text="{Binding SelectedTable.Schema, StringFormat=架构: {0}}"
+                               VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2"
+                               Classes="caption"
+                               Text="{Binding TableCommentDisplayText, StringFormat=备注: {0}}"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="3"
+                            Click="OnEditTableCommentClick"
+                            Classes="toolbarAction"
+                            IsVisible="{Binding CanEditComments}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="编辑备注" />
+                    </Button>
+                    <Button Grid.Column="5"
+                            Command="{Binding RefreshCommand}"
+                            Classes="toolbarAction"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="重新加载" />
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1"
+                  RowDefinitions="Auto,*">
+                <Border Grid.Row="0"
+                        Padding="12,8,12,0"
+                        BorderBrush="{DynamicResource BorderLight}"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="4">
+                        <Button x:Name="TabColumnsButton"
+                                Command="{Binding SelectTabCommand}"
+                                CommandParameter="columns"
+                                Classes="tabButton">
+                            <TextBlock Text="字段" />
+                        </Button>
+                        <Button x:Name="TabIndexesButton"
+                                Command="{Binding SelectTabCommand}"
+                                CommandParameter="indexes"
+                                Classes="tabButton">
+                            <TextBlock Text="索引" />
+                        </Button>
+                        <Button x:Name="TabDdlButton"
+                                Command="{Binding SelectTabCommand}"
+                                CommandParameter="ddl"
+                                Classes="tabButton">
+                            <TextBlock Text="DDL" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <Grid Grid.Row="1">
+                    <Grid IsVisible="{Binding ShowColumnsTab}"
+                          RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Padding="12,6"
+                                IsVisible="{Binding ShowColumnsInfoBanner}"
+                                Background="{DynamicResource Brush.Info.50}"
+                                BorderBrush="{DynamicResource Brush.Info.100}"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="当前字段信息为按元数据生成的只读文本视图。"
+                                           Classes="caption"
+                                           VerticalAlignment="Center" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding DismissColumnsBannerCommand}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="6,2"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="×"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1"
+                              Margin="12,10,12,12">
+                            <Border Classes="detailGridShell"
+                                    IsVisible="{Binding HasColumns}">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Disabled">
+                                    <Grid RowDefinitions="Auto,*">
+                                        <Border Grid.Row="0"
+                                                Classes="detailGridHeader">
+                                            <Grid ColumnDefinitions="44,150,190,160,72,64,64,74,120,92"
+                                                  ColumnSpacing="12">
+                                                <TextBlock Grid.Column="0" Text="#" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="1" Text="列名" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="2" Text="数据类型" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="3" Text="备注说明" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="4" Text="长度" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="5" Text="主键" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="6" Text="自增" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="7" Text="允许空" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="8" Text="默认值" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="9" Text="操作" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                            </Grid>
+                                        </Border>
+
+                                        <ScrollViewer Grid.Row="1"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      HorizontalScrollBarVisibility="Disabled">
+                                            <ItemsControl ItemsSource="{Binding Columns}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Classes="detailGridRow">
+                                                            <Grid ColumnDefinitions="44,150,190,160,72,64,64,74,120,92"
+                                                                  ColumnSpacing="12">
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding OrdinalPosition}"
+                                                                           Classes="detailGridCell secondary center" />
+                                                                <TextBlock Grid.Column="1"
+                                                                           Text="{Binding Name}"
+                                                                           Classes="detailGridCell primary"
+                                                                           TextWrapping="NoWrap"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           ToolTip.Tip="{Binding Name}" />
+                                                                <TextBlock Grid.Column="2"
+                                                                           Text="{Binding DataType}"
+                                                                           Classes="detailGridCell mono"
+                                                                           TextWrapping="NoWrap"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="3"
+                                                                           Text="{Binding Comment, TargetNullValue=-}"
+                                                                           Classes="detailGridCell secondary"
+                                                                           TextWrapping="NoWrap"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           ToolTip.Tip="{Binding Comment, TargetNullValue=-}" />
+                                                                <TextBlock Grid.Column="4"
+                                                                           Text="{Binding Length}"
+                                                                           Classes="detailGridCell center" />
+
+                                                                <Grid Grid.Column="5">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsPrimaryKey}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsPrimaryKey, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <Grid Grid.Column="6">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsIdentity}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsIdentity, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <Grid Grid.Column="7">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsNullable}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsNullable, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <TextBlock Grid.Column="8"
+                                                                           Text="{Binding DefaultValue, TargetNullValue=-}"
+                                                                           Classes="detailGridCell mono secondary"
+                                                                           TextWrapping="NoWrap"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           ToolTip.Tip="{Binding DefaultValue, TargetNullValue=-}" />
+                                                                <Button Grid.Column="9"
+                                                                        Click="OnEditColumnCommentClick"
+                                                                        Tag="{Binding}"
+                                                                        Classes="inlineAction"
+                                                                        HorizontalAlignment="Center"
+                                                                        VerticalAlignment="Center">
+                                                                    <TextBlock Text="编辑" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+
+                            <TextBlock Text="暂无字段数据"
+                                       Classes="caption"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding ShowColumnsEmptyState}" />
+                        </Grid>
+                    </Grid>
+
+                    <Grid IsVisible="{Binding ShowIndexesTab}"
+                          RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Padding="12,6"
+                                IsVisible="{Binding ShowIndexesInfoBanner}"
+                                Background="{DynamicResource Brush.Info.50}"
+                                BorderBrush="{DynamicResource Brush.Info.100}"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="当前索引信息为按元数据生成的只读文本视图。"
+                                           Classes="caption"
+                                           VerticalAlignment="Center" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding DismissIndexesBannerCommand}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="6,2"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="×"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <Grid Grid.Row="1"
+                              Margin="12,10,12,12">
+                            <Border Classes="detailGridShell"
+                                    IsVisible="{Binding HasIndexes}">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                              VerticalScrollBarVisibility="Disabled">
+                                    <Grid RowDefinitions="Auto,*">
+                                        <Border Grid.Row="0"
+                                                Classes="detailGridHeader">
+                                            <Grid ColumnDefinitions="220,160,70,70,70,320"
+                                                  ColumnSpacing="12">
+                                                <TextBlock Grid.Column="0" Text="索引名" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="1" Text="类型" Classes="detailGridHeaderText" />
+                                                <TextBlock Grid.Column="2" Text="唯一" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="3" Text="主键" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="4" Text="升序" Classes="detailGridHeaderText" HorizontalAlignment="Center" />
+                                                <TextBlock Grid.Column="5" Text="字段" Classes="detailGridHeaderText" />
+                                            </Grid>
+                                        </Border>
+
+                                        <ScrollViewer Grid.Row="1"
+                                                      VerticalScrollBarVisibility="Auto"
+                                                      HorizontalScrollBarVisibility="Disabled">
+                                            <ItemsControl ItemsSource="{Binding Indexes}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Classes="detailGridRow">
+                                                            <Grid ColumnDefinitions="220,160,70,70,70,320"
+                                                                  ColumnSpacing="12">
+                                                                <TextBlock Grid.Column="0"
+                                                                           Text="{Binding Name}"
+                                                                           Classes="detailGridCell primary"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <TextBlock Grid.Column="1"
+                                                                           Text="{Binding IndexType}"
+                                                                           Classes="detailGridCell secondary"
+                                                                           TextTrimming="CharacterEllipsis" />
+
+                                                                <Grid Grid.Column="2">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsUnique}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsUnique, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <Grid Grid.Column="3">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsPrimaryKey}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsPrimaryKey, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <Grid Grid.Column="4">
+                                                                    <Border Classes="booleanBadge positive"
+                                                                            IsVisible="{Binding IsAscending}">
+                                                                        <TextBlock Text="是"
+                                                                                   Classes="booleanBadgeText positive" />
+                                                                    </Border>
+                                                                    <Border Classes="booleanBadge negative"
+                                                                            IsVisible="{Binding IsAscending, Converter={StaticResource InvertedBoolConverter}}">
+                                                                        <TextBlock Text="否"
+                                                                                   Classes="booleanBadgeText negative" />
+                                                                    </Border>
+                                                                </Grid>
+
+                                                                <TextBlock Grid.Column="5"
+                                                                           Text="{Binding Columns}"
+                                                                           Classes="detailGridCell mono secondary"
+                                                                           TextWrapping="Wrap" />
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+
+                            <TextBlock Text="暂无索引数据"
+                                       Classes="caption"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       IsVisible="{Binding ShowIndexesEmptyState}" />
+                        </Grid>
+                    </Grid>
+
+                    <Grid IsVisible="{Binding ShowDdlTab}"
+                          RowDefinitions="Auto,*">
+                        <Border Grid.Row="0"
+                                Padding="12,6"
+                                IsVisible="{Binding ShowDdlInfoBanner}"
+                                Background="{DynamicResource Brush.Info.50}"
+                                BorderBrush="{DynamicResource Brush.Info.100}"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Text="当前 DDL 为基于已加载元数据生成的回退脚本。"
+                                           Classes="caption"
+                                           VerticalAlignment="Center" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding DismissDdlBannerCommand}"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="6,2"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="×"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource Brush.Text.Tertiary}" />
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <TextBox Grid.Row="1"
+                                 Text="{Binding TableDefinition}"
+                                 IsReadOnly="True"
+                                 AcceptsReturn="True"
+                                 TextWrapping="NoWrap"
+                                 FontFamily="Consolas"
+                                 Padding="16" />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

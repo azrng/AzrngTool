@@ -1,0 +1,64 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="100"
+             x:Class="SmartSQL.UI.Controls.ToastNotification">
+
+    <Border x:Name="RootBorder"
+            IsVisible="False"
+            CornerRadius="8"
+            Padding="16,12"
+            BoxShadow="0 4 16 0 #40000000"
+            MinWidth="300"
+            MaxWidth="500">
+        <Border.Styles>
+            <Style Selector="Border.success">
+                <Setter Property="Background" Value="#D4EDDA"/>
+                <Setter Property="BorderBrush" Value="#C3E6CB"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.error">
+                <Setter Property="Background" Value="#F8D7DA"/>
+                <Setter Property="BorderBrush" Value="#F5C6CB"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.warning">
+                <Setter Property="Background" Value="#FFF3CD"/>
+                <Setter Property="BorderBrush" Value="#FFEAA7"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.info">
+                <Setter Property="Background" Value="#D1ECF1"/>
+                <Setter Property="BorderBrush" Value="#BEE5EB"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+        </Border.Styles>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+            <Grid.ColumnSpacing>12</Grid.ColumnSpacing>
+
+            <!-- Icon -->
+            <TextBlock x:Name="IconText"
+                       Grid.Column="0"
+                       FontSize="20"
+                       VerticalAlignment="Center"/>
+
+            <!-- Message -->
+            <TextBlock x:Name="MessageText"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontWeight="Medium"/>
+
+            <!-- Close Button -->
+            <Button x:Name="CloseButton"
+                    Grid.Column="2"
+                    Padding="8,4"
+                    Classes="secondary"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <TextBlock Text="×" FontSize="18" Foreground="#666"/>
+            </Button>
+        </Grid>
+    </Border>
+</UserControl>

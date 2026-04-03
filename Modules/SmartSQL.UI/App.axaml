@@ -1,0 +1,54 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="SmartSQL.UI.App"
+             xmlns:local="using:SmartSQL.UI"
+             xmlns:converters="using:SmartSQL.UI.Converters"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             RequestedThemeVariant="Light">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <!-- Fluent Theme -->
+        <FluentTheme />
+
+        <!-- Global Styles -->
+        <StyleInclude Source="/Assets/Styles/Global.axaml"/>
+
+        <!-- Control Styles -->
+        <StyleInclude Source="/Assets/Styles/Controls/Buttons.axaml"/>
+        <StyleInclude Source="/Assets/Styles/Controls/Inputs.axaml"/>
+        <StyleInclude Source="/Assets/Styles/Controls/DataGrid.axaml"/>
+        <StyleInclude Source="/Assets/Styles/Controls/Misc.axaml"/>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Design Tokens -->
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Assets/Styles/DesignTokens.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Application Name -->
+            <x:String x:Key="AppName">SmartSQL</x:String>
+
+            <!-- Application Version -->
+            <x:String x:Key="AppVersion">1.0.0</x:String>
+
+            <!-- Converters -->
+            <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
+            <converters:BoolToColorConverter x:Key="BoolToColorConverter"/>
+            <converters:BoolToStringConverter x:Key="BoolToStringConverter"/>
+            <converters:InvertedBoolConverter x:Key="InvertedBoolConverter"/>
+            <converters:EnumToIndexConverter x:Key="EnumToIndexConverter"/>
+            <converters:AllTrueConverter x:Key="AllTrueConverter"/>
+            <converters:EqualToZeroConverter x:Key="EqualToZeroConverter"/>
+            <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter"/>
+            <converters:DatabaseTypeIconConverter x:Key="DatabaseTypeIconConverter"/>
+            <converters:DatabaseTypeToBoolConverter x:Key="DatabaseTypeToBoolConverter"/>
+            <converters:BoolToGlyphConverter x:Key="BoolToGlyphConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

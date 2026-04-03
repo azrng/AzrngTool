@@ -1,0 +1,35 @@
+using Avalonia.Data.Converters;
+using System;
+using System.Globalization;
+
+namespace SmartSQL.UI.Converters;
+
+/// <summary>
+/// 当值等于 0 时返回 true，否则返回 false
+/// </summary>
+public class EqualToZeroConverter : IValueConverter
+{
+    /// <summary>
+    /// 转换值
+    /// </summary>
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is int intVal)
+        {
+            return intVal == 0;
+        }
+        if (value is long longVal)
+        {
+            return longVal == 0;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 反向转换值
+    /// </summary>
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return value;
+    }
+}

@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="using:SmartSQL.UI.Models"
+             xmlns:controls="using:SmartSQL.UI.Controls"
+             x:Class="SmartSQL.UI.Controls.DatabaseTree"
+             x:DataType="controls:DatabaseTree"
+             x:Name="RootControl">
+
+    <Design.DataContext>
+        <models:TreeNodeItem Name="Root" DisplayName="数据库对象" />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*">
+        <TreeView x:Name="DatabaseTreeView"
+                  ItemsSource="{Binding #RootControl.FilteredChildren}"
+                  MinHeight="200"
+                  Background="Transparent"
+                  BorderThickness="0">
+            <TreeView.DataTemplates>
+                <TreeDataTemplate DataType="models:TreeNodeItem" ItemsSource="{Binding Children}">
+                    <Grid ColumnDefinitions="Auto,8,*" Margin="0,4">
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding IconGlyph}"
+                                   FontSize="15"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding DisplayName}"
+                                   VerticalAlignment="Center"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </Grid>
+                </TreeDataTemplate>
+            </TreeView.DataTemplates>
+
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem">
+                    <Setter Property="Padding" Value="8,4" />
+                    <Setter Property="Margin" Value="0,1" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+
+                <Style Selector="TreeViewItem:pointerover">
+                    <Setter Property="Background" Value="#F5F9FC" />
+                </Style>
+
+                <Style Selector="TreeViewItem:selected">
+                    <Setter Property="Background" Value="#E8F4F8" />
+                    <Setter Property="Foreground" Value="#2C3E50" />
+                </Style>
+
+                <Style Selector="TreeViewItem > Border">
+                    <Setter Property="CornerRadius" Value="4" />
+                </Style>
+            </TreeView.Styles>
+        </TreeView>
+
+        <Border IsVisible="{Binding #RootControl.IsLoading}"
+                Background="#F5F7FA"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="32,24"
+                CornerRadius="8">
+            <StackPanel Spacing="16" HorizontalAlignment="Center">
+                <ProgressBar IsIndeterminate="True"
+                             Width="40"
+                             Height="40"
+                             HorizontalAlignment="Center" />
+                <TextBlock Text="正在加载..."
+                           Classes="subheading"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="{Binding #RootControl.LoadingText}"
+                           Classes="muted"
+                           FontSize="12"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <Border IsVisible="{Binding #DatabaseTreeView.ItemCount, Converter={StaticResource EqualToZeroConverter}}"
+                Background="#F5F7FA"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="32,24"
+                CornerRadius="8">
+            <StackPanel Spacing="12" HorizontalAlignment="Center">
+                <TextBlock Text="DB"
+                           FontSize="32"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Opacity="0.3" />
+                <TextBlock Text="暂无数据"
+                           Classes="subheading"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
