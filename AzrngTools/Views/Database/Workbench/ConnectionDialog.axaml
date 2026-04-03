@@ -95,6 +95,25 @@
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
         </Style>
 
+        <Style Selector="Border.connectionListBadge">
+            <Setter Property="Width" Value="42" />
+            <Setter Property="Height" Value="42" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionListBadgeText">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
         <Style Selector="Border.connectionDialogHint">
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
@@ -388,18 +407,9 @@
                                             Padding="12">
                                         <Grid ColumnDefinitions="42,*"
                                               ColumnSpacing="12">
-                                            <Border Width="42"
-                                                    Height="42"
-                                                    CornerRadius="14"
-                                                    Background="{Binding DatabaseTypeBackgroundColor}"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Top">
+                                            <Border Classes="connectionListBadge">
                                                 <TextBlock Text="{Binding DatabaseTypeIcon}"
-                                                           FontSize="13"
-                                                           FontWeight="Bold"
-                                                           Foreground="{DynamicResource Brush.Text.Primary}"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center" />
+                                                           Classes="connectionListBadgeText" />
                                             </Border>
 
                                             <StackPanel Grid.Column="1"

@@ -143,20 +143,6 @@ public partial class ConnectionConfig : ObservableObject
     };
 
     /// <summary>
-    /// 获取数据库类型对应的背景色
-    /// </summary>
-    public string DatabaseTypeBackgroundColor => DatabaseType switch
-    {
-        DatabaseType.SqlServer => "#EEF4FF",
-        DatabaseType.MySql => "#EEFBFF",
-        DatabaseType.PostgresSql => "#EDF5FF",
-        DatabaseType.Sqlite => "#F2F7FB",
-        DatabaseType.Oracle => "#FFF2F0",
-        DatabaseType.Dm => "#FFF1F1",
-        _ => "#F5F7FB"
-    };
-
-    /// <summary>
     /// 更新使用统计
     /// </summary>
     public void UpdateUsageStats()
