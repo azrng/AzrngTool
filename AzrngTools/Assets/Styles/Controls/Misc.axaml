@@ -302,15 +302,15 @@
     </Style>
 
     <Style Selector="Border.statusPill">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.50}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Info.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
         <Setter Property="Padding" Value="10,5"/>
     </Style>
 
     <Style Selector="TextBlock.statusPillText">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
         <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}"/>
         <Setter Property="VerticalAlignment" Value="Center"/>

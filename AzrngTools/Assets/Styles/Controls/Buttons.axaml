@@ -146,9 +146,9 @@
     </Style>
 
     <Style Selector="Button.toolbarAction">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="12,8"/>
@@ -159,12 +159,13 @@
     </Style>
 
     <Style Selector="Button.toolbarAction:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.50}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Info.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
     </Style>
 
     <Style Selector="Button.toolbarAction:pressed">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="Opacity" Value="0.92"/>
     </Style>
 
     <Style Selector="Button.sidebarAction">
@@ -210,9 +211,9 @@
     </Style>
 
     <Style Selector="Button.inlineAction">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.50}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Info.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
         <Setter Property="Padding" Value="10,4"/>
@@ -223,12 +224,13 @@
     </Style>
 
     <Style Selector="Button.inlineAction:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.100}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.300}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
     </Style>
 
     <Style Selector="Button.inlineAction:pressed">
-        <Setter Property="Background" Value="{DynamicResource Brush.Info.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="Opacity" Value="0.92"/>
     </Style>
 
     <Style Selector="Button.workbenchToolbarAction">
