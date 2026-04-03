@@ -295,8 +295,11 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             result.UpdateUsageStats();
-            SelectedConnection = result;
-            LoggingService.LogOperation($"Selected connection: {result.Name}");
+            var targetConnection = ResolveConnectionFromCollection(result);
+            await ApplySelectedConnectionAsync(targetConnection);
+
+            ToastService.ShowSuccess($"已切换到连接：{targetConnection.Name}", 2000);
+            LoggingService.LogOperation($"Selected connection: {targetConnection.Name}");
         }
         catch (Exception ex)
         {
@@ -408,26 +411,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnSelectedConnectionChanging(ConnectionConfig? value)
     {
-        Schemas.Clear();
-        CurrentSchemaName = null;
-        CurrentSchema = null;
-        ActiveConnectionContext = null;
-        AvailableDatabases.Clear();
-
-        _suppressDatabaseSelectionChanged = true;
-        SelectedDatabaseName = null;
-        _suppressDatabaseSelectionChanged = false;
-
-        SqlQueryViewModel.CurrentConnection = null;
-        ResetWorkspaceState();
-
-        if (value == null)
-        {
-            ShowOverviewPage = true;
-        }
-
-        OnPropertyChanged(nameof(CurrentConnectionLabel));
-        OnPropertyChanged(nameof(CompactConnectionLabel));
+        ResetConnectionContextState(value);
     }
 
     partial void OnSelectedConnectionChanged(ConnectionConfig? value)
@@ -441,6 +425,44 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         _ = InitializeConnectionContextAsync(value);
+    }
+
+    private void ResetConnectionContextState(ConnectionConfig? nextConnection)
+    {
+        Schemas.Clear();
+        CurrentSchemaName = null;
+        CurrentSchema = null;
+        ActiveConnectionContext = null;
+        AvailableDatabases.Clear();
+
+        _suppressDatabaseSelectionChanged = true;
+        SelectedDatabaseName = null;
+        _suppressDatabaseSelectionChanged = false;
+
+        SqlQueryViewModel.CurrentConnection = null;
+        BrowserViewModel.Reset();
+        ResetWorkspaceState();
+
+        if (nextConnection == null)
+        {
+            ShowOverviewPage = true;
+        }
+
+        OnPropertyChanged(nameof(CurrentConnectionLabel));
+        OnPropertyChanged(nameof(CompactConnectionLabel));
+    }
+
+    private async Task ApplySelectedConnectionAsync(ConnectionConfig connection)
+    {
+        if (!ReferenceEquals(SelectedConnection, connection))
+        {
+            SelectedConnection = null;
+            SelectedConnection = connection;
+            return;
+        }
+
+        ResetConnectionContextState(connection);
+        await InitializeConnectionContextAsync(connection);
     }
 
     partial void OnSelectedDatabaseNameChanged(string? value)
@@ -533,6 +555,14 @@ public partial class MainWindowViewModel : ViewModelBase
         BrowserViewModel.CurrentConnection = connection;
         await LoadSchemasAsync(connection);
         await BrowserViewModel.LoadDataAsync();
+
+        if (BrowserViewModel.FirstRootNode == null &&
+            !string.IsNullOrWhiteSpace(BrowserViewModel.LoadingText) &&
+            (BrowserViewModel.LoadingText.StartsWith("加载失败", StringComparison.Ordinal) ||
+             BrowserViewModel.LoadingText.StartsWith("加载异常", StringComparison.Ordinal)))
+        {
+            ToastService.ShowWarning($"对象浏览器未能加载：{BrowserViewModel.LoadingText}", 4000);
+        }
     }
 
     public async Task ActivateSchemaAsync(SchemaModel schema)
@@ -1625,6 +1655,14 @@ public partial class MainWindowViewModel : ViewModelBase
     private ConnectionConfig? GetActiveConnection()
     {
         return ActiveConnectionContext ?? SelectedConnection;
+    }
+
+    private ConnectionConfig ResolveConnectionFromCollection(ConnectionConfig connection)
+    {
+        return Connections.FirstOrDefault(item => ReferenceEquals(item, connection))
+               ?? Connections.FirstOrDefault(item =>
+                   string.Equals(item.Name, connection.Name, StringComparison.OrdinalIgnoreCase))
+               ?? connection;
     }
 
     private async Task LoadAvailableDatabasesAsync(ConnectionConfig connection, string? preferredDatabase)

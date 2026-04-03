@@ -129,6 +129,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         RootNodes.Clear();
         FilteredRootNodes.Clear();
         _allNodes.Clear();
+        OnPropertyChanged(nameof(FirstRootNode));
 
         try
         {
@@ -167,6 +168,21 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    public void Reset()
+    {
+        RootNodes.Clear();
+        FilteredRootNodes.Clear();
+        _allNodes.Clear();
+        SelectedNode = null;
+        SearchText = string.Empty;
+        IsLoading = false;
+        LoadingText = null;
+        CurrentConnection = null;
+        HasSearchResults = false;
+        SearchResultCount = 0;
+        OnPropertyChanged(nameof(FirstRootNode));
     }
 
     /// <summary>
