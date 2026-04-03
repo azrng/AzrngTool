@@ -149,7 +149,9 @@
 
                         <Border Grid.Row="1"
                                 Classes="browserTreeSurface">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          IsScrollChainingEnabled="False">
                                 <controls:DatabaseTree x:Name="DatabaseTree"
                                                        Margin="{StaticResource Thickness.4}"
                                                        RootNode="{Binding BrowserViewModel.FirstRootNode}"
