@@ -25,30 +25,30 @@
 
     <Window.Styles>
         <Style Selector="Border.exportDialogSurface">
-            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
         </Style>
 
         <Style Selector="Border.exportSectionCard">
-            <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
             <Setter Property="Padding" Value="16" />
         </Style>
 
         <Style Selector="Border.exportTag">
-            <Setter Property="Background" Value="{DynamicResource Brush.Info.50}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Info.100}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
             <Setter Property="Padding" Value="10,4" />
         </Style>
 
         <Style Selector="TextBlock.exportTagText">
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
             <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
             <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
         </Style>
@@ -77,11 +77,12 @@
         </Style>
 
         <Style Selector="TreeView.exportTree TreeViewItem:pointerover">
-            <Setter Property="Background" Value="#F5F9FC" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
         </Style>
 
         <Style Selector="TreeView.exportTree TreeViewItem:selected">
-            <Setter Property="Background" Value="#EAF2FF" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Nav.SelectedBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
 
         <Style Selector="TreeView.exportTree TreeViewItem > Border">
@@ -89,8 +90,8 @@
         </Style>
 
         <Style Selector="Border.exportDocumentTypeCard">
-            <Setter Property="Background" Value="#F7FBF7" />
-            <Setter Property="BorderBrush" Value="#CFE3D4" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
             <Setter Property="Padding" Value="16" />
@@ -111,17 +112,54 @@
         </Style>
 
         <Style Selector="Border.exportDocumentTypeCard.markdown">
-            <Setter Property="Background" Value="#F7F8FD" />
-            <Setter Property="BorderBrush" Value="#D7DCF4" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
         </Style>
 
         <Style Selector="Border.exportDocumentTypeCard.selected">
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.400}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Strong}" />
             <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <Style Selector="Border.exportDocumentTypeBadge">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+
+        <Style Selector="Border.exportDocumentTypeBadge.excel">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportDocumentTypeBadgeText">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportDocumentTypeBadgeText.excel">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportDocumentTypeTitle">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportDocumentTypeDescription">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
     </Window.Styles>
 
-    <Grid Background="{DynamicResource Brush.Background.App}">
+    <Grid Background="{DynamicResource Brush.App.Background}">
         <Panel IsHitTestVisible="False"
                ZIndex="9999">
             <StackPanel x:Name="ToastContainer"
@@ -174,7 +212,7 @@
                                         <TextBlock Text="DB"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
-                                                   Foreground="{DynamicResource Brush.Status.Info.Text}"
+                                                   Foreground="{DynamicResource Brush.Accent.Strong}"
                                                    FontWeight="SemiBold" />
                                     </Border>
                                     <StackPanel Grid.Column="1"
@@ -312,24 +350,20 @@
                                     <Button Command="{Binding SelectDocumentTypeCommand}"
                                             CommandParameter="{x:Static dto:ExportDocumentType.Excel}"
                                             Classes="exportDocumentTypeButton">
-                                        <Border Classes="exportDocumentTypeCard"
-                                                Classes.selected="{Binding IsExcelSelected}">
-                                            <Grid ColumnDefinitions="Auto,*"
-                                                  ColumnSpacing="12">
-                                                <Border Classes="excelIconBadge"
-                                                        VerticalAlignment="Top">
+                                                <Border Classes="exportDocumentTypeCard"
+                                                        Classes.selected="{Binding IsExcelSelected}">
+                                                    <Grid ColumnDefinitions="Auto,*"
+                                                          ColumnSpacing="12">
+                                                <Border Classes="exportDocumentTypeBadge excel">
                                                     <TextBlock Text="X"
-                                                               Classes="excelIconGlyph" />
+                                                               Classes="exportDocumentTypeBadgeText excel" />
                                                 </Border>
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="4">
                                                     <TextBlock Text="Excel"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="#245A31" />
+                                                               Classes="exportDocumentTypeTitle" />
                                                     <TextBlock Text="按勾选对象生成结构化 Excel 文档，适合整理和交付。"
-                                                               Foreground="#4A6A53"
-                                                               FontSize="{DynamicResource Font.Size.BodySmall}"
-                                                               TextWrapping="Wrap" />
+                                                               Classes="exportDocumentTypeDescription" />
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -342,28 +376,16 @@
                                                 Classes.selected="{Binding IsMarkdownSelected}">
                                             <Grid ColumnDefinitions="Auto,*"
                                                   ColumnSpacing="12">
-                                                <Border Width="36"
-                                                        Height="36"
-                                                        CornerRadius="12"
-                                                        Background="#EDF0FF"
-                                                        BorderBrush="#D7DCF4"
-                                                        BorderThickness="1"
-                                                        VerticalAlignment="Top">
+                                                <Border Classes="exportDocumentTypeBadge">
                                                     <TextBlock Text="MD"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"
-                                                               FontWeight="Bold"
-                                                               Foreground="#4654A3" />
+                                                               Classes="exportDocumentTypeBadgeText" />
                                                 </Border>
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="4">
                                                     <TextBlock Text="Markdown"
-                                                               FontWeight="SemiBold"
-                                                               Foreground="#3E4A8A" />
+                                                               Classes="exportDocumentTypeTitle" />
                                                     <TextBlock Text="输出轻量结构文档，便于阅读、提交仓库和二次编辑。"
-                                                               Foreground="#5F6895"
-                                                               FontSize="{DynamicResource Font.Size.BodySmall}"
-                                                               TextWrapping="Wrap" />
+                                                               Classes="exportDocumentTypeDescription" />
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -375,7 +397,7 @@
                 </Grid>
 
                 <Border Grid.Row="2"
-                        BorderBrush="{DynamicResource Brush.Border.Default}"
+                        BorderBrush="{DynamicResource Brush.Panel.Stroke}"
                         BorderThickness="0,1,0,0"
                         Padding="0,16,0,0">
                     <Grid ColumnDefinitions="*,Auto,Auto"
