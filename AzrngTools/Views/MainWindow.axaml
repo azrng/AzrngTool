@@ -178,8 +178,10 @@
             <Grid Grid.Column="1">
                 <Border Classes="shell-panel">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                        <Grid MaxWidth="{StaticResource Layout.Shell.ContentMaxWidth}" HorizontalAlignment="Stretch">
-                            <TransitioningContentControl Content="{Binding CurrentPage}" />
+                        <Grid HorizontalAlignment="Stretch"
+                              MinWidth="0">
+                            <TransitioningContentControl Content="{Binding CurrentPage}"
+                                                         HorizontalAlignment="Stretch" />
                         </Grid>
                     </ScrollViewer>
                 </Border>
