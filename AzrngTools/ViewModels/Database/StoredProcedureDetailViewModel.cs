@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Services;
+using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 public partial class StoredProcedureDetailViewModel : ViewModelBase
 {

@@ -2,9 +2,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Markup.Xaml;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class ConnectionConfigForm : UserControl
 {

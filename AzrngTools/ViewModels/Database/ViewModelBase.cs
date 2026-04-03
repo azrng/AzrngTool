@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 /// <summary>
 /// ViewModel 基类

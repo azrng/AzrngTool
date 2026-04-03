@@ -1,4 +1,4 @@
-namespace SmartSQL.UI.Models.DTOs;
+namespace AzrngTools.Models.Database.DTOs;
 
 public sealed class CommentEditorDialogResultDto
 {

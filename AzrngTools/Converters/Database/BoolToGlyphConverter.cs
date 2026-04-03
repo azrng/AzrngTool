@@ -2,7 +2,7 @@ using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
-namespace SmartSQL.UI.Converters;
+namespace AzrngTools.Converters.Database;
 
 /// <summary>
 /// 将布尔值转换为 Unicode 字形符号（✓/✗）

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using NPOI.SS.UserModel;
 using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
-using SmartSQL.UI.Models;
+using AzrngTools.Models.Database;
 
-namespace SmartSQL.UI.Services;
+namespace AzrngTools.Services.Database;
 
 /// <summary>
 /// 文档导出服务 - 支持 Excel 和 Markdown 格式

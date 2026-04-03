@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SmartSQL.UI.Models;
+namespace AzrngTools.Models.Database;
 
 /// <summary>
 /// 存储过程树节点

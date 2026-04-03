@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class TableDetailView : UserControl
 {

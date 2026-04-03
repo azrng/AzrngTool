@@ -23,7 +23,7 @@ using AzrngTools.Views.TextHandle;
 using GTranslate.Translators;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using DbWorkbenchViewModel = SmartSQL.UI.ViewModels.MainWindowViewModel;
+using DbWorkbenchViewModel = AzrngTools.ViewModels.Database.MainWindowViewModel;
 
 namespace AzrngTools;
 

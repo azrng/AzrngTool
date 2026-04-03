@@ -7,10 +7,10 @@ using Azrng.Core.Model;
 using Azrng.DataAccess.DbBridge;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Services;
+using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 /// <summary>
 /// 数据库浏览 ViewModel
@@ -226,7 +226,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         };
 
         var views = (await dbBridge.GetSchemaViewListAsync(schemaName))
-            .Select(dto => new SmartSQL.UI.Models.ViewModel
+            .Select(dto => new AzrngTools.Models.Database.ViewModel
             {
                 Name = dto.ViewName,
                 Schema = dto.ViewOwner,

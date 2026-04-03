@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using SmartSQL.UI.Services;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Services.Database;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class ExportDialog : Window
 {

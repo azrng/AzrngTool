@@ -5,9 +5,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models;
+using AzrngTools.Models.Database;
 
-namespace SmartSQL.UI.Controls;
+namespace AzrngTools.Controls.Database;
 
 public partial class DatabaseTree : UserControl
 {

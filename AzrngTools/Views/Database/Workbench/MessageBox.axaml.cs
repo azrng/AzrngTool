@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Input;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 /// <summary>
 /// 消息框按钮类型

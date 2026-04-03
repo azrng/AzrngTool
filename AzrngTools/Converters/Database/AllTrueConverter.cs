@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace SmartSQL.UI.Converters;
+namespace AzrngTools.Converters.Database;
 
 /// <summary>
 /// 多值转换器：当所有值都为 true 时返回 true

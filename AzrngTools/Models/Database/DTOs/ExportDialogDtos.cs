@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SmartSQL.UI.Models.DTOs;
+namespace AzrngTools.Models.Database.DTOs;
 
 public enum ExportObjectType
 {

@@ -34,6 +34,7 @@
 | T023   | 数据库模块提示语中文化补充 | 清理 `SmartSQL.UI` 主工作台 ViewModel 中残留的英文提示与导出状态文案，统一宿主内外的中文反馈体验 | REVIEW   | 2026-04-03   |
 | T024   | 数据库模块工程级完全融合 | 去掉 `Modules/SmartSQL.UI` 的独立项目边界，将其源码、XAML 与资源直接纳入 `AzrngTools` 主项目编译 | REVIEW   | 2026-04-03   |
 | T025   | 数据库模块结构级目录融合 | 将数据库模块源码和样式从 `Modules/SmartSQL.UI` 物理迁入 `AzrngTools` 目录树，清理临时链接配置 | REVIEW   | 2026-04-03   |
+| T026   | 数据库模块命名空间收口 | 将数据库模块残留的 `SmartSQL.UI.*` 命名空间统一迁到 `AzrngTools` 目录语义下，清理宿主与模块之间的旧前缀引用 | REVIEW   | 2026-04-03   |
 
 
 

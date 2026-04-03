@@ -2,7 +2,7 @@ using Avalonia.Data.Converters;
 using System;
 using System.Globalization;
 
-namespace SmartSQL.UI.Converters;
+namespace AzrngTools.Converters.Database;
 
 /// <summary>
 /// 将 null 转换为 false，非 null 转换为 true

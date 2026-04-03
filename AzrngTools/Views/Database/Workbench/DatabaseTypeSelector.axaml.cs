@@ -2,10 +2,10 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Azrng.Core.Model;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Models.Database;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class DatabaseTypeSelector : UserControl
 {

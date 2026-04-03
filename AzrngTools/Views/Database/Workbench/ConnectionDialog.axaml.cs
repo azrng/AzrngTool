@@ -4,11 +4,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Services;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class ConnectionDialog : Window
 {

@@ -1,8 +1,8 @@
 using Azrng.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
-using SmartSQL.UI.Helpers;
+using AzrngTools.Utils.Database;
 
-namespace SmartSQL.UI.Models;
+namespace AzrngTools.Models.Database;
 
 /// <summary>
 /// 数据库连接配置

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SmartSQL.UI.Services;
+namespace AzrngTools.Services.Database;
 
 /// <summary>
 /// 简单的日志服务

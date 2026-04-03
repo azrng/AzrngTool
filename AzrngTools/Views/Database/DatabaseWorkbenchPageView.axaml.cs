@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using SmartSQL.UI.Controls;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Services;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Controls.Database;
+using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
+using AzrngTools.ViewModels.Database;
 
 namespace AzrngTools.Views.Database;
 
@@ -78,7 +78,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
             case TreeNodeType.Table when node.Data is TableModel table:
                 await viewModel.ActivateTableAsync(table);
                 break;
-            case TreeNodeType.View when node.Data is SmartSQL.UI.Models.ViewModel view:
+            case TreeNodeType.View when node.Data is AzrngTools.Models.Database.ViewModel view:
                 await viewModel.ActivateViewAsync(view);
                 break;
             case TreeNodeType.StoredProcedure when node.Data is StoredProcedureModel procedure:

@@ -2,9 +2,9 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 using Azrng.Core.Model;
-using SmartSQL.UI.Models;
+using AzrngTools.Models.Database;
 
-namespace SmartSQL.UI.Converters;
+namespace AzrngTools.Converters.Database;
 
 /// <summary>
 /// 将 DatabaseType 转换为布尔值（用于判断是否匹配指定类型）

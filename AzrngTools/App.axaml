@@ -1,8 +1,8 @@
-﻿<Application
+<Application
     RequestedThemeVariant="Default"
     x:Class="AzrngTools.App"
     xmlns="https://github.com/avaloniaui"
-    xmlns:dbconv="clr-namespace:SmartSQL.UI.Converters"
+    xmlns:dbconv="clr-namespace:AzrngTools.Converters.Database"
     xmlns:local="using:AzrngTools"
     xmlns:semi="https://irihi.tech/semi"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">

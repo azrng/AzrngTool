@@ -1,9 +1,9 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models.DTOs;
+using AzrngTools.Models.Database.DTOs;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 public partial class CommentEditorDialogViewModel : ViewModelBase
 {

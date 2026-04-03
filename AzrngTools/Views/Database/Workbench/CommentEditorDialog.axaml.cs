@@ -1,8 +1,8 @@
 using System;
 using Avalonia.Controls;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class CommentEditorDialog : Window
 {

@@ -3,7 +3,7 @@ using Avalonia.Media;
 using System;
 using System.Globalization;
 
-namespace SmartSQL.UI.Converters;
+namespace AzrngTools.Converters.Database;
 
 /// <summary>
 /// 将布尔值转换为颜色

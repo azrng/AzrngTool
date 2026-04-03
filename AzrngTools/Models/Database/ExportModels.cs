@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SmartSQL.UI.Models;
+namespace AzrngTools.Models.Database;
 
 /// <summary>
 /// Excel 导出模型 - 完整架构信息

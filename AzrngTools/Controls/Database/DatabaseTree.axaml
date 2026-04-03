@@ -1,8 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:models="using:SmartSQL.UI.Models"
-             xmlns:controls="using:SmartSQL.UI.Controls"
-             x:Class="SmartSQL.UI.Controls.DatabaseTree"
+             xmlns:models="using:AzrngTools.Models.Database"
+             xmlns:controls="using:AzrngTools.Controls.Database"
+             x:Class="AzrngTools.Controls.Database.DatabaseTree"
              x:CompileBindings="False"
              x:DataType="controls:DatabaseTree"
              x:Name="RootControl">

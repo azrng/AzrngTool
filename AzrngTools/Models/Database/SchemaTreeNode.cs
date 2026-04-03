@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SmartSQL.UI.Models;
+namespace AzrngTools.Models.Database;
 
 /// <summary>
 /// Schema 树节点

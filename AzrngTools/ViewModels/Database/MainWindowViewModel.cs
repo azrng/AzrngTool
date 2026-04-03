@@ -10,12 +10,13 @@ using Avalonia.Platform.Storage;
 using Azrng.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Models.DTOs;
-using SmartSQL.UI.Services;
-using SmartSQL.UI.Views;
+using AzrngTools.Models.Database;
+using AzrngTools.Models.Database.DTOs;
+using AzrngTools.Services.Database;
+using AzrngTools.Views.Database.Workbench;
+using DatabaseViewModel = AzrngTools.Models.Database.ViewModel;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 public enum DetailWorkspaceMode
 {
@@ -635,7 +636,7 @@ public partial class MainWindowViewModel : ViewModelBase
             existingTable.Name == table.Name) ?? table;
     }
 
-    public async Task ActivateViewAsync(Models.ViewModel view)
+    public async Task ActivateViewAsync(DatabaseViewModel view)
     {
         if (view == null)
         {
@@ -725,7 +726,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task OpenViewFromSchemaOverviewAsync(Models.ViewModel? view)
+    private async Task OpenViewFromSchemaOverviewAsync(DatabaseViewModel? view)
     {
         if (view != null)
         {

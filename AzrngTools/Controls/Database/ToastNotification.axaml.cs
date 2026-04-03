@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 
-namespace SmartSQL.UI.Controls;
+namespace AzrngTools.Controls.Database;
 
 public enum MessageType
 {

@@ -1,7 +1,7 @@
 using Azrng.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SmartSQL.UI.Models;
+namespace AzrngTools.Models.Database;
 
 /// <summary>
 /// 数据库模型

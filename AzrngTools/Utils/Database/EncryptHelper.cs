@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SmartSQL.UI.Helpers;
+namespace AzrngTools.Utils.Database;
 
 /// <summary>
 /// 加密帮助类 - 使用 AES 加密算法

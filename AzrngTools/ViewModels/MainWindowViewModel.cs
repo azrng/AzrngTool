@@ -12,7 +12,7 @@ using AzrngTools.ViewModels.TextHandle;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using DbWorkbenchViewModel = SmartSQL.UI.ViewModels.MainWindowViewModel;
+using DbWorkbenchViewModel = AzrngTools.ViewModels.Database.MainWindowViewModel;
 
 namespace AzrngTools.ViewModels;
 

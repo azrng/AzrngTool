@@ -2,9 +2,9 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using SmartSQL.UI.Controls;
+using AzrngTools.Controls.Database;
 
-namespace SmartSQL.UI.Services;
+namespace AzrngTools.Services.Database;
 
 /// <summary>
 /// 消息提示服务

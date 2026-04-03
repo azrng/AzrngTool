@@ -1,16 +1,16 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using SmartSQL.UI.Controls;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Services;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Controls.Database;
+using AzrngTools.Models.Database;
+using AzrngTools.Services.Database;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class MainWindow : Window
 {
@@ -77,7 +77,7 @@ public partial class MainWindow : Window
             case TreeNodeType.Table when node.Data is TableModel table:
                 await ShowTableDetailAsync(viewModel, table);
                 break;
-            case TreeNodeType.View when node.Data is SmartSQL.UI.Models.ViewModel view:
+            case TreeNodeType.View when node.Data is AzrngTools.Models.Database.ViewModel view:
                 await ShowViewDetailAsync(viewModel, view);
                 break;
             case TreeNodeType.StoredProcedure when node.Data is StoredProcedureModel procedure:
@@ -109,7 +109,7 @@ public partial class MainWindow : Window
         await viewModel.ActivateTableAsync(table);
     }
 
-    private static async Task ShowViewDetailAsync(MainWindowViewModel viewModel, SmartSQL.UI.Models.ViewModel view)
+    private static async Task ShowViewDetailAsync(MainWindowViewModel viewModel, AzrngTools.Models.Database.ViewModel view)
     {
         await viewModel.ActivateViewAsync(view);
     }

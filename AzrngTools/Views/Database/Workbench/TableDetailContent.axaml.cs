@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.ViewModels;
+using AzrngTools.Models.Database;
+using AzrngTools.ViewModels.Database;
 
-namespace SmartSQL.UI.Views;
+namespace AzrngTools.Views.Database.Workbench;
 
 public partial class TableDetailContent : UserControl
 {

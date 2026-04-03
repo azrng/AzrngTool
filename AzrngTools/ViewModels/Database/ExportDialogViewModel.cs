@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using Azrng.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using SmartSQL.UI.Models;
-using SmartSQL.UI.Models.DTOs;
-using SmartSQL.UI.Services;
+using AzrngTools.Models.Database;
+using AzrngTools.Models.Database.DTOs;
+using AzrngTools.Services.Database;
 
-namespace SmartSQL.UI.ViewModels;
+namespace AzrngTools.ViewModels.Database;
 
 public partial class ExportDialogViewModel : ViewModelBase
 {
@@ -601,7 +601,7 @@ public partial class ExportDialogViewModel : ViewModelBase
             return table.Schema;
         }
 
-        if (node.Data is Models.ViewModel view)
+        if (node.Data is AzrngTools.Models.Database.ViewModel view)
         {
             return view.Schema;
         }

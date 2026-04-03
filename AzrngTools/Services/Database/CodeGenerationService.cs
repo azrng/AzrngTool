@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartSQL.UI.Models;
+using AzrngTools.Models.Database;
 
-namespace SmartSQL.UI.Services;
+namespace AzrngTools.Services.Database;
 
 /// <summary>
 /// 代码生成服务

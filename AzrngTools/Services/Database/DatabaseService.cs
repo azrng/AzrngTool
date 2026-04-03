@@ -3,9 +3,9 @@ using Azrng.Core.Model;
 using Azrng.DataAccess;
 using Azrng.DataAccess.DbBridge;
 using Azrng.DataAccess.Helper;
-using SmartSQL.UI.Models;
+using AzrngTools.Models.Database;
 
-namespace SmartSQL.UI.Services
+namespace AzrngTools.Services.Database
 {
     /// <summary>
     /// 数据库服务

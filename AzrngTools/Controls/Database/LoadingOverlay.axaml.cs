@@ -5,7 +5,7 @@ using Avalonia.Threading;
 using Avalonia.Media;
 using Avalonia.Media.Transformation;
 
-namespace SmartSQL.UI.Controls;
+namespace AzrngTools.Controls.Database;
 
 public partial class LoadingOverlay : UserControl
 {
