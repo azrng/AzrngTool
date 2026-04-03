@@ -61,6 +61,12 @@
             <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
         </Style>
 
+        <Style Selector="TextBlock.connectionDialogBadgeCaption">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
         <Style Selector="TextBlock.connectionDialogTitle">
             <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
             <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
@@ -563,22 +569,17 @@
                                 <Border Grid.Column="1"
                                         Width="56"
                                         Height="56"
-                                        CornerRadius="16"
-                                        Background="{Binding CurrentBrandSoftColor}"
-                                        BorderBrush="{Binding CurrentBrandBorderColor}"
-                                        BorderThickness="1">
+                                        Classes="connectionDialogBadge">
                                     <StackPanel Spacing="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center">
                                         <TextBlock Text="{Binding CurrentBrandMonogram}"
+                                                   Classes="connectionDialogBadgeText"
                                                    FontSize="15"
-                                                   FontWeight="Bold"
-                                                   Foreground="{Binding CurrentBrandAccentColor}"
                                                    HorizontalAlignment="Center" />
                                         <TextBlock Text="{Binding CurrentBrandWordmark}"
-                                                   FontSize="8"
-                                                   Foreground="{Binding CurrentBrandAccentColor}"
-                                                   HorizontalAlignment="Center" />
+                                                   Classes="connectionDialogBadgeCaption"
+                                                   FontSize="8" />
                                     </StackPanel>
                                 </Border>
                             </Grid>

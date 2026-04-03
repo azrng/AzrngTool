@@ -191,36 +191,6 @@ public partial class ConnectionDialogViewModel : ViewModelBase
         _ => "请填写连接信息并保存。"
     };
 
-    public string CurrentBrandAccentColor => ConnectionConfig?.DatabaseType switch
-    {
-        DatabaseType.PostgresSql => "#2F6FAD",
-        DatabaseType.MySql => "#0C87AE",
-        DatabaseType.SqlServer => "#4A7BD1",
-        DatabaseType.Sqlite => "#5E768F",
-        DatabaseType.Oracle => "#E04C43",
-        _ => "#3B82F6"
-    };
-
-    public string CurrentBrandSoftColor => ConnectionConfig?.DatabaseType switch
-    {
-        DatabaseType.PostgresSql => "#EDF5FF",
-        DatabaseType.MySql => "#EEFBFF",
-        DatabaseType.SqlServer => "#EEF4FF",
-        DatabaseType.Sqlite => "#F2F7FB",
-        DatabaseType.Oracle => "#FFF2F0",
-        _ => "#EEF4FF"
-    };
-
-    public string CurrentBrandBorderColor => ConnectionConfig?.DatabaseType switch
-    {
-        DatabaseType.PostgresSql => "#CFE0F3",
-        DatabaseType.MySql => "#C8ECF5",
-        DatabaseType.SqlServer => "#D8E4FF",
-        DatabaseType.Sqlite => "#D9E4EE",
-        DatabaseType.Oracle => "#FFD7D1",
-        _ => "#D8E4FF"
-    };
-
     public string EditorTitle => ShowDatabaseTypeSelector
         ? "选择数据库类型"
         : $"{GetDatabaseTypeDisplayName(ConnectionConfig.DatabaseType)} 连接设置";
@@ -785,9 +755,6 @@ public partial class ConnectionDialogViewModel : ViewModelBase
         OnPropertyChanged(nameof(CurrentBrandWordmark));
         OnPropertyChanged(nameof(CurrentEditorTitle));
         OnPropertyChanged(nameof(CurrentEditorDescription));
-        OnPropertyChanged(nameof(CurrentBrandAccentColor));
-        OnPropertyChanged(nameof(CurrentBrandSoftColor));
-        OnPropertyChanged(nameof(CurrentBrandBorderColor));
         NotifyAllFieldValidationStateChanged();
     }
 
