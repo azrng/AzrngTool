@@ -73,7 +73,7 @@
                         <Border Grid.Row="0"
                                 Classes="detailGridHeader">
                             <StackPanel Spacing="{StaticResource Space.10}">
-                                <Grid ColumnDefinitions="*,Auto"
+                                <Grid ColumnDefinitions="*"
                                       ColumnSpacing="{StaticResource Space.12}">
                                     <StackPanel Spacing="{StaticResource Space.4}">
                                         <TextBlock Text="数据表详情"
@@ -81,13 +81,6 @@
                                         <TextBlock Text="在字段、索引和 DDL 之间切换查看当前数据表的结构信息。"
                                                    Classes="caption" />
                                     </StackPanel>
-
-                                    <Border Grid.Column="1"
-                                            Classes="statusPill"
-                                            VerticalAlignment="Top">
-                                        <TextBlock Text="{Binding SelectedTable.Name}"
-                                                   Classes="statusPillText" />
-                                    </Border>
                                 </Grid>
 
                                 <StackPanel Orientation="Horizontal"
