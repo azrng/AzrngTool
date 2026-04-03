@@ -58,6 +58,7 @@
 | T047   | 已保存连接列表徽标主题收口 | 将左侧已保存连接列表中的数据库类型徽标切回统一主题样式，移除 `ConnectionConfig` 中仅供背景色展示的旧字段 | REVIEW   | 2026-04-03   |
 | T048   | 共享按钮与表格样式主题收口 | 将 `Buttons.axaml` 和 `DataGrid.axaml` 中残留的旧 token 体系切回当前 `Panel/Accent/Text/Nav` 主题语义 | REVIEW   | 2026-04-04   |
 | T049   | 对象浏览器超出滚动条修复 | 修正对象浏览器树区域的布局收缩与滚动容器约束，让内容超出时稳定显示并独立使用纵向滚动条 | REVIEW   | 2026-04-04   |
+| T050   | Misc 样式旧 token 收口 | 将 `Misc.axaml` 中残留的旧 `Brand/Neutral` 及历史别名 token 切回当前 `Panel/Accent/Text/Nav` 主题语义 | REVIEW   | 2026-04-04   |
 
 
 

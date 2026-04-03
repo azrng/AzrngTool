@@ -5,7 +5,7 @@
 
     <!-- Card Style -->
     <Style Selector="Border.card">
-        <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
         <Setter Property="Padding" Value="{DynamicResource Space.XL}"/>
     </Style>
@@ -25,19 +25,19 @@
     </Style>
 
     <Style Selector="ListBoxItem.sidebarItem:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.50}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}"/>
     </Style>
 
     <Style Selector="ListBoxItem.sidebarItem:selected">
-        <Setter Property="Background" Value="{DynamicResource SidebarSelected}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.SelectedBackground}"/>
     </Style>
 
     <Style Selector="ListBoxItem.sidebarItem:selected TextBlock.icon">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
     <Style Selector="ListBoxItem.sidebarItem:selected TextBlock.label">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
     <!-- Tab Control -->
@@ -54,7 +54,7 @@
     </Style>
 
     <Style Selector="TabControl.modern TabItem:selected">
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
     <!-- Text Styles -->
@@ -105,25 +105,25 @@
     </Style>
 
     <Style Selector="Button.tabButton:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.50}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
     </Style>
 
     <Style Selector="Button.tabButton:pressed">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.100}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
     </Style>
 
     <Style Selector="Button.tabButton.tabActive">
-        <Setter Property="Background" Value="{DynamicResource Brush.Brand.50}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.600}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.500}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
         <Setter Property="BorderThickness" Value="0,0,0,2"/>
         <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
     </Style>
 
     <Style Selector="Button.tabButton.tabActive:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Brand.100}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Brand.700}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
     <!-- Helper Classes -->
@@ -132,18 +132,18 @@
     </Style>
 
     <Style Selector="TextBlock.primary">
-        <Setter Property="Foreground" Value="{DynamicResource PrimaryColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
     <Style Selector="Border.spacer">
-        <Setter Property="Background" Value="{DynamicResource BorderLight}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Border.Divider}"/>
         <Setter Property="Height" Value="1"/>
     </Style>
 
     <!-- Window Control Border Group -->
     <Style Selector="Border.windowControlGroup">
-        <Setter Property="Background" Value="#F7FAFD"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderLight}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="14"/>
         <Setter Property="Padding" Value="4"/>
@@ -151,7 +151,7 @@
 
     <!-- Window Control Glyph -->
     <Style Selector="TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
         <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -159,11 +159,11 @@
     </Style>
 
     <Style Selector="Button.windowControl.close TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
     </Style>
 
     <Style Selector="Button.windowControl.close:pointerover TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
     </Style>
 
     <!-- Excel Icon Badge -->
@@ -177,7 +177,7 @@
     </Style>
 
     <Style Selector="TextBlock.excelIconGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
         <Setter Property="FontSize" Value="11"/>
         <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -252,7 +252,7 @@
     </Style>
 
     <Style Selector="Border.overviewHeroCard">
-        <Setter Property="Background" Value="{DynamicResource Brush.Brand.600}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
         <Setter Property="Padding" Value="22"/>
     </Style>
@@ -266,7 +266,7 @@
     </Style>
 
     <Style Selector="TextBlock.overviewHeroPillText">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Neutral.0}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
         <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
         <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
         <Setter Property="Opacity" Value="0.96"/>
@@ -274,16 +274,16 @@
     </Style>
 
     <Style Selector="Border.overviewMetricCard">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="16"/>
     </Style>
 
     <Style Selector="Border.overviewQuickCard">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="16"/>
