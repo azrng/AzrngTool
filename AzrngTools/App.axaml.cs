@@ -37,6 +37,7 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
+        RequestedThemeVariant = Services.GetRequiredService<IThemePreferenceService>().LoadRequestedThemeVariant();
 
         ViewLocator.Register<MainWindowViewModel, MainWindow>();
         ViewLocator.Register<OverviewPageViewModel, OverviewPageView>();
@@ -118,6 +119,7 @@ public partial class App : Application
 
         services.AddSingleton<MainWindow>();
         services.AddSingleton<IAppInfoService, AppInfoService>();
+        services.AddSingleton<IThemePreferenceService, ThemePreferenceService>();
         services.AddSingleton<ITranslator, YandexTranslator>();
         services.AddHttpClient();
         services.AddHttpClient(nameof(AppUpdateService), client =>

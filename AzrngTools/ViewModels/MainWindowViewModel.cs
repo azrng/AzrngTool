@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Avalonia;
+using Avalonia.Styling;
 using AzrngTools.Services;
 using AzrngTools.ViewModels.Encode;
 using AzrngTools.ViewModels.Encrypts;
@@ -31,6 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase
     ];
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly IThemePreferenceService _themePreferenceService;
     private readonly IToolUsageStatsService _toolUsageStatsService;
     private readonly Dictionary<string, MenuBar> _toolMenuLookup = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _groupExpansionStates = new(StringComparer.Ordinal);
@@ -40,10 +42,14 @@ public partial class MainWindowViewModel : ViewModelBase
     private MenuBar _homeMenu;
     private bool _suppressUsageTracking;
 
-    public MainWindowViewModel(IServiceProvider serviceProvider, IToolUsageStatsService toolUsageStatsService)
+    public MainWindowViewModel(
+        IServiceProvider serviceProvider,
+        IToolUsageStatsService toolUsageStatsService,
+        IThemePreferenceService themePreferenceService)
     {
         _serviceProvider = serviceProvider;
         _toolUsageStatsService = toolUsageStatsService;
+        _themePreferenceService = themePreferenceService;
 
         CreateMenuBars();
         BuildToolLookup();
@@ -53,6 +59,8 @@ public partial class MainWindowViewModel : ViewModelBase
         AppSubtitle = "开发工具集 · 支持分组浏览与搜索";
         TotalToolCount = _allGroupMenus.Sum(group => group.Child?.Count ?? 0);
         CategoryCount = _allGroupMenus.Count;
+        IsDarkThemeEnabled = Application.Current?.RequestedThemeVariant == ThemeVariant.Dark
+            || Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
 
         SelectedListItem = _homeMenu is null
             ? RootMenuItems.FirstOrDefault()
@@ -97,6 +105,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _searchSummary;
+
+    [ObservableProperty]
+    private bool _isDarkThemeEnabled;
 
     private void CreateMenuBars()
     {
@@ -563,8 +574,12 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        app.RequestedThemeVariant = app.ActualThemeVariant == ThemeVariant.Dark
+        var requestedThemeVariant = app.ActualThemeVariant == ThemeVariant.Dark
             ? ThemeVariant.Light
             : ThemeVariant.Dark;
+
+        app.RequestedThemeVariant = requestedThemeVariant;
+        IsDarkThemeEnabled = requestedThemeVariant == ThemeVariant.Dark;
+        _themePreferenceService.SaveRequestedThemeVariant(requestedThemeVariant);
     }
 }

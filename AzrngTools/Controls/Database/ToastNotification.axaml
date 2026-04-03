@@ -8,57 +8,82 @@
 
     <Border x:Name="RootBorder"
             IsVisible="False"
-            CornerRadius="8"
-            Padding="16,12"
-            BoxShadow="0 4 16 0 #40000000"
+            CornerRadius="{StaticResource Radius.Xl}"
+            Padding="{StaticResource Thickness.16}"
+            BoxShadow="{DynamicResource Shadow.MD}"
             MinWidth="300"
             MaxWidth="500">
         <Border.Styles>
             <Style Selector="Border.success">
-                <Setter Property="Background" Value="#D4EDDA"/>
-                <Setter Property="BorderBrush" Value="#C3E6CB"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Status.Success.Background}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Success.Border}"/>
                 <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.success TextBlock.toastToneText">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success.Text}"/>
+            </Style>
+            <Style Selector="Border.success Button.toastClose">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success.Text}"/>
             </Style>
             <Style Selector="Border.error">
-                <Setter Property="Background" Value="#F8D7DA"/>
-                <Setter Property="BorderBrush" Value="#F5C6CB"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Status.Error.Background}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Error.Border}"/>
                 <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.error TextBlock.toastToneText">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}"/>
+            </Style>
+            <Style Selector="Border.error Button.toastClose">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}"/>
             </Style>
             <Style Selector="Border.warning">
-                <Setter Property="Background" Value="#FFF3CD"/>
-                <Setter Property="BorderBrush" Value="#FFEAA7"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Status.Warning.Background}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Warning.Border}"/>
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
+            <Style Selector="Border.warning TextBlock.toastToneText">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Warning.Text}"/>
+            </Style>
+            <Style Selector="Border.warning Button.toastClose">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Warning.Text}"/>
+            </Style>
             <Style Selector="Border.info">
-                <Setter Property="Background" Value="#D1ECF1"/>
-                <Setter Property="BorderBrush" Value="#BEE5EB"/>
+                <Setter Property="Background" Value="{DynamicResource Brush.Status.Info.Background}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Info.Border}"/>
                 <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+            <Style Selector="Border.info TextBlock.toastToneText">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}"/>
+            </Style>
+            <Style Selector="Border.info Button.toastClose">
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Info.Text}"/>
             </Style>
         </Border.Styles>
         <Grid ColumnDefinitions="Auto,*,Auto">
             <Grid.ColumnSpacing>12</Grid.ColumnSpacing>
 
-            <!-- Icon -->
             <TextBlock x:Name="IconText"
                        Grid.Column="0"
+                       Classes="toastToneText"
                        FontSize="20"
                        VerticalAlignment="Center"/>
 
-            <!-- Message -->
             <TextBlock x:Name="MessageText"
                        Grid.Column="1"
+                       Classes="toastToneText"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"
                        FontWeight="Medium"/>
 
-            <!-- Close Button -->
             <Button x:Name="CloseButton"
                     Grid.Column="2"
-                    Padding="8,4"
-                    Classes="secondary"
-                    Background="Transparent"
-                    BorderThickness="0">
-                <TextBlock Text="×" FontSize="18" Foreground="#666"/>
+                    Classes="secondary toastClose"
+                    Background="{DynamicResource Brush.Surface.Transparent}"
+                    BorderThickness="0"
+                    Padding="{StaticResource Thickness.8}">
+                <TextBlock Text="×"
+                           FontSize="18"
+                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
             </Button>
         </Grid>
     </Border>

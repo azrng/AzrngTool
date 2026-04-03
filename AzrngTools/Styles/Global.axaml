@@ -231,7 +231,7 @@
     </Style>
 
     <Style Selector="TextBox.flat-readonly">
-        <Setter Property="Background" Value="{StaticResource Brush.Surface.Transparent}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Transparent}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 
@@ -246,7 +246,7 @@
     </Style>
 
     <Style Selector="ListBox.shell-nav">
-        <Setter Property="Background" Value="{StaticResource Brush.Surface.Transparent}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Surface.Transparent}" />
         <Setter Property="BorderThickness" Value="0" />
     </Style>
 

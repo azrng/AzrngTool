@@ -171,8 +171,8 @@
         <Setter Property="Width" Value="22"/>
         <Setter Property="Height" Value="26"/>
         <Setter Property="CornerRadius" Value="7"/>
-        <Setter Property="Background" Value="#1F8F45"/>
-        <Setter Property="BorderBrush" Value="#187238"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Brand.ExcelBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Brand.ExcelBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
@@ -258,8 +258,8 @@
     </Style>
 
     <Style Selector="Border.overviewHeroPill">
-        <Setter Property="Background" Value="#52FFFFFF"/>
-        <Setter Property="BorderBrush" Value="#66FFFFFF"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Hero.GlassBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Hero.GlassBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
         <Setter Property="Padding" Value="12,6"/>
@@ -293,8 +293,8 @@
         <Setter Property="Width" Value="150"/>
         <Setter Property="Height" Value="150"/>
         <Setter Property="CornerRadius" Value="24"/>
-        <Setter Property="Background" Value="#26FFFFFF"/>
-        <Setter Property="BorderBrush" Value="#33FFFFFF"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Hero.TileBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Hero.TileBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 

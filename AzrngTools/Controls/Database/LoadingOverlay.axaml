@@ -8,32 +8,32 @@
 
     <Grid x:Name="RootGrid"
           IsVisible="False"
-          Background="#80000000"
+          Background="{DynamicResource Brush.Overlay.Scrim}"
           ZIndex="9999">
-        <Border Background="White"
-                CornerRadius="12"
+        <Border Background="{DynamicResource Brush.Panel.Background}"
+                BorderBrush="{DynamicResource Brush.Panel.Stroke}"
+                BorderThickness="1"
+                CornerRadius="{StaticResource Radius.Display}"
                 Padding="32,24"
-                BoxShadow="0 8 32 0 #40000000"
+                BoxShadow="{DynamicResource Shadow.LG}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 MinWidth="200">
             <StackPanel Spacing="16" HorizontalAlignment="Center">
-                <!-- Loading Spinner -->
                 <Border x:Name="SpinnerBorder"
                         Width="40" Height="40"
                         CornerRadius="20"
                         BorderThickness="4"
-                        BorderBrush="{DynamicResource PrimaryColor}"
+                        BorderBrush="{DynamicResource Brush.Accent.Strong}"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"/>
 
-                <!-- Loading Text -->
                 <TextBlock x:Name="PART_LoadingText"
                            Text="加载中..."
                            HorizontalAlignment="Center"
                            FontWeight="Medium"
                            FontSize="14"
-                           Foreground="#374151"/>
+                           Foreground="{DynamicResource Brush.Text.Primary}"/>
             </StackPanel>
         </Border>
     </Grid>

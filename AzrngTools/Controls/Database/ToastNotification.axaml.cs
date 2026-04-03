@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -86,10 +86,12 @@ public partial class ToastNotification : UserControl
     {
         _closeTimer?.Stop();
         _closeTimer = null;
+
         if (_closeButton != null)
         {
             _closeButton.Click -= CloseButton_Click;
         }
+
         base.OnDetachedFromVisualTree(e);
     }
 
@@ -118,7 +120,9 @@ public partial class ToastNotification : UserControl
     private void UpdateAppearance()
     {
         if (_rootBorder == null || _iconText == null || _messageText == null)
+        {
             return;
+        }
 
         _rootBorder.Classes.Clear();
 
@@ -126,19 +130,19 @@ public partial class ToastNotification : UserControl
         {
             case MessageType.Success:
                 _rootBorder.Classes.Add("success");
-                _iconText.Text = "✓";
+                _iconText.Text = "OK";
                 break;
             case MessageType.Error:
                 _rootBorder.Classes.Add("error");
-                _iconText.Text = "✕";
+                _iconText.Text = "X";
                 break;
             case MessageType.Warning:
                 _rootBorder.Classes.Add("warning");
-                _iconText.Text = "⚠";
+                _iconText.Text = "!";
                 break;
             case MessageType.Info:
                 _rootBorder.Classes.Add("info");
-                _iconText.Text = "ℹ";
+                _iconText.Text = "i";
                 break;
         }
 
@@ -148,17 +152,20 @@ public partial class ToastNotification : UserControl
     private void StartAutoCloseTimer()
     {
         if (AutoCloseDelay <= 0)
+        {
             return;
+        }
 
         _closeTimer?.Stop();
         _closeTimer = new DispatcherTimer(
             TimeSpan.FromMilliseconds(AutoCloseDelay),
             DispatcherPriority.Background,
-            (s, e) =>
+            (_, _) =>
             {
                 Hide();
                 _closeTimer?.Stop();
             });
+
         _closeTimer.Start();
     }
 

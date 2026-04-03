@@ -1,5 +1,10 @@
-﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://AzrngTools/Assets/Styles/Fonts.axaml" />
+        <ResourceInclude Source="avares://AzrngTools/Assets/Styles/Spacing.axaml" />
+    </ResourceDictionary.MergedDictionaries>
+
     <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
             <SolidColorBrush x:Key="Brush.App.Background">#F4F7FB</SolidColorBrush>
@@ -10,12 +15,63 @@
             <SolidColorBrush x:Key="Brush.Text.Primary">#FF162033</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Text.Secondary">#FF5D6980</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Text.Tertiary">#FF7D8798</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.OnAccent">#FFFFFFFF</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Soft">#FFDCEBFF</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Strong">#FF1D4ED8</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Border">#FFB7D2FF</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Nav.SelectedBackground">#FFDCEBFF</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Nav.HoverBackground">#FFF0F4FA</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Muted">#FFB8C2D3</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Divider">#14000000</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Danger">#FFE25555</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Surface.Transparent">Transparent</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Overlay.Scrim">#800A1220</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.GlassBackground">#52FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.GlassBorder">#66FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.TileBackground">#26FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.TileBorder">#33FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Close.SubtleForeground">#FF667085</SolidColorBrush>
+
+            <SolidColorBrush x:Key="Brush.Success.50">#FFF0FDF4</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.100">#FFDCFCE7</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.500">#FF22C55E</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.600">#FF16A34A</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.700">#FF15803D</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.50">#FFFFF7ED</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.100">#FFFFEDD5</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.500">#FFF59E0B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.600">#FFD97706</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.700">#FFB45309</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.50">#FFFEF2F2</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.100">#FFFEE2E2</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.500">#FFEF4444</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.600">#FFDC2626</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.700">#FFB91C1C</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.50">#FFEFF6FF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.100">#FFDBEAFE</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.500">#FF3B82F6</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.600">#FF2563EB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.700">#FF1D4ED8</SolidColorBrush>
+
+            <SolidColorBrush x:Key="Brush.Status.Success.Background">#FFF0FDF4</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Success.Border">#FFBBF7D0</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Success.Text">#FF166534</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Background">#FFFFF7ED</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Border">#FFFED7AA</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Text">#FFB45309</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Background">#FFFEF2F2</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Border">#FFFECACA</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Text">#FFB91C1C</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Background">#FFEFF6FF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Border">#FFBFDBFE</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Text">#FF1D4ED8</SolidColorBrush>
+
+            <x:String x:Key="Shadow.None">none</x:String>
+            <x:String x:Key="Shadow.SM">0 1 3 0 #140C1424</x:String>
+            <x:String x:Key="Shadow.MD">0 4 16 0 #220C1424</x:String>
+            <x:String x:Key="Shadow.LG">0 10 28 0 #280C1424</x:String>
         </ResourceDictionary>
+
         <ResourceDictionary x:Key="Dark">
             <SolidColorBrush x:Key="Brush.App.Background">#FF0E1726</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Panel.Background">#FF131D2D</SolidColorBrush>
@@ -25,11 +81,61 @@
             <SolidColorBrush x:Key="Brush.Text.Primary">#FFF4F7FB</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Text.Secondary">#FFB2C0D4</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Text.Tertiary">#FF8A97AB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Text.OnAccent">#FF08111E</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Soft">#FF183B72</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Strong">#FF7FB3FF</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Accent.Border">#FF2C5B9B</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Nav.SelectedBackground">#FF183B72</SolidColorBrush>
             <SolidColorBrush x:Key="Brush.Nav.HoverBackground">#FF1A2638</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Muted">#FF41516A</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Divider">#26F4F7FB</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Border.Danger">#FFFF6B6B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Surface.Transparent">Transparent</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Overlay.Scrim">#A60A1220</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.GlassBackground">#1FFFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.GlassBorder">#33FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.TileBackground">#14FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Hero.TileBorder">#26FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Close.SubtleForeground">#FFB2C0D4</SolidColorBrush>
+
+            <SolidColorBrush x:Key="Brush.Success.50">#FF11261B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.100">#FF1C5131</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.500">#FF4ADE80</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.600">#FF22C55E</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Success.700">#FF16A34A</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.50">#FF2C1F0D</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.100">#FF5A3B12</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.500">#FFFBBF24</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.600">#FFF59E0B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Warning.700">#FFD97706</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.50">#FF2B1517</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.100">#FF5C2026</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.500">#FFF87171</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.600">#FFEF4444</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Error.700">#FFDC2626</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.50">#FF112338</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.100">#FF1D466E</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.500">#FF60A5FA</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.600">#FF3B82F6</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Info.700">#FF2563EB</SolidColorBrush>
+
+            <SolidColorBrush x:Key="Brush.Status.Success.Background">#FF11261B</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Success.Border">#FF1C5131</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Success.Text">#FF86EFAC</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Background">#FF2C1F0D</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Border">#FF5A3B12</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Warning.Text">#FFFCD34D</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Background">#FF2B1517</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Border">#FF5C2026</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Error.Text">#FFFCA5A5</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Background">#FF112338</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Border">#FF1D466E</SolidColorBrush>
+            <SolidColorBrush x:Key="Brush.Status.Info.Text">#FF93C5FD</SolidColorBrush>
+
+            <x:String x:Key="Shadow.None">none</x:String>
+            <x:String x:Key="Shadow.SM">0 1 4 0 #52000000</x:String>
+            <x:String x:Key="Shadow.MD">0 6 18 0 #66000000</x:String>
+            <x:String x:Key="Shadow.LG">0 14 36 0 #7A000000</x:String>
         </ResourceDictionary>
     </ResourceDictionary.ThemeDictionaries>
 
@@ -109,12 +215,9 @@
     <CornerRadius x:Key="Radius.Xxl">15</CornerRadius>
     <CornerRadius x:Key="Radius.Display">18</CornerRadius>
     <CornerRadius x:Key="Radius.Hero">20</CornerRadius>
-    <CornerRadius x:Key="Radius.Pill">999</CornerRadius>
 
     <FontFamily x:Key="FontFamily.App">avares://Avalonia.Fonts.Inter#Inter</FontFamily>
 
-    <SolidColorBrush x:Key="Brush.Border.Muted">#FFAAAAAA</SolidColorBrush>
-    <SolidColorBrush x:Key="Brush.Border.Divider">#22000000</SolidColorBrush>
-    <SolidColorBrush x:Key="Brush.Text.OnAccent">#FFFFFFFF</SolidColorBrush>
-    <SolidColorBrush x:Key="Brush.Surface.Transparent">Transparent</SolidColorBrush>
+    <SolidColorBrush x:Key="Brush.Brand.ExcelBackground">#FF1F8F45</SolidColorBrush>
+    <SolidColorBrush x:Key="Brush.Brand.ExcelBorder">#FF187238</SolidColorBrush>
 </ResourceDictionary>

@@ -47,6 +47,7 @@
 
                     <ToggleSwitch
                         Command="{Binding ToggleCheckedChangedCommand}"
+                        IsChecked="{Binding IsDarkThemeEnabled, Mode=TwoWay}"
                         Padding="{StaticResource Thickness.4}"
                         Theme="{DynamicResource ButtonToggleSwitch}">
                         <ToggleSwitch.OnContent>
