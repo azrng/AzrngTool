@@ -952,6 +952,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
+        var workbenchToastContainer = ToastService.CurrentContainer;
         var dialogViewModel = new ExportDialogViewModel(connection, SelectedDatabaseName, CurrentSchemaName, _lastDocumentExportDirectory);
         var dialog = new ExportDialog(dialogViewModel)
         {
@@ -959,6 +960,12 @@ public partial class MainWindowViewModel : ViewModelBase
         };
 
         var exportRequest = await dialog.ShowDialog<ExportDialogResultDto?>(MainWindow);
+
+        if (workbenchToastContainer != null)
+        {
+            ToastService.SetContainer(workbenchToastContainer);
+        }
+
         if (exportRequest == null)
         {
             return;
