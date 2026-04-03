@@ -78,8 +78,13 @@ public partial class ToastNotification : UserControl
             _closeButton.Click += CloseButton_Click;
         }
 
+        UpdateVisibility();
         UpdateAppearance();
-        StartAutoCloseTimer();
+
+        if (IsVisible)
+        {
+            StartAutoCloseTimer();
+        }
     }
 
     protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
