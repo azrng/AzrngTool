@@ -11,7 +11,7 @@
         x:Name="MainWindowControl"
         d:DesignWidth="1400"
         d:DesignHeight="900"
-        Title="SmartSQL - 数据库文档工具"
+        Title="数据库工作台 - AzrngTools"
         Icon="/Assets/avalonia-logo.ico"
         Width="1400"
         Height="900"
@@ -58,11 +58,11 @@
                             </Border>
                             <StackPanel VerticalAlignment="Center"
                                         Spacing="2">
-                                <TextBlock Text="SmartSQL"
+                                <TextBlock Text="数据库工作台"
                                            FontSize="18"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource TextPrimary}" />
-                                <TextBlock Text="数据库浏览与文档生成"
+                                <TextBlock Text="AzrngTools 内置的连接、浏览与导出工作台"
                                            FontSize="11"
                                            Foreground="{DynamicResource TextSecondary}" />
                             </StackPanel>
@@ -87,13 +87,10 @@
                         <Button Grid.Column="2"
                                 Command="{Binding ShowAddConnectionDialogCommand}"
                                 Classes="toolbarAction"
-                                ToolTip.Tip="连接管理">
+                                ToolTip.Tip="管理数据库连接">
                             <StackPanel Orientation="Horizontal"
-                                        Spacing="8"
                                         VerticalAlignment="Center">
-                                <TextBlock Text="▣"
-                                           FontSize="12" />
-                                <TextBlock Text="连接管理"
+                                <TextBlock Text="管理连接"
                                            FontWeight="Medium" />
                             </StackPanel>
                         </Button>
@@ -101,11 +98,11 @@
                         <Button Grid.Column="3"
                                 Command="{Binding OpenExportDialogCommand}"
                                 Classes="excelExportButton"
-                                ToolTip.Tip="导出">
+                                ToolTip.Tip="导出文档">
                             <StackPanel Orientation="Horizontal"
                                         Spacing="0"
                                         VerticalAlignment="Center">
-                                <TextBlock Text="导出"
+                                <TextBlock Text="导出文档"
                                            FontWeight="Medium"
                                            VerticalAlignment="Center" />
                             </StackPanel>
@@ -174,7 +171,7 @@
                                     <StackPanel Spacing="2">
                                         <TextBlock Text="对象浏览器"
                                                    Classes="subheading" />
-                                        <TextBlock Text="保留更多树区空间，便于浏览大量表对象。"
+                                        <TextBlock Text="连接与对象树集中在左侧，便于连续浏览表、视图与存储过程。"
                                                    Classes="caption"
                                                    TextWrapping="Wrap" />
                                     </StackPanel>
@@ -243,7 +240,7 @@
                                                 Spacing="6">
                                         <TextBlock Text="⌕"
                                                    FontSize="12" />
-                                        <TextBlock Text="清空"
+                                        <TextBlock Text="清空搜索"
                                                    FontWeight="Medium" />
                                     </StackPanel>
                                 </Button>
@@ -272,16 +269,16 @@
                                         <StackPanel Spacing="12">
                                             <Border Classes="overviewHeroPill"
                                                     HorizontalAlignment="Left">
-                                                <TextBlock Text="DATABASE WORKSPACE"
+                                                <TextBlock Text="AZRNGTOOLS DATABASE"
                                                            Classes="overviewHeroPillText" />
                                             </Border>
 
-                                            <TextBlock Text="把连接、浏览、导出整合到一个工作台里"
+                                            <TextBlock Text="在一个工作台里完成连接、浏览与文档导出"
                                                        FontSize="24"
                                                        FontWeight="SemiBold"
                                                        Foreground="{DynamicResource Brush.Neutral.0}"
                                                        TextWrapping="Wrap" />
-                                            <TextBlock Text="选择左侧对象后即可在右侧继续查看架构、表、视图和存储过程详情；未选择对象时，这里会展示当前连接概览与快捷操作。"
+                                            <TextBlock Text="这里是并入 AzrngTools 的数据库工作台入口。先选择连接和数据库，再从左侧对象树进入架构、表、视图与存储过程详情。"
                                                        Foreground="{DynamicResource Brush.Neutral.0}"
                                                        Opacity="0.88"
                                                        TextWrapping="Wrap"
@@ -293,8 +290,7 @@
                                                         Command="{Binding ShowAddConnectionDialogCommand}">
                                                     <StackPanel Orientation="Horizontal"
                                                                 Spacing="8">
-                                                        <TextBlock Text="▣" />
-                                                        <TextBlock Text="打开连接管理" />
+                                                        <TextBlock Text="管理连接" />
                                                     </StackPanel>
                                                 </Button>
                                             </StackPanel>
@@ -333,9 +329,9 @@
                                             HorizontalAlignment="Stretch"
                                             Classes="overviewQuickCard">
                                         <StackPanel Spacing="10">
-                                            <TextBlock Text="对象浏览建议"
+                                            <TextBlock Text="浏览路径"
                                                        Classes="subheading" />
-                                            <TextBlock Text="先在左侧选择数据库，再展开表、视图或存储过程节点；树上的搜索会帮助你快速定位目标对象。"
+                                            <TextBlock Text="先选择连接与数据库，再展开表、视图或存储过程节点；左侧搜索可帮助你快速定位目标对象。"
                                                        Classes="caption"
                                                        TextWrapping="Wrap" />
                                         </StackPanel>
@@ -346,9 +342,9 @@
                                             HorizontalAlignment="Stretch"
                                             Classes="overviewQuickCard">
                                         <StackPanel Spacing="10">
-                                            <TextBlock Text="文档输出"
+                                            <TextBlock Text="导出与整理"
                                                        Classes="subheading" />
-                                            <TextBlock Text="当前工作台支持从头部直接导出文档；进入对象详情后，还可以继续查看字段、索引和 DDL。"
+                                            <TextBlock Text="头部可直接导出文档；进入对象详情后，还能继续查看字段、索引和 DDL，方便整理数据库结构。"
                                                        Classes="caption"
                                                        TextWrapping="Wrap" />
                                         </StackPanel>

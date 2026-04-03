@@ -126,7 +126,7 @@ public partial class MainWindowViewModel : ViewModelBase
             ? SelectedConnection.Name
             : $"{SelectedConnection.Name} / {SelectedDatabaseName}";
 
-    public string Greeting { get; } = $"SmartSQL Avalonia v{GetAppVersion()} - Ready to build your database documentation!";
+    public string Greeting { get; } = $"AzrngTools Database Workbench v{GetAppVersion()}";
 
     public Window? MainWindow { get; set; }
 

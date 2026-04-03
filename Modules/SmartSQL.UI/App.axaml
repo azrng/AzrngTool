@@ -32,7 +32,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Application Name -->
-            <x:String x:Key="AppName">SmartSQL</x:String>
+            <x:String x:Key="AppName">数据库工作台</x:String>
 
             <!-- Application Version -->
             <x:String x:Key="AppVersion">1.0.0</x:String>
