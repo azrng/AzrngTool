@@ -154,6 +154,99 @@
             <Setter Property="BorderBrush" Value="Transparent" />
         </Style>
 
+        <Style Selector="Border.connectionTypeSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:pointerover Border.connectionTypeSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled Border.connectionTypeSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="Opacity" Value="0.76" />
+        </Style>
+
+        <Style Selector="Border.connectionTypeAccentBar">
+            <Setter Property="Height" Value="4" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="CornerRadius" Value="16,16,0,0" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled Border.connectionTypeAccentBar">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Stroke}" />
+        </Style>
+
+        <Style Selector="Border.connectionTypeBadge">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled Border.connectionTypeBadge">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionTypeBadgeText">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Body}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled TextBlock.connectionTypeBadgeText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionTypeName">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Body}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionTypeHint">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="Border.connectionTypeState">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.10.4}" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled Border.connectionTypeState">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionTypeStateText">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="Button.connectionTypeCard:disabled TextBlock.connectionTypeStateText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
         <Style Selector="Button.connectionAction">
             <Setter Property="FocusAdorner" Value="{x:Null}" />
             <Setter Property="Cursor" Value="Hand" />
@@ -406,7 +499,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Button Width="176"
-                                                Height="118"
+                                                Height="138"
                                                 Margin="0,0,18,18"
                                                 Classes="connectionTypeCard"
                                                 Padding="0"
@@ -415,45 +508,28 @@
                                                 IsEnabled="{Binding IsEnabled}"
                                                 Command="{Binding $parent[Window].DataContext.SelectDatabaseTypeCommand}"
                                                 CommandParameter="{Binding Type}">
-                                            <Border Background="{DynamicResource Brush.Panel.Background}"
-                                                    BorderBrush="{Binding BorderColor}"
-                                                    BorderThickness="1"
-                                                    CornerRadius="16">
+                                            <Border Classes="connectionTypeSurface">
                                                 <Grid RowDefinitions="4,*">
-                                                    <Border Height="4"
-                                                            Background="{Binding AccentColor}"
-                                                            CornerRadius="16,16,0,0" />
+                                                    <Border Classes="connectionTypeAccentBar" />
 
                                                     <StackPanel Grid.Row="1"
                                                                 Spacing="10"
                                                                 Margin="18,16"
                                                                 HorizontalAlignment="Center"
                                                                 VerticalAlignment="Center">
-                                                        <Border Width="44"
-                                                                Height="44"
-                                                                CornerRadius="14"
-                                                                Background="{Binding SoftColor}"
-                                                                BorderBrush="{Binding BorderColor}"
-                                                                BorderThickness="1">
+                                                        <Border Classes="connectionTypeBadge">
                                                             <TextBlock Text="{Binding Icon}"
-                                                                       FontSize="16"
-                                                                       FontWeight="Bold"
-                                                                       Foreground="{Binding IconForeground}"
-                                                                       HorizontalAlignment="Center"
-                                                                       VerticalAlignment="Center" />
+                                                                       Classes="connectionTypeBadgeText" />
                                                         </Border>
 
                                                         <TextBlock Text="{Binding Name}"
-                                                                   FontSize="15"
-                                                                   FontWeight="SemiBold"
-                                                                   Foreground="{DynamicResource Brush.Text.Primary}"
-                                                                   HorizontalAlignment="Center" />
+                                                                   Classes="connectionTypeName" />
 
-                                                        <TextBlock Text="{Binding Hint}"
-                                                                   FontSize="11"
-                                                                   Foreground="{DynamicResource Brush.Text.Secondary}"
-                                                                   HorizontalAlignment="Center"
-                                                                   IsVisible="{Binding IsDisabled}" />
+                                                        <Border Classes="connectionTypeState"
+                                                                HorizontalAlignment="Center">
+                                                            <TextBlock Text="{Binding Hint}"
+                                                                       Classes="connectionTypeStateText" />
+                                                        </Border>
                                                     </StackPanel>
                                                 </Grid>
                                             </Border>

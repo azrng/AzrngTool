@@ -22,10 +22,6 @@ public class DatabaseTypeCard
     public bool IsEnabled { get; set; } = true;
     public bool IsDisabled => !IsEnabled;
     public string Hint { get; set; } = string.Empty;
-    public string AccentColor { get; set; } = "#3B82F6";
-    public string SoftColor { get; set; } = "#EEF4FF";
-    public string BorderColor { get; set; } = "#D9E7FF";
-    public string IconForeground { get; set; } = "#2457C5";
 }
 
 public partial class ConnectionDialogViewModel : ViewModelBase
@@ -275,11 +271,11 @@ public partial class ConnectionDialogViewModel : ViewModelBase
     {
         DatabaseTypeCards = new ObservableCollection<DatabaseTypeCard>
         {
-            new() { Type = DatabaseType.PostgresSql, Icon = "PG", Name = "PostgresSql", AccentColor = "#2F6FAD", SoftColor = "#EDF5FF", BorderColor = "#CFE0F3", IconForeground = "#2F6FAD" },
-            new() { Type = DatabaseType.MySql, Icon = "MY", Name = "MySql", AccentColor = "#0C87AE", SoftColor = "#EEFBFF", BorderColor = "#C8ECF5", IconForeground = "#0C87AE" },
-            new() { Type = DatabaseType.SqlServer, Icon = "MS", Name = "SQL Server", IsEnabled = false, Hint = "暂未开放", AccentColor = "#5A7CC5", SoftColor = "#F1F5FF", BorderColor = "#DBE4FF", IconForeground = "#5A7CC5" },
-            new() { Type = DatabaseType.Sqlite, Icon = "SQ", Name = "Sqlite", IsEnabled = false, Hint = "暂未开放", AccentColor = "#688198", SoftColor = "#F3F7FB", BorderColor = "#DCE6EE", IconForeground = "#688198" },
-            new() { Type = DatabaseType.Oracle, Icon = "OR", Name = "Oracle", IsEnabled = false, Hint = "暂未开放", AccentColor = "#DE4C43", SoftColor = "#FFF2F0", BorderColor = "#FFD7D1", IconForeground = "#DE4C43" }
+            new() { Type = DatabaseType.PostgresSql, Icon = "PG", Name = "PostgresSql", Hint = "可配置" },
+            new() { Type = DatabaseType.MySql, Icon = "MY", Name = "MySql", Hint = "可配置" },
+            new() { Type = DatabaseType.SqlServer, Icon = "MS", Name = "SQL Server", IsEnabled = false, Hint = "待接入" },
+            new() { Type = DatabaseType.Sqlite, Icon = "SQ", Name = "Sqlite", IsEnabled = false, Hint = "待接入" },
+            new() { Type = DatabaseType.Oracle, Icon = "OR", Name = "Oracle", IsEnabled = false, Hint = "待接入" }
         };
     }
 
