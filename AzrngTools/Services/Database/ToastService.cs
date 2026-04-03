@@ -65,7 +65,8 @@ public static class ToastService
 
     private static void ShowToast(string message, MessageType type, int autoCloseDelay)
     {
-        if (_toastContainer == null)
+        var targetContainer = _toastContainer;
+        if (targetContainer == null)
         {
             LoggingService.LogWarning("Toast 容器未初始化，无法显示消息");
             return;
@@ -82,13 +83,13 @@ public static class ToastService
 
             toast.Closed += (s, e) =>
             {
-                if (_toastContainer != null && s is ToastNotification t)
+                if (s is ToastNotification t)
                 {
-                    _toastContainer.Children.Remove(t);
+                    targetContainer.Children.Remove(t);
                 }
             };
 
-            _toastContainer.Children.Add(toast);
+            targetContainer.Children.Add(toast);
 
             // 自动显示
             toast.Show(message, type, autoCloseDelay);
