@@ -477,83 +477,285 @@
                             ClipToBounds="True"
                             IsVisible="{Binding ShowSchemaWorkspace}">
                         <ScrollViewer Classes="schemaWorkspaceScroll">
-                            <StackPanel Spacing="{StaticResource Space.14}">
-                                <Grid ColumnDefinitions="*,Auto"
-                                      RowDefinitions="Auto,Auto"
-                                      RowSpacing="{StaticResource Space.4}">
-                                    <TextBlock Text="{Binding CurrentSchema.Name, FallbackValue=架构}"
-                                               Classes="schemaWorkspaceTitle" />
-                                    <TextBlock Grid.Row="1"
-                                               Text="{Binding CurrentConnectionLabel}"
-                                               Classes="schemaWorkspaceSubtitle" />
+                            <StackPanel Spacing="{StaticResource Space.16}">
+                                <Border Classes="dbWorkbenchHeroCard">
+                                    <Grid ColumnDefinitions="*,280"
+                                          ColumnSpacing="{StaticResource Space.16}">
+                                        <StackPanel Spacing="{StaticResource Space.12}">
+                                            <Border Classes="dbWorkbenchHeroBadge"
+                                                    HorizontalAlignment="Left">
+                                                <TextBlock Text="SCHEMA WORKSPACE"
+                                                           Classes="dbWorkbenchHeroBadgeText" />
+                                            </Border>
+
+                                            <TextBlock Text="{Binding CurrentSchema.Name, FallbackValue=架构工作区}"
+                                                       Classes="dbWorkbenchHeroTitle"
+                                                       TextWrapping="Wrap" />
+
+                                            <TextBlock Text="{Binding CurrentConnectionLabel}"
+                                                       Classes="caption"
+                                                       TextWrapping="Wrap" />
+
+                                            <TextBlock Text="这里承接当前架构的浏览上下文。左侧对象树继续负责导航，右侧则先汇总架构状态，再承接后续表、视图与存储过程详情。"
+                                                       Classes="body"
+                                                       TextWrapping="Wrap" />
+
+                                            <Grid ColumnDefinitions="*,*"
+                                                  ColumnSpacing="{StaticResource Space.12}">
+                                                <Border Grid.Column="0"
+                                                        Classes="dbWorkbenchInfoCard">
+                                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                                        <TextBlock Text="所有者"
+                                                                   Classes="label" />
+                                                        <TextBlock Text="{Binding CurrentSchema.Owner, FallbackValue=-}"
+                                                                   Classes="dbWorkbenchInfoValue" />
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <Border Grid.Column="1"
+                                                        Classes="dbWorkbenchInfoCard">
+                                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                                        <TextBlock Text="架构记录表数"
+                                                                   Classes="label" />
+                                                        <TextBlock Text="{Binding CurrentSchema.TableCount}"
+                                                                   Classes="dbWorkbenchInfoValue" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        Spacing="{StaticResource Space.12}">
+                                                <Button Classes="workbenchAccentAction"
+                                                        Command="{Binding OpenExportDialogCommand}">
+                                                    <TextBlock Text="导出当前上下文" />
+                                                </Button>
+
+                                                <Border Classes="statusPill"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding CurrentSchema.Name, StringFormat=当前架构: {0}}"
+                                                               Classes="statusPillText" />
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="1"
+                                                Classes="dbWorkbenchStatusCard">
+                                            <StackPanel Spacing="{StaticResource Space.12}">
+                                                <StackPanel Spacing="{StaticResource Space.4}">
+                                                    <TextBlock Text="架构摘要"
+                                                               Classes="subheading" />
+                                                    <TextBlock Text="右侧先给出架构规模和默认状态，进入具体对象前就能建立上下文。"
+                                                               Classes="caption"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+
+                                                <Grid ColumnDefinitions="*,*"
+                                                      RowDefinitions="Auto,Auto"
+                                                      ColumnSpacing="{StaticResource Space.12}"
+                                                      RowSpacing="{StaticResource Space.12}">
+                                                    <Border Grid.Row="0"
+                                                            Grid.Column="0"
+                                                            Classes="dbWorkbenchMiniMetricCard">
+                                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                                            <TextBlock Text="数据表"
+                                                                       Classes="dbWorkbenchMiniMetricLabel" />
+                                                            <TextBlock Text="{Binding TableDetailViewModel.Tables.Count}"
+                                                                       Classes="dbWorkbenchMiniMetricValue" />
+                                                        </StackPanel>
+                                                    </Border>
+
+                                                    <Border Grid.Row="0"
+                                                            Grid.Column="1"
+                                                            Classes="dbWorkbenchMiniMetricCard">
+                                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                                            <TextBlock Text="视图"
+                                                                       Classes="dbWorkbenchMiniMetricLabel" />
+                                                            <TextBlock Text="{Binding ViewDetailViewModel.Views.Count}"
+                                                                       Classes="dbWorkbenchMiniMetricValue" />
+                                                        </StackPanel>
+                                                    </Border>
+
+                                                    <Border Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            Classes="dbWorkbenchMiniMetricCard">
+                                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                                            <TextBlock Text="存储过程"
+                                                                       Classes="dbWorkbenchMiniMetricLabel" />
+                                                            <TextBlock Text="{Binding StoredProcedureDetailViewModel.Procedures.Count}"
+                                                                       Classes="dbWorkbenchMiniMetricValue" />
+                                                        </StackPanel>
+                                                    </Border>
+
+                                                    <Border Grid.Row="1"
+                                                            Grid.Column="1"
+                                                            Classes="dbWorkbenchMiniMetricCard">
+                                                        <StackPanel Spacing="{StaticResource Space.4}">
+                                                            <TextBlock Text="默认架构"
+                                                                       Classes="dbWorkbenchMiniMetricLabel" />
+                                                            <Grid ColumnDefinitions="Auto,*"
+                                                                  ColumnSpacing="{StaticResource Space.8}">
+                                                                <Border Classes="booleanBadge positive"
+                                                                        IsVisible="{Binding CurrentSchema.IsDefault}">
+                                                                    <TextBlock Text="是"
+                                                                               Classes="booleanBadgeText positive" />
+                                                                </Border>
+
+                                                                <Border Classes="booleanBadge negative"
+                                                                        IsVisible="{Binding CurrentSchema.IsDefault, Converter={StaticResource InvertedBoolConverter}}">
+                                                                    <TextBlock Text="否"
+                                                                               Classes="booleanBadgeText negative" />
+                                                                </Border>
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </Border>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <Grid ColumnDefinitions="1.35*,*"
+                                      ColumnSpacing="{StaticResource Space.16}">
+                                    <StackPanel Grid.Column="0"
+                                                Spacing="{StaticResource Space.16}">
+                                        <Border Classes="dbWorkbenchSectionCard">
+                                            <StackPanel Spacing="{StaticResource Space.12}">
+                                                <StackPanel Spacing="{StaticResource Space.4}">
+                                                    <TextBlock Text="浏览路径"
+                                                               Classes="subheading" />
+                                                    <TextBlock Text="选中架构后，右侧应该回答两个问题：当前架构里有什么，以及接下来从哪里进入。"
+                                                               Classes="caption"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+
+                                                <Border Classes="dbWorkbenchStepRow">
+                                                    <Grid ColumnDefinitions="Auto,*"
+                                                          ColumnSpacing="{StaticResource Space.12}">
+                                                        <Border Classes="dbWorkbenchStepBadge">
+                                                            <TextBlock Text="1"
+                                                                       Classes="dbWorkbenchStepBadgeText" />
+                                                        </Border>
+
+                                                        <StackPanel Grid.Column="1"
+                                                                    Spacing="{StaticResource Space.2}">
+                                                            <TextBlock Text="先确认当前架构上下文"
+                                                                       Classes="body" />
+                                                            <TextBlock Text="顶部状态条与本页摘要一起说明连接、数据库和当前架构，避免后续详情页脱离上下文。"
+                                                                       Classes="caption"
+                                                                       TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border Classes="dbWorkbenchStepRow">
+                                                    <Grid ColumnDefinitions="Auto,*"
+                                                          ColumnSpacing="{StaticResource Space.12}">
+                                                        <Border Classes="dbWorkbenchStepBadge">
+                                                            <TextBlock Text="2"
+                                                                       Classes="dbWorkbenchStepBadgeText" />
+                                                        </Border>
+
+                                                        <StackPanel Grid.Column="1"
+                                                                    Spacing="{StaticResource Space.2}">
+                                                            <TextBlock Text="从左侧对象树继续下钻"
+                                                                       Classes="body" />
+                                                            <TextBlock Text="切到表节点会进入表详情，切到视图和存储过程时也会复用同一套右侧工作区结构。"
+                                                                       Classes="caption"
+                                                                       TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border Classes="dbWorkbenchStepRow">
+                                                    <Grid ColumnDefinitions="Auto,*"
+                                                          ColumnSpacing="{StaticResource Space.12}">
+                                                        <Border Classes="dbWorkbenchStepBadge">
+                                                            <TextBlock Text="3"
+                                                                       Classes="dbWorkbenchStepBadgeText" />
+                                                        </Border>
+
+                                                        <StackPanel Grid.Column="1"
+                                                                    Spacing="{StaticResource Space.2}">
+                                                            <TextBlock Text="按需导出与整理"
+                                                                       Classes="body" />
+                                                            <TextBlock Text="确认架构范围后即可直接导出文档，也可以继续进入对象详情补充字段、参数和 DDL 信息。"
+                                                                       Classes="caption"
+                                                                       TextWrapping="Wrap" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Classes="dbWorkbenchSectionCard subtle">
+                                            <StackPanel Spacing="{StaticResource Space.10}">
+                                                <TextBlock Text="对象规模"
+                                                           Classes="subheading" />
+                                                <TextBlock Text="当前架构里的表、视图和存储过程数量会随加载结果更新，这里显示的是进入详情前的第一层摘要。"
+                                                           Classes="caption"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="{StaticResource Space.16}">
+                                        <Border Classes="dbWorkbenchSectionCard">
+                                            <StackPanel Spacing="{StaticResource Space.12}">
+                                                <StackPanel Spacing="{StaticResource Space.4}">
+                                                    <TextBlock Text="当前上下文"
+                                                               Classes="subheading" />
+                                                    <TextBlock Text="这部分保留给正在工作的架构信息，方便从入口页、架构页和对象详情页之间顺滑切换。"
+                                                               Classes="caption"
+                                                               TextWrapping="Wrap" />
+                                                </StackPanel>
+
+                                                <Border Classes="dbWorkbenchStateRow">
+                                                    <Grid RowDefinitions="Auto,Auto"
+                                                          RowSpacing="{StaticResource Space.4}">
+                                                        <TextBlock Text="连接"
+                                                                   Classes="label" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Text="{Binding CompactConnectionLabel}"
+                                                                   Classes="dbWorkbenchStateValue" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border Classes="dbWorkbenchStateRow">
+                                                    <Grid RowDefinitions="Auto,Auto"
+                                                          RowSpacing="{StaticResource Space.4}">
+                                                        <TextBlock Text="架构"
+                                                                   Classes="label" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Text="{Binding CurrentSchema.Name, FallbackValue=未选择架构}"
+                                                                   Classes="dbWorkbenchStateValue" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <Border Classes="dbWorkbenchStateRow">
+                                                    <Grid RowDefinitions="Auto,Auto"
+                                                          RowSpacing="{StaticResource Space.4}">
+                                                        <TextBlock Text="所有者"
+                                                                   Classes="label" />
+                                                        <TextBlock Grid.Row="1"
+                                                                   Text="{Binding CurrentSchema.Owner, FallbackValue=-}"
+                                                                   Classes="dbWorkbenchStateValue" />
+                                                    </Grid>
+                                                </Border>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <Border Classes="dbWorkbenchSectionCard subtle">
+                                            <StackPanel Spacing="{StaticResource Space.10}">
+                                                <TextBlock Text="后续入口"
+                                                           Classes="subheading" />
+                                                <TextBlock Text="下一步优先承接表、视图和存储过程详情页。如果你继续点下钻，右侧应该始终保持同一套工作台语义，而不是重新换一种页面语言。"
+                                                           Classes="caption"
+                                                           TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
                                 </Grid>
-
-                                <Grid ColumnDefinitions="*,*,*"
-                                      ColumnSpacing="{StaticResource Space.12}">
-                                    <Border Grid.Column="0"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="所有者"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding CurrentSchema.Owner, FallbackValue=-}"
-                                                       Classes="schemaMetricValue" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="1"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="默认架构"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding CurrentSchema.IsDefault, StringFormat={}{0}}"
-                                                       Classes="schemaMetricValue" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="2"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="架构名称"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding CurrentSchema.Name, FallbackValue=-}"
-                                                       Classes="schemaMetricValue" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-
-                                <Grid ColumnDefinitions="*,*,*"
-                                      ColumnSpacing="{StaticResource Space.12}">
-                                    <Border Grid.Column="0"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="数据表"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding TableDetailViewModel.Tables.Count}"
-                                                       Classes="schemaMetricValue prominent" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="1"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="视图"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding ViewDetailViewModel.Views.Count}"
-                                                       Classes="schemaMetricValue prominent" />
-                                        </StackPanel>
-                                    </Border>
-
-                                    <Border Grid.Column="2"
-                                            Classes="schemaMetricCard">
-                                        <StackPanel Spacing="{StaticResource Space.4}">
-                                            <TextBlock Text="存储过程"
-                                                       Classes="schemaMetricLabel" />
-                                            <TextBlock Text="{Binding StoredProcedureDetailViewModel.Procedures.Count}"
-                                                       Classes="schemaMetricValue prominent" />
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
