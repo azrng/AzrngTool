@@ -185,52 +185,52 @@
     </Style>
 
     <Style Selector="Border.toolbarStrip">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="Padding" Value="16,10"/>
     </Style>
 
     <Style Selector="Border.toolbarCommandBar">
-        <Setter Property="Background" Value="{DynamicResource Brush.Neutral.0}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
         <Setter Property="Padding" Value="14,10"/>
     </Style>
 
     <Style Selector="Border.toolbarStatCard">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Padding" Value="12,8"/>
     </Style>
 
     <Style Selector="Border.browserPanel">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
     </Style>
 
     <Style Selector="Border.browserSection">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="Padding" Value="20,18"/>
     </Style>
 
     <Style Selector="Border.browserCompactSection">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="Padding" Value="18,16,18,14"/>
     </Style>
 
     <Style Selector="Border.browserTreeSurface">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="Margin" Value="10"/>
@@ -238,8 +238,8 @@
     </Style>
 
     <Style Selector="Border.workspaceSurface">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
         <Setter Property="Padding" Value="0"/>
@@ -344,8 +344,8 @@
     </Style>
 
     <Style Selector="Border.schemaMetricCard">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.LG}"/>
         <Setter Property="Padding" Value="14,12"/>
@@ -371,25 +371,180 @@
     </Style>
 
     <Style Selector="Border.detailGridShell">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
         <Setter Property="ClipToBounds" Value="True"/>
     </Style>
 
     <Style Selector="Border.detailGridHeader">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Subtle}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="Padding" Value="14,12"/>
     </Style>
 
     <Style Selector="Border.detailGridRow">
-        <Setter Property="Background" Value="{DynamicResource Brush.Background.Surface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Default}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
         <Setter Property="BorderThickness" Value="0,0,0,1"/>
         <Setter Property="Padding" Value="14,12"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchIdentityBadge">
+        <Setter Property="Width" Value="40"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchIdentityText">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Title.Sm}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchHeroCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Hero}"/>
+        <Setter Property="Padding" Value="20"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchHeroBadge">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
+        <Setter Property="Padding" Value="12,6"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchHeroBadgeText">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchHeroTitle">
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Hero}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchInfoCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="14,12"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchInfoValue">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchStatusCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Display}"/>
+        <Setter Property="Padding" Value="18"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchStatePill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
+        <Setter Property="Padding" Value="10,5"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchStatePillText">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchMiniMetricCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="12"/>
+        <Setter Property="MinHeight" Value="74"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchMiniMetricLabel">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchMiniMetricValue">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontSize.Title.Md}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchSectionCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="18"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchSectionCard.subtle">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchStepRow">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="12"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchStepBadge">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}"/>
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchStepBadgeText">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextAlignment" Value="Center"/>
+    </Style>
+
+    <Style Selector="Border.dbWorkbenchStateRow">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="12"/>
+    </Style>
+
+    <Style Selector="TextBlock.dbWorkbenchStateValue">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
 
     <Style Selector="TextBlock.detailGridHeaderText">

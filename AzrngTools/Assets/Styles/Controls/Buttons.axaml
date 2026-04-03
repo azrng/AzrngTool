@@ -231,4 +231,70 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Info.100}"/>
     </Style>
 
+    <Style Selector="Button.workbenchToolbarAction">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.12.4}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusAdorner" Value="{x:Null}"/>
+    </Style>
+
+    <Style Selector="Button.workbenchToolbarAction:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+    </Style>
+
+    <Style Selector="Button.workbenchToolbarAction:pressed">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="Opacity" Value="0.9"/>
+    </Style>
+
+    <Style Selector="Button.workbenchAccentAction">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Strong}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.14.4}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusAdorner" Value="{x:Null}"/>
+    </Style>
+
+    <Style Selector="Button.workbenchAccentAction:pointerover">
+        <Setter Property="Opacity" Value="0.92"/>
+    </Style>
+
+    <Style Selector="Button.workbenchAccentAction:pressed">
+        <Setter Property="Opacity" Value="0.84"/>
+    </Style>
+
+    <Style Selector="Button.workbenchSidebarAction">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.10.4}"/>
+        <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusAdorner" Value="{x:Null}"/>
+    </Style>
+
+    <Style Selector="Button.workbenchSidebarAction:pointerover">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}"/>
+    </Style>
+
+    <Style Selector="Button.workbenchSidebarAction:pressed">
+        <Setter Property="Opacity" Value="0.9"/>
+    </Style>
+
 </Styles>
