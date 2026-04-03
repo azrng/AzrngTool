@@ -1,227 +1,445 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
-             xmlns:models="using:AzrngTools.Models.Database"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="500"
              x:Class="AzrngTools.Views.Database.Workbench.DatabaseTypeSelector"
              x:CompileBindings="False"
              x:DataType="vm:ConnectionDialogViewModel">
 
     <Design.DataContext>
-        <vm:ConnectionDialogViewModel/>
+        <vm:ConnectionDialogViewModel />
     </Design.DataContext>
 
+    <UserControl.Styles>
+        <Style Selector="Border.databaseTypeSelectorIntro">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.20}" />
+        </Style>
+
+        <Style Selector="Border.databaseTypeSelectorSummary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorMetricValue">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorMetricLabel">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style Selector="Button.databaseTypeCard">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.20}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="FocusAdorner" Value="{x:Null}" />
+            <Setter Property="MinHeight" Value="172" />
+        </Style>
+
+        <Style Selector="Button.databaseTypeCard /template/ ContentPresenter">
+            <Setter Property="Padding" Value="0" />
+        </Style>
+
+        <Style Selector="Button.databaseTypeCard:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        </Style>
+
+        <Style Selector="Button.databaseTypeCard:pressed">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+        </Style>
+
+        <Style Selector="Button.databaseTypeCard.disabled">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="Opacity" Value="0.74" />
+        </Style>
+
+        <Style Selector="Border.databaseTypeSelectorBadge">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="Border.databaseTypeSelectorBadge.disabled">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorBadgeText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Body}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorBadgeText.disabled">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorTitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorSubtitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="Border.databaseTypeSelectorState">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.10.4}" />
+        </Style>
+
+        <Style Selector="Border.databaseTypeSelectorState.disabled">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorStateText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.databaseTypeSelectorStateText.disabled">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+    </UserControl.Styles>
+
     <Grid RowDefinitions="Auto,*">
-        <!-- 页面标题 -->
-        <Border Grid.Row="0" Padding="20,0,20,16">
-            <TextBlock Text="选择数据库类型"
-                       Classes="heading"/>
+        <Border Grid.Row="0"
+                Classes="databaseTypeSelectorIntro">
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="{StaticResource Space.16}">
+                <StackPanel Spacing="{StaticResource Space.8}">
+                    <Border Classes="statusPill"
+                            HorizontalAlignment="Left">
+                        <TextBlock Text="DATABASE TYPES"
+                                   Classes="statusPillText" />
+                    </Border>
+                    <TextBlock Text="选择要接入当前工作台的数据库类型"
+                               Classes="heading" />
+                    <TextBlock Text="这一页已经切回当前数据库工作台的卡片语言。已接入类型可以直接进入配置，其余类型保留统一占位和待接入状态。"
+                               Classes="caption"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Grid Grid.Column="1"
+                      ColumnDefinitions="Auto,Auto"
+                      ColumnSpacing="{StaticResource Space.12}"
+                      VerticalAlignment="Top">
+                    <Border Grid.Column="0"
+                            Classes="databaseTypeSelectorSummary">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="2"
+                                       Classes="databaseTypeSelectorMetricValue"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="已接入"
+                                       Classes="databaseTypeSelectorMetricLabel"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Classes="databaseTypeSelectorSummary">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Text="8"
+                                       Classes="databaseTypeSelectorMetricValue"
+                                       HorizontalAlignment="Center" />
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorMetricLabel"
+                                       HorizontalAlignment="Center" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
         </Border>
 
-        <!-- 数据库类型网格 -->
         <ScrollViewer Grid.Row="1"
+                      Margin="{StaticResource Thickness.Top.20}"
+                      Padding="{StaticResource Thickness.Bottom.10}"
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
-            <Grid ColumnDefinitions="*,*,*,*,*" RowDefinitions="*,*"
-                  Margin="0,0,0,20">
-
-                <!-- 第一行：SQL Server -->
-                <Border Grid.Row="0" Grid.Column="0"
-                        Classes="dbCard"
+            <Grid ColumnDefinitions="*,*,*,*,*"
+                  RowDefinitions="Auto,Auto"
+                  ColumnSpacing="{StaticResource Space.16}"
+                  RowSpacing="{StaticResource Space.16}">
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        x:Name="SqlCard"
+                        Classes="databaseTypeCard disabled"
                         Tag="SqlServer"
-                        Cursor="Hand"
-                        x:Name="SqlCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Image Source="/Assets/Database/sqlserver.png"
-                               Width="48" Height="48"/>
+                        IsEnabled="False">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
+                            <TextBlock Text="MS"
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
+                        </Border>
                         <TextBlock Text="SQL Server"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="Microsoft"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第一行：MySql -->
-                <Border Grid.Row="0" Grid.Column="1"
-                        Classes="dbCard"
-                        Tag="MySql"
-                        Cursor="Hand"
-                        x:Name="MySqlCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Image Source="/Assets/Database/MySql.png"
-                               Width="48" Height="48"/>
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        x:Name="MySqlCard"
+                        Classes="databaseTypeCard"
+                        Tag="MySql">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge">
+                            <TextBlock Text="MY"
+                                       Classes="databaseTypeSelectorBadgeText" />
+                        </Border>
                         <TextBlock Text="MySql"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="Oracle"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="可配置"
+                                       Classes="databaseTypeSelectorStateText" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第一行：PostgresSql -->
-                <Border Grid.Row="0" Grid.Column="2"
-                        Classes="dbCard"
-                        Tag="PostgresSql"
-                        Cursor="Hand"
-                        x:Name="PostgreCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Image Source="/Assets/Database/PostgresSql.png"
-                               Width="48" Height="48"/>
+                <Button Grid.Row="0"
+                        Grid.Column="2"
+                        x:Name="PostgreCard"
+                        Classes="databaseTypeCard"
+                        Tag="PostgresSql">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge">
+                            <TextBlock Text="PG"
+                                       Classes="databaseTypeSelectorBadgeText" />
+                        </Border>
                         <TextBlock Text="PostgresSql"
-                                   Classes="dbCardTitle"/>
-                        <TextBlock Text="PostgresSql Global"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
+                        <TextBlock Text="PostgreSQL Global"
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="可配置"
+                                       Classes="databaseTypeSelectorStateText" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第一行：Sqlite -->
-                <Border Grid.Row="0" Grid.Column="3"
-                        Classes="dbCard"
+                <Button Grid.Row="0"
+                        Grid.Column="3"
+                        x:Name="SqliteCard"
+                        Classes="databaseTypeCard disabled"
                         Tag="Sqlite"
-                        Cursor="Hand"
-                        x:Name="SqliteCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Image Source="/Assets/Database/Sqlite.png"
-                               Width="48" Height="48"/>
+                        IsEnabled="False">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
+                            <TextBlock Text="SQ"
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
+                        </Border>
                         <TextBlock Text="Sqlite"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="Embedded"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第一行：Oracle -->
-                <Border Grid.Row="0" Grid.Column="4"
-                        Classes="dbCard"
+                <Button Grid.Row="0"
+                        Grid.Column="4"
+                        x:Name="OracleCard"
+                        Classes="databaseTypeCard disabled"
                         Tag="Oracle"
-                        Cursor="Hand"
-                        x:Name="OracleCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Image Source="/Assets/Database/oracle.png"
-                               Width="48" Height="48"/>
+                        IsEnabled="False">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
+                            <TextBlock Text="OR"
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
+                        </Border>
                         <TextBlock Text="Oracle"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="Oracle Corp"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第二行：达梦 -->
-                <Border Grid.Row="1" Grid.Column="0"
-                        Classes="dbCard"
+                <Button Grid.Row="1"
+                        Grid.Column="0"
+                        x:Name="DamengCard"
+                        Classes="databaseTypeCard disabled"
                         Tag="Dm"
-                        Cursor="Hand"
-                        x:Name="DamengCard">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8">
-                        <Border Width="48" Height="48"
-                                Background="#E74C3C"
-                                CornerRadius="8">
+                        IsEnabled="False">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
                             <TextBlock Text="达"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
                         </Border>
                         <TextBlock Text="达梦"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="武汉达梦"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第二行：DB2 (禁用) -->
-                <Border Grid.Row="1" Grid.Column="1"
-                        Classes="dbCard dbCardDisabled"
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Classes="databaseTypeCard disabled"
                         Tag="DB2"
                         IsEnabled="False">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8" Opacity="0.5">
-                        <Border Width="48" Height="48"
-                                Background="#95A5A6"
-                                CornerRadius="8">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
                             <TextBlock Text="DB2"
-                                       FontSize="14"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Classes="databaseTypeSelectorBadgeText disabled"
+                                       FontSize="{DynamicResource Font.Size.BodySmall}" />
                         </Border>
                         <TextBlock Text="DB2"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="IBM"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第二行：TiDB (禁用) -->
-                <Border Grid.Row="1" Grid.Column="2"
-                        Classes="dbCard dbCardDisabled"
+                <Button Grid.Row="1"
+                        Grid.Column="2"
+                        Classes="databaseTypeCard disabled"
                         Tag="TiDB"
                         IsEnabled="False">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8" Opacity="0.5">
-                        <Border Width="48" Height="48"
-                                Background="#E74C3C"
-                                CornerRadius="8">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
                             <TextBlock Text="Ti"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
                         </Border>
                         <TextBlock Text="TiDB"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="PingCAP"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第二行：瀚高 (禁用) -->
-                <Border Grid.Row="1" Grid.Column="3"
-                        Classes="dbCard dbCardDisabled"
+                <Button Grid.Row="1"
+                        Grid.Column="3"
+                        Classes="databaseTypeCard disabled"
                         Tag="HighGo"
                         IsEnabled="False">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8" Opacity="0.5">
-                        <Border Width="48" Height="48"
-                                Background="#3498DB"
-                                CornerRadius="8">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
                             <TextBlock Text="瀚"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
                         </Border>
                         <TextBlock Text="瀚高"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="瀚高软件"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
 
-                <!-- 第二行：人大金仓 (禁用) -->
-                <Border Grid.Row="1" Grid.Column="4"
-                        Classes="dbCard dbCardDisabled"
+                <Button Grid.Row="1"
+                        Grid.Column="4"
+                        Classes="databaseTypeCard disabled"
                         Tag="Kingbase"
                         IsEnabled="False">
-                    <StackPanel HorizontalAlignment="Center" Spacing="8" Opacity="0.5">
-                        <Border Width="48" Height="48"
-                                Background="#E74C3C"
-                                CornerRadius="8">
+                    <StackPanel Spacing="{StaticResource Space.12}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <Border Classes="databaseTypeSelectorBadge disabled">
                             <TextBlock Text="金"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="White"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                                       Classes="databaseTypeSelectorBadgeText disabled" />
                         </Border>
                         <TextBlock Text="人大金仓"
-                                   Classes="dbCardTitle"/>
+                                   Classes="databaseTypeSelectorTitle" />
                         <TextBlock Text="人大金仓"
-                                   Classes="dbCardSubtitle"/>
+                                   Classes="databaseTypeSelectorSubtitle" />
+                        <Border Classes="databaseTypeSelectorState disabled"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="待接入"
+                                       Classes="databaseTypeSelectorStateText disabled" />
+                        </Border>
                     </StackPanel>
-                </Border>
+                </Button>
             </Grid>
         </ScrollViewer>
     </Grid>
