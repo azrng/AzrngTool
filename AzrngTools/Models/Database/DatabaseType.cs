@@ -1,4 +1,4 @@
-// namespace AzrngTools.Models.Database;
+﻿// namespace AzrngTools.Models.Database;
 //
 // /// <summary>
 // /// 数据库类型枚举

@@ -1,4 +1,4 @@
-namespace AzrngTools.Models.Database.DTOs;
+﻿namespace AzrngTools.Models.Database.DTOs;
 
 public sealed class CommentEditorDialogResultDto
 {

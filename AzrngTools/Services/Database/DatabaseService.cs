@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using Azrng.Core.Model;
 using Azrng.DataAccess;
 using Azrng.DataAccess.DbBridge;

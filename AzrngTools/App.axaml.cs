@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;

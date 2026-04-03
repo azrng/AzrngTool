@@ -1,4 +1,4 @@
-using Azrng.Core.Model;
+﻿using Azrng.Core.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AzrngTools.Models.Database;
