@@ -288,7 +288,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
 
+            var workbenchToastContainer = ToastService.CurrentContainer;
             var result = await dialog.ShowDialog<ConnectionConfig?>(MainWindow);
+
+            if (workbenchToastContainer != null)
+            {
+                ToastService.SetContainer(workbenchToastContainer);
+            }
+
             if (result == null)
             {
                 return;
