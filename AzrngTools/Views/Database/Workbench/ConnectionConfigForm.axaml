@@ -12,6 +12,42 @@
         <vm:ConnectionDialogViewModel/>
     </Design.DataContext>
 
+    <UserControl.Styles>
+        <Style Selector="Run.requiredStar">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+        </Style>
+
+        <Style Selector="Border.connectionFormHint">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Lg}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionFormHintText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+        </Style>
+
+        <Style Selector="Border.connectionFormError">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Danger}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Lg}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionFormErrorTitle">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionFormErrorText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+        </Style>
+    </UserControl.Styles>
+
     <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                   VerticalScrollBarVisibility="Auto"
                   Padding="24"
@@ -22,7 +58,7 @@
             <StackPanel Spacing="8">
                 <TextBlock Text="连接名称"
                            Classes="label">
-                    <Run Text=" *" Foreground="#E74C3C"/>
+                    <Run Text=" *" Classes="requiredStar"/>
                 </TextBlock>
                 <TextBox Watermark="请输入连接名称"
                          Text="{Binding ConnectionConfig.Name, Mode=TwoWay}"
@@ -40,7 +76,7 @@
                 <StackPanel Grid.Column="0" Spacing="8">
                     <TextBlock Text="服务器地址"
                                Classes="label">
-                        <Run Text=" *" Foreground="#E74C3C"/>
+                        <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
                     <TextBox Watermark="请输入服务器地址"
                              Text="{Binding ConnectionConfig.Host, Mode=TwoWay}"
@@ -69,7 +105,7 @@
                 <StackPanel Grid.Column="0" Spacing="8">
                     <TextBlock Text="登录名"
                                Classes="label">
-                        <Run Text=" *" Foreground="#E74C3C"/>
+                        <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
                     <TextBox Watermark="请输入登录名"
                              Text="{Binding ConnectionConfig.Username, Mode=TwoWay}"
@@ -80,7 +116,7 @@
                 <StackPanel Grid.Column="1" Spacing="8">
                     <TextBlock Text="密码"
                                Classes="label">
-                        <Run Text=" *" Foreground="#E74C3C"/>
+                        <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
                     <TextBox Text="{Binding ConnectionConfig.Password, Mode=TwoWay}"
                              Watermark="请输入密码"
@@ -118,14 +154,11 @@
                             IsVisible="{Binding ShowRefreshDatabaseButton}"/>
                 </Grid>
                 <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
-                        Background="#F5F7FA"
+                        Classes="connectionFormHint"
                         Padding="12,10"
-                        CornerRadius="6"
-                        BorderBrush="#E0E6ED"
-                        BorderThickness="1">
+                        >
                     <TextBlock Text="{Binding DatabaseSelectionHint}"
-                               Foreground="#6B7280"
-                               FontSize="12"/>
+                               Classes="connectionFormHintText"/>
                 </Border>
             </StackPanel>
 
@@ -134,7 +167,7 @@
                         IsVisible="{Binding ShowDatabaseFilePathInput}">
                 <TextBlock Text="数据库文件"
                            Classes="label">
-                    <Run Text=" *" Foreground="#E74C3C"/>
+                    <Run Text=" *" Classes="requiredStar"/>
                 </TextBlock>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -153,35 +186,27 @@
                             Classes="secondary"
                             Margin="8,0,0,0"/>
                 </Grid>
-                <Border Background="#F5F7FA"
+                <Border Classes="connectionFormHint"
                         Padding="12,10"
-                        CornerRadius="6"
-                        BorderBrush="#E0E6ED"
-                        BorderThickness="1">
+                        >
                     <TextBlock Text="{Binding SQLiteModeHint}"
-                               Foreground="#6B7280"
-                               FontSize="12"/>
+                               Classes="connectionFormHintText"/>
                 </Border>
             </StackPanel>
 
             <!-- 验证错误显示 -->
             <Border IsVisible="{Binding HasValidationErrors}"
-                    Background="#FDE8E8"
+                    Classes="connectionFormError"
                     Padding="12"
-                    CornerRadius="6"
-                    BorderBrush="#F5C6C6"
-                    BorderThickness="1">
+                    >
                 <StackPanel Spacing="6">
                     <TextBlock Text="⚠ 请修正以下错误："
-                               FontWeight="SemiBold"
-                               Foreground="#C53030"
-                               FontSize="13"/>
+                               Classes="connectionFormErrorTitle"/>
                     <ItemsControl ItemsSource="{Binding ValidationErrors}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding}"
-                                           Foreground="#C53030"
-                                           FontSize="12"
+                                           Classes="connectionFormErrorText"
                                            Margin="4,0,0,0"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

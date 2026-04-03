@@ -25,11 +25,100 @@
     </Design.DataContext>
 
     <Window.Styles>
+        <Style Selector="Border.connectionDialogSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Display}" />
+        </Style>
+
+        <Style Selector="Border.connectionDialogDivider">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="0,1,0,0" />
+        </Style>
+
+        <Style Selector="Border.connectionDialogSectionDivider">
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+        </Style>
+
+        <Style Selector="Border.connectionListCard">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="Border.connectionDialogBadge">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogBadgeText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogTitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogSubtitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogMeta">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Tertiary}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogName">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogHost">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Caption}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        </Style>
+
+        <Style Selector="Border.connectionDialogHint">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="Border.connectionDialogErrorBanner">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border.Danger}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogErrorTitle">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.Body}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+        </Style>
+
+        <Style Selector="TextBlock.connectionDialogErrorText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+        </Style>
+
         <Style Selector="Button.connectionTypeCard">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
             <Setter Property="FocusAdorner" Value="{x:Null}" />
         </Style>
 
@@ -67,6 +156,33 @@
 
         <Style Selector="Button.connectionAction">
             <Setter Property="FocusAdorner" Value="{x:Null}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+        </Style>
+
+        <Style Selector="Button.connectionAction.primary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.connectionAction.primary:pointerover">
+            <Setter Property="Opacity" Value="0.92" />
+        </Style>
+
+        <Style Selector="Button.connectionAction.secondary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.connectionAction.secondary:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
         </Style>
 
         <Style Selector="ListBox.savedConnections">
@@ -115,12 +231,12 @@
         </Style>
 
         <Style Selector="ListBox.savedConnections ListBoxItem:selected Border.connectionListCard">
-            <Setter Property="Background" Value="White" />
-            <Setter Property="BorderBrush" Value="#D8E4F2" />
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
         </Style>
     </Window.Styles>
 
-    <Grid Background="#F6F9FF">
+    <Grid Background="{DynamicResource Brush.App.Background}">
         <Panel IsHitTestVisible="False"
                ZIndex="9999">
             <StackPanel x:Name="ToastContainer"
@@ -133,15 +249,11 @@
         <Grid Margin="10"
               ColumnDefinitions="286,14,*">
             <Border Grid.Column="0"
-                    Background="White"
-                    BorderBrush="#E7EDF7"
-                    BorderThickness="1"
-                    CornerRadius="18">
+                    Classes="connectionDialogSurface">
                 <Grid RowDefinitions="Auto,*,Auto">
                     <Border Grid.Row="0"
                             Padding="16"
-                            BorderBrush="#EEF3FA"
-                            BorderThickness="0,0,0,1">
+                            Classes="connectionDialogSectionDivider">
                         <Grid ColumnDefinitions="*,52"
                               ColumnSpacing="10">
                             <TextBox Grid.Column="0"
@@ -153,11 +265,7 @@
                                     Width="52"
                                     Height="46"
                                     Command="{Binding CreateNewConnectionCommand}"
-                                    Classes="connectionAction"
-                                    Background="#3B6EF5"
-                                    Foreground="White"
-                                    BorderThickness="0"
-                                    CornerRadius="12">
+                                    Classes="connectionAction primary">
                                 <TextBlock Text="+"
                                            FontSize="24"
                                            FontWeight="SemiBold"
@@ -178,11 +286,7 @@
                                 <DataTemplate>
                                     <Border Classes="connectionListCard"
                                             Margin="6,4"
-                                            Padding="12"
-                                            Background="White"
-                                            BorderBrush="#EEF2F8"
-                                            BorderThickness="1"
-                                            CornerRadius="14">
+                                            Padding="12">
                                         <Grid ColumnDefinitions="42,*"
                                               ColumnSpacing="12">
                                             <Border Width="42"
@@ -194,7 +298,7 @@
                                                 <TextBlock Text="{Binding DatabaseTypeIcon}"
                                                            FontSize="13"
                                                            FontWeight="Bold"
-                                                           Foreground="#33516E"
+                                                           Foreground="{DynamicResource Brush.Text.Primary}"
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center" />
                                             </Border>
@@ -202,13 +306,10 @@
                                             <StackPanel Grid.Column="1"
                                                         Spacing="4">
                                                 <TextBlock Text="{Binding Name}"
-                                                           FontSize="17"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#3B4D66"
+                                                           Classes="connectionDialogName"
                                                            TextTrimming="CharacterEllipsis" />
                                                 <TextBlock Text="{Binding Host}"
-                                                           FontSize="12"
-                                                           Foreground="#9AA7B8"
+                                                           Classes="connectionDialogHost"
                                                            TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </Grid>
@@ -225,23 +326,19 @@
                                         HorizontalAlignment="Center">
                                 <Border Width="56"
                                         Height="56"
-                                        CornerRadius="18"
-                                        Background="#F2F6FD">
+                                        Classes="connectionDialogBadge">
                                     <TextBlock Text="DB"
                                                FontSize="16"
                                                FontWeight="Bold"
-                                               Foreground="#A5B3C6"
+                                               Classes="connectionDialogBadgeText"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                 </Border>
                                 <TextBlock Text="暂无连接"
-                                           FontSize="16"
-                                           FontWeight="SemiBold"
-                                           Foreground="#607089"
+                                           Classes="connectionDialogTitle"
                                            HorizontalAlignment="Center" />
                                 <TextBlock Text="点击右上角 + 新建连接"
-                                           FontSize="12"
-                                           Foreground="#A0ADBE"
+                                           Classes="connectionDialogMeta"
                                            HorizontalAlignment="Center" />
                             </StackPanel>
                         </Border>
@@ -249,22 +346,16 @@
 
                     <Border Grid.Row="2"
                             Padding="16"
-                            BorderBrush="#EEF3FA"
-                            BorderThickness="0,1,0,0">
+                            Classes="connectionDialogDivider">
                         <Grid ColumnDefinitions="*,Auto">
                             <TextBlock Text="已保存连接"
                                        VerticalAlignment="Center"
-                                       FontSize="12"
-                                       Foreground="#A0ADBE" />
+                                       Classes="connectionDialogMeta" />
                             <Button Grid.Column="1"
                                     Width="42"
                                     Height="36"
                                     Command="{Binding DeleteConnectionCommand}"
-                                    Classes="connectionAction"
-                                    Background="White"
-                                    BorderBrush="#E7EDF7"
-                                    BorderThickness="1"
-                                    CornerRadius="10">
+                                    Classes="connectionAction secondary">
                                 <TextBlock Text="🗑"
                                            FontSize="14"
                                            HorizontalAlignment="Center"
@@ -277,37 +368,27 @@
 
             <Grid Grid.Column="2">
                 <Border IsVisible="{Binding ShowDatabaseTypeSelector}"
-                        Background="White"
-                        BorderBrush="#E7EDF7"
-                        BorderThickness="1"
-                        CornerRadius="18">
+                        Classes="connectionDialogSurface">
                     <Grid RowDefinitions="Auto,*">
                         <Border Grid.Row="0"
                                 Padding="28,22"
-                                BorderBrush="#EEF3FA"
-                                BorderThickness="0,0,0,1">
+                                Classes="connectionDialogSectionDivider">
                             <Grid ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="选择数据库类型"
-                                               FontSize="18"
-                                               FontWeight="SemiBold"
-                                               Foreground="#51657E" />
+                                               Classes="connectionDialogTitle" />
                                     <TextBlock Text="当前仅开放 PostgresSql 和 MySql，可按你的业务类型继续配置连接。"
-                                               FontSize="12"
-                                               Foreground="#A0ADBE" />
+                                               Classes="connectionDialogSubtitle" />
                                 </StackPanel>
 
                                 <Border Grid.Column="1"
                                         Width="56"
                                         Height="56"
-                                        CornerRadius="18"
-                                        Background="#F0F6FF"
-                                        BorderBrush="#DCE8FF"
-                                        BorderThickness="1">
+                                        Classes="connectionDialogBadge">
                                     <TextBlock Text="DB"
                                                FontSize="15"
                                                FontWeight="Bold"
-                                               Foreground="#4B79D8"
+                                               Classes="connectionDialogBadgeText"
                                                HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                 </Border>
@@ -334,7 +415,7 @@
                                                 IsEnabled="{Binding IsEnabled}"
                                                 Command="{Binding $parent[Window].DataContext.SelectDatabaseTypeCommand}"
                                                 CommandParameter="{Binding Type}">
-                                            <Border Background="White"
+                                            <Border Background="{DynamicResource Brush.Panel.Background}"
                                                     BorderBrush="{Binding BorderColor}"
                                                     BorderThickness="1"
                                                     CornerRadius="16">
@@ -365,12 +446,12 @@
                                                         <TextBlock Text="{Binding Name}"
                                                                    FontSize="15"
                                                                    FontWeight="SemiBold"
-                                                                   Foreground="#405267"
+                                                                   Foreground="{DynamicResource Brush.Text.Primary}"
                                                                    HorizontalAlignment="Center" />
 
                                                         <TextBlock Text="{Binding Hint}"
                                                                    FontSize="11"
-                                                                   Foreground="#A0ADBE"
+                                                                   Foreground="{DynamicResource Brush.Text.Secondary}"
                                                                    HorizontalAlignment="Center"
                                                                    IsVisible="{Binding IsDisabled}" />
                                                     </StackPanel>
@@ -385,35 +466,21 @@
                 </Border>
 
                 <Border IsVisible="{Binding ShowEditor}"
-                        Background="White"
-                        BorderBrush="#E7EDF7"
-                        BorderThickness="1"
-                        CornerRadius="18">
+                        Classes="connectionDialogSurface">
                     <Grid RowDefinitions="Auto,*,Auto">
                         <Border Grid.Row="0"
                                 Padding="28,20"
-                                BorderBrush="#EEF3FA"
+                                Background="{DynamicResource Brush.Panel.HeroBackground}"
+                                BorderBrush="{DynamicResource Brush.Accent.Border}"
                                 BorderThickness="0,0,0,1">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0"
-                                                     EndPoint="1,0">
-                                    <GradientStop Color="#F8FBFF"
-                                                  Offset="0" />
-                                    <GradientStop Color="{Binding CurrentBrandSoftColor}"
-                                                  Offset="0.75" />
-                                </LinearGradientBrush>
-                            </Border.Background>
 
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="20">
                                 <StackPanel Spacing="6">
                                     <TextBlock Text="{Binding CurrentEditorTitle}"
-                                               FontSize="18"
-                                               FontWeight="SemiBold"
-                                               Foreground="#4F647C" />
+                                               Classes="connectionDialogTitle" />
                                     <TextBlock Text="{Binding CurrentEditorDescription}"
-                                               FontSize="12"
-                                               Foreground="#9EABBC"
+                                               Classes="connectionDialogSubtitle"
                                                TextWrapping="Wrap" />
                                 </StackPanel>
 
@@ -444,18 +511,13 @@
                         <Grid Grid.Row="1">
                             <ScrollViewer Padding="28,24">
                                 <StackPanel Spacing="18">
-                                    <Border Background="White"
-                                            BorderBrush="#EEF2F8"
-                                            BorderThickness="1"
-                                            CornerRadius="16"
+                                    <Border Classes="connectionDialogSurface"
                                             Padding="24">
                                         <StackPanel Spacing="18">
                                             <Grid ColumnDefinitions="120,*"
                                                   ColumnSpacing="18">
                                                 <TextBlock Text="连接名称"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#5A6E85"
+                                                           Classes="label"
                                                            VerticalAlignment="Center" />
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="6">
@@ -474,9 +536,7 @@
                                                   ColumnDefinitions="120,*"
                                                   ColumnSpacing="18">
                                                 <TextBlock Text="服务器地址"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#5A6E85"
+                                                           Classes="label"
                                                            VerticalAlignment="Center" />
                                                 <Grid Grid.Column="1"
                                                       ColumnDefinitions="*,150"
@@ -513,9 +573,7 @@
                                                   ColumnDefinitions="120,*"
                                                   ColumnSpacing="18">
                                                 <TextBlock Text="登录凭据"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#5A6E85"
+                                                           Classes="label"
                                                            VerticalAlignment="Center" />
                                                 <Grid Grid.Column="1"
                                                       ColumnDefinitions="*,*"
@@ -553,9 +611,7 @@
                                                   ColumnDefinitions="120,*"
                                                   ColumnSpacing="18">
                                                 <TextBlock Text="默认数据库"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#5A6E85"
+                                                           Classes="label"
                                                            VerticalAlignment="Center" />
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="6">
@@ -574,11 +630,7 @@
                                                         <Button Grid.Column="1"
                                                                 Command="{Binding RefreshDatabasesCommand}"
                                                                 IsVisible="{Binding ShowRefreshDatabaseButton}"
-                                                                Classes="connectionAction"
-                                                                Background="{Binding CurrentBrandAccentColor}"
-                                                                Foreground="White"
-                                                                BorderThickness="0"
-                                                                CornerRadius="12"
+                                                                Classes="connectionAction primary"
                                                                 Height="42">
                                                             <TextBlock Text="刷新"
                                                                        FontSize="13"
@@ -589,14 +641,10 @@
                                                     </Grid>
 
                                                     <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
-                                                            Background="#F7FAFF"
-                                                            BorderBrush="#E8EEF7"
-                                                            BorderThickness="1"
-                                                            CornerRadius="10"
+                                                            Classes="connectionDialogHint"
                                                             Padding="12,10">
                                                         <TextBlock Text="{Binding DatabaseSelectionHint}"
-                                                                   FontSize="12"
-                                                                   Foreground="#98A7B9" />
+                                                                   Classes="connectionDialogMeta" />
                                                     </Border>
 
                                                     <TextBlock Text="{Binding DatabaseValidationMessage}"
@@ -610,17 +658,14 @@
                                                 <CheckBox IsChecked="{Binding ConnectionConfig.UseWindowsAuthentication, Mode=TwoWay}"
                                                           Content="使用 Windows 身份验证" />
                                                 <TextBlock Text="启用后将不再要求填写登录名和密码。"
-                                                           FontSize="12"
-                                                           Foreground="#A0ADBE" />
+                                                           Classes="connectionDialogMeta" />
                                             </StackPanel>
 
                                             <Grid IsVisible="{Binding ShowDatabaseFilePathInput}"
                                                   ColumnDefinitions="120,*"
                                                   ColumnSpacing="18">
                                                 <TextBlock Text="数据库文件"
-                                                           FontSize="14"
-                                                           FontWeight="SemiBold"
-                                                           Foreground="#5A6E85"
+                                                           Classes="label"
                                                            VerticalAlignment="Center" />
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="6">
@@ -640,14 +685,10 @@
                                                                        FontWeight="Medium" />
                                                         </Button>
                                                     </Grid>
-                                                    <Border Background="#F7FAFF"
-                                                            BorderBrush="#E8EEF7"
-                                                            BorderThickness="1"
-                                                            CornerRadius="10"
+                                                    <Border Classes="connectionDialogHint"
                                                             Padding="12,10">
                                                         <TextBlock Text="{Binding SQLiteModeHint}"
-                                                                   FontSize="12"
-                                                                   Foreground="#98A7B9" />
+                                                                   Classes="connectionDialogMeta" />
                                                     </Border>
                                                     <TextBlock Text="{Binding DatabaseValidationMessage}"
                                                                Classes="validationError"
@@ -658,22 +699,16 @@
                                     </Border>
 
                                     <Border IsVisible="{Binding HasValidationErrors}"
-                                            Background="#FFF3F1"
-                                            BorderBrush="#FFD8D2"
-                                            BorderThickness="1"
-                                            CornerRadius="14"
+                                            Classes="connectionDialogErrorBanner"
                                             Padding="16">
                                         <StackPanel Spacing="8">
                                             <TextBlock Text="请先修正以下问题"
-                                                       FontSize="14"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="#CE574B" />
+                                                       Classes="connectionDialogErrorTitle" />
                                             <ItemsControl ItemsSource="{Binding ValidationErrors}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock Text="{Binding}"
-                                                                   FontSize="12"
-                                                                   Foreground="#CE574B"
+                                                                   Classes="connectionDialogErrorText"
                                                                    Margin="4,0,0,0" />
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -686,21 +721,15 @@
                         </Grid>
                         <Border Grid.Row="2"
                                 Padding="24"
-                                BorderBrush="#EEF3FA"
-                                BorderThickness="0,1,0,0">
+                                Classes="connectionDialogDivider">
                             <Grid ColumnDefinitions="Auto,*,Auto">
                                 <Button Grid.Column="0"
                                         Command="{Binding TestConnectionCommand}"
                                         IsVisible="{Binding ShowTestButton}"
-                                        Classes="connectionAction"
-                                        Background="White"
-                                        BorderBrush="#DCE6F4"
-                                        BorderThickness="1"
-                                        CornerRadius="12"
+                                        Classes="connectionAction secondary"
                                         Padding="18,10">
                                     <TextBlock Text="测试连接"
-                                               FontWeight="Medium"
-                                               Foreground="#5B6D86" />
+                                               FontWeight="Medium" />
                                 </Button>
 
                                 <StackPanel Grid.Column="2"
@@ -708,50 +737,31 @@
                                             Spacing="12">
                                     <Button Command="{Binding BackToTypeSelectorCommand}"
                                             IsVisible="{Binding ShowBackButton}"
-                                            Classes="connectionAction"
-                                            Background="White"
-                                            BorderBrush="#DCE6F4"
-                                            BorderThickness="1"
-                                            CornerRadius="12"
+                                            Classes="connectionAction secondary"
                                             Padding="18,10">
                                         <TextBlock Text="上一步"
-                                                   FontWeight="Medium"
-                                                   Foreground="#5B6D86" />
+                                                   FontWeight="Medium" />
                                     </Button>
 
                                     <Button Command="{Binding ConnectCommand}"
-                                            Classes="connectionAction"
-                                            Background="{Binding CurrentBrandAccentColor}"
-                                            BorderThickness="0"
-                                            CornerRadius="12"
+                                            Classes="connectionAction primary"
                                             Padding="22,10">
                                         <TextBlock Text="连接"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="White" />
+                                                   FontWeight="SemiBold" />
                                     </Button>
 
                                     <Button Command="{Binding SaveCommand}"
-                                            Classes="connectionAction"
-                                            Background="White"
-                                            BorderBrush="#DCE6F4"
-                                            BorderThickness="1"
-                                            CornerRadius="12"
+                                            Classes="connectionAction secondary"
                                             Padding="22,10">
                                         <TextBlock Text="保存"
-                                                   FontWeight="Medium"
-                                                   Foreground="#5B6D86" />
+                                                   FontWeight="Medium" />
                                     </Button>
 
                                     <Button Command="{Binding CancelCommand}"
-                                            Classes="connectionAction"
-                                            Background="White"
-                                            BorderBrush="#DCE6F4"
-                                            BorderThickness="1"
-                                            CornerRadius="12"
+                                            Classes="connectionAction secondary"
                                             Padding="22,10">
                                         <TextBlock Text="取消"
-                                                   FontWeight="Medium"
-                                                   Foreground="#5B6D86" />
+                                                   FontWeight="Medium" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
