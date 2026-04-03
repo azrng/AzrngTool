@@ -300,7 +300,7 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception ex)
         {
             LoggingService.LogError("Failed to open the connection dialog.", ex);
-            await ShowErrorMessageAsync("Open Connection Manager Failed", $"Unable to open the connection dialog.\n\n{ex.Message}");
+            await ShowErrorMessageAsync("打开连接管理失败", $"无法打开连接管理对话框。\n\n{ex.Message}");
         }
     }
 
@@ -775,7 +775,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 };
 
                 Schemas = new ObservableCollection<SchemaModel>(mySqlSchemas);
-                LoadingText = $"Loaded 1 schema for {config.Name}.";
+                LoadingText = $"已为 {config.Name} 加载 1 个架构。";
                 LoggingService.LogInfo($"Loaded MySql runtime schema {schemaName} for {config.Name}.");
                 return;
             }
@@ -794,7 +794,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LoadingText = $"Schema load failed: {ex.Message}";
+            LoadingText = $"架构加载失败：{ex.Message}";
             LoggingService.LogError($"Schema load failed for {config.Name}.", ex);
         }
         finally
@@ -833,7 +833,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (!exportWholeDatabase && string.IsNullOrWhiteSpace(CurrentSchemaName))
         {
-            ToastService.ShowWarning("Select a schema in the object tree before exporting the current schema.", 3000);
+            ToastService.ShowWarning("导出当前架构前，请先在对象树中选择一个架构。", 3000);
             return;
         }
 
@@ -1406,7 +1406,7 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception ex)
         {
             LoggingService.LogError("Failed to load the selected schema.", ex);
-            ToastService.ShowError($"Schema load failed: {ex.Message}", 3000);
+            ToastService.ShowError($"架构加载失败：{ex.Message}", 3000);
         }
     }
 
@@ -1454,7 +1454,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         foreach (var schemaName in schemaNames)
         {
-            LoadingText = $"Loading tables from schema {schemaName}...";
+            LoadingText = $"正在加载架构 {schemaName} 的数据表...";
             var (tableSuccess, schemaTables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
             if (!tableSuccess)
             {
@@ -1465,7 +1465,7 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 tables.Add(table);
 
-                LoadingText = $"Loading columns for {table.Schema}.{table.Name}...";
+                LoadingText = $"正在加载 {table.Schema}.{table.Name} 的字段...";
                 var (columnSuccess, columns, columnMessage) = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
                 if (!columnSuccess)
                 {
@@ -1476,7 +1476,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
                 tableColumnsMap[BuildTableExportKey(table)] = columns.OrderBy(column => column.OrdinalPosition).ToList();
 
-                LoadingText = $"Loading indexes for {table.Schema}.{table.Name}...";
+                LoadingText = $"正在加载 {table.Schema}.{table.Name} 的索引...";
                 var (indexSuccess, indexes, indexMessage) = await _databaseService.GetIndexesAsync(connection, table.Schema, table.Name);
                 if (!indexSuccess)
                 {
@@ -1491,7 +1491,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         var totalObjects = tables.Count;
-        return (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"Prepared {totalObjects} objects for export.");
+        return (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"已为导出准备 {totalObjects} 个对象。");
     }
 
     private async Task<(bool Success, List<TableModel> Tables, List<ViewModel> Views, List<StoredProcedureModel> Procedures, Dictionary<string, List<ColumnModel>> TableColumnsMap, Dictionary<string, List<IndexModel>> TableIndexesMap, string Message)> BuildExportPayloadAsync(
@@ -1571,7 +1571,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var totalObjects = tables.Count;
         return totalObjects == 0
             ? (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, "未匹配到可导出的对象。")
-            : (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"Prepared {totalObjects} objects for export.");
+            : (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"已为导出准备 {totalObjects} 个对象。");
     }
 
     private async Task<(bool Success, List<TableModel> Tables, Dictionary<string, List<ColumnModel>> TableColumnsMap, string Message)> BuildCodeGenerationPayloadAsync(
@@ -1587,7 +1587,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var tableColumnsMap = new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase);
         foreach (var table in tables.OrderBy(table => table.Name))
         {
-            LoadingText = $"Loading columns for {table.Schema}.{table.Name}...";
+            LoadingText = $"正在加载 {table.Schema}.{table.Name} 的字段...";
             var (columnSuccess, columns, columnMessage) = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
             if (!columnSuccess)
             {
