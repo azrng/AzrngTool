@@ -1,6 +1,10 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Controls.Primitives;
 using Avalonia.VisualTree;
 using AzrngTools.Controls.Database;
 using AzrngTools.Models.Database;
@@ -11,7 +15,8 @@ namespace AzrngTools.Views.Database;
 
 public partial class DatabaseWorkbenchPageView : UserControl
 {
-    private DatabaseTree _databaseTree;
+    private DatabaseTree? _databaseTree;
+    private ScrollViewer? _hostScrollViewer;
 
     public DatabaseWorkbenchPageView()
     {
@@ -24,6 +29,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
     {
         InitializeToastService();
         RegisterNodeSelectedHandler();
+        BindHostViewportHeight();
 
         if (DataContext is MainWindowViewModel viewModel &&
             TopLevel.GetTopLevel(this) is Window owner)
@@ -39,6 +45,13 @@ public partial class DatabaseWorkbenchPageView : UserControl
             _databaseTree.NodeSelected -= OnNodeSelected;
             _databaseTree = null;
         }
+
+        if (_hostScrollViewer != null)
+        {
+            _hostScrollViewer.SizeChanged -= OnHostScrollViewerSizeChanged;
+        }
+
+        _hostScrollViewer = null;
     }
 
     private void InitializeToastService()
@@ -63,7 +76,42 @@ public partial class DatabaseWorkbenchPageView : UserControl
         }
     }
 
-    private async void OnNodeSelected(object sender, TreeNodeItem node)
+    private void BindHostViewportHeight()
+    {
+        if (_hostScrollViewer != null)
+        {
+            _hostScrollViewer.SizeChanged -= OnHostScrollViewerSizeChanged;
+        }
+
+        _hostScrollViewer = this.GetVisualAncestors().OfType<ScrollViewer>().FirstOrDefault();
+        if (_hostScrollViewer == null)
+        {
+            return;
+        }
+
+        VerticalAlignment = VerticalAlignment.Stretch;
+        ApplyViewportHeight(_hostScrollViewer.Bounds.Height);
+        _hostScrollViewer.SizeChanged += OnHostScrollViewerSizeChanged;
+    }
+
+    private void OnHostScrollViewerSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        ApplyViewportHeight(e.NewSize.Height);
+    }
+
+    private void ApplyViewportHeight(double height)
+    {
+        if (height <= 0)
+        {
+            return;
+        }
+
+        Height = height;
+        MinHeight = 0;
+        MaxHeight = height;
+    }
+
+    private async void OnNodeSelected(object? sender, TreeNodeItem? node)
     {
         if (node == null || DataContext is not MainWindowViewModel viewModel)
         {

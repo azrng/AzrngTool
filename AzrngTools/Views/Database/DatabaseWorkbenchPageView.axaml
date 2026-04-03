@@ -9,6 +9,8 @@
              x:Class="AzrngTools.Views.Database.DatabaseWorkbenchPageView"
              x:DataType="vm:MainWindowViewModel"
              x:Name="WorkbenchPage"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
              d:DesignWidth="1400"
              d:DesignHeight="900">
 
