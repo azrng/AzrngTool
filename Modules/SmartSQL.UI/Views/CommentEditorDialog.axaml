@@ -5,6 +5,7 @@
         xmlns:vm="using:SmartSQL.UI.ViewModels"
         mc:Ignorable="d"
         x:Class="SmartSQL.UI.Views.CommentEditorDialog"
+        x:CompileBindings="False"
         x:DataType="vm:CommentEditorDialogViewModel"
         Title="{Binding DialogTitle}"
         Width="640"

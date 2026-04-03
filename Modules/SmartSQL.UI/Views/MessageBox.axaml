@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="SmartSQL.UI.Views.MessageBox"
+        x:CompileBindings="False"
         x:DataType="views:MessageBox"
         xmlns:views="using:SmartSQL.UI.Views"
         Title="确认"

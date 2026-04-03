@@ -6,7 +6,8 @@
              mc:Ignorable="d"
              d:DesignWidth="1100"
              d:DesignHeight="720"
-             x:Class="SmartSQL.UI.Views.ViewDetailView">
+             x:Class="SmartSQL.UI.Views.ViewDetailView"
+             x:CompileBindings="False">
 
     <Design.DataContext>
         <vm:ViewDetailViewModel />

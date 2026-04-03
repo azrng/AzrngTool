@@ -3,6 +3,7 @@
              xmlns:models="using:SmartSQL.UI.Models"
              xmlns:controls="using:SmartSQL.UI.Controls"
              x:Class="SmartSQL.UI.Controls.DatabaseTree"
+             x:CompileBindings="False"
              x:DataType="controls:DatabaseTree"
              x:Name="RootControl">
 

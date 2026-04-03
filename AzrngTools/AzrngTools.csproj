@@ -39,6 +39,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
         <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12">
@@ -48,6 +49,7 @@
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.12" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.3.0.6" />
         <PackageReference Include="Azrng.Core" Version="1.16.0" />
+        <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta3" />
         <PackageReference Include="Common.Windows.Core" Version="0.0.6" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Costura.Fody" Version="5.7.0">
@@ -63,10 +65,22 @@
         <PackageReference Include="AzrngCommon.Security" Version="1.2.1" />
         <PackageReference Include="GTranslate" Version="2.3.1" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
+        <PackageReference Include="NPOI" Version="2.7.6" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Modules\SmartSQL.UI\SmartSQL.UI.csproj" />
+        <Compile Include="..\Modules\SmartSQL.UI\**\*.cs"
+                 Exclude="..\Modules\SmartSQL.UI\bin\**;..\Modules\SmartSQL.UI\obj\**;..\Modules\SmartSQL.UI\App.axaml.cs;..\Modules\SmartSQL.UI\Program.cs;..\Modules\SmartSQL.UI\ViewLocator.cs">
+            <Link>Modules\SmartSQL.UI\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </Compile>
+        <AvaloniaXaml Include="..\Modules\SmartSQL.UI\**\*.axaml"
+                      Exclude="..\Modules\SmartSQL.UI\bin\**;..\Modules\SmartSQL.UI\obj\**;..\Modules\SmartSQL.UI\App.axaml">
+            <Link>Modules\SmartSQL.UI\%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+        </AvaloniaXaml>
+        <AvaloniaResource Include="..\Modules\SmartSQL.UI\Assets\Styles\**">
+            <Link>Assets\Styles\%(RecursiveDir)%(Filename)%(Extension)</Link>
+        </AvaloniaResource>
     </ItemGroup>
 
 </Project>

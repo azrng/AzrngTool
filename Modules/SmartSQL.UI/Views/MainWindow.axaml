@@ -7,6 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="SmartSQL.UI.Views.MainWindow"
+        x:CompileBindings="False"
         x:DataType="vm:MainWindowViewModel"
         x:Name="MainWindowControl"
         d:DesignWidth="1400"

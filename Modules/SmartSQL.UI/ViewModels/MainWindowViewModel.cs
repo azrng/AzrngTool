@@ -146,7 +146,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private static string GetAppVersion()
     {
-        return typeof(App).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
+        return typeof(global::AzrngTools.App).Assembly.GetName().Version?.ToString(3) ?? "1.0.0";
     }
 
     private void LoadGroups()

@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
              x:Class="SmartSQL.UI.Views.ConnectionConfigForm"
+             x:CompileBindings="False"
              x:DataType="vm:ConnectionDialogViewModel">
 
     <Design.DataContext>

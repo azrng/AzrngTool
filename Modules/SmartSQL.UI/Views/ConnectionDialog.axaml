@@ -8,6 +8,7 @@
         d:DesignWidth="1140"
         d:DesignHeight="720"
         x:Class="SmartSQL.UI.Views.ConnectionDialog"
+        x:CompileBindings="False"
         x:DataType="vm:ConnectionDialogViewModel"
         x:Name="MainWindow"
         Title="连接管理"

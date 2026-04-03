@@ -7,6 +7,7 @@
         xmlns:dto="using:SmartSQL.UI.Models.DTOs"
         mc:Ignorable="d"
         x:Class="SmartSQL.UI.Views.ExportDialog"
+        x:CompileBindings="False"
         x:DataType="vm:ExportDialogViewModel"
         x:Name="ExportDialogWindow"
         Title="导出文档"
