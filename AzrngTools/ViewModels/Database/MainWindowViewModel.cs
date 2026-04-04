@@ -938,7 +938,7 @@ public partial class MainWindowViewModel : ViewModelBase
             var totalObjects = tables.Count + views.Count + procedures.Count;
             var exportedFileName = Path.GetFileName(exportFilePath);
             LoadingText = $"导出成功：{exportedFileName}";
-            ToastService.ShowSuccess($"导出成功，共 {totalObjects} 个对象。", 4000);
+            ToastService.ShowSuccess($"导出成功\n共 {totalObjects} 个对象", 4000);
         }
         catch (Exception ex)
         {
