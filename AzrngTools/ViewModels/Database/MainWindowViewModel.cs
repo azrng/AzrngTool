@@ -850,130 +850,6 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task ExportDocumentAsync(string? mode)
-    {
-        var connection = GetActiveConnection();
-        if (connection == null)
-        {
-            ToastService.ShowWarning("请先选择数据库连接。", 2000);
-            return;
-        }
-
-        if (MainWindow == null)
-        {
-            LoggingService.LogWarning("MainWindow is not available.");
-            return;
-        }
-
-        var normalizedMode = (mode ?? string.Empty).Trim().ToLowerInvariant();
-        var exportWholeDatabase = normalizedMode.StartsWith("database-", StringComparison.Ordinal);
-        var exportAsMarkdown = normalizedMode.EndsWith("markdown", StringComparison.Ordinal);
-
-        if (!exportWholeDatabase && string.IsNullOrWhiteSpace(CurrentSchemaName))
-        {
-            ToastService.ShowWarning("导出当前架构前，请先在对象树中选择一个架构。", 3000);
-            return;
-        }
-
-        var topLevel = TopLevel.GetTopLevel(MainWindow);
-        if (topLevel?.StorageProvider == null)
-        {
-            LoggingService.LogWarning("Storage provider is unavailable for document export.");
-            return;
-        }
-
-        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            Title = exportAsMarkdown ? "导出 Markdown 文档" : "导出 Excel 文档",
-            FileTypeChoices = new[]
-            {
-                exportAsMarkdown
-                    ? new FilePickerFileType("Markdown 文档") { Patterns = new[] { "*.md" } }
-                    : new FilePickerFileType("Excel 文档") { Patterns = new[] { "*.xlsx" } }
-            },
-            DefaultExtension = exportAsMarkdown ? "md" : "xlsx",
-            SuggestedFileName = BuildSuggestedExportFileName(exportWholeDatabase, exportAsMarkdown)
-        });
-
-        if (file == null)
-        {
-            return;
-        }
-
-        IsLoading = true;
-        LoadingText = exportWholeDatabase
-            ? "正在准备导出整个数据库..."
-            : $"正在准备导出架构 {CurrentSchemaName} ...";
-
-        try
-        {
-            var (success, tables, views, procedures, tableColumnsMap, tableIndexesMap, message) = await BuildExportPayloadAsync(connection, exportWholeDatabase);
-            if (!success)
-            {
-                LoadingText = message;
-                ToastService.ShowError(message, 5000);
-                return;
-            }
-
-            if (tables.Count == 0 && views.Count == 0 && procedures.Count == 0)
-            {
-                LoadingText = "没有可导出的数据。";
-                ToastService.ShowWarning("没有可导出的数据。", 3000);
-                return;
-            }
-
-            var documentName = exportWholeDatabase
-                ? connection.Name
-                : $"{connection.Name} - {CurrentSchemaName}";
-
-            bool exported;
-            if (exportAsMarkdown)
-            {
-                exported = await _documentExportService.ExportToMarkdownAsync(
-                    file.Path.LocalPath,
-                    documentName,
-                    tables,
-                    tableColumnsMap,
-                    views,
-                    procedures,
-                    tableIndexesMap);
-            }
-            else
-            {
-                exported = await _documentExportService.ExportToExcelAsync(
-                    file.Path.LocalPath,
-                    documentName,
-                    tables,
-                    tableColumnsMap,
-                    views,
-                    procedures,
-                    tableIndexesMap);
-            }
-
-            if (!exported)
-            {
-                LoadingText = "文档导出失败，请查看日志获取详情。";
-                ToastService.ShowError("文档导出失败，请查看日志获取详情。", 5000);
-                return;
-            }
-
-            var totalObjects = tables.Count + views.Count + procedures.Count;
-            LoadingText = $"已导出 {totalObjects} 个对象到 {file.Name}。";
-            ToastService.ShowSuccess($"已导出 {totalObjects} 个对象到 {file.Name}。", 4000);
-        }
-        catch (Exception ex)
-        {
-            LoadingText = "文档导出失败。";
-            LoggingService.LogError("文档导出失败。", ex);
-            ToastService.ShowError($"文档导出失败：{ex.Message}", 6000);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    [RelayCommand]
     private async Task OpenExportDialogAsync()
     {
         var connection = GetActiveConnection();
@@ -1061,8 +937,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var totalObjects = tables.Count + views.Count + procedures.Count;
             var exportedFileName = Path.GetFileName(exportFilePath);
-            LoadingText = $"已导出 {totalObjects} 个对象到 {exportedFileName}。";
-            ToastService.ShowSuccess($"已导出 {totalObjects} 个对象到 {exportedFileName}。", 4000);
+            LoadingText = $"导出成功：{exportedFileName}";
+            ToastService.ShowSuccess($"导出成功，共 {totalObjects} 个对象。", 4000);
         }
         catch (Exception ex)
         {
@@ -1457,90 +1333,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private async Task<(bool Success, List<TableModel> Tables, List<ViewModel> Views, List<StoredProcedureModel> Procedures, Dictionary<string, List<ColumnModel>> TableColumnsMap, Dictionary<string, List<IndexModel>> TableIndexesMap, string Message)> BuildExportPayloadAsync(
         ConnectionConfig connection,
-        bool exportWholeDatabase)
-    {
-        var tables = new List<TableModel>();
-        var views = new List<ViewModel>();
-        var procedures = new List<StoredProcedureModel>();
-        var tableColumnsMap = new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase);
-        var tableIndexesMap = new Dictionary<string, List<IndexModel>>(StringComparer.OrdinalIgnoreCase);
-
-        List<string> schemaNames;
-        if (connection.DatabaseType == DatabaseType.MySql)
-        {
-            var mySqlSchemaName = string.IsNullOrWhiteSpace(connection.Database)
-                ? CurrentSchemaName
-                : connection.Database;
-
-            if (string.IsNullOrWhiteSpace(mySqlSchemaName))
-            {
-                return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, "MySql 当前数据库为空，无法导出。");
-            }
-
-            schemaNames = new List<string> { mySqlSchemaName };
-        }
-        else if (exportWholeDatabase)
-        {
-            var (success, schemas, message) = await _databaseService.GetSchemasAsync(connection);
-            if (!success)
-            {
-                return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, message);
-            }
-
-            schemaNames = schemas.Select(schema => schema.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-        }
-        else
-        {
-            schemaNames = new List<string> { CurrentSchemaName! };
-        }
-
-        foreach (var schemaName in schemaNames)
-        {
-            LoadingText = $"正在加载架构 {schemaName} 的数据表...";
-            var (tableSuccess, schemaTables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
-            if (!tableSuccess)
-            {
-                return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, tableMessage);
-            }
-
-            foreach (var table in schemaTables.OrderBy(table => table.Name))
-            {
-                tables.Add(table);
-
-                LoadingText = $"正在加载 {table.Schema}.{table.Name} 的字段...";
-                var (columnSuccess, columns, columnMessage) = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
-                if (!columnSuccess)
-                {
-                    LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnMessage}");
-                    tableColumnsMap[BuildTableExportKey(table)] = new List<ColumnModel>();
-                    continue;
-                }
-
-                tableColumnsMap[BuildTableExportKey(table)] = columns.OrderBy(column => column.OrdinalPosition).ToList();
-
-                LoadingText = $"正在加载 {table.Schema}.{table.Name} 的索引...";
-                var (indexSuccess, indexes, indexMessage) = await _databaseService.GetIndexesAsync(connection, table.Schema, table.Name);
-                if (!indexSuccess)
-                {
-                    LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexMessage}");
-                    tableIndexesMap[BuildTableExportKey(table)] = new List<IndexModel>();
-                    continue;
-                }
-
-                tableIndexesMap[BuildTableExportKey(table)] = indexes.ToList();
-            }
-
-        }
-
-        var totalObjects = tables.Count;
-        return (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"已为导出准备 {totalObjects} 个对象。");
-    }
-
-    private async Task<(bool Success, List<TableModel> Tables, List<ViewModel> Views, List<StoredProcedureModel> Procedures, Dictionary<string, List<ColumnModel>> TableColumnsMap, Dictionary<string, List<IndexModel>> TableIndexesMap, string Message)> BuildExportPayloadAsync(
-        ConnectionConfig connection,
         IReadOnlyCollection<ExportSelectedObjectDto> selectedObjects)
     {
         var tables = new List<TableModel>();
@@ -1645,18 +1437,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         return (true, tables, tableColumnsMap, $"Prepared {tables.Count} tables for code generation.");
-    }
-
-    private string BuildSuggestedExportFileName(bool exportWholeDatabase, bool exportAsMarkdown)
-    {
-        var connection = GetActiveConnection();
-        var scope = exportWholeDatabase
-            ? connection?.Name ?? SelectedConnection?.Name ?? "database"
-            : $"{connection?.Name ?? SelectedConnection?.Name}_{CurrentSchemaName}";
-
-        var safeScope = SanitizeFileName(scope);
-        var format = exportAsMarkdown ? "markdown" : "excel";
-        return $"smartsql_{safeScope}_{format}_{DateTime.Now:yyyyMMdd_HHmmss}";
     }
 
     private ConnectionConfig? GetActiveConnection()
