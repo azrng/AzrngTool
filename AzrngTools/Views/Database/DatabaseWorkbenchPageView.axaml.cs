@@ -27,7 +27,6 @@ public partial class DatabaseWorkbenchPageView : UserControl
 
     private void OnAttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
     {
-        InitializeToastService();
         RegisterNodeSelectedHandler();
         BindHostViewportHeight();
 
@@ -52,14 +51,6 @@ public partial class DatabaseWorkbenchPageView : UserControl
         }
 
         _hostScrollViewer = null;
-    }
-
-    private void InitializeToastService()
-    {
-        if (this.FindControl<StackPanel>("ToastContainer") is { } toastContainer)
-        {
-            ToastService.SetContainer(toastContainer);
-        }
     }
 
     private void RegisterNodeSelectedHandler()

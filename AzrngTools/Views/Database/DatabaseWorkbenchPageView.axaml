@@ -797,11 +797,6 @@
             </Grid>
         </Grid>
 
-        <StackPanel x:Name="ToastContainer"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Margin="{StaticResource Thickness.20}"
-                    Spacing="{StaticResource Space.8}" />
     </Panel>
 </UserControl>
 

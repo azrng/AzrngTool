@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using AzrngTools.Services.Database;
 using AzrngTools.Utils.Events;
 using AzrngTools.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;
@@ -11,16 +12,39 @@ namespace AzrngTools.Views
 {
     public partial class MainWindow : Window, IScopedDependency
     {
+        private Panel? _globalToastContainer;
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = App.Current.Services.GetRequiredService<MainWindowViewModel>();
+            _globalToastContainer = this.FindControl<StackPanel>("GlobalToastContainer");
+            Opened += OnWindowOpened;
+            Closed += OnWindowClosed;
 
             // 处理消息  在首页保存通知页面信息
             WeakReferenceMessenger.Default.Register<MessageModel, string>(this, "Main", (r, m) =>
             {
                 App.NotificationPage?.Show(new Notification(m.Title, m.Message));
             });
+        }
+
+        private void OnWindowOpened(object? sender, System.EventArgs e)
+        {
+            if (_globalToastContainer != null)
+            {
+                ToastService.SetContainer(_globalToastContainer);
+            }
+        }
+
+        private void OnWindowClosed(object? sender, System.EventArgs e)
+        {
+            Opened -= OnWindowOpened;
+            Closed -= OnWindowClosed;
+
+            if (_globalToastContainer != null && ReferenceEquals(ToastService.CurrentContainer, _globalToastContainer))
+            {
+                ToastService.ClearContainer();
+            }
         }
 
         /// <summary>
