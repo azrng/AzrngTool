@@ -15,7 +15,6 @@
                 BorderThickness="1"
                 CornerRadius="{StaticResource Radius.Display}"
                 Padding="32,24"
-                BoxShadow="{DynamicResource Shadow.LG}"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 MinWidth="200">

@@ -2,6 +2,7 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Threading;
 
 namespace AzrngTools.Controls.Database;
@@ -78,6 +79,7 @@ public partial class ToastNotification : UserControl
             _closeButton.Click += CloseButton_Click;
         }
 
+        ApplyShadowToken();
         UpdateVisibility();
         UpdateAppearance();
 
@@ -120,6 +122,25 @@ public partial class ToastNotification : UserControl
         {
             _rootBorder.IsVisible = IsVisible;
         }
+    }
+
+    private void ApplyShadowToken()
+    {
+        if (_rootBorder == null)
+        {
+            return;
+        }
+
+        if (Application.Current?.TryGetResource("Shadow.MD", ActualThemeVariant, out var shadowResource) == true &&
+            shadowResource is string shadowValue &&
+            !string.IsNullOrWhiteSpace(shadowValue) &&
+            !string.Equals(shadowValue, "none", StringComparison.OrdinalIgnoreCase))
+        {
+            _rootBorder.BoxShadow = BoxShadows.Parse(shadowValue);
+            return;
+        }
+
+        _rootBorder.BoxShadow = default;
     }
 
     private void UpdateAppearance()

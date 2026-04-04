@@ -44,6 +44,7 @@ public partial class LoadingOverlay : UserControl
         _rootGrid = this.FindControl<Grid>("RootGrid");
         _partLoadingText = this.FindControl<TextBlock>("PART_LoadingText");
         _spinnerBorder = this.FindControl<Border>("SpinnerBorder");
+        ApplyShadowToken();
         UpdateVisibility();
     }
 
@@ -113,5 +114,29 @@ public partial class LoadingOverlay : UserControl
         {
             _spinnerBorder.RenderTransform = null;
         }
+    }
+
+    private void ApplyShadowToken()
+    {
+        if (_rootGrid == null)
+        {
+            return;
+        }
+
+        if (_rootGrid.Children.Count == 0 || _rootGrid.Children[0] is not Border surface)
+        {
+            return;
+        }
+
+        if (Application.Current?.TryGetResource("Shadow.LG", ActualThemeVariant, out var shadowResource) == true &&
+            shadowResource is string shadowValue &&
+            !string.IsNullOrWhiteSpace(shadowValue) &&
+            !string.Equals(shadowValue, "none", StringComparison.OrdinalIgnoreCase))
+        {
+            surface.BoxShadow = BoxShadows.Parse(shadowValue);
+            return;
+        }
+
+        surface.BoxShadow = default;
     }
 }

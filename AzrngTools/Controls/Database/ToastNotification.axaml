@@ -10,7 +10,6 @@
             IsVisible="False"
             CornerRadius="{StaticResource Radius.Xl}"
             Padding="{StaticResource Thickness.16}"
-            BoxShadow="{DynamicResource Shadow.MD}"
             MinWidth="300"
             MaxWidth="500">
         <Border.Styles>
