@@ -13,41 +13,66 @@
     xmlns:vm="clr-namespace:AzrngTools.ViewModels.Encode"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="JWT 解码工作台" />
-                        <TextBlock Classes="section-copy" Text="输入 JWT 后会自动解析 Header 和 Payload，适合快速查看载荷内容。" />
-                    </StackPanel>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="JWT 解码工作台" />
+                            <TextBlock Classes="section-copy" Text="输入 JWT 后自动解析 Header 和 Payload，把输入、结果和辅助操作集中到更均衡的工作区里。" />
+                        </StackPanel>
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Header" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Payload" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="自动解析" />
-                        </Border>
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="Header" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="Payload" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="自动解析" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
+
+                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                        <Button
+                            Command="{Binding CopyHeaderCommand}"
+                            Content="复制 Header"
+                            IsEnabled="{Binding HasHeader}"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding CopyPayloadCommand}"
+                            Content="复制 Payload"
+                            IsEnabled="{Binding HasPayload}"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="JWT 输入" />
-                            <TextBlock Classes="section-copy" Text="支持直接粘贴完整 JWT，也可输入带 `Bearer ` 前缀的令牌，内容变化后会自动尝试解码。" />
-                        </StackPanel>
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="JWT 输入" />
+                                <TextBlock Classes="section-copy" Text="支持直接粘贴完整 JWT，也可输入带 `Bearer ` 前缀的令牌，内容变化后会自动尝试解码。" />
+                            </StackPanel>
+
+                            <Border Grid.Column="1" Classes="badge-pill compact" VerticalAlignment="Top">
+                                <TextBlock Classes="badge-text" Text="{Binding JwtCharacterCount, StringFormat='字符 {0}'}" />
+                            </Border>
+                        </Grid>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">
                             <avaloniaEdit:TextEditor
                                 FontFamily="Consolas,monospace"
                                 HorizontalScrollBarVisibility="Auto"
-                                MinHeight="420"
+                                MinHeight="500"
                                 Name="JwtText"
                                 Padding="{StaticResource Thickness.8}"
                                 behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
@@ -64,70 +89,109 @@
                                 </avaloniaEdit:TextEditor.Options>
                             </avaloniaEdit:TextEditor>
                         </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="解析结果" />
-                            <TextBlock Classes="section-copy" Text="Header 和 Payload 分区展示，便于快速检查签发信息、时间字段和业务载荷内容。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
-                                <TextBlock Classes="metric-label" Text="Header" />
-                                <TextBox
-                                    Grid.Row="1"
-                                    AcceptsReturn="True"
-                                    Classes="Standard"
-                                    Height="150"
-                                    IsReadOnly="True"
-                                    Text="{Binding HeaderText}"
-                                    PlaceholderText="Header" />
-                            </Grid>
-                        </Border>
 
                         <Border Grid.Row="2" Classes="tool-card-soft">
-                            <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
-                                <TextBlock Classes="metric-label" Text="Payload" />
-                                <TextBox
-                                    Grid.Row="1"
-                                    AcceptsReturn="True"
-                                    Classes="Standard"
-                                    Height="230"
-                                    IsReadOnly="True"
-                                    Text="{Binding PayloadText}"
-                                    PlaceholderText="Payload" />
-                            </Grid>
-                        </Border>
-
-                        <Border Grid.Row="3" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="当前页面仅做结构解析展示，不验证签名，也不会新增额外的令牌编辑操作。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用说明" />
-                            <TextBlock Classes="section-copy" Text="这里不提供显式按钮，继续沿用“输入即解析”的现有行为，减少一次额外点击。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="令牌需要至少包含 Header 与 Payload 两段内容。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="支持 URL Safe Base64 形式，页面会按现有逻辑自动补齐并解码。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="输入无效时，结果区会清空并通过提示消息反馈错误。" TextWrapping="Wrap" />
+                                <TextBlock Classes="metric-label" Text="输入提示" />
+                                <TextBlock Classes="Small" Text="• 令牌至少需要包含 Header 和 Payload 两段内容，签名段可以存在也可以省略。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 支持 URL Safe Base64 形式，页面会按现有逻辑自动补齐并解码。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 输入无效时，结果区会清空并通过提示消息反馈错误。" TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="解析结果" />
+                            <TextBlock Classes="section-copy" Text="Header 和 Payload 结果分区展示，适合快速查看签发信息、时间字段和业务载荷内容。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                        <TextBlock Classes="metric-label" Text="Header" />
+                                        <Border Grid.Column="1" Classes="badge-pill compact">
+                                            <TextBlock Classes="badge-text" Text="{Binding HeaderCharacterCount, StringFormat='字符 {0}'}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="250"
+                                        IsReadOnly="True"
+                                        Text="{Binding HeaderText}"
+                                        PlaceholderText="Header" />
+
+                                    <Button
+                                        Grid.Row="2"
+                                        Command="{Binding CopyHeaderCommand}"
+                                        Content="复制 Header"
+                                        HorizontalAlignment="Left"
+                                        IsEnabled="{Binding HasHeader}"
+                                        Theme="{DynamicResource OutlineButton}" />
+                                </Grid>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-soft">
+                                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                        <TextBlock Classes="metric-label" Text="Payload" />
+                                        <Border Grid.Column="1" Classes="badge-pill compact">
+                                            <TextBlock Classes="badge-text" Text="{Binding PayloadCharacterCount, StringFormat='字符 {0}'}" />
+                                        </Border>
+                                    </Grid>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="250"
+                                        IsReadOnly="True"
+                                        Text="{Binding PayloadText}"
+                                        PlaceholderText="Payload" />
+
+                                    <Button
+                                        Grid.Row="2"
+                                        Command="{Binding CopyPayloadCommand}"
+                                        Content="复制 Payload"
+                                        HorizontalAlignment="Left"
+                                        IsEnabled="{Binding HasPayload}"
+                                        Theme="{DynamicResource OutlineButton}" />
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.10}">
+                                <StackPanel Spacing="{StaticResource Space.8}">
+                                    <TextBlock Classes="metric-label" Text="使用说明" />
+                                    <TextBlock Classes="Small" Text="• 当前页面只做结构解析展示，不验证签名，也不会生成新的令牌。" TextWrapping="Wrap" />
+                                    <TextBlock Classes="Small" Text="• 输入即解析仍然保留，不需要额外点击解析按钮。" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="{StaticResource Space.8}">
+                                    <TextBlock Classes="metric-label" Text="当前状态" />
+                                    <TextBlock Classes="section-copy" Text="{Binding HasJwtInput, StringFormat='已输入令牌：{0}'}" />
+                                    <TextBlock Classes="section-copy" Text="{Binding HasHeader, StringFormat='Header 可复制：{0}'}" />
+                                    <TextBlock Classes="section-copy" Text="{Binding HasPayload, StringFormat='Payload 可复制：{0}'}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
             </Grid>
+
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <TextBlock
+                    Classes="section-copy"
+                    Text="这个页现在更偏向“查看台”而不是“操作台”：左侧专注输入，右侧专注结果，底部保留解释和状态，减少原来三栏布局里右侧过碎、空白又多的问题。"
+                    TextWrapping="Wrap" />
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>
