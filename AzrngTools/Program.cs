@@ -28,6 +28,7 @@ internal sealed class Program
         AppBuilder.Configure<App>()
                   .UseWin32()
                   .UseSkia()
+                  .UseHarfBuzz()
                   .WithInterFont()
                   .LogToTrace();
 
