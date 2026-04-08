@@ -39,8 +39,11 @@ dotnet build AzrngTools.sln -v minimal
 
 ### 本地发布
 ```bash
-dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64
+dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contained true -p:PublishAot=false -p:PublishTrimmed=false
 ```
+
+- 正式发布默认采用：`SelfContained + PublishSingleFile + PublishReadyToRun`
+- 当前默认发布策略不启用 `AOT` 和 `Trim`，优先保证桌面运行稳定性
 
 ### GitHub Actions 自动发布
 1. 将准备好的代码合并到 `main`

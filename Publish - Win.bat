@@ -1,5 +1,4 @@
-set "sourceFolder=.\AzrngTools"
-
-dotnet publish -f net10.0-windows -r win-x64 -c Release
+@echo off
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0publish.ps1"
 
 pause

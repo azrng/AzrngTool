@@ -13,29 +13,20 @@
         <InvariantGlobalization>false</InvariantGlobalization>
     </PropertyGroup>
 
-    <!-- AOT发布配置 -->
+    <!-- 稳定发布配置：优先保证桌面工具箱在正式环境中的兼容性 -->
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <!-- 启用AOT编译 -->
-        <PublishAot>true</PublishAot>
-        <!-- 启用代码裁剪 -->
-        <PublishTrimmed>true</PublishTrimmed>
-        <!-- 启用自包含发布 -->
+        <!-- 使用自包含单文件发布，避免依赖目标机器本地运行时 -->
         <SelfContained>true</SelfContained>
-        <!-- 目标运行时 -->
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <!-- 启用单文件发布 -->
         <PublishSingleFile>true</PublishSingleFile>
-        <!-- 启用ReadyToRun优化 -->
         <PublishReadyToRun>true</PublishReadyToRun>
-        <!-- 启用IL链接优化 -->
-        <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-        <!-- 启用反射优化 -->
-        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+        <PublishTrimmed>false</PublishTrimmed>
+        <PublishAot>false</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
-        <TrimmerRootDescriptor Condition="'$(Configuration)' == 'Release'" Include="Roots.xml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -53,12 +44,8 @@
         <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta3" />
         <PackageReference Include="Common.Windows.Core" Version="0.0.6" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-        <PackageReference Condition="'$(Configuration)' == 'Release'" Include="Costura.Fody" Version="5.7.0">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
         <PackageReference Include="NJsonSchema" Version="11.5.2" />
-        <PackageReference Condition="'$(Configuration)' == 'Release'" Include="PublishAotCompressed" Version="1.0.3" />
         <PackageReference Include="Semi.Avalonia" Version="11.3.7.3">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>

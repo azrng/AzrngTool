@@ -13,9 +13,8 @@ using Microsoft.Extensions.Logging;
 
 namespace AzrngTools.Services;
 
-public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
+public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web);
     private readonly IAppInfoService _appInfoService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<AppUpdateService> _logger;
@@ -179,7 +178,10 @@ public sealed class AppUpdateService : IAppUpdateService, ISingletonDependency
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var release = await JsonSerializer.DeserializeAsync<GithubReleaseResponse>(stream, SerializerOptions, cancellationToken);
+        var release = await JsonSerializer.DeserializeAsync(
+            stream,
+            AppUpdateJsonContext.Default.GithubReleaseResponse,
+            cancellationToken);
 
         if (release is null)
         {
@@ -414,5 +416,11 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
 
         [JsonPropertyName("browser_download_url")]
         public string DownloadUrl { get; set; } = string.Empty;
+    }
+
+    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web)]
+    [JsonSerializable(typeof(GithubReleaseResponse))]
+    private sealed partial class AppUpdateJsonContext : JsonSerializerContext
+    {
     }
 }

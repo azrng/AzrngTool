@@ -68,12 +68,20 @@ jobs:
           $version = "${{ steps.release_meta.outputs.version }}"
           $shortSha = "${{ github.sha }}".Substring(0, 7)
           $informationalVersion = "$version+$shortSha"
+          
+          if (Test-Path "${{ env.PUBLISH_DIR }}") {
+            Remove-Item "${{ env.PUBLISH_DIR }}" -Recurse -Force
+          }
 
           dotnet publish "${{ env.PROJECT_PATH }}" `
             -c Release `
             -r win-x64 `
             --self-contained true `
             -o "${{ env.PUBLISH_DIR }}" `
+            -p:PublishAot=false `
+            -p:PublishTrimmed=false `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
             -p:InformationalVersion=$informationalVersion `
             -p:Version=$version
 
@@ -81,11 +89,6 @@ jobs:
         shell: pwsh
         run: |
           $packagePath = "${{ steps.release_meta.outputs.package_path }}"
-          $pdbPath = Join-Path "${{ env.PUBLISH_DIR }}" "AzrngTools.pdb"
-
-          if (Test-Path $pdbPath) {
-            Remove-Item $pdbPath -Force
-          }
 
           if (Test-Path $packagePath) {
             Remove-Item $packagePath -Force
