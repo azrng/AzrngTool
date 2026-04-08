@@ -7,6 +7,7 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AcceptNPOIOSMFLicense>true</AcceptNPOIOSMFLicense>
         <ImplicitUsings>true</ImplicitUsings>
         <Nullable>enable</Nullable>
         <NoWarn>$(NoWarn);8632</NoWarn>
