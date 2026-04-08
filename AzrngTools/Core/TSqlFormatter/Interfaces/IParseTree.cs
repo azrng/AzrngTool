@@ -1,4 +1,5 @@
-﻿using System.Xml;
+#nullable disable
+using System.Xml;
 
 namespace TSqlFormatter.Interfaces
 {

@@ -43,7 +43,7 @@
                             Classes="Standard"
                             Height="320"
                             Text="{Binding OriginText}"
-                            Watermark="请输入 JSON 内容" />
+                            PlaceholderText="请输入 JSON 内容" />
                     </Grid>
                 </Border>
 
@@ -88,7 +88,7 @@
                         Height="360"
                         IsReadOnly="True"
                         Text="{Binding SchemaData}"
-                        Watermark="生成的 JSON Schema 将显示在这里" />
+                        PlaceholderText="生成的 JSON Schema 将显示在这里" />
                 </Grid>
             </Border>
         </Grid>

@@ -45,7 +45,7 @@
                             Classes="Standard"
                             Height="52"
                             Text="{Binding Amount}"
-                            Watermark="请输入金额（例如：123456.78）" />
+                            PlaceholderText="请输入金额（例如：123456.78）" />
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button

@@ -46,7 +46,7 @@
                             Classes="Standard"
                             Height="300"
                             Text="{Binding Base64String, UpdateSourceTrigger=LostFocus}"
-                            Watermark="请输入 Base64 字符串（支持带或不带 data:image/...;base64, 前缀）" />
+                            PlaceholderText="请输入 Base64 字符串（支持带或不带 data:image/...;base64, 前缀）" />
 
                         <Border Grid.Row="2" Classes="tool-card-soft">
                             <StackPanel Spacing="{StaticResource Space.8}">

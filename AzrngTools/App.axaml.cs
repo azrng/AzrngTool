@@ -94,12 +94,12 @@ public partial class App : Application
     /// <summary>
     /// Gets the current <see cref="App"/> instance in use
     /// </summary>
-    public static new App Current => (App)Avalonia.Application.Current;
+    public static new App Current => (App)Avalonia.Application.Current!;
 
     /// <summary>
     /// 通知页面
     /// </summary>
-    public static WindowNotificationManager NotificationPage { get; set; }
+    public static WindowNotificationManager? NotificationPage { get; set; }
 
     /// <summary>
     /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
@@ -129,7 +129,7 @@ public partial class App : Application
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
         });
 
-        var assembly = AssemblyHelper.GetEntryAssembly();
+        var assembly = AssemblyHelper.GetEntryAssembly() ?? typeof(App).Assembly;
         services.RegisterBusinessServices(assembly);
 
         // 注入ViewModels

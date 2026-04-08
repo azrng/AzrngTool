@@ -87,7 +87,7 @@
                                     Height="150"
                                     IsReadOnly="True"
                                     Text="{Binding HeaderText}"
-                                    Watermark="Header" />
+                                    PlaceholderText="Header" />
                             </Grid>
                         </Border>
 
@@ -101,7 +101,7 @@
                                     Height="230"
                                     IsReadOnly="True"
                                     Text="{Binding PayloadText}"
-                                    Watermark="Payload" />
+                                    PlaceholderText="Payload" />
                             </Grid>
                         </Border>
 

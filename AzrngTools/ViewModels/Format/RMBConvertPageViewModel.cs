@@ -1,3 +1,4 @@
+#nullable disable
 using Azrng.Core.Helpers;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;

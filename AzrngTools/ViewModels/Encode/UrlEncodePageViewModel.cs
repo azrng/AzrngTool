@@ -1,3 +1,4 @@
+#nullable disable
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;

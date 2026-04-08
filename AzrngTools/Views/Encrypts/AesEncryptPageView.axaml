@@ -47,7 +47,7 @@
                                 Classes="Standard"
                                 Height="220"
                                 Text="{Binding Original}"
-                                Watermark="请输入要加密或解密的内容" />
+                                PlaceholderText="请输入要加密或解密的内容" />
                         </Grid>
                     </Border>
 
@@ -63,7 +63,7 @@
                                     Grid.Row="1"
                                     Classes="Standard"
                                     Text="{Binding Secret}"
-                                    Watermark="请输入密钥" />
+                                    PlaceholderText="请输入密钥" />
                             </Grid>
                         </Border>
 
@@ -78,7 +78,7 @@
                                     Grid.Row="1"
                                     Classes="Standard"
                                     Text="{Binding Iv}"
-                                    Watermark="ECB 模式可留空，其它模式请输入 IV" />
+                                    PlaceholderText="ECB 模式可留空，其它模式请输入 IV" />
                             </Grid>
                         </Border>
                     </Grid>
@@ -97,7 +97,7 @@
                                 Height="220"
                                 IsReadOnly="True"
                                 Text="{Binding Ciphertext}"
-                                Watermark="加密或解密后的内容将显示在这里" />
+                                PlaceholderText="加密或解密后的内容将显示在这里" />
                         </Grid>
                     </Border>
                 </Grid>

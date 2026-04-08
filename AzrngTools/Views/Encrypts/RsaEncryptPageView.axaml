@@ -48,7 +48,7 @@
                                             Classes="Standard"
                                             Height="220"
                                             Text="{Binding Original}"
-                                            Watermark="请输入要加密或解密的内容" />
+                                            PlaceholderText="请输入要加密或解密的内容" />
                                     </Grid>
                                 </Border>
 
@@ -98,7 +98,7 @@
                                             Classes="Standard"
                                             Height="220"
                                             Text="{Binding PublicKey}"
-                                            Watermark="请输入公钥" />
+                                            PlaceholderText="请输入公钥" />
                                     </Grid>
                                 </Border>
 
@@ -115,7 +115,7 @@
                                             Classes="Standard"
                                             Height="220"
                                             Text="{Binding PrivateKey}"
-                                            Watermark="请输入私钥" />
+                                            PlaceholderText="请输入私钥" />
                                     </Grid>
                                 </Border>
                             </Grid>
@@ -134,7 +134,7 @@
                                         Height="220"
                                         IsReadOnly="True"
                                         Text="{Binding Ciphertext}"
-                                        Watermark="加密或解密的结果" />
+                                        PlaceholderText="加密或解密的结果" />
                                 </Grid>
                             </Border>
                         </Grid>
@@ -175,7 +175,7 @@
                                         Classes="Standard"
                                         Height="180"
                                         Text="{Binding PublicKey}"
-                                        Watermark="公钥" />
+                                        PlaceholderText="公钥" />
                                 </Grid>
                             </Border>
 
@@ -192,7 +192,7 @@
                                         Classes="Standard"
                                         Height="220"
                                         Text="{Binding PrivateKey}"
-                                        Watermark="私钥" />
+                                        PlaceholderText="私钥" />
                                 </Grid>
                             </Border>
                         </Grid>

@@ -72,7 +72,7 @@
                                 Height="280"
                                 Text="{Binding Original}"
                                 TextWrapping="Wrap"
-                                Watermark="请输入要转换的内容" />
+                                PlaceholderText="请输入要转换的内容" />
                         </Grid>
                     </Border>
                 </Grid>
@@ -92,7 +92,7 @@
                             IsReadOnly="True"
                             Text="{Binding HandleText}"
                             TextWrapping="Wrap"
-                            Watermark="处理后的内容将显示在这里" />
+                            PlaceholderText="处理后的内容将显示在这里" />
                     </Grid>
                 </Border>
 

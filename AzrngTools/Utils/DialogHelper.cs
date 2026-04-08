@@ -13,7 +13,7 @@ namespace AzrngTools.Utils
         /// <param name="selectMany">Is selecting many files allowed?</param>
         /// <returns>An array of file names</returns>
         /// <exception cref="ArgumentNullException">if context was null</exception>
-        public static async Task<List<string>> OpenFileDialogAsync(object context, string title = null,
+        public static async Task<List<string>> OpenFileDialogAsync(object context, string? title = null,
                                                                    bool selectMany = true)
         {
             if (context == null)
@@ -42,7 +42,7 @@ namespace AzrngTools.Utils
         /// <param name="context">The context</param>
         /// <param name="title">The dialog title or a default is null</param>
         /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<bool> SaveFileDialogAsync(object context, string title = null)
+        public static async Task<bool> SaveFileDialogAsync(object context, string? title = null)
         {
             if (context == null)
             {
@@ -59,7 +59,7 @@ namespace AzrngTools.Utils
 
             var result = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions { Title = title ?? "请选择保存路径" });
 
-            return true;
+            return result is not null;
         }
     }
 
@@ -96,13 +96,13 @@ namespace AzrngTools.Utils
         /// <summary>
         /// This property handles the registration of Views and ViewModel
         /// </summary>
-        public static readonly AttachedProperty<object> RegisterProperty =
-            AvaloniaProperty.RegisterAttached<DialogManager, Visual, object>("Register");
+        public static readonly AttachedProperty<object?> RegisterProperty =
+            AvaloniaProperty.RegisterAttached<DialogManager, Visual, object?>("Register");
 
         /// <summary>
         /// Accessor for Attached property <see cref="RegisterProperty"/>.
         /// </summary>
-        public static void SetRegister(AvaloniaObject element, object value)
+        public static void SetRegister(AvaloniaObject element, object? value)
         {
             element.SetValue(RegisterProperty, value);
         }
@@ -110,7 +110,7 @@ namespace AzrngTools.Utils
         /// <summary>
         /// Accessor for Attached property <see cref="RegisterProperty"/>.
         /// </summary>
-        public static object GetRegister(AvaloniaObject element)
+        public static object? GetRegister(AvaloniaObject element)
         {
             return element.GetValue(RegisterProperty);
         }
@@ -120,7 +120,7 @@ namespace AzrngTools.Utils
         /// </summary>
         /// <param name="context">The context to lookup</param>
         /// <returns>The registered Visual for the context or null if none was found</returns>
-        public static Visual GetVisualForContext(object context)
+        public static Visual? GetVisualForContext(object context)
         {
             return RegistrationMapper.GetValueOrDefault(context);
         }
@@ -130,7 +130,7 @@ namespace AzrngTools.Utils
         /// </summary>
         /// <param name="context">The context to lookup</param>
         /// <returns>The registered TopLevel for the context or null if none was found</returns>
-        public static TopLevel GetTopLevelForContext(object context)
+        public static TopLevel? GetTopLevelForContext(object context)
         {
             return TopLevel.GetTopLevel(GetVisualForContext(context));
         }

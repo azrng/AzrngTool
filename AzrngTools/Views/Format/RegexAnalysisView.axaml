@@ -44,7 +44,7 @@
                             Grid.Row="1"
                             Classes="Standard"
                             Text="{Binding RegexPattern}"
-                            Watermark="请输入正则表达式" />
+                            PlaceholderText="请输入正则表达式" />
 
                         <Border Grid.Row="2" Classes="tool-card-soft">
                             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource Space.12}">
@@ -108,7 +108,7 @@
                             Classes="Standard"
                             Height="220"
                             Text="{Binding TestText}"
-                            Watermark="请输入测试文本" />
+                            PlaceholderText="请输入测试文本" />
                     </Grid>
                 </Border>
 
@@ -125,7 +125,7 @@
                             Classes="Standard"
                             Height="220"
                             Text="{Binding ReplacementText}"
-                            Watermark="请输入替换内容" />
+                            PlaceholderText="请输入替换内容" />
                     </Grid>
                 </Border>
             </Grid>
@@ -145,7 +145,7 @@
                             Height="220"
                             IsReadOnly="True"
                             Text="{Binding HighlightedText}"
-                            Watermark="匹配结果会用【】标出" />
+                            PlaceholderText="匹配结果会用【】标出" />
                     </Grid>
                 </Border>
 
@@ -163,7 +163,7 @@
                             Height="220"
                             IsReadOnly="True"
                             Text="{Binding ReplacedText}"
-                            Watermark="替换后的内容会显示在这里" />
+                            PlaceholderText="替换后的内容会显示在这里" />
                     </Grid>
                 </Border>
 
@@ -181,7 +181,7 @@
                             Height="240"
                             IsReadOnly="True"
                             Text="{Binding MatchSummary}"
-                            Watermark="匹配位置和长度会显示在这里" />
+                            PlaceholderText="匹配位置和长度会显示在这里" />
                     </Grid>
                 </Border>
 
@@ -199,7 +199,7 @@
                             Height="240"
                             IsReadOnly="True"
                             Text="{Binding GroupDetails}"
-                            Watermark="分组信息会显示在这里" />
+                            PlaceholderText="分组信息会显示在这里" />
                     </Grid>
                 </Border>
             </Grid>

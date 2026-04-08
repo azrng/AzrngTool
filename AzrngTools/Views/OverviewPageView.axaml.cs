@@ -5,7 +5,7 @@ namespace AzrngTools.Views
 {
     public partial class OverviewPageView : ViewControlBase
     {
-        private WindowNotificationManager _manager;
+        private WindowNotificationManager? _manager;
 
         public OverviewPageView()
         {
@@ -16,6 +16,11 @@ namespace AzrngTools.Views
         {
             base.OnAttachedToVisualTree(e);
             var topLevel = TopLevel.GetTopLevel(this);
+            if (topLevel is null)
+            {
+                return;
+            }
+
             _manager = new WindowNotificationManager(topLevel) { MaxItems = 3 };
             App.NotificationPage = _manager;
         }

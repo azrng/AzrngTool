@@ -1,4 +1,4 @@
-﻿<Window xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -376,7 +376,7 @@
                               ColumnSpacing="10">
                             <TextBox Grid.Column="0"
                                      Text="{Binding SearchText}"
-                                     Watermark="搜索连接"
+                                     PlaceholderText="搜索连接"
                                      Height="46"
                                      Classes="modern" />
                             <Button Grid.Column="1"
@@ -609,7 +609,7 @@
                                                 <StackPanel Grid.Column="1"
                                                             Spacing="6">
                                                     <TextBox Text="{Binding ConnectionConfig.Name, Mode=TwoWay}"
-                                                             Watermark="请输入连接名称"
+                                                             PlaceholderText="请输入连接名称"
                                                              Height="42"
                                                              Classes="modern"
                                                              Classes.error="{Binding IsNameInvalid}" />
@@ -631,7 +631,7 @@
                                                     <StackPanel Grid.Column="0"
                                                                 Spacing="6">
                                                         <TextBox Text="{Binding ConnectionConfig.Host, Mode=TwoWay}"
-                                                                 Watermark="请输入服务器地址"
+                                                                 PlaceholderText="请输入服务器地址"
                                                                  Height="42"
                                                                  Classes="modern"
                                                                  Classes.error="{Binding IsHostInvalid}" />
@@ -669,7 +669,7 @@
                                                                 Spacing="6"
                                                                 IsVisible="{Binding ShowUsernameField}">
                                                         <TextBox Text="{Binding ConnectionConfig.Username, Mode=TwoWay}"
-                                                                 Watermark="请输入登录名"
+                                                                 PlaceholderText="请输入登录名"
                                                                  Height="42"
                                                                  Classes="modern"
                                                                  Classes.error="{Binding IsUsernameInvalid}"
@@ -682,7 +682,7 @@
                                                     <StackPanel Grid.Column="1"
                                                                 Spacing="6">
                                                         <TextBox Text="{Binding ConnectionConfig.Password, Mode=TwoWay}"
-                                                                 Watermark="请输入密码"
+                                                                 PlaceholderText="请输入密码"
                                                                  Height="42"
                                                                  Classes="modern"
                                                                  Classes.error="{Binding IsPasswordInvalid}"
@@ -760,7 +760,7 @@
                                                           ColumnSpacing="10">
                                                         <TextBox Grid.Column="0"
                                                                  Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
-                                                                 Watermark="{Binding DatabaseFilePathHint}"
+                                                                 PlaceholderText="{Binding DatabaseFilePathHint}"
                                                                  Height="42"
                                                                  Classes="modern"
                                                                  Classes.error="{Binding IsDatabaseInvalid}" />

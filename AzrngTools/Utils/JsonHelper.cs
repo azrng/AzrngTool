@@ -76,7 +76,7 @@ namespace AzrngTools.Utils
             return System.Text.Json.JsonSerializer.Serialize(obj, options);
         }
 
-        public static T FromJson<T>(string json)
+        public static T? FromJson<T>(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
             {
@@ -87,7 +87,7 @@ namespace AzrngTools.Utils
                           {
                               Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, TypeInfoResolver = new DefaultJsonTypeInfoResolver()
                           };
-            return System.Text.Json.JsonSerializer.Deserialize<T>(json!, options);
+            return System.Text.Json.JsonSerializer.Deserialize<T>(json, options);
         }
     }
 }

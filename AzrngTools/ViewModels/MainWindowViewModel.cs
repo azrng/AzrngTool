@@ -39,7 +39,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private List<MenuBar> _allRootMenus = [];
     private List<MenuBar> _allGroupMenus = [];
-    private MenuBar _homeMenu;
+    private MenuBar? _homeMenu;
     private bool _suppressUsageTracking;
 
     public MainWindowViewModel(
@@ -68,31 +68,31 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [ObservableProperty]
-    private ObservableCollection<MenuBar> _rootMenuItems;
+    private ObservableCollection<MenuBar> _rootMenuItems = [];
 
     [ObservableProperty]
-    private ObservableCollection<MenuBar> _groupMenuItems;
+    private ObservableCollection<MenuBar> _groupMenuItems = [];
 
     [ObservableProperty]
-    private MenuBar _selectedListItem;
+    private MenuBar? _selectedListItem;
 
     [ObservableProperty]
-    private object _currentPage;
+    private object? _currentPage;
 
     [ObservableProperty]
-    private string _searchKeyword;
+    private string _searchKeyword = string.Empty;
 
     [ObservableProperty]
-    private string _appTitle;
+    private string _appTitle = string.Empty;
 
     [ObservableProperty]
-    private string _appSubtitle;
+    private string _appSubtitle = string.Empty;
 
     [ObservableProperty]
-    private string _currentPageTitle;
+    private string _currentPageTitle = string.Empty;
 
     [ObservableProperty]
-    private string _currentPageSubtitle;
+    private string _currentPageSubtitle = string.Empty;
 
     [ObservableProperty]
     private int _totalToolCount;
@@ -104,7 +104,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private int _categoryCount;
 
     [ObservableProperty]
-    private string _searchSummary;
+    private string _searchSummary = string.Empty;
 
     [ObservableProperty]
     private bool _isDarkThemeEnabled;
@@ -287,7 +287,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    partial void OnSelectedListItemChanged(MenuBar value)
+    partial void OnSelectedListItemChanged(MenuBar? value)
     {
         if (value?.MenuType is null)
         {
@@ -323,8 +323,13 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private void SetSelectedListItemSilently(MenuBar menu)
+    private void SetSelectedListItemSilently(MenuBar? menu)
     {
+        if (menu is null)
+        {
+            return;
+        }
+
         _suppressUsageTracking = true;
         try
         {
@@ -351,6 +356,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 continue;
             }
 
+            if (menu is null)
+            {
+                continue;
+            }
+
             yield return menu;
             if (addedKeys.Count >= maxCount)
             {
@@ -365,6 +375,11 @@ public partial class MainWindowViewModel : ViewModelBase
                 continue;
             }
 
+            if (menu is null)
+            {
+                continue;
+            }
+
             yield return menu;
             if (addedKeys.Count >= maxCount)
             {
@@ -373,7 +388,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private bool TryBuildCommonMenu(string key, string keyword, HashSet<string> addedKeys, out MenuBar menu)
+    private bool TryBuildCommonMenu(string key, string keyword, HashSet<string> addedKeys, out MenuBar? menu)
     {
         menu = null;
 
@@ -434,7 +449,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private static MenuBar CloneMenu(MenuBar source)
     {
-        return new MenuBar(source.Title, source.MenuType, source.ToolTip);
+        return new MenuBar
+        {
+            Title = source.Title,
+            MenuType = source.MenuType,
+            ToolTip = source.ToolTip
+        };
     }
 
     private void CaptureGroupExpansionStates()
@@ -476,7 +496,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private void OnGroupPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnGroupPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(MenuBar.IsExpanded) || sender is not MenuBar currentGroup || !currentGroup.IsExpanded)
         {
@@ -496,7 +516,7 @@ public partial class MainWindowViewModel : ViewModelBase
         CaptureGroupExpansionStates();
     }
 
-    private MenuBar CloneGroupForSearch(MenuBar source, string keyword, bool hasSearchKeyword)
+    private MenuBar? CloneGroupForSearch(MenuBar source, string keyword, bool hasSearchKeyword)
     {
         if (string.IsNullOrWhiteSpace(keyword))
         {
@@ -554,12 +574,12 @@ public partial class MainWindowViewModel : ViewModelBase
         return menu?.Title ?? string.Empty;
     }
 
-    private static bool IsSameMenu(MenuBar left, MenuBar right)
+    private static bool IsSameMenu(MenuBar? left, MenuBar? right)
     {
         return left?.Title == right?.Title && left?.MenuType == right?.MenuType;
     }
 
-    private MenuBar FindVisibleMenu(MenuBar target)
+    private MenuBar? FindVisibleMenu(MenuBar target)
     {
         return RootMenuItems.FirstOrDefault(menu => IsSameMenu(menu, target))
                ?? GroupMenuItems.SelectMany(group => group.Child ?? []).FirstOrDefault(menu => IsSameMenu(menu, target));

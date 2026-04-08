@@ -6,13 +6,13 @@ namespace AzrngTools.Behaviors
 {
     public class DocumentTextBindingBehavior : Behavior<TextEditor>
     {
-        private TextEditor _textEditor;
+        private TextEditor? _textEditor;
         private bool _isUpdatingText = false;
 
-        public static readonly StyledProperty<string> TextProperty =
-            AvaloniaProperty.Register<DocumentTextBindingBehavior, string>(nameof(Text));
+        public static readonly StyledProperty<string?> TextProperty =
+            AvaloniaProperty.Register<DocumentTextBindingBehavior, string?>(nameof(Text));
 
-        public string Text
+        public string? Text
         {
             get => GetValue(TextProperty);
             set => SetValue(TextProperty, value);
@@ -44,7 +44,7 @@ namespace AzrngTools.Behaviors
             this.PropertyChanged -= OnTextPropertyChanged;
         }
 
-        private void TextChanged(object sender, EventArgs eventArgs)
+        private void TextChanged(object? sender, EventArgs eventArgs)
         {
             if (_textEditor != null && _textEditor.Document != null && !_isUpdatingText)
             {
@@ -54,7 +54,7 @@ namespace AzrngTools.Behaviors
             }
         }
 
-        private void OnTextPropertyChanged(object sender, AvaloniaPropertyChangedEventArgs e)
+        private void OnTextPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
         {
             if (e.Property == TextProperty && !_isUpdatingText)
             {

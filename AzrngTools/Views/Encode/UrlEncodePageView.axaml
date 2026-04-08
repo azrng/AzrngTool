@@ -46,7 +46,7 @@
                             Classes="Standard"
                             Height="260"
                             Text="{Binding Original}"
-                            Watermark="请输入要编码或解码的 URL / 文本" />
+                            PlaceholderText="请输入要编码或解码的 URL / 文本" />
                     </Grid>
                 </Border>
 
@@ -64,7 +64,7 @@
                             Height="260"
                             IsReadOnly="True"
                             Text="{Binding HandleText}"
-                            Watermark="处理后的内容会显示在这里" />
+                            PlaceholderText="处理后的内容会显示在这里" />
                     </Grid>
                 </Border>
 

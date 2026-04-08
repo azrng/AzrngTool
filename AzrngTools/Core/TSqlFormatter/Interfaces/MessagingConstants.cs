@@ -1,4 +1,5 @@
-﻿
+#nullable disable
+
 namespace TSqlFormatter.Interfaces
 {
     public static class MessagingConstants

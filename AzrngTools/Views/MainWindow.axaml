@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
@@ -93,7 +93,7 @@
                         <TextBox
                             Grid.Row="0"
                             Text="{Binding SearchKeyword}"
-                            Watermark="搜索工具 / 分组..." />
+                            PlaceholderText="搜索工具 / 分组..." />
 
                         <Border
                             Grid.Row="1"

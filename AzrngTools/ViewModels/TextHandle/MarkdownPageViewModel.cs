@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+#nullable disable
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AzrngTools.ViewModels.TextHandle
 {

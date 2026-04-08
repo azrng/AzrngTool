@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -60,7 +60,7 @@
                            Classes="label">
                     <Run Text=" *" Classes="requiredStar"/>
                 </TextBlock>
-                <TextBox Watermark="请输入连接名称"
+                <TextBox PlaceholderText="请输入连接名称"
                          Text="{Binding ConnectionConfig.Name, Mode=TwoWay}"
                          Height="40"
                          Classes="modern"/>
@@ -78,7 +78,7 @@
                                Classes="label">
                         <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
-                    <TextBox Watermark="请输入服务器地址"
+                    <TextBox PlaceholderText="请输入服务器地址"
                              Text="{Binding ConnectionConfig.Host, Mode=TwoWay}"
                              Height="40"
                              Classes="modern"/>
@@ -87,7 +87,7 @@
                 <StackPanel Grid.Column="1" Spacing="8">
                     <TextBlock Text="端口"
                                Classes="label"/>
-                    <TextBox Watermark="5432"
+                    <TextBox PlaceholderText="5432"
                              Text="{Binding ConnectionConfig.Port, Mode=TwoWay}"
                              Height="40"
                              Classes="modern"
@@ -107,7 +107,7 @@
                                Classes="label">
                         <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
-                    <TextBox Watermark="请输入登录名"
+                    <TextBox PlaceholderText="请输入登录名"
                              Text="{Binding ConnectionConfig.Username, Mode=TwoWay}"
                              Height="40"
                              Classes="modern"/>
@@ -119,7 +119,7 @@
                         <Run Text=" *" Classes="requiredStar"/>
                     </TextBlock>
                     <TextBox Text="{Binding ConnectionConfig.Password, Mode=TwoWay}"
-                             Watermark="请输入密码"
+                             PlaceholderText="请输入密码"
                              Height="40"
                              Classes="modern"/>
                 </StackPanel>
@@ -176,7 +176,7 @@
                     </Grid.ColumnDefinitions>
                     <Grid.ColumnSpacing>8</Grid.ColumnSpacing>
                     <TextBox Grid.Column="0"
-                             Watermark="{Binding DatabaseFilePathHint}"
+                             PlaceholderText="{Binding DatabaseFilePathHint}"
                              Text="{Binding ConnectionConfig.Database, Mode=TwoWay}"
                              Height="40"
                              Classes="modern"/>

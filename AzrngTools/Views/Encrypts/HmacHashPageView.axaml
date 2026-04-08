@@ -44,7 +44,7 @@
                             Classes="Standard"
                             Height="260"
                             Text="{Binding Original}"
-                            Watermark="请输入要进行哈希的内容" />
+                            PlaceholderText="请输入要进行哈希的内容" />
                     </Grid>
                 </Border>
 
@@ -59,7 +59,7 @@
                             Grid.Row="1"
                             Classes="Standard"
                             Text="{Binding Secret}"
-                            Watermark="请输入密钥" />
+                            PlaceholderText="请输入密钥" />
 
                         <TextBox
                             Grid.Row="2"
@@ -68,7 +68,7 @@
                             Height="220"
                             IsReadOnly="True"
                             Text="{Binding Ciphertext}"
-                            Watermark="哈希后的内容" />
+                            PlaceholderText="哈希后的内容" />
                     </Grid>
                 </Border>
 

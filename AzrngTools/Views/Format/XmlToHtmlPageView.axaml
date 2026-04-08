@@ -46,7 +46,7 @@
                             Classes="Standard"
                             Height="240"
                             Text="{Binding XmlContent}"
-                            Watermark="请输入 XML 内容" />
+                            PlaceholderText="请输入 XML 内容" />
                     </Grid>
                 </Border>
 
@@ -63,7 +63,7 @@
                             Classes="Standard"
                             Height="240"
                             Text="{Binding XsltContent}"
-                            Watermark="请输入 XSLT 内容" />
+                            PlaceholderText="请输入 XSLT 内容" />
                     </Grid>
                 </Border>
             </Grid>
@@ -107,7 +107,7 @@
                             Height="260"
                             IsReadOnly="True"
                             Text="{Binding HtmlContent}"
-                            Watermark="HTML 内容" />
+                            PlaceholderText="HTML 内容" />
                     </Grid>
                 </Border>
             </Grid>

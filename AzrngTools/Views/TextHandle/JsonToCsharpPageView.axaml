@@ -48,7 +48,7 @@
                                     Grid.Column="1"
                                     Classes="Standard"
                                     Text="{Binding RootClassName}"
-                                    Watermark="请输入根类名" />
+                                    PlaceholderText="请输入根类名" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Classes="metric-label" VerticalAlignment="Center" Text="命名空间" />
                                 <TextBox
@@ -56,7 +56,7 @@
                                     Grid.Column="1"
                                     Classes="Standard"
                                     Text="{Binding NameSpace}"
-                                    Watermark="请输入命名空间" />
+                                    PlaceholderText="请输入命名空间" />
                             </Grid>
                         </Border>
 
@@ -132,7 +132,7 @@
                             Height="360"
                             Text="{Binding JsonInput}"
                             TextWrapping="Wrap"
-                            Watermark="请输入 JSON 内容" />
+                            PlaceholderText="请输入 JSON 内容" />
                     </Grid>
                 </Border>
 
@@ -152,7 +152,7 @@
                             IsReadOnly="True"
                             Text="{Binding CsharpOutput}"
                             TextWrapping="Wrap"
-                            Watermark="生成的 C# 实体类代码将显示在这里" />
+                            PlaceholderText="生成的 C# 实体类代码将显示在这里" />
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
                             <Button

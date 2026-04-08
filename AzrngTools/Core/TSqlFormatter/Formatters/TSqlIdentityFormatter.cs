@@ -1,4 +1,5 @@
-﻿/*
+#nullable disable
+/*
 Poor Man's T-SQL Formatter - a small free Transact-SQL formatting 
 library for .Net 2.0, written in C#. 
 Copyright (C) 2011-2013 Tao Klerks

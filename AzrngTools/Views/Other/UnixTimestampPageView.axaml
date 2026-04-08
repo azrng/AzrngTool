@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     d:DesignHeight="760"
     d:DesignWidth="1100"
     mc:Ignorable="d"
@@ -62,7 +62,7 @@
                                     Grid.Row="1"
                                     Classes="Standard"
                                     Text="{Binding TimestampSeconds}"
-                                    Watermark="请输入秒级时间戳" />
+                                    PlaceholderText="请输入秒级时间戳" />
                                 <TextBlock
                                     Grid.Row="2"
                                     Classes="section-copy"
@@ -83,7 +83,7 @@
                                     Grid.Row="1"
                                     Classes="Standard"
                                     Text="{Binding TimestampMilliseconds}"
-                                    Watermark="请输入毫秒级时间戳" />
+                                    PlaceholderText="请输入毫秒级时间戳" />
                                 <TextBlock
                                     Grid.Row="2"
                                     Classes="section-copy"

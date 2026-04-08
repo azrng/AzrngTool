@@ -1,4 +1,5 @@
-﻿using AzrngTools.Utils.Events;
+#nullable disable
+using AzrngTools.Utils.Events;
 using Common.Security;
 using Common.Security.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;

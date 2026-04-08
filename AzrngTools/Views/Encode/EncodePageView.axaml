@@ -43,7 +43,7 @@
                             Classes="Standard"
                             Height="300"
                             Text="{Binding OriginalText}"
-                            Watermark="请输入要处理的文本" />
+                            PlaceholderText="请输入要处理的文本" />
                     </Grid>
                 </Border>
 
@@ -61,7 +61,7 @@
                             Height="300"
                             IsReadOnly="True"
                             Text="{Binding ResultText}"
-                            Watermark="编码或解码后的内容将显示在页里" />
+                            PlaceholderText="编码或解码后的内容将显示在页里" />
                     </Grid>
                 </Border>
 

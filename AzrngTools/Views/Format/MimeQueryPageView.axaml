@@ -43,7 +43,7 @@
                             Grid.Row="1"
                             Classes="Standard"
                             Text="{Binding SearchText}"
-                            Watermark="请输入文件扩展名或 MIME 类型" />
+                            PlaceholderText="请输入文件扩展名或 MIME 类型" />
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button

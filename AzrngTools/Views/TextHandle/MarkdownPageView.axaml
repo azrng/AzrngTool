@@ -44,7 +44,7 @@
                             Classes="Standard"
                             Height="520"
                             Text="{Binding MdText}"
-                            Watermark="请输入 Markdown 内容" />
+                            PlaceholderText="请输入 Markdown 内容" />
                     </Grid>
                 </Border>
 

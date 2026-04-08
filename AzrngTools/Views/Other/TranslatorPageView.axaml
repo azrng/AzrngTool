@@ -43,7 +43,7 @@
                             Classes="Standard"
                             Height="320"
                             Text="{Binding OriginText}"
-                            Watermark="请输入要转换的内容" />
+                            PlaceholderText="请输入要转换的内容" />
                     </Grid>
                 </Border>
 
@@ -93,7 +93,7 @@
                         Height="260"
                         IsReadOnly="True"
                         Text="{Binding ResultText}"
-                        Watermark="输出的结果" />
+                        PlaceholderText="输出的结果" />
                 </Grid>
             </Border>
         </Grid>

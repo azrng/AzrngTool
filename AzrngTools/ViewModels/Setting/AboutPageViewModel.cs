@@ -1,3 +1,4 @@
+#nullable disable
 using AzrngTools.Models;
 using AzrngTools.Services;
 using AzrngTools.Utils.Events;

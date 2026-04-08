@@ -50,7 +50,7 @@
                             Height="320"
                             Text="{Binding InputText}"
                             TextWrapping="Wrap"
-                            Watermark="请输入要统计的文本..." />
+                            PlaceholderText="请输入要统计的文本..." />
                     </Grid>
                 </Border>
 

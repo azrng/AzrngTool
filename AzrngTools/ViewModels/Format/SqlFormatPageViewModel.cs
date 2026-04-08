@@ -1,4 +1,5 @@
-﻿using AzrngTools.Utils;
+#nullable disable
+using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

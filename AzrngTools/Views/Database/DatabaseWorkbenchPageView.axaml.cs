@@ -25,7 +25,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
         DetachedFromVisualTree += OnDetachedFromVisualTree;
     }
 
-    private void OnAttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         RegisterNodeSelectedHandler();
         BindHostViewportHeight();
@@ -37,7 +37,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
         }
     }
 
-    private void OnDetachedFromVisualTree(object sender, VisualTreeAttachmentEventArgs e)
+    private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         if (_databaseTree != null)
         {
@@ -129,7 +129,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
         }
     }
 
-    private void OnClearBrowserSearchClick(object sender, RoutedEventArgs e)
+    private void OnClearBrowserSearchClick(object? sender, RoutedEventArgs e)
     {
         if (_databaseTree != null)
         {
@@ -138,4 +138,3 @@ public partial class DatabaseWorkbenchPageView : UserControl
     }
 }
 
-#nullable enable

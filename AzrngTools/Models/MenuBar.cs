@@ -19,22 +19,22 @@ public partial class MenuBar : ObservableObject
     /// <summary>
     /// 标题
     /// </summary>
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// 菜单类型
     /// </summary>
-    public Type MenuType { get; set; }
+    public Type? MenuType { get; set; }
 
     /// <summary>
     /// 悬浮的值
     /// </summary>
-    public string ToolTip { get; set; }
+    public string ToolTip { get; set; } = string.Empty;
 
     /// <summary>
     /// 子项
     /// </summary>
-    public List<MenuBar> Child { get; set; }
+    public List<MenuBar> Child { get; set; } = [];
 
     [ObservableProperty]
     private bool _isExpanded;

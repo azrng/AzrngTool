@@ -38,7 +38,7 @@ namespace AzrngTools;
 /// </summary>
 public class ViewLocator : IDataTemplate
 {
-    private static Dictionary<Type, Func<Control>> Registration = new Dictionary<Type, Func<Control>>();
+    private static readonly Dictionary<Type, Func<Control>> Registration = new();
 
     public static void Register<TViewModel, TView>() where TView : Control, new()
     {
@@ -50,8 +50,13 @@ public class ViewLocator : IDataTemplate
         Registration.Add(typeof(TViewModel), factory);
     }
 
-    public Control Build(object data)
+    public Control? Build(object? data)
     {
+        if (data is null)
+        {
+            return null;
+        }
+
         var type = data.GetType();
 
         if (Registration.TryGetValue(type, out var factory))
@@ -62,8 +67,8 @@ public class ViewLocator : IDataTemplate
         return new TextBlock { Text = "Not Found: " + type };
     }
 
-    public bool Match(object data)
+    public bool Match(object? data)
     {
-        return data is ViewModelBase || Registration.ContainsKey(data.GetType());
+        return data is ViewModelBase || (data is not null && Registration.ContainsKey(data.GetType()));
     }
 }
