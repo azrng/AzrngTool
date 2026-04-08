@@ -13,13 +13,13 @@
     xmlns:vm="clr-namespace:AzrngTools.ViewModels.Encode"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="JWT 解码工作台" />
-                            <TextBlock Classes="section-copy" Text="输入 JWT 后自动解析 Header 和 Payload，把输入、结果和辅助操作集中到更均衡的工作区里。" />
+                            <TextBlock Classes="section-copy" Text="把 JWT 输入、结构解析和状态反馈集中到同一块工作区里，适合快速检查 Header、Payload 与令牌结构是否正常。" />
                         </StackPanel>
 
                         <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -60,7 +60,7 @@
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="JWT 输入" />
-                                <TextBlock Classes="section-copy" Text="支持直接粘贴完整 JWT，也可输入带 `Bearer ` 前缀的令牌，内容变化后会自动尝试解码。" />
+                                <TextBlock Classes="section-copy" Text="支持直接粘贴完整 JWT，也可以输入带 `Bearer ` 前缀的令牌；内容变化后会自动尝试解码。" />
                             </StackPanel>
 
                             <Border Grid.Column="1" Classes="badge-pill compact" VerticalAlignment="Top">
@@ -105,7 +105,7 @@
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="解析结果" />
-                            <TextBlock Classes="section-copy" Text="Header 和 Payload 结果分区展示，适合快速查看签发信息、时间字段和业务载荷内容。" />
+                            <TextBlock Classes="section-copy" Text="Header 和 Payload 结果分区展示，便于快速查看签发信息、时间字段和业务载荷内容。" />
                         </StackPanel>
 
                         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
@@ -124,8 +124,8 @@
                                         Classes="Standard"
                                         Height="250"
                                         IsReadOnly="True"
-                                        Text="{Binding HeaderText}"
-                                        PlaceholderText="Header" />
+                                        PlaceholderText="Header"
+                                        Text="{Binding HeaderText}" />
 
                                     <Button
                                         Grid.Row="2"
@@ -152,8 +152,8 @@
                                         Classes="Standard"
                                         Height="250"
                                         IsReadOnly="True"
-                                        Text="{Binding PayloadText}"
-                                        PlaceholderText="Payload" />
+                                        PlaceholderText="Payload"
+                                        Text="{Binding PayloadText}" />
 
                                     <Button
                                         Grid.Row="2"
@@ -171,7 +171,7 @@
                                 <StackPanel Spacing="{StaticResource Space.8}">
                                     <TextBlock Classes="metric-label" Text="使用说明" />
                                     <TextBlock Classes="Small" Text="• 当前页面只做结构解析展示，不验证签名，也不会生成新的令牌。" TextWrapping="Wrap" />
-                                    <TextBlock Classes="Small" Text="• 输入即解析仍然保留，不需要额外点击解析按钮。" TextWrapping="Wrap" />
+                                    <TextBlock Classes="Small" Text="• 保留输入即解析的工作方式，不需要额外点击解析按钮。" TextWrapping="Wrap" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1" Spacing="{StaticResource Space.8}">
@@ -185,13 +185,6 @@
                     </Grid>
                 </Border>
             </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-soft">
-                <TextBlock
-                    Classes="section-copy"
-                    Text="这个页现在更偏向“查看台”而不是“操作台”：左侧专注输入，右侧专注结果，底部保留解释和状态，减少原来三栏布局里右侧过碎、空白又多的问题。"
-                    TextWrapping="Wrap" />
-            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

@@ -12,121 +12,25 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="十六进制转换工作台" />
-                        <TextBlock Classes="section-copy" Text="适合在字符串、十六进制文本和字节数组说明之间快速切换，并支持常见分隔符设置。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="UTF-8" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="字节数组" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="分隔符" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Grid Grid.Column="0" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <Border Grid.Row="0" Classes="tool-card-roomy">
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="分隔符设置" />
-                                <TextBlock Classes="section-copy" Text="支持空格、无分隔、短横线和冒号，也支持自动识别 `0x / 0X` 前缀。" />
-                            </StackPanel>
-
-                            <Border Grid.Row="1" Classes="tool-card-soft">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                    <TextBlock Classes="metric-label" VerticalAlignment="Center" Text="分隔符" />
-                                    <ComboBox
-                                        Grid.Column="1"
-                                        SelectedIndex="{Binding SeparatorIndex}"
-                                        Theme="{DynamicResource OutlineComboBox}">
-                                        <ComboBoxItem Content="空格" Tag=" " />
-                                        <ComboBoxItem Content="无" Tag="" />
-                                        <ComboBoxItem Content="短横线" Tag="-" />
-                                        <ComboBoxItem Content="冒号" Tag=":" />
-                                    </ComboBox>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </Border>
-
-                    <Border Grid.Row="1" Classes="tool-card-roomy">
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="输入内容" />
-                                <TextBlock Classes="section-copy" Text="可输入普通字符串，也可直接输入十六进制文本进行反向转换。" />
-                            </StackPanel>
-
-                            <TextBox
-                                Grid.Row="1"
-                                AcceptsReturn="True"
-                                Classes="Standard"
-                                Height="280"
-                                Text="{Binding Original}"
-                                TextWrapping="Wrap"
-                                PlaceholderText="请输入要转换的内容" />
-                        </Grid>
-                    </Border>
-                </Grid>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="字符串结果、十六进制结果和字节数组详情都会统一输出到这里。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="412"
-                            IsReadOnly="True"
-                            Text="{Binding HandleText}"
-                            TextWrapping="Wrap"
-                            PlaceholderText="处理后的内容将显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="同一输入区支持多种转换方向，适合排查接口字节内容和编码格式。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 字符串转十六进制：按 UTF-8 输出十六进制文本" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 十六进制转字符串：按 UTF-8 还原原始文本" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 十六进制转字节数组：输出逐字节详情" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="结果区既能显示单行十六进制，也能显示多行字节数组说明，所以保留了更高的可视高度。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="根据当前输入内容选择对应转换方向，复制与清空放在同一组里，便于连续验证。"/>
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="十六进制转换工作台" />
+                            <TextBlock Classes="section-copy" Text="把分隔符设置、输入内容和结果展示收口到同一套双列工作区中，适合排查接口字节内容与编码格式。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="UTF-8" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="字节数组" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="分隔符" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
@@ -156,6 +60,139 @@
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入与格式" />
+                            <TextBlock Classes="section-copy" Text="支持普通字符串和十六进制文本互转，输入区上方保留分隔符设置，方便连续切换输出格式。" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <TextBlock Classes="metric-label" VerticalAlignment="Center" Text="分隔符" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    SelectedIndex="{Binding SeparatorIndex}"
+                                    Theme="{DynamicResource OutlineComboBox}">
+                                    <ComboBoxItem Content="空格" Tag=" " />
+                                    <ComboBoxItem Content="无" Tag="" />
+                                    <ComboBoxItem Content="短横线" Tag="-" />
+                                    <ComboBoxItem Content="冒号" Tag=":" />
+                                </ComboBox>
+                            </Grid>
+                        </Border>
+
+                        <TextBox
+                            Grid.Row="2"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="320"
+                            PlaceholderText="请输入要转换的内容"
+                            Text="{Binding Original}"
+                            TextWrapping="Wrap" />
+
+                        <Border Grid.Row="3" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入提示" />
+                                <TextBlock Classes="Small" Text="• 十六进制输入支持空格、短横线以及 `0x / 0X` 前缀。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 字符串类转换按 UTF-8 编码处理。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 十六进制字符长度必须为偶数，否则会直接给出提示。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理结果" />
+                            <TextBlock Classes="section-copy" Text="无论是单行十六进制输出，还是字节数组逐项说明，都会统一展示在这里，方便直接复制或继续比对。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="412"
+                            IsReadOnly="True"
+                            PlaceholderText="处理后的内容会显示在这里"
+                            Text="{Binding HandleText}"
+                            TextWrapping="Wrap" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="结果区保留更高可视高度，兼顾短文本十六进制和多行字节数组说明两类场景。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="使用建议" />
+                            <TextBlock Classes="section-copy" Text="页面现在把设置区并回左侧工作流，避免旧三栏布局里“设置很窄、输入也很窄”的问题，连续排查字节内容会更顺手。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 如果目标是接口签名串或二进制报文，通常先用“十六进制转字节数组”确认每个字节值。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 输出分隔符只影响十六进制展示形式，不会改变真实字节内容。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="动作分组" />
+                            <TextBlock Classes="section-copy" Text="保留原有四个转换动作，并把复制和清空统一放在同一组，方便在整批编码页中形成一致操作肌肉记忆。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="文本向" />
+                                    <TextBlock Classes="section-copy" Text="字符串转十六进制 / 十六进制转字符串" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="字节向" />
+                                    <TextBlock Classes="section-copy" Text="字节数组转十六进制 / 十六进制转字节数组" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="输出辅助" />
+                                    <TextBlock Classes="section-copy" Text="复制结果" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="输入辅助" />
+                                    <TextBlock Classes="section-copy" Text="清空 / 分隔符切换" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

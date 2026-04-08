@@ -12,90 +12,22 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="简繁中文转换工作台" />
-                        <TextBlock Classes="section-copy" Text="把输入、转换结果和常用操作拆成清晰区域，适合连续校对简体与繁体内容并快速复制结果。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="简体转繁体" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="繁体转简体" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="在这里粘贴待转换的中文文本，适合短句、段落和一般说明性内容。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="280"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要转换的文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="转换结果" />
-                            <TextBlock Classes="section-copy" Text="结果区保持只读展示，便于对照检查后直接复制到当前工作内容中。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="280"
-                            IsReadOnly="True"
-                            Text="{Binding HandleText}"
-                            PlaceholderText="转换后的内容将显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用说明" />
-                            <TextBlock Classes="section-copy" Text="保留现有双向转换、复制和清空操作，适合反复对照查看不同写法。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="简体转繁体：将当前输入内容转换为繁体写法。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="繁体转简体：将当前输入内容转换为简体写法。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="复制结果：仅复制右侧结果区内容。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="字符级简繁转换适合常见汉字内容，个别词语在上下文语义上可能存在多种对应写法。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="输入一次即可在两个方向之间切换验证，同时保留复制和清空按钮，方便连续处理多段文本。" />
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="简繁中文转换工作台" />
+                            <TextBlock Classes="section-copy" Text="把中文输入、转换结果和常用动作整理到同一页里，适合连续核对简体与繁体内容并快速复制结果。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="简体转繁体" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="繁体转简体" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
@@ -117,6 +49,108 @@
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="在这里粘贴待转换的中文文本，适合短句、段落以及一般说明性内容；左侧始终保留当前原文。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            PlaceholderText="请输入要转换的文本"
+                            Text="{Binding Original}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入提示" />
+                                <TextBlock Classes="Small" Text="• 简体内容直接执行“简体转繁体”，繁体内容执行“繁体转简体”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 页面保留双向转换、复制和清空四个真实动作，不增加额外中间态。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 适合做术语、标题和多段中文说明的快速对照。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="转换结果" />
+                            <TextBlock Classes="section-copy" Text="结果区保持只读展示，便于对照检查后直接复制到当前工作内容中，而不影响左侧原始文本。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            IsReadOnly="True"
+                            PlaceholderText="转换后的内容会显示在这里"
+                            Text="{Binding HandleText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="字符级简繁转换适合常见汉字内容，个别词语在上下文语义上仍可能存在不同写法。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="使用建议" />
+                            <TextBlock Classes="section-copy" Text="原来的第三栏说明被拆成底部承接区后，输入和结果都获得了更完整的纵向空间，长段落对照时更轻松。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 如果需要逐句核对，建议一次粘贴一段，转换后立即在右侧对照检查。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 复制结果前不必清空输入，左侧原文会一直保留，方便回看。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="动作组成" />
+                            <TextBlock Classes="section-copy" Text="当前页保持双向转换与复制清空的统一结构，和其他编码页的页头操作区保持一致。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="转换向" />
+                                    <TextBlock Classes="section-copy" Text="简体转繁体 / 繁体转简体" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="辅助向" />
+                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

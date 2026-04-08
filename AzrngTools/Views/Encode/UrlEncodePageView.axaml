@@ -12,106 +12,38 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="URL 编码解码工作台" />
-                        <TextBlock Classes="section-copy" Text="输入、操作和结果分成三块独立区域，适合快速验证完整 URL、路径片段和普通文本的编码差异。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="编码" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="解码" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="路径编码" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,1.0*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="粘贴完整 URL、查询参数、路径片段或普通文本。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="260"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要编码或解码的 URL / 文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="结果区只负责展示，不参与输入，便于前后内容对照。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="260"
-                            IsReadOnly="True"
-                            Text="{Binding HandleText}"
-                            PlaceholderText="处理后的内容会显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="不同按钮针对不同场景，避免把完整 URL 和路径编码混用。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• URL编码：适合完整参数值或普通文本" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• URL解码：适合还原 `%xx` 形式内容" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• URL路径编码：保留 `/ ? :` 等路径相关字符" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="复制结果和清空按钮只影响当前页面，不会触发额外网络请求或外部动作。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="先输入，再执行对应动作；复制和清空放在同一组里，便于连续试验。"/>
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="URL 编码解码工作台" />
+                            <TextBlock Classes="section-copy" Text="把输入、转换结果和操作反馈集中到一套双列工作区中，适合快速验证完整 URL、参数值和路径片段的编码差异。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="编码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="解码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="路径组件" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
                             Command="{Binding UrlEncodeCommand}"
-                            Content="URL编码"
+                            Content="URL 编码"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
                             Command="{Binding UrlDecodeCommand}"
-                            Content="URL解码"
+                            Content="URL 解码"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
                             Command="{Binding UrlPathComponentEncodeCommand}"
-                            Content="URL路径编码"
+                            Content="路径组件编码"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
                             Command="{Binding CopyResultCommand}"
@@ -124,6 +56,108 @@
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="支持粘贴完整 URL、查询参数、路径片段或普通文本；当前输入始终作为本次转换的唯一来源。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            PlaceholderText="请输入要编码或解码的 URL / 文本"
+                            Text="{Binding Original}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入建议" />
+                                <TextBlock Classes="Small" Text="• 完整参数值或普通文本优先使用“URL 编码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 仅需要还原 `%xx` 形式时使用“URL 解码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 处理路径片段时用“路径组件编码”，可避免把整条地址中的分隔符一并转义。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理结果" />
+                            <TextBlock Classes="section-copy" Text="结果区只负责展示当前转换输出，便于和左侧输入直接对照，也方便继续复制到其他工具页使用。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            IsReadOnly="True"
+                            PlaceholderText="处理后的内容会显示在这里"
+                            Text="{Binding HandleText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="复制和清空只作用于当前页，不会触发额外网络请求或影响其他工具的输入内容。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="使用建议" />
+                            <TextBlock Classes="section-copy" Text="把原来的第三栏说明拆到底部以后，输入区和结果区获得了更完整的纵向空间，长链接和多参数场景会更容易检查。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 如果你不确定该用哪种动作，先看输入中是否包含完整协议头、主机名和查询串。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 路径组件编码更适合只处理某一段路径名，而不是整条链接。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="操作分工" />
+                            <TextBlock Classes="section-copy" Text="当前页面保留原有真实动作，不增加演示性按钮，只把常用操作前置到页头方便连续处理。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="编码向" />
+                                    <TextBlock Classes="section-copy" Text="URL 编码 / 路径组件编码" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="结果向" />
+                                    <TextBlock Classes="section-copy" Text="URL 解码 / 复制 / 清空" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

@@ -1,4 +1,5 @@
 #nullable disable
+using Avalonia.Controls;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,7 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 namespace AzrngTools.ViewModels.Encode;
 
 /// <summary>
-/// url编码
+/// 文本编码组合
 /// </summary>
 public partial class EncodePageViewModel : ViewModelBase
 {
@@ -18,22 +19,19 @@ public partial class EncodePageViewModel : ViewModelBase
         _messageService = messageService;
     }
 
-    /// <summary>
-    /// 原始文本
-    /// </summary>
     [ObservableProperty]
-    private string _originalText;
+    private string _originalText = string.Empty;
 
-    /// <summary>
-    /// 结束文本
-    /// </summary>
     [ObservableProperty]
-    private string _resultText;
+    private string _resultText = string.Empty;
 
-    /// <summary>
-    /// 处理
-    /// </summary>
-    /// <param name="isEncoding"></param>
+    public bool HasResult => !ResultText.IsNullOrWhiteSpace();
+
+    partial void OnResultTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasResult));
+    }
+
     [RelayCommand]
     private void UrlHandler(string isEncoding)
     {
@@ -51,14 +49,10 @@ public partial class EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            _messageService.SendMessage($"异常：{ex.Message}");
+            _messageService.SendMessage($"处理异常：{ex.Message}");
         }
     }
 
-    /// <summary>
-    /// 处理
-    /// </summary>
-    /// <param name="isEncoding"></param>
     [RelayCommand]
     private void TextHandler(string isEncoding)
     {
@@ -72,11 +66,50 @@ public partial class EncodePageViewModel : ViewModelBase
 
             ResultText = isEncoding.Equals("true", StringComparison.CurrentCultureIgnoreCase)
                 ? StringHelper.TextToUnicode(OriginalText)
-                :StringHelper.UnicodeToText( OriginalText);
+                : StringHelper.UnicodeToText(OriginalText);
         }
         catch (Exception ex)
         {
-            _messageService.SendMessage($"异常：{ex.Message}");
+            _messageService.SendMessage($"处理异常：{ex.Message}");
         }
+    }
+
+    [RelayCommand]
+    private void Clear()
+    {
+        OriginalText = string.Empty;
+        ResultText = string.Empty;
+    }
+
+    [RelayCommand]
+    private async Task CopyResult()
+    {
+        try
+        {
+            if (ResultText.IsNullOrWhiteSpace())
+            {
+                _messageService.SendMessage("没有可复制的内容");
+                return;
+            }
+
+            var topLevel = GetTopLevel();
+            if (topLevel?.Clipboard is not null)
+            {
+                await ClipboardHelper.SetTextAsync(topLevel, ResultText);
+            }
+
+            _messageService.SendMessage("已复制到剪贴板");
+        }
+        catch (Exception ex)
+        {
+            _messageService.SendMessage($"复制失败：{ex.Message}");
+        }
+    }
+
+    private TopLevel GetTopLevel()
+    {
+        return TopLevel.GetTopLevel(App.Current?.ApplicationLifetime is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+            ? desktop.MainWindow
+            : null);
     }
 }
