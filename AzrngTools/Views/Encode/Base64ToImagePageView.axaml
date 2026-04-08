@@ -76,7 +76,8 @@
                                 Grid.Row="1"
                                 Classes="tool-card-soft"
                                 Height="420"
-                                HorizontalAlignment="Stretch"
+                                Width="760"
+                                HorizontalAlignment="Center"
                                 Padding="{StaticResource Thickness.12}">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                                     <Grid Height="396" Width="736">
