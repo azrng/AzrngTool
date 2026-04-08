@@ -316,13 +316,20 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
             return "0.0.0";
         }
 
-        var match = Regex.Match(value, @"\d+\.\d+\.\d+\.\d+");
+        var match = Regex.Match(value, @"\d+\.\d+\.\d+(?:\.\d+)?");
         if (match.Success)
         {
-            return match.Value;
+            return NormalizeVersionText(match.Value);
         }
 
-        return value.Trim().TrimStart('v', 'V');
+        return NormalizeVersionText(value.Trim().TrimStart('v', 'V'));
+    }
+
+    private static string NormalizeVersionText(string value)
+    {
+        return Version.TryParse(value, out var version) && version.Revision == 0
+            ? version.ToString(3)
+            : value;
     }
 
     private static string EscapePowerShellString(string value)
