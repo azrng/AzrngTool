@@ -134,7 +134,6 @@ public partial class MainWindowViewModel : ViewModelBase
                     new MenuBar("DES", typeof(DesEncryptPageViewModel)),
                     new MenuBar("SM4", typeof(Sm4EncryptPageViewModel)),
                     new MenuBar("RSA", typeof(RsaEncryptPageViewModel)),
-                    new MenuBar("Markdown预览", typeof(MarkdownPageViewModel)),
                     new MenuBar("Json Schema生成", typeof(JsonSchemaPageViewModel)),
                     new MenuBar("JSON转C#实体类", typeof(JsonToCsharpPageViewModel)),
                     new MenuBar("密码生成器", typeof(PasswordGeneratorPageViewModel))
