@@ -73,6 +73,7 @@
 | T062   | 版本号切换为三段式 | 将版本体系从历史四段式迁移为三段式，并兼容旧版本更新检测与当前发布链路 | REVIEW   | 2026-04-08   |
 | T063   | Release 构建警告清理 | 清理 Avalonia 12 升级后 Release 构建中的过时 API 与 Nullable 警告，恢复无警告构建 | REVIEW   | 2026-04-08   |
 | T064   | Avalonia 12 升级启动修复 | 对齐 Avalonia 12 模板启动配置并排查运行时兼容项，恢复主程序正常启动 | REVIEW   | 2026-04-08   |
+| T065   | Markdown 页 Avalonia 12 兼容收口 | 为 Markdown 预览页选择稳定的 Avalonia 12 渲染方案，替换当前仅兼容 Avalonia 11 的依赖 | BLOCKED  | 2026-04-08   |
 
 
 
