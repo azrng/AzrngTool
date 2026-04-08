@@ -75,6 +75,7 @@
 | T064   | Avalonia 12 升级启动修复 | 对齐 Avalonia 12 模板启动配置并排查运行时兼容项，恢复主程序正常启动 | REVIEW   | 2026-04-08   |
 | T065   | Markdown 页 Avalonia 12 兼容收口 | 为 Markdown 预览页选择稳定的 Avalonia 12 渲染方案，替换当前仅兼容 Avalonia 11 的依赖 | BLOCKED  | 2026-04-08   |
 | T066   | Markdown 菜单临时隐藏 | 在 Avalonia 12 兼容完成前临时隐藏 Markdown 预览入口，并在 README 中说明原因 | REVIEW   | 2026-04-08   |
+| T067   | Base64 文本页留白优化 | 扩展 Base64 文本页面工作区布局，提升大屏利用率并补充真实可用的辅助操作 | REVIEW   | 2026-04-08   |
 
 
 
