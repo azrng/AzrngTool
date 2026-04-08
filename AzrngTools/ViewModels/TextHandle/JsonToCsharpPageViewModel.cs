@@ -121,7 +121,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel?.Clipboard is not null)
             {
-                await topLevel.Clipboard.SetTextAsync(CsharpOutput);
+                await ClipboardHelper.SetTextAsync(topLevel, CsharpOutput);
             }
 
             _messageService.SendMessage("已复制到剪贴板");

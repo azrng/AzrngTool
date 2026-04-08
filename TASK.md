@@ -68,6 +68,7 @@
 | T057   | 导出成功提示文案与旧入口清理 | 优化导出成功 Toast 文案，避免长文件名挤占提示可读性，并移除数据库工作台未使用的旧导出入口与相关冗余 helper | REVIEW   | 2026-04-04   |
 | T058   | 更新中心 AOT 序列化修复 | 将关于页检查更新链路切换到 Native AOT 兼容的 JSON 元数据模式，修复发布后检查更新时报 reflection-based serialization 禁用错误 | REVIEW   | 2026-04-08   |
 | T059   | 稳定发布配置切回非 AOT | 将 Release 发布默认切回自包含单文件与 ReadyToRun 方案，移除当前高风险 AOT/Trim 配置并同步脚本与文档 | REVIEW   | 2026-04-08   |
+| T060   | Avalonia 12 升级构建修复 | 修复升级 Avalonia 12 并启用 Nullable 后的构建错误，恢复主工程可编译状态 | REVIEW   | 2026-04-08   |
 
 
 

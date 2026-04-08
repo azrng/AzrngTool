@@ -82,7 +82,7 @@ public partial class ChineseConvertPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel?.Clipboard is not null)
             {
-                await topLevel.Clipboard.SetTextAsync(HandleText);
+                await ClipboardHelper.SetTextAsync(topLevel, HandleText);
             }
 
             _messageService.SendMessage("已复制到剪贴板");

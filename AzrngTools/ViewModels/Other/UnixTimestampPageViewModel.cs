@@ -271,7 +271,7 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(ConversionResult);
+                await ClipboardHelper.SetTextAsync(topLevel, ConversionResult);
             }
 
             _messageService.SendMessage("已复制到剪贴板");
@@ -290,7 +290,7 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(CurrentTimestamp);
+                await ClipboardHelper.SetTextAsync(topLevel, CurrentTimestamp);
             }
 
             _messageService.SendMessage("已复制当前时间戳到剪贴板");

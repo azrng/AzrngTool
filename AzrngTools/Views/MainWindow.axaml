@@ -1,10 +1,9 @@
 ﻿<Window
-    ExtendClientAreaChromeHints="NoChrome"
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
     Width="{StaticResource Layout.MainWindow.Width}"
-    SystemDecorations="None"
+    WindowDecorations="None"
     Title="AzrngTools"
     d:DesignHeight="450"
     d:DesignWidth="800"

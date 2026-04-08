@@ -8,6 +8,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <ImplicitUsings>true</ImplicitUsings>
+        <Nullable>enable</Nullable>
         <NoWarn>$(NoWarn);8632</NoWarn>
         <!--不需要特定于全球化的代码和数据，使用固定模式-->
         <InvariantGlobalization>false</InvariantGlobalization>
@@ -30,15 +31,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.12" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.12" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12">
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="12.0.0" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.0">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.12" />
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.13" />
         <PackageReference Include="Avalonia.Xaml.Behaviors" Version="11.3.0.6" />
         <PackageReference Include="Azrng.Core" Version="1.16.0" />
         <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta3" />
@@ -46,14 +47,14 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
         <PackageReference Include="NJsonSchema" Version="11.5.2" />
-        <PackageReference Include="Semi.Avalonia" Version="11.3.7.3">
+        <PackageReference Include="Semi.Avalonia" Version="12.0.0">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
         <PackageReference Include="AzrngCommon.Security" Version="1.2.1" />
         <PackageReference Include="GTranslate" Version="2.3.1" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
-        <PackageReference Include="NPOI" Version="2.7.6" />
+        <PackageReference Include="NPOI" Version="2.8.0" />
     </ItemGroup>
 
 </Project>

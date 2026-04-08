@@ -2,7 +2,6 @@
 using System.Net.Http;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
-using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using AzrngTools.Services;
 using AzrngTools.ViewModels;
@@ -86,8 +85,6 @@ public partial class App : Application
         Program.RegisterUiThreadExceptionHandler();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // 下面的行需要删除Avalonia数据验证，如果没有这一行，您将获得来自Avalonia和CT的重复验证
-            BindingPlugins.DataValidators.RemoveAt(0);
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 

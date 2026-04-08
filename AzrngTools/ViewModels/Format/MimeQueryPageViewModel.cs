@@ -270,7 +270,7 @@ public partial class MimeQueryPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(QueryResult);
+                await ClipboardHelper.SetTextAsync(topLevel, QueryResult);
             }
             _messageService.SendMessage("已复制到剪贴板");
         }

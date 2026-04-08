@@ -8,7 +8,7 @@ namespace AzrngTools.Utils;
 /// </summary>
 public static class ClipboardHelper
 {
-    public static async Task SetTextAsync(TopLevel topLevel, string text)
+    public static async Task SetTextAsync(TopLevel? topLevel, string text)
     {
         if (topLevel?.Clipboard is not null)
         {
@@ -16,7 +16,7 @@ public static class ClipboardHelper
         }
     }
 
-    public static async Task<string> GetTextAsync(TopLevel topLevel)
+    public static async Task<string> GetTextAsync(TopLevel? topLevel)
     {
         if (topLevel?.Clipboard is not null)
         {

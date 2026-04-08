@@ -270,7 +270,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(GeneratedPassword);
+                await ClipboardHelper.SetTextAsync(topLevel, GeneratedPassword);
             }
             _messageService.SendMessage("已复制到剪贴板");
         }
@@ -318,7 +318,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(allPasswords);
+                await ClipboardHelper.SetTextAsync(topLevel, allPasswords);
             }
             _messageService.SendMessage($"已复制 {GeneratedPasswords.Count} 个密码到剪贴板");
         }

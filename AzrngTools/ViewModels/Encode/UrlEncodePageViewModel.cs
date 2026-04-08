@@ -130,7 +130,7 @@ public partial class UrlEncodePageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(HandleText);
+                await ClipboardHelper.SetTextAsync(topLevel, HandleText);
             }
             _messageService.SendMessage("已复制到剪贴板");
         }

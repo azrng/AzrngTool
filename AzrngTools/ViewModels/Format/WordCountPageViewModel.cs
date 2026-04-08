@@ -226,7 +226,7 @@ public partial class WordCountPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(result);
+                await ClipboardHelper.SetTextAsync(topLevel, result);
             }
             _messageService.SendMessage("已复制到剪贴板");
         }

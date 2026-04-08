@@ -92,7 +92,7 @@ public partial class RMBConvertPageViewModel : ViewModelBase
             var topLevel = GetTopLevel();
             if (topLevel != null)
             {
-                await topLevel.Clipboard.SetTextAsync(UppercaseAmount);
+                await ClipboardHelper.SetTextAsync(topLevel, UppercaseAmount);
             }
             _messageService.SendMessage("已复制到剪贴板");
         }
