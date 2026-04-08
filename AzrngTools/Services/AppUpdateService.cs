@@ -46,15 +46,13 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         }
 
         var currentVersion = ExtractComparableVersion(_appInfoService.Version);
-        var currentBuildId = ExtractBuildId(_appInfoService.InformationalVersion);
         var latestVersion = ExtractComparableVersion(release.TagName);
-        var latestBuildId = ExtractBuildId(release.TagName);
 
         return new AppUpdateInfo
         {
             CurrentVersion = currentVersion,
             LatestVersion = latestVersion,
-            HasUpdate = HasNewerRelease(currentVersion, currentBuildId, latestVersion, latestBuildId),
+            HasUpdate = HasNewerRelease(currentVersion, latestVersion),
             DownloadUrl = asset.DownloadUrl,
             ReleasePageUrl = string.IsNullOrWhiteSpace(release.HtmlUrl)
                 ? _appInfoService.RepositoryUrl
@@ -299,28 +297,9 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
         return extractDirectory;
     }
 
-    private static bool HasNewerRelease(string currentVersion,
-                                        string currentBuildId,
-                                        string latestVersion,
-                                        string latestBuildId)
+    private static bool HasNewerRelease(string currentVersion, string latestVersion)
     {
-        var versionCompare = ParseVersion(latestVersion).CompareTo(ParseVersion(currentVersion));
-        if (versionCompare > 0)
-        {
-            return true;
-        }
-
-        if (versionCompare < 0)
-        {
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(currentBuildId) || string.IsNullOrWhiteSpace(latestBuildId))
-        {
-            return false;
-        }
-
-        return !string.Equals(currentBuildId, latestBuildId, StringComparison.OrdinalIgnoreCase);
+        return ParseVersion(latestVersion).CompareTo(ParseVersion(currentVersion)) > 0;
     }
 
     private static Version ParseVersion(string value)
@@ -344,28 +323,6 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
         }
 
         return value.Trim().TrimStart('v', 'V');
-    }
-
-    private static string ExtractBuildId(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return string.Empty;
-        }
-
-        var plusIndex = value.IndexOf('+');
-        if (plusIndex >= 0 && plusIndex < value.Length - 1)
-        {
-            return value[(plusIndex + 1)..].Trim();
-        }
-
-        var buildMarkerIndex = value.LastIndexOf("-build-", StringComparison.OrdinalIgnoreCase);
-        if (buildMarkerIndex >= 0 && buildMarkerIndex < value.Length - 7)
-        {
-            return value[(buildMarkerIndex + 7)..].Trim();
-        }
-
-        return string.Empty;
     }
 
     private static string EscapePowerShellString(string value)

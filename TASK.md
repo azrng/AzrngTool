@@ -69,6 +69,7 @@
 | T058   | 更新中心 AOT 序列化修复 | 将关于页检查更新链路切换到 Native AOT 兼容的 JSON 元数据模式，修复发布后检查更新时报 reflection-based serialization 禁用错误 | REVIEW   | 2026-04-08   |
 | T059   | 稳定发布配置切回非 AOT | 将 Release 发布默认切回自包含单文件与 ReadyToRun 方案，移除当前高风险 AOT/Trim 配置并同步脚本与文档 | REVIEW   | 2026-04-08   |
 | T060   | Avalonia 12 升级构建修复 | 修复升级 Avalonia 12 并启用 Nullable 后的构建错误，恢复主工程可编译状态 | REVIEW   | 2026-04-08   |
+| T061   | 更新中心同版本误报修复 | 调整版本比较逻辑，避免相同版本号仅因构建标识不同就提示立即更新 | REVIEW   | 2026-04-08   |
 
 
 
