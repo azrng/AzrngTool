@@ -79,17 +79,19 @@
                                 HorizontalAlignment="Stretch"
                                 Padding="{StaticResource Thickness.12}">
                                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                                    <Grid Height="396" Width="736">
-                                        <Image
-                                            HorizontalAlignment="Center"
-                                            IsVisible="{Binding HasImage}"
-                                            Source="{Binding PreviewImage}"
-                                            Stretch="Uniform"
-                                            VerticalAlignment="Center" />
-                                        <StackPanel HorizontalAlignment="Center" IsVisible="{Binding !HasImage}" Spacing="{StaticResource Space.6}" VerticalAlignment="Center">
-                                            <TextBlock Classes="section-title" HorizontalAlignment="Center" Text="等待图片预览" />
-                                            <TextBlock Classes="section-copy" HorizontalAlignment="Center" Text="完成转换后会在这里显示图片内容。" TextAlignment="Center" />
-                                        </StackPanel>
+                                    <Grid HorizontalAlignment="Center">
+                                        <Grid Height="396" Width="640">
+                                            <Image
+                                                HorizontalAlignment="Center"
+                                                IsVisible="{Binding HasImage}"
+                                                Source="{Binding PreviewImage}"
+                                                Stretch="Uniform"
+                                                VerticalAlignment="Center" />
+                                            <StackPanel HorizontalAlignment="Center" IsVisible="{Binding !HasImage}" Spacing="{StaticResource Space.6}" VerticalAlignment="Center">
+                                                <TextBlock Classes="section-title" HorizontalAlignment="Center" Text="等待图片预览" />
+                                                <TextBlock Classes="section-copy" HorizontalAlignment="Center" Text="完成转换后会在这里显示图片内容。" TextAlignment="Center" />
+                                            </StackPanel>
+                                        </Grid>
                                     </Grid>
                                 </ScrollViewer>
                             </Border>

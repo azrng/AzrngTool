@@ -26,9 +26,10 @@ internal sealed class Program
 
     private static AppBuilder BuildAvaloniaApp() =>
         AppBuilder.Configure<App>()
-                  .UseWin32()
-                  .UseSkia()
-                  .UseHarfBuzz()
+                  .UsePlatformDetect()
+#if DEBUG
+                  .WithDeveloperTools()
+#endif
                   .WithInterFont()
                   .LogToTrace();
 

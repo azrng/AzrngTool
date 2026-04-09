@@ -12,89 +12,25 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Gzip 编码解码工作台" />
-                        <TextBlock Classes="section-copy" Text="维持最简的输入、转换和结果结构，适合快速验证压缩文本是否能正确编码或还原。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="编码" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="解码" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="可以输入原始文本进行压缩，也可以粘贴已有 Gzip 字符串做反向解码。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="280"
-                            Text="{Binding OriginalText}"
-                            PlaceholderText="请输入要处理的文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="编码或解码后的最终结果统一展示在这里，便于直接继续复制或比对内容。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="280"
-                            IsReadOnly="True"
-                            Text="{Binding ResultText}"
-                            PlaceholderText="处理后的内容将显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="当前页面只保留编码和解码两个核心动作，避免在压缩测试时出现多余干扰。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="编码：将输入文本压缩并输出为字符串结果。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="解码：将当前输入内容按 Gzip 文本还原为原始内容。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="如果输入格式不正确，结果区不会生成有效输出，错误信息仍然通过现有提示机制反馈。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="保持原有两步式操作逻辑，输入文本后即可选择编码或解码，不增加额外工具动作。" />
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="Gzip 编码解码工作台" />
+                            <TextBlock Classes="section-copy" Text="把压缩、解压和结果校对收口到同一套工作区中，适合快速验证文本是否能正确压缩或还原。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="编码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="解码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="复制结果" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
@@ -107,9 +43,121 @@
                             CommandParameter="false"
                             Content="解码"
                             Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding CopyResultCommand}"
+                            Content="复制结果"
+                            IsEnabled="{Binding HasResult}"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="可以输入原始文本进行压缩，也可以粘贴已有 Gzip 字符串做反向解码；左侧始终作为当前处理源。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            PlaceholderText="请输入要处理的文本"
+                            Text="{Binding OriginalText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入建议" />
+                                <TextBlock Classes="Small" Text="• 需要压缩普通文本时直接执行“编码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 已有压缩字符串需要还原时执行“解码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 如果输入格式不合法，页面会保持当前结果并通过提示消息反馈错误。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理结果" />
+                            <TextBlock Classes="section-copy" Text="编码或解码后的最终结果统一展示在这里，便于继续复制、比对或直接回贴到其他工具中。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            IsReadOnly="True"
+                            PlaceholderText="处理后的内容会显示在这里"
+                            Text="{Binding ResultText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    IsEnabled="{Binding HasResult}"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="这一页仍保持最小动作集合，只补齐复制与清空能力，不改变原有压缩解压逻辑。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="使用建议" />
+                            <TextBlock Classes="section-copy" Text="底部说明被拆成两个承接区后，这页在宽屏下不会再出现左中右三栏都偏窄的情况，长文本压缩结果更容易核对。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 调试接口压缩字段时，可以先解码确认原文，再按需要重新编码。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 如果只想快速验证是否可解压，直接把目标字符串贴到左侧即可。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="当前动作" />
+                            <TextBlock Classes="section-copy" Text="页面保留编码、解码、复制和清空四个实际动作，保证整批编码页的操作区表现更统一。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="转换向" />
+                                    <TextBlock Classes="section-copy" Text="编码 / 解码" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="辅助向" />
+                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

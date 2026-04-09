@@ -12,99 +12,31 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Unicode 编码解码工作台" />
-                        <TextBlock Classes="section-copy" Text="适合在普通文本和 `\uXXXX` 形式之间快速互转，尤其方便处理接口返回、脚本片段和转义字符串。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Unicode编码" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Unicode解码" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="可输入普通文本，或已转义为 `\uXXXX` 形式的 Unicode 字符串。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="260"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要编码或解码的文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="结果区只展示最终文本，编码后和解码后都统一落在页里，方便复制。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="260"
-                            IsReadOnly="True"
-                            Text="{Binding HandleText}"
-                            PlaceholderText="处理后的内容将显示在页里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="页页留留最常见的双向转换与复制清空动作，适合连续校验多段文本。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• Unicode编码：将文本转换为 `\uXXXX` 形式" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• Unicode解码：将 `\uXXXX` 形式还原为原始文本" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 支持中文、英文、数字和常见符号" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="复制结果与清空按钮只作用于当前页面，不会影响其他工具页的输入内容。"
-                                TextWrapping="Wrap" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="先输入，再选择编码或解码；复制和清空放在同一区域，便于反复测试。"/>
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="Unicode 编码解码工作台" />
+                            <TextBlock Classes="section-copy" Text="把文本输入、Unicode 转换和结果核对收口到同一页里，适合处理接口返回、脚本片段与转义字符串。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="Unicode 编码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="Unicode 解码" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
                             Command="{Binding UnicodeEncodeCommand}"
-                            Content="Unicode编码"
+                            Content="Unicode 编码"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
                             Command="{Binding UnicodeDecodeCommand}"
-                            Content="Unicode解码"
+                            Content="Unicode 解码"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
                             Command="{Binding CopyResultCommand}"
@@ -117,6 +49,108 @@
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="可以输入普通文本，也可以直接输入 `\\uXXXX` 形式的 Unicode 字符串；左侧始终作为当前转换源。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            PlaceholderText="请输入要编码或解码的文本"
+                            Text="{Binding Original}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入建议" />
+                                <TextBlock Classes="Small" Text="• 把普通文本转换为转义串时使用“Unicode 编码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 如果内容里已经是 `\\uXXXX` 形式，就直接执行“Unicode 解码”。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 适合处理中英文、数字和常见符号混合场景。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理结果" />
+                            <TextBlock Classes="section-copy" Text="所有转换结果统一展示在这里，便于和左侧输入对照，也方便直接复制到接口调试或代码编辑场景中。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            IsReadOnly="True"
+                            PlaceholderText="处理后的内容会显示在这里"
+                            Text="{Binding HandleText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="复制和清空只作用于当前工作台，不会影响其他工具页的输入内容。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="工作方式" />
+                            <TextBlock Classes="section-copy" Text="页面现在用更完整的上下结构承接说明和操作，长文本情况下也不再需要挤在第三栏里阅读提示。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 如果你的输入来自接口 JSON，先确认内容里保留的是原始反斜杠还是已经被反序列化后的文本。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 连续调试多段字符串时，推荐每次处理后先复制结果，再决定是否清空重新输入。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="操作组成" />
+                            <TextBlock Classes="section-copy" Text="保留现有双向转换与复制清空动作，不增加额外业务逻辑，只把常用入口移动到页头统一展示。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="转换向" />
+                                    <TextBlock Classes="section-copy" Text="Unicode 编码 / 解码" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="辅助向" />
+                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

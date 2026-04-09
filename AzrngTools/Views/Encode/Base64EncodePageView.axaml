@@ -12,102 +12,198 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Base64 文本工作台" />
-                        <TextBlock Classes="section-copy" Text="适合快速在普通文本和 Base64 字符串之间来回转换，输入和结果并排展示，方便直接对照。" />
-                    </StackPanel>
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="Base64 文本工作台" />
+                            <TextBlock Classes="section-copy" Text="把输入、结果和状态信息收口到同一块工作区里，适合连续做 Base64 编码、解码、复制和结果回填。" />
+                        </StackPanel>
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="编码" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="解码" />
-                        </Border>
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="编码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="解码" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="回填" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
+
+                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                        <Button
+                            Command="{Binding Base64HandlerCommand}"
+                            CommandParameter="true"
+                            Content="Base64 编码"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding Base64HandlerCommand}"
+                            CommandParameter="false"
+                            Content="Base64 解码"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding PasteFromClipboardCommand}"
+                            Content="从剪贴板导入"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding CopyResultCommand}"
+                            Content="复制结果"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="可直接粘贴普通文本，或已经存在的 Base64 字符串。" />
-                        </StackPanel>
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="输入内容" />
+                                <TextBlock Classes="section-copy" Text="可直接粘贴普通文本，也可粘贴已有的 Base64 字符串；这里始终作为当前工作输入源。" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
+                                <Border Classes="badge-pill compact">
+                                    <TextBlock Classes="badge-text" Text="{Binding OriginalCharacterCount, StringFormat='字符 {0}'}" />
+                                </Border>
+                                <Border Classes="badge-pill compact">
+                                    <TextBlock Classes="badge-text" Text="{Binding OriginalByteCount, StringFormat='字节 {0}'}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
 
                         <TextBox
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="260"
+                            Height="360"
                             Text="{Binding Original}"
-                            PlaceholderText="请输入要处理的文本" />
+                            PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入建议" />
+                                <TextBlock Classes="Small" Text="• 普通文本适合直接执行“Base64 编码”，生成可传输的字符串内容。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 已有 Base64 内容可直接执行“Base64 解码”，结果会显示在右侧结果区。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 内容较长时优先用“从剪贴板导入”，可减少手动粘贴时的中断操作。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
                     </Grid>
                 </Border>
 
                 <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="编码或解码后的结果会显示在一里，便于立即复制或继续处理。" />
-                        </StackPanel>
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="处理结果" />
+                                <TextBlock Classes="section-copy" Text="编码或解码后的内容统一输出在这里，便于立即复制、校验，或直接回填到输入区继续处理。" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
+                                <Border Classes="badge-pill compact">
+                                    <TextBlock Classes="badge-text" Text="{Binding ResultCharacterCount, StringFormat='字符 {0}'}" />
+                                </Border>
+                                <Border Classes="badge-pill compact">
+                                    <TextBlock Classes="badge-text" Text="{Binding ResultByteCount, StringFormat='字节 {0}'}" />
+                                </Border>
+                            </StackPanel>
+                        </Grid>
 
                         <TextBox
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="260"
+                            Height="360"
                             IsReadOnly="True"
                             Text="{Binding HandleText}"
-                            PlaceholderText="处理后的内容" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="一一页持持最精简的双向转换模式，只持留现有编码与解码两个动作。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• Base64编码：把当前文本转换成 Base64 字符串" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• Base64解码：把当前 Base64 字符串还原成原始文本" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
+                            PlaceholderText="处理后的内容会显示在这里" />
 
                         <Border Grid.Row="2" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="section-copy"
-                                Text="如果输入不是合法 Base64，页面会持持原结果，并通过通知提示转换失败。"
-                                TextWrapping="Wrap" />
+                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding UseResultAsInputCommand}"
+                                    Content="结果回填到输入区"
+                                    IsEnabled="{Binding HasResult}"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    IsEnabled="{Binding HasResult}"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Classes="section-copy"
+                                    Text="如果输入不是合法 Base64，页面会保留当前结果，并通过通知提示转换失败。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
                         </Border>
                     </Grid>
                 </Border>
             </Grid>
 
             <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="直接针对左侧输入区执行操作，结果统一输出到中间结果区。"/>
-                    </StackPanel>
+                <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                    <Border Classes="tool-card-soft">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="使用建议" />
+                                <TextBlock Classes="section-copy" Text="把底部区域改成说明和状态面板后，页面在大窗口下会更饱满，也更适合连续处理多段文本。" />
+                            </StackPanel>
 
-                    <WrapPanel Grid.Row="1" Classes="tool-actions">
-                        <Button
-                            Command="{Binding Base64HandlerCommand}"
-                            CommandParameter="true"
-                            Content="Base64编码"
-                            Theme="{DynamicResource SolidButton}" />
-                        <Button
-                            Command="{Binding Base64HandlerCommand}"
-                            CommandParameter="false"
-                            Content="Base64解码"
-                            Theme="{DynamicResource SolidButton}" />
-                    </WrapPanel>
+                            <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="Small" Text="• 编码前建议先确认输入区内容是否为原始文本，避免把 Base64 再次编码。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 解码后如果结果还需要继续处理，可以直接使用“结果回填到输入区”形成连续工作流。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 当前页的复制、清空和导入操作都只作用于当前工作台，不会影响其他工具页。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="tool-card-soft">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="工作状态" />
+                                <TextBlock Classes="section-copy" Text="这里集中展示当前输入和结果规模，方便在长文本、配置片段和接口数据之间快速判断处理量。" />
+                            </StackPanel>
+
+                            <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
+                                <Border Classes="tool-card-roomy">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="metric-label" Text="输入字符数" />
+                                        <TextBlock Classes="metric-value compact" Text="{Binding OriginalCharacterCount}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="1" Classes="tool-card-roomy">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="metric-label" Text="输入字节数" />
+                                        <TextBlock Classes="metric-value compact" Text="{Binding OriginalByteCount}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Classes="tool-card-roomy">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="metric-label" Text="结果字符数" />
+                                        <TextBlock Classes="metric-value compact" Text="{Binding ResultCharacterCount}" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
+                                    <StackPanel Spacing="{StaticResource Space.4}">
+                                        <TextBlock Classes="metric-label" Text="结果字节数" />
+                                        <TextBlock Classes="metric-value compact" Text="{Binding ResultByteCount}" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </Grid>
+                    </Border>
                 </Grid>
             </Border>
         </Grid>

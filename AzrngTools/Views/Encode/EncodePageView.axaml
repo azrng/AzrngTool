@@ -12,83 +12,25 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="文本编码组合工作台" />
-                        <TextBlock Classes="section-copy" Text="留留原有的 Unicode 与 URL 双向转换能力，把输入、结果和操作说明整理到同一页，适合快速做基础编码转换。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Unicode" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="URL" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.05*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="在页里输入原始文本、Unicode 序列或 URL 编码内容，后续按钮会根据你选择的动作直接处理。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="300"
-                            Text="{Binding OriginalText}"
-                            PlaceholderText="请输入要处理的文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="处理结果" />
-                            <TextBlock Classes="section-copy" Text="结果区留留只读展示模式，便于和原始文本并排对照，不引入额外执行逻辑。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            Height="300"
-                            IsReadOnly="True"
-                            Text="{Binding ResultText}"
-                            PlaceholderText="编码或解码后的内容将显示在页里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="页页继续留留四个基础动作，适合在不切换页面的情况下完成常见的文本编码转换。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 中文转 Unicode 与 Unicode 转中文共用同一输入区。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• URL 编码与 URL 解码同样直接作用于当前输入内容。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 处理失败仍由原有消息提示反馈，不改动逻辑。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="按当前输入内容选择对应转换动作即可。" />
-                    </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="文本编码组合工作台" />
+                            <TextBlock Classes="section-copy" Text="保留 Unicode 与 URL 双向转换能力，把输入、结果和操作统一收口到一页内，适合快速做基础编码转换。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="Unicode" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="URL" />
+                            </Border>
+                            <Border Classes="badge-pill">
+                                <TextBlock Classes="badge-text" Text="组合转换" />
+                            </Border>
+                        </WrapPanel>
+                    </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
@@ -111,9 +53,135 @@
                             CommandParameter="false"
                             Content="URL 解码"
                             Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding CopyResultCommand}"
+                            Content="复制结果"
+                            IsEnabled="{Binding HasResult}"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
             </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Grid.Column="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="输入内容" />
+                            <TextBlock Classes="section-copy" Text="在这里输入原始文本、Unicode 序列或 URL 编码内容；后续动作会根据你选择的按钮直接处理当前输入。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            PlaceholderText="请输入要处理的文本"
+                            Text="{Binding OriginalText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="输入建议" />
+                                <TextBlock Classes="Small" Text="• 文本转 Unicode 与 Unicode 转中文共用同一输入区。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• URL 编码与 URL 解码同样直接作用于当前输入内容。" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 处理失败仍由现有消息提示机制反馈，不改变业务逻辑。" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理结果" />
+                            <TextBlock Classes="section-copy" Text="结果区保持只读展示，方便与左侧原文并排对照，也便于直接复制到接口调试或脚本中继续使用。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            Height="360"
+                            IsReadOnly="True"
+                            PlaceholderText="编码或解码后的内容会显示在这里"
+                            Text="{Binding ResultText}" />
+
+                        <Border Grid.Row="2" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Command="{Binding CopyResultCommand}"
+                                    Content="复制结果"
+                                    IsEnabled="{Binding HasResult}"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Classes="section-copy"
+                                    Text="这页保留组合型转换场景，但视觉结构已经和其他编码页统一成相同的工作台节奏。"
+                                    TextWrapping="Wrap"
+                                    VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                <Border Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="使用建议" />
+                            <TextBlock Classes="section-copy" Text="底部被改成说明与动作概览后，这页不再需要靠右侧窄栏承接四种转换说明，大屏利用率会更好。" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                            <TextBlock Classes="Small" Text="• 如果你需要先做 Unicode 再做 URL，可先处理一次后复制结果，再继续下一步。" TextWrapping="Wrap" />
+                            <TextBlock Classes="Small" Text="• 对于不确定来源的内容，先观察左侧输入形态，再选择对应转换方向会更稳妥。" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="tool-card-soft">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="动作分层" />
+                            <TextBlock Classes="section-copy" Text="当前页把四个转换动作和复制清空统一前置，保持组合页也具备和单项编码页一致的操作入口位置。" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
+                            <Border Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="Unicode 向" />
+                                    <TextBlock Classes="section-copy" Text="中文转 Unicode / Unicode 转中文" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="URL 向" />
+                                    <TextBlock Classes="section-copy" Text="URL 编码 / URL 解码" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="结果辅助" />
+                                    <TextBlock Classes="section-copy" Text="复制结果" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
+                                <StackPanel Spacing="{StaticResource Space.4}">
+                                    <TextBlock Classes="metric-label" Text="输入辅助" />
+                                    <TextBlock Classes="section-copy" Text="清空" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>
