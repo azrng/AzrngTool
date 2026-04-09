@@ -335,7 +335,7 @@
                 </Border>
             </Grid>
 
-            <Border Grid.Column="1" Classes="tool-card-roomy" IsVisible="{Binding IsHistoryPaneOpen}" Width="340">
+            <Border Grid.Column="1" Classes="tool-card-roomy" IsVisible="{Binding IsHistoryPaneOpen}" Width="340" x:Name="HistoryPane">
                 <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
@@ -369,7 +369,7 @@
                         <TextBlock Classes="section-copy" Text="当前还没有请求历史，先发送一次请求再回来切换。" />
                     </Border>
 
-                    <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding HasHistoryItems}" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" IsVisible="{Binding HasHistoryItems}" MinHeight="0" VerticalScrollBarVisibility="Auto" x:Name="HistoryScrollViewer">
                         <ItemsControl ItemsSource="{Binding HistoryItems}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:ApiRequestHistoryItemViewModel">
