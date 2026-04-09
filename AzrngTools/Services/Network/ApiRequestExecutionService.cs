@@ -39,27 +39,40 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
                 DurationMs = stopwatch.ElapsedMilliseconds,
                 SizeBytes = Encoding.UTF8.GetByteCount(content),
                 Content = TryFormatJson(content),
+                FinalUrl = finalUrl,
+                RequestSummary = $"{request.Method.ToUpperInvariant()} {finalUrl}",
                 Headers = response.Headers.Concat(response.Content.Headers)
                     .SelectMany(header => header.Value.Select(value => new ApiResponseHeader
                     {
                         Name = header.Key,
                         Value = value
                     }))
-                    .ToList(),
-                RequestSummary = $"{request.Method.ToUpperInvariant()} {finalUrl}"
+                    .ToList()
             };
 
             return ApiRequestExecutionResult.Success(responseSnapshot);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            var canceledResponse = new ApiResponseSnapshot
+            {
+                Content = "请求已取消。",
+                ErrorMessage = "请求已取消。",
+                FinalUrl = string.IsNullOrWhiteSpace(finalUrl) ? request.Url : finalUrl,
+                RequestSummary = $"{request.Method.ToUpperInvariant()} {(string.IsNullOrWhiteSpace(finalUrl) ? request.Url : finalUrl)}"
+            };
+
+            return ApiRequestExecutionResult.Canceled("请求已取消。", canceledResponse);
+        }
         catch (Exception exception)
         {
+            var effectiveUrl = string.IsNullOrWhiteSpace(finalUrl) ? request.Url : finalUrl;
             var failureResponse = new ApiResponseSnapshot
             {
                 Content = $"请求发送失败：{exception.Message}",
                 ErrorMessage = exception.Message,
-                RequestSummary = string.IsNullOrWhiteSpace(finalUrl)
-                    ? request.Url
-                    : $"{request.Method.ToUpperInvariant()} {finalUrl}"
+                FinalUrl = effectiveUrl,
+                RequestSummary = $"{request.Method.ToUpperInvariant()} {effectiveUrl}"
             };
 
             return ApiRequestExecutionResult.Failure($"请求发送失败：{exception.Message}", failureResponse);
@@ -133,16 +146,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
 
     public static string BuildUrl(ApiRequestSnapshot request)
     {
-        var url = request.Url;
-
-        foreach (var pathParameter in request.PathParameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
-        {
-            var value = Uri.EscapeDataString(pathParameter.Value);
-            url = url.Replace($"{{{pathParameter.Name}}}", value, StringComparison.OrdinalIgnoreCase);
-            url = url.Replace($":{pathParameter.Name}", value, StringComparison.OrdinalIgnoreCase);
-        }
-
-        var builder = new UriBuilder(url);
+        var builder = new UriBuilder(request.Url);
         var queryItems = ParseQuery(builder.Query);
         foreach (var queryParameter in request.QueryParameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
         {

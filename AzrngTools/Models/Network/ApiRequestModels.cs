@@ -24,7 +24,6 @@ public sealed class ApiRequestSnapshot
     public string BodyContent { get; set; } = string.Empty;
     public bool IgnoreSslErrors { get; set; }
     public List<ApiRequestKeyValueItem> QueryParameters { get; set; } = [];
-    public List<ApiRequestKeyValueItem> PathParameters { get; set; } = [];
     public List<ApiRequestKeyValueItem> Headers { get; set; } = [];
     public List<ApiRequestKeyValueItem> FormFields { get; set; } = [];
 }
@@ -42,6 +41,7 @@ public sealed class ApiResponseSnapshot
     public long SizeBytes { get; set; }
     public string Content { get; set; } = string.Empty;
     public string ErrorMessage { get; set; } = string.Empty;
+    public string FinalUrl { get; set; } = string.Empty;
     public string RequestSummary { get; set; } = string.Empty;
     public List<ApiResponseHeader> Headers { get; set; } = [];
 }
@@ -49,6 +49,7 @@ public sealed class ApiResponseSnapshot
 public sealed class ApiRequestExecutionResult
 {
     public bool IsSuccess { get; init; }
+    public bool IsCanceled { get; init; }
     public string Message { get; init; } = string.Empty;
     public ApiResponseSnapshot? Response { get; init; }
 
@@ -67,6 +68,17 @@ public sealed class ApiRequestExecutionResult
         return new ApiRequestExecutionResult
         {
             IsSuccess = false,
+            Message = message,
+            Response = response
+        };
+    }
+
+    public static ApiRequestExecutionResult Canceled(string message, ApiResponseSnapshot? response = null)
+    {
+        return new ApiRequestExecutionResult
+        {
+            IsSuccess = false,
+            IsCanceled = true,
             Message = message,
             Response = response
         };

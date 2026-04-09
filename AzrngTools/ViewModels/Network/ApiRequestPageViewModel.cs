@@ -15,6 +15,8 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private readonly IApiRequestExecutionService _executionService;
     private readonly IApiRequestStoreService _storeService;
     private readonly IMessageService _messageService;
+    private readonly object _requestLock = new();
+    private CancellationTokenSource? _requestCancellationTokenSource;
     private List<ApiRequestHistoryItemViewModel> _allHistoryItems = [];
 
     public ApiRequestPageViewModel(
@@ -55,8 +57,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
     public ObservableCollection<ApiRequestParameterItemViewModel> QueryParameters { get; } = [];
 
-    public ObservableCollection<ApiRequestParameterItemViewModel> PathParameters { get; } = [];
-
     public ObservableCollection<ApiRequestParameterItemViewModel> Headers { get; } = [];
 
     public ObservableCollection<ApiRequestParameterItemViewModel> FormFields { get; } = [];
@@ -67,6 +67,12 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isBusy;
+
+    [ObservableProperty]
+    private bool _isRequestInFlight;
+
+    [ObservableProperty]
+    private string _requestLoadingText = "正在发送请求...";
 
     [ObservableProperty]
     private string _statusMessage = "准备就绪。";
@@ -114,6 +120,9 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private bool _showResponsePlaceholder = true;
 
     [ObservableProperty]
+    private string _responseRequestUrlText = string.Empty;
+
+    [ObservableProperty]
     private string _responseStatusText = string.Empty;
 
     [ObservableProperty]
@@ -137,6 +146,8 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     public string HistoryPaneToggleText => IsHistoryPaneOpen ? "收起历史" : "历史侧栏";
 
     public bool ShowHistoryEmptyPlaceholder => !HasHistoryItems;
+
+    public bool ShowResponsePlaceholderCard => ShowResponsePlaceholder && !IsRequestInFlight;
 
     public string RequestBodyPlaceholder => SelectedBodyMode switch
     {
@@ -201,9 +212,24 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowHistoryEmptyPlaceholder));
     }
 
+    partial void OnIsRequestInFlightChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowResponsePlaceholderCard));
+    }
+
+    partial void OnShowResponsePlaceholderChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowResponsePlaceholderCard));
+    }
+
     [RelayCommand]
     private async Task SendRequestAsync()
     {
+        if (IsRequestInFlight)
+        {
+            return;
+        }
+
         if (string.IsNullOrWhiteSpace(RequestUrl))
         {
             StatusMessage = "请求地址不能为空。";
@@ -212,30 +238,77 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         }
 
         var snapshot = BuildRequestSnapshot();
+        var cancellationTokenSource = new CancellationTokenSource();
+        lock (_requestLock)
+        {
+            _requestCancellationTokenSource?.Dispose();
+            _requestCancellationTokenSource = cancellationTokenSource;
+        }
+
         try
         {
-            IsBusy = true;
-            var result = await _executionService.SendAsync(snapshot, CancellationToken.None);
+            IsRequestInFlight = true;
+            RequestLoadingText = $"正在发送 {snapshot.Method} 请求...";
+            StatusMessage = RequestLoadingText;
+
+            var result = await _executionService.SendAsync(snapshot, cancellationTokenSource.Token);
             ApplyResponse(result.Response, result.IsSuccess);
             StatusMessage = result.Message;
 
-            await _storeService.AddHistoryAsync(snapshot, result.Response, CancellationToken.None);
-            await RefreshHistoryAsync();
+            if (!result.IsCanceled)
+            {
+                await _storeService.AddHistoryAsync(snapshot, result.Response, CancellationToken.None);
+                await RefreshHistoryAsync();
+            }
 
-            if (!result.IsSuccess)
+            if (!result.IsSuccess && !result.IsCanceled)
             {
                 _messageService.SendMessage(result.Message);
             }
         }
         finally
         {
-            IsBusy = false;
+            IsRequestInFlight = false;
+
+            lock (_requestLock)
+            {
+                if (ReferenceEquals(_requestCancellationTokenSource, cancellationTokenSource))
+                {
+                    _requestCancellationTokenSource = null;
+                }
+            }
+
+            cancellationTokenSource.Dispose();
         }
+    }
+
+    [RelayCommand]
+    private void CancelRequest()
+    {
+        CancellationTokenSource? cancellationTokenSource;
+        lock (_requestLock)
+        {
+            cancellationTokenSource = _requestCancellationTokenSource;
+        }
+
+        if (cancellationTokenSource is null || cancellationTokenSource.IsCancellationRequested)
+        {
+            return;
+        }
+
+        RequestLoadingText = "正在取消请求...";
+        StatusMessage = RequestLoadingText;
+        cancellationTokenSource.Cancel();
     }
 
     [RelayCommand]
     private void ToggleHistoryPane()
     {
+        if (IsRequestInFlight)
+        {
+            return;
+        }
+
         IsHistoryPaneOpen = !IsHistoryPaneOpen;
     }
 
@@ -263,7 +336,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     [RelayCommand]
     private void LoadHistoryItem(ApiRequestHistoryItemViewModel? item)
     {
-        if (item is null)
+        if (item is null || IsRequestInFlight)
         {
             return;
         }
@@ -280,12 +353,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private void AddQueryParameter()
     {
         QueryParameters.Add(new ApiRequestParameterItemViewModel());
-    }
-
-    [RelayCommand]
-    private void AddPathParameter()
-    {
-        PathParameters.Add(new ApiRequestParameterItemViewModel());
     }
 
     [RelayCommand]
@@ -309,7 +376,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         }
 
         QueryParameters.Remove(item);
-        PathParameters.Remove(item);
         Headers.Remove(item);
         FormFields.Remove(item);
     }
@@ -317,6 +383,11 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     [RelayCommand]
     private void ClearCurrentRequest()
     {
+        if (IsRequestInFlight)
+        {
+            return;
+        }
+
         SelectedMethod = "GET";
         RequestUrl = "https://";
         RequestBody = string.Empty;
@@ -324,7 +395,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         SelectedBodyMode = ApiRequestBodyModes.None;
 
         QueryParameters.Clear();
-        PathParameters.Clear();
         Headers.Clear();
         FormFields.Clear();
 
@@ -368,7 +438,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             BodyContent = RequestBody,
             IgnoreSslErrors = IgnoreSslErrors,
             QueryParameters = QueryParameters.Select(ToKeyValue).ToList(),
-            PathParameters = PathParameters.Select(ToKeyValue).ToList(),
             Headers = Headers.Select(ToKeyValue).ToList(),
             FormFields = FormFields.Select(ToKeyValue).ToList()
         };
@@ -388,7 +457,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         SelectedBodyMode = snapshot.BodyMode;
 
         ResetCollection(QueryParameters, snapshot.QueryParameters.Select(ToViewModel));
-        ResetCollection(PathParameters, snapshot.PathParameters.Select(ToViewModel));
         ResetCollection(Headers, snapshot.Headers.Select(ToViewModel));
 
         var formFields = snapshot.FormFields.Count > 0
@@ -412,6 +480,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
         HasResponse = true;
         ShowResponsePlaceholder = false;
+        ResponseRequestUrlText = response.FinalUrl;
         ResponseStatusText = success && response.StatusCode is { } code
             ? $"HTTP {code}"
             : "请求失败";
@@ -427,6 +496,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     {
         HasResponse = false;
         ShowResponsePlaceholder = true;
+        ResponseRequestUrlText = string.Empty;
         ResponseStatusText = string.Empty;
         ResponseDurationText = string.Empty;
         ResponseSizeText = string.Empty;
