@@ -3,6 +3,7 @@ using AzrngTools.Models;
 using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace AzrngTools.ViewModels.Setting
 {
@@ -70,6 +71,20 @@ namespace AzrngTools.ViewModels.Setting
             HardDiskId = snapshot.HardDiskId;
             BiosSerial = snapshot.BiosSerial;
             MacAddress = snapshot.MacAddress;
+        }
+
+        [RelayCommand]
+        private void RefreshHardwareInfo()
+        {
+            try
+            {
+                ApplySnapshot(_hardwareInfoCacheService.RefreshHardwareInfo());
+                _messageService.SendMessage("已刷新本机硬件信息缓存。");
+            }
+            catch (Exception ex)
+            {
+                _messageService.SendMessage($"刷新失败：{ex.Message}");
+            }
         }
     }
 }

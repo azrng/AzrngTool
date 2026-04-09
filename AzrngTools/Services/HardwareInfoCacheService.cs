@@ -40,6 +40,17 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
         }
     }
 
+    public HardwareInfoSnapshot RefreshHardwareInfo()
+    {
+        lock (_syncRoot)
+        {
+            var snapshot = CollectSnapshot();
+            _cachedSnapshot = snapshot;
+            SaveSnapshot(snapshot);
+            return snapshot;
+        }
+    }
+
     private HardwareInfoSnapshot? LoadSnapshot()
     {
         try

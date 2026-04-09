@@ -18,9 +18,15 @@
                         <TextBlock Classes="section-copy" Text="集中展示当前设备的指纹、CPU、BIOS、MAC 和硬盘信息。" />
                     </StackPanel>
 
-                    <Border Grid.Column="1" Classes="badge-pill" VerticalAlignment="Center">
-                        <TextBlock Classes="badge-text" Text="本机信息" />
-                    </Border>
+                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Classes="badge-pill">
+                            <TextBlock Classes="badge-text" Text="本机信息" />
+                        </Border>
+                        <Button
+                            Command="{Binding RefreshHardwareInfoCommand}"
+                            Content="刷新本机信息"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </WrapPanel>
                 </Grid>
             </Border>
 
