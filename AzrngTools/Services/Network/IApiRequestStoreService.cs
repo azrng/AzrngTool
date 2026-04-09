@@ -11,13 +11,4 @@ public interface IApiRequestStoreService
     Task ClearHistoryAsync(CancellationToken cancellationToken);
 
     Task DeleteHistoryAsync(string id, CancellationToken cancellationToken);
-
-    Task<IReadOnlyList<ApiEnvironmentVariable>> GetEnvironmentVariablesAsync(CancellationToken cancellationToken);
-
-    Task SaveEnvironmentVariablesAsync(
-        string activeEnvironmentName,
-        IReadOnlyList<ApiEnvironmentVariable> variables,
-        CancellationToken cancellationToken);
-
-    Task<string> GetActiveEnvironmentNameAsync(CancellationToken cancellationToken);
 }

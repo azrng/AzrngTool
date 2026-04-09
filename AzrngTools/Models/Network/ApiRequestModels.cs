@@ -81,17 +81,7 @@ public sealed class ApiRequestHistoryItem
     public ApiResponseSnapshot? Response { get; set; }
 }
 
-public sealed class ApiEnvironmentVariable
-{
-    public string Id { get; set; } = string.Empty;
-    public string Key { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
-    public bool IsEnabled { get; set; } = true;
-}
-
 public sealed class ApiRequestToolStore
 {
-    public string ActiveEnvironmentName { get; set; } = "Default";
-    public List<ApiEnvironmentVariable> EnvironmentVariables { get; set; } = [];
     public List<ApiRequestHistoryItem> HistoryItems { get; set; } = [];
 }

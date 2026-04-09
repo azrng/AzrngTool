@@ -89,49 +89,6 @@ public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingleton
         }
     }
 
-    public async Task<IReadOnlyList<ApiEnvironmentVariable>> GetEnvironmentVariablesAsync(CancellationToken cancellationToken)
-    {
-        var store = await LoadStoreAsync(cancellationToken);
-        return store.EnvironmentVariables.ToList();
-    }
-
-    public async Task SaveEnvironmentVariablesAsync(
-        string activeEnvironmentName,
-        IReadOnlyList<ApiEnvironmentVariable> variables,
-        CancellationToken cancellationToken)
-    {
-        await _mutex.WaitAsync(cancellationToken);
-        try
-        {
-            var store = await LoadStoreCoreAsync(cancellationToken);
-            store.ActiveEnvironmentName = string.IsNullOrWhiteSpace(activeEnvironmentName)
-                ? "Default"
-                : activeEnvironmentName.Trim();
-            store.EnvironmentVariables = variables
-                .Where(item => !string.IsNullOrWhiteSpace(item.Key) || !string.IsNullOrWhiteSpace(item.Value))
-                .Select(item => new ApiEnvironmentVariable
-                {
-                    Id = string.IsNullOrWhiteSpace(item.Id) ? Guid.NewGuid().ToString("N") : item.Id,
-                    Key = item.Key,
-                    Value = item.Value,
-                    IsEnabled = item.IsEnabled
-                })
-                .ToList();
-
-            await SaveStoreCoreAsync(store, cancellationToken);
-        }
-        finally
-        {
-            _mutex.Release();
-        }
-    }
-
-    public async Task<string> GetActiveEnvironmentNameAsync(CancellationToken cancellationToken)
-    {
-        var store = await LoadStoreAsync(cancellationToken);
-        return string.IsNullOrWhiteSpace(store.ActiveEnvironmentName) ? "Default" : store.ActiveEnvironmentName;
-    }
-
     private async Task<ApiRequestToolStore> LoadStoreAsync(CancellationToken cancellationToken)
     {
         await _mutex.WaitAsync(cancellationToken);

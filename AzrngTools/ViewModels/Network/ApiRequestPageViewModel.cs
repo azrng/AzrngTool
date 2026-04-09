@@ -61,8 +61,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
     public ObservableCollection<ApiRequestParameterItemViewModel> FormFields { get; } = [];
 
-    public ObservableCollection<ApiRequestEnvironmentVariableItemViewModel> EnvironmentVariables { get; } = [];
-
     public ObservableCollection<ApiRequestHistoryItemViewModel> HistoryItems { get; } = [];
 
     public ObservableCollection<ApiRequestBodyModeOptionViewModel> BodyModeOptions { get; }
@@ -71,7 +69,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private bool _isBusy;
 
     [ObservableProperty]
-    private string _statusMessage = "准备就绪";
+    private string _statusMessage = "准备就绪。";
 
     [ObservableProperty]
     private string _selectedMethod = "GET";
@@ -98,10 +96,16 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private ApiRequestBodyModeOptionViewModel? _selectedBodyModeOption;
 
     [ObservableProperty]
-    private string _activeEnvironmentName = "Default";
+    private string _historySearchText = string.Empty;
 
     [ObservableProperty]
-    private string _historySearchText = string.Empty;
+    private bool _isHistoryPaneOpen;
+
+    [ObservableProperty]
+    private bool _hasHistoryItems;
+
+    [ObservableProperty]
+    private string _historySummaryText = "暂无历史记录。";
 
     [ObservableProperty]
     private bool _hasResponse;
@@ -130,12 +134,16 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     public bool HasRawBodyEditor =>
         SelectedBodyMode is ApiRequestBodyModes.RawJson or ApiRequestBodyModes.RawXml or ApiRequestBodyModes.RawText;
 
+    public string HistoryPaneToggleText => IsHistoryPaneOpen ? "收起历史" : "历史侧栏";
+
+    public bool ShowHistoryEmptyPlaceholder => !HasHistoryItems;
+
     public string RequestBodyPlaceholder => SelectedBodyMode switch
     {
         ApiRequestBodyModes.RawJson => "输入 JSON 请求体",
         ApiRequestBodyModes.RawXml => "输入 XML 请求体",
         ApiRequestBodyModes.RawText => "输入纯文本请求体",
-        _ => "当前 Body 模式不需要原始文本"
+        _ => "当前 Body 模式不需要原始文本。"
     };
 
     private async Task InitializeAsync()
@@ -143,8 +151,6 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            ActiveEnvironmentName = await _storeService.GetActiveEnvironmentNameAsync(CancellationToken.None);
-            await LoadEnvironmentVariablesAsync();
             await RefreshHistoryAsync();
             StatusMessage = "接口工作台已就绪。";
         }
@@ -185,6 +191,16 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         ApplyHistoryFilter();
     }
 
+    partial void OnIsHistoryPaneOpenChanged(bool value)
+    {
+        OnPropertyChanged(nameof(HistoryPaneToggleText));
+    }
+
+    partial void OnHasHistoryItemsChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowHistoryEmptyPlaceholder));
+    }
+
     [RelayCommand]
     private async Task SendRequestAsync()
     {
@@ -199,7 +215,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            var result = await _executionService.SendAsync(snapshot, BuildEnvironmentDictionary(), CancellationToken.None);
+            var result = await _executionService.SendAsync(snapshot, CancellationToken.None);
             ApplyResponse(result.Response, result.IsSuccess);
             StatusMessage = result.Message;
 
@@ -218,40 +234,9 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task SaveEnvironmentVariablesAsync()
+    private void ToggleHistoryPane()
     {
-        var variables = EnvironmentVariables.Select(item => new ApiEnvironmentVariable
-        {
-            Id = item.Id,
-            Key = item.Key,
-            Value = item.Value,
-            IsEnabled = item.IsEnabled
-        }).ToList();
-
-        await _storeService.SaveEnvironmentVariablesAsync(ActiveEnvironmentName, variables, CancellationToken.None);
-        StatusMessage = "环境变量已保存。";
-        _messageService.SendMessage(StatusMessage);
-    }
-
-    [RelayCommand]
-    private void AddEnvironmentVariable()
-    {
-        EnvironmentVariables.Add(new ApiRequestEnvironmentVariableItemViewModel
-        {
-            Id = Guid.NewGuid().ToString("N"),
-            IsEnabled = true
-        });
-    }
-
-    [RelayCommand]
-    private void RemoveEnvironmentVariable(ApiRequestEnvironmentVariableItemViewModel? item)
-    {
-        if (item is null)
-        {
-            return;
-        }
-
-        EnvironmentVariables.Remove(item);
+        IsHistoryPaneOpen = !IsHistoryPaneOpen;
     }
 
     [RelayCommand]
@@ -287,7 +272,8 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         RequestUrl = item.Request.Url;
         ApplySnapshot(item.Request);
         ApplyResponse(item.Response, item.Response?.StatusCode is not null && string.IsNullOrWhiteSpace(item.Response.ErrorMessage));
-        StatusMessage = $"已载入 {item.Timestamp.ToLocalTime():yyyy-MM-dd HH:mm} 的请求。";
+        IsHistoryPaneOpen = false;
+        StatusMessage = $"已载入 {item.Timestamp.ToLocalTime():yyyy-MM-dd HH:mm} 的请求记录。";
     }
 
     [RelayCommand]
@@ -343,7 +329,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         FormFields.Clear();
 
         ResetResponse();
-        StatusMessage = "已清空当前请求配置。";
+        StatusMessage = "当前请求配置已清空。";
     }
 
     [RelayCommand]
@@ -431,10 +417,10 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             : "请求失败";
         ResponseDurationText = response.DurationMs > 0 ? $"{response.DurationMs} ms" : "未返回耗时";
         ResponseSizeText = response.SizeBytes > 0 ? FormatBytes(response.SizeBytes) : "0 B";
-        ResponseBodyText = string.IsNullOrWhiteSpace(response.ErrorMessage)
-            ? response.Content
-            : response.Content;
-        ResponseHeadersText = string.Join(Environment.NewLine, response.Headers.Select(item => $"{item.Name}: {item.Value}"));
+        ResponseBodyText = response.Content;
+        ResponseHeadersText = response.Headers.Count > 0
+            ? string.Join(Environment.NewLine, response.Headers.Select(item => $"{item.Name}: {item.Value}"))
+            : "未返回响应头。";
     }
 
     private void ResetResponse()
@@ -455,38 +441,31 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         ApplyHistoryFilter();
     }
 
-    private async Task LoadEnvironmentVariablesAsync()
-    {
-        var variables = await _storeService.GetEnvironmentVariablesAsync(CancellationToken.None);
-        ResetCollection(EnvironmentVariables, variables.Select(item => new ApiRequestEnvironmentVariableItemViewModel
-        {
-            Id = string.IsNullOrWhiteSpace(item.Id) ? Guid.NewGuid().ToString("N") : item.Id,
-            Key = item.Key,
-            Value = item.Value,
-            IsEnabled = item.IsEnabled
-        }));
-    }
-
     private void ApplyHistoryFilter()
     {
         var keyword = HistorySearchText?.Trim();
         var filtered = string.IsNullOrWhiteSpace(keyword)
             ? _allHistoryItems
             : _allHistoryItems.Where(item =>
-                item.Method.Contains(keyword, StringComparison.OrdinalIgnoreCase)
-                || item.Url.Contains(keyword, StringComparison.OrdinalIgnoreCase)
-                || item.StatusText.Contains(keyword, StringComparison.OrdinalIgnoreCase))
-            .ToList();
+                    item.Method.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                    || item.Url.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                    || item.StatusText.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
         ResetCollection(HistoryItems, filtered);
-    }
+        HasHistoryItems = filtered.Count > 0;
 
-    private IReadOnlyDictionary<string, string> BuildEnvironmentDictionary()
-    {
-        return EnvironmentVariables
-            .Where(item => item.IsEnabled && !string.IsNullOrWhiteSpace(item.Key))
-            .GroupBy(item => item.Key, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(group => group.Key, group => group.Last().Value, StringComparer.OrdinalIgnoreCase);
+        HistorySummaryText = _allHistoryItems.Count switch
+        {
+            0 => "暂无历史记录。",
+            _ when filtered.Count == _allHistoryItems.Count => $"共 {_allHistoryItems.Count} 条历史记录。",
+            _ => $"筛选结果 {filtered.Count} / {_allHistoryItems.Count}。"
+        };
+
+        if (!HasHistoryItems)
+        {
+            IsHistoryPaneOpen = false;
+        }
     }
 
     private static ApiRequestKeyValueItem ToKeyValue(ApiRequestParameterItemViewModel item)
@@ -525,7 +504,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             Request = item.Request,
             Response = response,
             StatusText = statusText,
-            DurationText = response?.DurationMs > 0 ? $"{response.DurationMs}ms" : "-",
+            DurationText = response?.DurationMs > 0 ? $"{response.DurationMs} ms" : "-",
             SizeText = response?.SizeBytes > 0 ? FormatBytes(response.SizeBytes) : "-"
         };
     }

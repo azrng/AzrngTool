@@ -2,12 +2,11 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using AzrngTools.Models.Network;
 
 namespace AzrngTools.Services.Network;
 
-public sealed partial class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
+public sealed class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
 {
     private readonly IHttpClientFactory _httpClientFactory;
 
@@ -16,21 +15,18 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<ApiRequestExecutionResult> SendAsync(
-        ApiRequestSnapshot request,
-        IReadOnlyDictionary<string, string> variables,
-        CancellationToken cancellationToken)
+    public async Task<ApiRequestExecutionResult> SendAsync(ApiRequestSnapshot request, CancellationToken cancellationToken)
     {
         var finalUrl = string.Empty;
 
         try
         {
-            finalUrl = BuildUrl(request, variables);
+            finalUrl = BuildUrl(request);
             using var client = CreateHttpClient(request.IgnoreSslErrors);
             using var message = new HttpRequestMessage(new HttpMethod(request.Method), finalUrl);
 
-            message.Content = BuildContent(request, variables);
-            ApplyHeaders(message, request.Headers, variables);
+            message.Content = BuildContent(request);
+            ApplyHeaders(message, request.Headers);
 
             var stopwatch = Stopwatch.StartNew();
             using var response = await client.SendAsync(message, cancellationToken);
@@ -84,51 +80,35 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
         return new HttpClient(handler, disposeHandler: true);
     }
 
-    private static void ApplyHeaders(
-        HttpRequestMessage message,
-        IEnumerable<ApiRequestKeyValueItem> headers,
-        IReadOnlyDictionary<string, string> variables)
+    private static void ApplyHeaders(HttpRequestMessage message, IEnumerable<ApiRequestKeyValueItem> headers)
     {
         foreach (var header in headers.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
         {
-            var value = ReplaceVariables(header.Value, variables);
-            if (message.Headers.TryAddWithoutValidation(header.Name, value))
+            if (message.Headers.TryAddWithoutValidation(header.Name, header.Value))
             {
                 continue;
             }
 
             message.Content ??= new ByteArrayContent(Array.Empty<byte>());
-            message.Content.Headers.TryAddWithoutValidation(header.Name, value);
+            message.Content.Headers.TryAddWithoutValidation(header.Name, header.Value);
         }
     }
 
-    private static HttpContent? BuildContent(ApiRequestSnapshot request, IReadOnlyDictionary<string, string> variables)
+    private static HttpContent? BuildContent(ApiRequestSnapshot request)
     {
         return request.BodyMode switch
         {
             ApiRequestBodyModes.None => null,
-            ApiRequestBodyModes.RawJson => new StringContent(
-                ReplaceVariables(request.BodyContent, variables),
-                Encoding.UTF8,
-                "application/json"),
-            ApiRequestBodyModes.RawXml => new StringContent(
-                ReplaceVariables(request.BodyContent, variables),
-                Encoding.UTF8,
-                "application/xml"),
-            ApiRequestBodyModes.RawText => new StringContent(
-                ReplaceVariables(request.BodyContent, variables),
-                Encoding.UTF8,
-                "text/plain"),
-            ApiRequestBodyModes.FormUrlEncoded => new FormUrlEncodedContent(
-                BuildFormPairs(request, variables)),
-            ApiRequestBodyModes.FormData => BuildMultipartContent(BuildFormPairs(request, variables)),
+            ApiRequestBodyModes.RawJson => new StringContent(request.BodyContent, Encoding.UTF8, "application/json"),
+            ApiRequestBodyModes.RawXml => new StringContent(request.BodyContent, Encoding.UTF8, "application/xml"),
+            ApiRequestBodyModes.RawText => new StringContent(request.BodyContent, Encoding.UTF8, "text/plain"),
+            ApiRequestBodyModes.FormUrlEncoded => new FormUrlEncodedContent(BuildFormPairs(request)),
+            ApiRequestBodyModes.FormData => BuildMultipartContent(BuildFormPairs(request)),
             _ => null
         };
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> BuildFormPairs(
-        ApiRequestSnapshot request,
-        IReadOnlyDictionary<string, string> variables)
+    private static IEnumerable<KeyValuePair<string, string>> BuildFormPairs(ApiRequestSnapshot request)
     {
         var fields = request.FormFields.Count > 0
             ? request.FormFields
@@ -136,9 +116,7 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
 
         return fields
             .Where(item => !string.IsNullOrWhiteSpace(item.Name))
-            .Select(item => new KeyValuePair<string, string>(
-                ReplaceVariables(item.Name, variables),
-                ReplaceVariables(item.Value, variables)))
+            .Select(item => new KeyValuePair<string, string>(item.Name, item.Value))
             .ToList();
     }
 
@@ -153,13 +131,13 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
         return content;
     }
 
-    public static string BuildUrl(ApiRequestSnapshot request, IReadOnlyDictionary<string, string> variables)
+    public static string BuildUrl(ApiRequestSnapshot request)
     {
-        var url = ReplaceVariables(request.Url, variables);
+        var url = request.Url;
 
         foreach (var pathParameter in request.PathParameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
         {
-            var value = Uri.EscapeDataString(ReplaceVariables(pathParameter.Value, variables));
+            var value = Uri.EscapeDataString(pathParameter.Value);
             url = url.Replace($"{{{pathParameter.Name}}}", value, StringComparison.OrdinalIgnoreCase);
             url = url.Replace($":{pathParameter.Name}", value, StringComparison.OrdinalIgnoreCase);
         }
@@ -168,26 +146,12 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
         var queryItems = ParseQuery(builder.Query);
         foreach (var queryParameter in request.QueryParameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)))
         {
-            queryItems[queryParameter.Name] = ReplaceVariables(queryParameter.Value, variables);
+            queryItems[queryParameter.Name] = queryParameter.Value;
         }
 
         builder.Query = string.Join("&", queryItems.Select(item =>
             $"{Uri.EscapeDataString(item.Key)}={Uri.EscapeDataString(item.Value)}"));
         return builder.Uri.ToString();
-    }
-
-    public static string ReplaceVariables(string input, IReadOnlyDictionary<string, string> variables)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            return string.Empty;
-        }
-
-        return VariableRegex().Replace(input, match =>
-        {
-            var key = match.Groups[1].Value;
-            return variables.TryGetValue(key, out var value) ? value : match.Value;
-        });
     }
 
     private static Dictionary<string, string> ParseQuery(string query)
@@ -251,7 +215,4 @@ public sealed partial class ApiRequestExecutionService : IApiRequestExecutionSer
             return content;
         }
     }
-
-    [GeneratedRegex("\\{\\{\\s*([\\w.-]+)\\s*\\}\\}")]
-    private static partial Regex VariableRegex();
 }

@@ -12,21 +12,6 @@ public partial class ApiRequestParameterItemViewModel : ViewModelBase
     private string _value = string.Empty;
 }
 
-public partial class ApiRequestEnvironmentVariableItemViewModel : ViewModelBase
-{
-    [ObservableProperty]
-    private string _id = string.Empty;
-
-    [ObservableProperty]
-    private string _key = string.Empty;
-
-    [ObservableProperty]
-    private string _value = string.Empty;
-
-    [ObservableProperty]
-    private bool _isEnabled = true;
-}
-
 public partial class ApiRequestBodyModeOptionViewModel : ViewModelBase
 {
     [ObservableProperty]
