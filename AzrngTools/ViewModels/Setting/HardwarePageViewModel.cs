@@ -1,6 +1,7 @@
 #nullable disable
+using AzrngTools.Models;
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
-using Common.Windows.Core;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AzrngTools.ViewModels.Setting
@@ -10,10 +11,12 @@ namespace AzrngTools.ViewModels.Setting
     /// </summary>
     public partial class HardwarePageViewModel : ViewModelBase
     {
+        private readonly IHardwareInfoCacheService _hardwareInfoCacheService;
         private readonly IMessageService _messageService;
 
-        public HardwarePageViewModel(IMessageService messageService)
+        public HardwarePageViewModel(IHardwareInfoCacheService hardwareInfoCacheService, IMessageService messageService)
         {
+            _hardwareInfoCacheService = hardwareInfoCacheService;
             _messageService = messageService;
             Generate();
         }
@@ -52,17 +55,21 @@ namespace AzrngTools.ViewModels.Setting
         {
             try
             {
-                CpuId = HardwareInfo.GetCpuId();
-                HardDiskId = HardwareInfo.GetMainDiskId();
-                BiosSerial = HardwareInfo.GetBiosSerial();
-                MacAddress = HardwareInfo.GetMacAddress();
-
-                Fingerprint = HardwareInfo.GenerateFingerprint(CpuId, HardDiskId, BiosSerial, MacAddress);
+                ApplySnapshot(_hardwareInfoCacheService.GetHardwareInfo());
             }
             catch (Exception ex)
             {
                 _messageService.SendMessage($"异常：{ex.Message}");
             }
+        }
+
+        private void ApplySnapshot(HardwareInfoSnapshot snapshot)
+        {
+            Fingerprint = snapshot.Fingerprint;
+            CpuId = snapshot.CpuId;
+            HardDiskId = snapshot.HardDiskId;
+            BiosSerial = snapshot.BiosSerial;
+            MacAddress = snapshot.MacAddress;
         }
     }
 }
