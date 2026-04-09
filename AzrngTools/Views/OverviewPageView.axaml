@@ -15,9 +15,6 @@
                 <StackPanel Spacing="{StaticResource Space.10}">
                     <TextBlock Classes="hero-eyebrow" Text="开发工作台" />
                     <TextBlock Classes="hero-title" Text="更清晰的导航，更稳定的亮色主题，更现代的 Fluent 视觉底座" />
-                    <TextBlock
-                        Classes="hero-copy"
-                        Text="现在首页、壳层和工具页的层次关系已经被重新整理，输入区、操作区和结果区会更容易区分，浅色模式下的文字对比度也更可读。" />
 
                     <WrapPanel Classes="tool-actions">
                         <Border Classes="badge-pill">

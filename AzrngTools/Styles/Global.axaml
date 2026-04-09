@@ -131,6 +131,12 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
     </Style>
 
+    <Style Selector="TextBlock.titlebar-motto">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
     <Style Selector="TextBlock.page-title">
         <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Lg}" />
         <Setter Property="FontWeight" Value="SemiBold" />

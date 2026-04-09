@@ -42,7 +42,7 @@
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource Space.8}" VerticalAlignment="Center">
                         <TextBlock
-                            Classes="app-subtitle"
+                            Classes="titlebar-motto"
                             Text="放下个人素质，享受缺德人生"
                             VerticalAlignment="Center" />
 
@@ -70,7 +70,7 @@
                         <Button
                             Classes="Tertiary"
                             Click="BtnMin_OnClick"
-                            Content="―"
+                            Content="−"
                             Theme="{DynamicResource BorderlessButton}"
                             x:Name="btnMin" />
                         <Button
