@@ -349,6 +349,7 @@ docs/
 # ai忽略文件
 .claude
 .dotnet-cli
+.temp-build/
 
 NUL
 !AzrngTools/Roots.xml

@@ -106,26 +106,25 @@
                             <TextBlock Classes="section-copy" Text="先选择日期和时间，再用右下角操作按钮生成时间戳；右侧回填区只负责显示结果，不承担输入。"/>
                         </StackPanel>
 
-                        <Grid Grid.Row="1" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
+                        <Grid Grid.Row="1" ColumnDefinitions="1.0*,1.0*" ColumnSpacing="{StaticResource Space.12}">
                             <Border Grid.Column="0" Classes="tool-card-soft">
-                                <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.8}">
-                                        <TextBlock Classes="metric-label" Grid.Column="0" VerticalAlignment="Center" Text="选择日期" />
-                                        <CalendarDatePicker
-                                            Grid.Column="1"
-                                            IsTodayHighlighted="True"
-                                            SelectedDate="{Binding TargetDateSelection}" />
-                                    </Grid>
+                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <TextBlock Classes="metric-label" Text="选择日期" />
+                                    <CalendarDatePicker
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Stretch"
+                                        IsTodayHighlighted="True"
+                                        SelectedDate="{Binding TargetDateSelection}" />
 
-                                    <Grid Grid.Row="1" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.8}">
-                                        <TextBlock Classes="metric-label" Grid.Column="0" VerticalAlignment="Center" Text="选择时间" />
-                                        <TimePicker
-                                            Grid.Column="1"
-                                            SelectedTime="{Binding TargetTimeSelection}" />
-                                    </Grid>
+                                    <TextBlock Grid.Row="2" Classes="metric-label" Text="选择时间" />
+                                    <TimePicker
+                                        Grid.Row="3"
+                                        HorizontalAlignment="Stretch"
+                                        MinWidth="0"
+                                        SelectedTime="{Binding TargetTimeSelection}" />
 
                                     <TextBlock
-                                        Grid.Row="2"
+                                        Grid.Row="4"
                                         Classes="section-copy"
                                         Text="这里控制“日期时间转时间戳”，不会影响左侧两个时间戳输入框。" />
                                 </Grid>

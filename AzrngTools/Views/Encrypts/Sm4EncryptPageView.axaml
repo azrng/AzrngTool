@@ -30,7 +30,7 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.0*,1.15*" ColumnSpacing="{StaticResource Space.12}">
+            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.0*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
@@ -42,68 +42,58 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="260"
+                            MinHeight="420"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要加密或解密的内容" />
                     </Grid>
                 </Border>
 
-                <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <Border Grid.Row="0" Classes="tool-card-roomy">
-                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="密钥与结果" />
-                                <TextBlock Classes="section-copy" Text="密钥区和结果区拆开展示，方便在不同密钥之间快速切换验证。" />
-                            </StackPanel>
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="密钥、结果与格式" />
+                            <TextBlock Classes="section-copy" Text="把密钥、格式选择和操作按钮都集中到右侧主工作区，避免下方出现割裂的小卡片。" />
+                        </StackPanel>
 
-                            <TextBox
-                                Grid.Row="1"
-                                Classes="Standard"
-                                Text="{Binding Secret}"
-                                PlaceholderText="请输入密钥" />
+                        <TextBox
+                            Grid.Row="1"
+                            Classes="Standard"
+                            Text="{Binding Secret}"
+                            PlaceholderText="请输入密钥" />
 
-                            <TextBox
-                                Grid.Row="2"
-                                AcceptsReturn="True"
-                                Classes="Standard"
-                                Height="220"
-                                IsReadOnly="True"
-                                Text="{Binding Ciphertext}"
-                                PlaceholderText="处理后的内容将显示在这里" />
-                        </Grid>
-                    </Border>
+                        <TextBox
+                            Grid.Row="2"
+                            AcceptsReturn="True"
+                            Classes="Standard"
+                            MinHeight="280"
+                            IsReadOnly="True"
+                            Text="{Binding Ciphertext}"
+                            PlaceholderText="处理后的内容将显示在这里" />
 
-                    <Border Grid.Row="1" Classes="tool-card-roomy" VerticalAlignment="Top">
-                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="格式与操作" />
-                            </StackPanel>
+                        <Border Grid.Row="3" Classes="tool-card-soft">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <TextBlock Classes="metric-label" Text="内容类型" VerticalAlignment="Center" />
+                                <ComboBox
+                                    Grid.Column="1"
+                                    ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                                    SelectedIndex="{Binding OutTypeValue}" />
+                            </Grid>
+                        </Border>
 
-                            <Border Grid.Row="1" Classes="tool-card-soft">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                    <TextBlock Classes="metric-label" Text="内容类型" VerticalAlignment="Center" />
-                                    <ComboBox
-                                        Grid.Column="1"
-                                        ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
-                                        SelectedIndex="{Binding OutTypeValue}" />
-                                </Grid>
-                            </Border>
-
-                            <WrapPanel Grid.Row="2" Classes="tool-actions">
-                                <Button
-                                    Command="{Binding Sm4HandlerCommand}"
-                                    CommandParameter="true"
-                                    Content="加密"
-                                    Theme="{DynamicResource SolidButton}" />
-                                <Button
-                                    Command="{Binding Sm4HandlerCommand}"
-                                    CommandParameter="false"
-                                    Content="解密"
-                                    Theme="{DynamicResource OutlineButton}" />
-                            </WrapPanel>
-                        </Grid>
-                    </Border>
-                </Grid>
+                        <WrapPanel Grid.Row="4" Classes="tool-actions">
+                            <Button
+                                Command="{Binding Sm4HandlerCommand}"
+                                CommandParameter="true"
+                                Content="加密"
+                                Theme="{DynamicResource SolidButton}" />
+                            <Button
+                                Command="{Binding Sm4HandlerCommand}"
+                                CommandParameter="false"
+                                Content="解密"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
             </Grid>
         </Grid>
     </ScrollViewer>

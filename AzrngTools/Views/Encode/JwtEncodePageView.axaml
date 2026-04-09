@@ -54,7 +54,7 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
+            <Grid Grid.Row="1" ColumnDefinitions="0.95*,1.05*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
@@ -122,7 +122,7 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="250"
+                                        MinHeight="360"
                                         IsReadOnly="True"
                                         PlaceholderText="Header"
                                         Text="{Binding HeaderText}" />
@@ -150,7 +150,7 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="250"
+                                        MinHeight="360"
                                         IsReadOnly="True"
                                         PlaceholderText="Payload"
                                         Text="{Binding PayloadText}" />
