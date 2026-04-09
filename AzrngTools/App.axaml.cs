@@ -8,6 +8,7 @@ using AzrngTools.ViewModels;
 using AzrngTools.ViewModels.Encode;
 using AzrngTools.ViewModels.Encrypts;
 using AzrngTools.ViewModels.Format;
+using AzrngTools.ViewModels.Network;
 using AzrngTools.ViewModels.Other;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
@@ -16,6 +17,7 @@ using AzrngTools.Views.Database;
 using AzrngTools.Views.Encode;
 using AzrngTools.Views.Encrypts;
 using AzrngTools.Views.Format;
+using AzrngTools.Views.Network;
 using AzrngTools.Views.Other;
 using AzrngTools.Views.Setting;
 using AzrngTools.Views.TextHandle;
@@ -41,6 +43,7 @@ public partial class App : Application
         ViewLocator.Register<MainWindowViewModel, MainWindow>();
         ViewLocator.Register<OverviewPageViewModel, OverviewPageView>();
         ViewLocator.Register<DbWorkbenchViewModel, DatabaseWorkbenchPageView>();
+        ViewLocator.Register<ApiRequestPageViewModel, ApiRequestPageView>();
 
         ViewLocator.Register<HashPageViewModel, HashPageView>();
         ViewLocator.Register<AesEncryptPageViewModel, AesEncryptPageView>();
@@ -136,6 +139,7 @@ public partial class App : Application
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<OverviewPageViewModel>();
         services.AddTransient<DbWorkbenchViewModel>();
+        services.AddTransient<ApiRequestPageViewModel>();
 
         services.AddTransient<HashPageViewModel>();
         services.AddTransient<AesEncryptPageViewModel>();

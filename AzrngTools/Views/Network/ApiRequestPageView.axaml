@@ -1,0 +1,465 @@
+<UserControl
+    d:DesignHeight="980"
+    d:DesignWidth="1320"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Network.ApiRequestPageView"
+    x:DataType="vm:ApiRequestPageViewModel"
+    x:Name="RootPage"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AzrngTools.ViewModels.Network"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+        <Border Grid.Row="0" Classes="tool-card-roomy">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                <StackPanel Spacing="{StaticResource Space.4}">
+                    <TextBlock Classes="section-title" Text="接口调试工作台" />
+                    <TextBlock Classes="section-copy" Text="参考 apifox 的请求调试流程，把地址、参数、Body、Header、响应、历史记录和环境变量都收口到同一页里，适合在当前工具箱里直接调接口。" />
+                </StackPanel>
+
+                <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="HTTP 请求" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="历史记录" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="环境变量" />
+                    </Border>
+                </WrapPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="320,*" ColumnSpacing="{StaticResource Space.12}">
+            <Border Grid.Column="0" Classes="tool-card-roomy">
+                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="请求历史" />
+                            <TextBlock Classes="section-copy" Text="每次发送后的请求与响应都会保存在本地，方便回放与复用。" />
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="1"
+                            Command="{Binding ClearHistoryCommand}"
+                            Content="清空历史"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </Grid>
+
+                    <TextBox
+                        Grid.Row="1"
+                        PlaceholderText="搜索方法、地址或状态"
+                        Text="{Binding HistorySearchText}" />
+
+                    <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled" MaxHeight="920" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding HistoryItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ApiRequestHistoryItemViewModel">
+                                    <Border Classes="tool-card-soft" Margin="{StaticResource Thickness.Bottom.10}">
+                                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                <Border Classes="badge-pill compact">
+                                                    <TextBlock Classes="badge-text" Text="{Binding Method}" />
+                                                </Border>
+
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    Classes="section-copy"
+                                                    Text="{Binding Url}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    VerticalAlignment="Center" />
+
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Classes="metric-label"
+                                                    Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
+                                                    VerticalAlignment="Center" />
+                                            </Grid>
+
+                                            <WrapPanel Grid.Row="1" Classes="tool-actions">
+                                                <Border Classes="badge-pill compact">
+                                                    <TextBlock Classes="badge-text" Text="{Binding StatusText}" />
+                                                </Border>
+                                                <Border Classes="badge-pill compact">
+                                                    <TextBlock Classes="badge-text" Text="{Binding DurationText}" />
+                                                </Border>
+                                                <Border Classes="badge-pill compact">
+                                                    <TextBlock Classes="badge-text" Text="{Binding SizeText}" />
+                                                </Border>
+                                            </WrapPanel>
+
+                                            <WrapPanel Grid.Row="2" Classes="tool-actions">
+                                                <Button
+                                                    Command="{ReflectionBinding #RootPage.DataContext.LoadHistoryItemCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="载入"
+                                                    Theme="{DynamicResource OutlineButton}" />
+                                                <Button
+                                                    Command="{ReflectionBinding #RootPage.DataContext.DeleteHistoryItemCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="删除"
+                                                    Theme="{DynamicResource OutlineButton}" />
+                                            </WrapPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                <Border Grid.Row="0" Classes="tool-card-roomy">
+                    <Grid ColumnDefinitions="130,*,Auto,Auto" ColumnSpacing="{StaticResource Space.10}">
+                        <ComboBox
+                            Grid.Column="0"
+                            ItemsSource="{Binding HttpMethods}"
+                            SelectedItem="{Binding SelectedMethod}" />
+
+                        <TextBox
+                            Grid.Column="1"
+                            PlaceholderText="输入请求地址，例如 https://api.example.com/users/{id}"
+                            Text="{Binding RequestUrl}" />
+
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding SendRequestCommand}"
+                            Content="发送请求"
+                            Theme="{DynamicResource SolidButton}" />
+
+                        <Button
+                            Grid.Column="3"
+                            Command="{Binding ClearCurrentRequestCommand}"
+                            Content="清空当前"
+                            Theme="{DynamicResource OutlineButton}" />
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Row="1" ColumnDefinitions="1.15*,0.85*" ColumnSpacing="{StaticResource Space.12}">
+                    <Border Grid.Column="0" Classes="tool-card-roomy">
+                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="请求配置" />
+                                <TextBlock Classes="section-copy" Text="参数、Header 和 Body 都按接口调试的常见路径拆开，便于逐块核对输入。" />
+                            </StackPanel>
+
+                            <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedConfigTabIndex}">
+                                <TabItem Header="Params">
+                                    <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                                        <Border Classes="tool-card-soft">
+                                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                    <TextBlock Classes="section-title" Text="Query 参数" />
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        Command="{Binding AddQueryParameterCommand}"
+                                                        Content="添加"
+                                                        Theme="{DynamicResource OutlineButton}" />
+                                                </Grid>
+
+                                                <Border Grid.Row="1" Classes="tool-card-subtle">
+                                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                        <TextBlock Classes="metric-label" Text="参数名" />
+                                                        <TextBlock Grid.Column="1" Classes="metric-label" Text="参数值" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <ItemsControl Grid.Row="2" ItemsSource="{Binding QueryParameters}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                                <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
+                                                                <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Content="删除"
+                                                                    Theme="{DynamicResource OutlineButton}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </Border>
+
+                                        <Border Grid.Row="1" Classes="tool-card-soft">
+                                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                    <TextBlock Classes="section-title" Text="Path 参数" />
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        Command="{Binding AddPathParameterCommand}"
+                                                        Content="添加"
+                                                        Theme="{DynamicResource OutlineButton}" />
+                                                </Grid>
+
+                                                <Border Grid.Row="1" Classes="tool-card-subtle">
+                                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                        <TextBlock Classes="metric-label" Text="占位名" />
+                                                        <TextBlock Grid.Column="1" Classes="metric-label" Text="替换值" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <ItemsControl Grid.Row="2" ItemsSource="{Binding PathParameters}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                                <TextBox Grid.Column="0" PlaceholderText="id" Text="{Binding Name}" />
+                                                                <TextBox Grid.Column="1" PlaceholderText="123" Text="{Binding Value}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Content="删除"
+                                                                    Theme="{DynamicResource OutlineButton}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem Header="Headers">
+                                    <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                            <TextBlock Classes="section-title" Text="请求头" />
+                                            <Button
+                                                Grid.Column="1"
+                                                Command="{Binding AddHeaderCommand}"
+                                                Content="添加 Header"
+                                                Theme="{DynamicResource OutlineButton}" />
+                                        </Grid>
+
+                                        <Border Grid.Row="1" Classes="tool-card-subtle">
+                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                <TextBlock Classes="metric-label" Text="Header 名" />
+                                                <TextBlock Grid.Column="1" Classes="metric-label" Text="Header 值" />
+                                            </Grid>
+                                        </Border>
+
+                                        <ItemsControl Grid.Row="2" ItemsSource="{Binding Headers}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                        <TextBox Grid.Column="0" PlaceholderText="Authorization" Text="{Binding Name}" />
+                                                        <TextBox Grid.Column="1" PlaceholderText="Bearer {{token}}" Text="{Binding Value}" />
+                                                        <Button
+                                                            Grid.Column="2"
+                                                            Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="删除"
+                                                            Theme="{DynamicResource OutlineButton}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem Header="Body">
+                                    <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                            <TextBlock Classes="metric-label" Text="Body 模式" VerticalAlignment="Center" />
+                                            <ComboBox
+                                                Grid.Column="1"
+                                                ItemsSource="{Binding BodyModeOptions}"
+                                                SelectedItem="{Binding SelectedBodyModeOption}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:ApiRequestBodyModeOptionViewModel">
+                                                        <TextBlock Text="{Binding DisplayName}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Grid>
+
+                                        <CheckBox
+                                            Grid.Row="1"
+                                            Content="忽略 SSL 证书错误"
+                                            IsChecked="{Binding IgnoreSslErrors}" />
+
+                                        <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding IsFormBodyMode}">
+                                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                    <TextBlock Classes="section-title" Text="表单字段" />
+                                                    <Button
+                                                        Grid.Column="1"
+                                                        Command="{Binding AddFormFieldCommand}"
+                                                        Content="添加字段"
+                                                        Theme="{DynamicResource OutlineButton}" />
+                                                </Grid>
+
+                                                <Border Grid.Row="1" Classes="tool-card-subtle">
+                                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                        <TextBlock Classes="metric-label" Text="字段名" />
+                                                        <TextBlock Grid.Column="1" Classes="metric-label" Text="字段值" />
+                                                    </Grid>
+                                                </Border>
+
+                                                <ItemsControl Grid.Row="2" ItemsSource="{Binding FormFields}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                                <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
+                                                                <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Content="删除"
+                                                                    Theme="{DynamicResource OutlineButton}" />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                        </Border>
+
+                                        <TextBox
+                                            Grid.Row="3"
+                                            AcceptsReturn="True"
+                                            Classes="Standard"
+                                            Height="280"
+                                            IsVisible="{Binding HasRawBodyEditor}"
+                                            PlaceholderText="{Binding RequestBodyPlaceholder}"
+                                            Text="{Binding RequestBody}"
+                                            TextWrapping="Wrap" />
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="tool-card-roomy">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="环境变量" />
+                                <TextBlock Classes="section-copy" Text="支持使用 {{key}} 引用变量，保存后会持久化到本地用户目录。" />
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Classes="tool-card-soft">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                    <TextBlock Classes="metric-label" Text="环境名称" VerticalAlignment="Center" />
+                                    <TextBox Grid.Column="1" PlaceholderText="Default" Text="{Binding ActiveEnvironmentName}" />
+                                </Grid>
+                            </Border>
+
+                            <Grid Grid.Row="2" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.8}">
+                                <WrapPanel Classes="tool-actions">
+                                    <Button
+                                        Command="{Binding AddEnvironmentVariableCommand}"
+                                        Content="新增变量"
+                                        Theme="{DynamicResource OutlineButton}" />
+                                    <Button
+                                        Command="{Binding SaveEnvironmentVariablesCommand}"
+                                        Content="保存变量"
+                                        Theme="{DynamicResource SolidButton}" />
+                                </WrapPanel>
+
+                                <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" MaxHeight="500" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding EnvironmentVariables}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:ApiRequestEnvironmentVariableItemViewModel">
+                                                <Border Classes="tool-card-soft" Margin="{StaticResource Thickness.0.8}">
+                                                    <Grid ColumnDefinitions="Auto,*,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                        <CheckBox Grid.Column="0" IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" />
+                                                        <TextBox Grid.Column="1" PlaceholderText="key" Text="{Binding Key}" />
+                                                        <TextBox Grid.Column="2" PlaceholderText="value" Text="{Binding Value}" />
+                                                        <Button
+                                                            Grid.Column="3"
+                                                            Command="{ReflectionBinding #RootPage.DataContext.RemoveEnvironmentVariableCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="删除"
+                                                            Theme="{DynamicResource OutlineButton}" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="2" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="响应结果" />
+                                <TextBlock Classes="section-copy" Text="发送后会展示状态、耗时、大小、响应体和响应头，失败时也会保留用户可见反馈。" />
+                            </StackPanel>
+
+                            <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right">
+                                <Button
+                                    Command="{Binding CopyResponseBodyCommand}"
+                                    Content="复制响应体"
+                                    Theme="{DynamicResource OutlineButton}" />
+                                <Button
+                                    Command="{Binding CopyResponseHeadersCommand}"
+                                    Content="复制响应头"
+                                    Theme="{DynamicResource OutlineButton}" />
+                            </WrapPanel>
+                        </Grid>
+
+                        <WrapPanel Grid.Row="1" Classes="tool-actions" IsVisible="{Binding HasResponse}">
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding ResponseStatusText}" />
+                            </Border>
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding ResponseDurationText}" />
+                            </Border>
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding ResponseSizeText}" />
+                            </Border>
+                        </WrapPanel>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding ShowResponsePlaceholder}">
+                            <TextBlock Classes="section-copy" Text="点击上方“发送请求”后，这里会展示响应体和响应头。" />
+                        </Border>
+
+                        <TabControl Grid.Row="2" IsVisible="{Binding HasResponse}" SelectedIndex="{Binding SelectedResponseTabIndex}">
+                            <TabItem Header="Body">
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    Classes="Standard"
+                                    Height="320"
+                                    IsReadOnly="True"
+                                    PlaceholderText="响应体会显示在这里"
+                                    Text="{Binding ResponseBodyText}"
+                                    TextWrapping="Wrap" />
+                            </TabItem>
+                            <TabItem Header="Headers">
+                                <TextBox
+                                    AcceptsReturn="True"
+                                    Classes="Standard"
+                                    Height="320"
+                                    IsReadOnly="True"
+                                    PlaceholderText="响应头会显示在这里"
+                                    Text="{Binding ResponseHeadersText}"
+                                    TextWrapping="Wrap" />
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="3" Classes="tool-card-soft">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                        <TextBlock Classes="metric-label" Text="工作状态" VerticalAlignment="Center" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Classes="section-copy"
+                            Text="{Binding StatusMessage}"
+                            TextWrapping="Wrap"
+                            VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -7,6 +7,7 @@ using AzrngTools.Services;
 using AzrngTools.ViewModels.Encode;
 using AzrngTools.ViewModels.Encrypts;
 using AzrngTools.ViewModels.Format;
+using AzrngTools.ViewModels.Network;
 using AzrngTools.ViewModels.Other;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
@@ -120,6 +121,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 Child =
                 [
                     new MenuBar("数据库工作台", typeof(DbWorkbenchViewModel))
+                ]
+            },
+            new MenuBar
+            {
+                Title = "网络与接口",
+                Child =
+                [
+                    new MenuBar("接口调试", typeof(ApiRequestPageViewModel))
                 ]
             },
             new MenuBar
