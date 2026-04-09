@@ -241,7 +241,7 @@
                 </Border>
 
                 <Border Grid.Row="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="响应结果" />
@@ -283,19 +283,7 @@
                             </Grid>
                         </Border>
 
-                        <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding HasResponse}">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                <TextBlock Classes="metric-label" Text="完整请求 URL" VerticalAlignment="Center" />
-                                <TextBox
-                                    Grid.Column="1"
-                                    Classes="flat-readonly"
-                                    IsReadOnly="True"
-                                    Text="{Binding ResponseRequestUrlText}"
-                                    TextWrapping="Wrap" />
-                            </Grid>
-                        </Border>
-
-                        <WrapPanel Grid.Row="3" Classes="tool-actions" IsVisible="{Binding HasResponse}">
+                        <WrapPanel Grid.Row="2" Classes="tool-actions" IsVisible="{Binding HasResponse}">
                             <Border Classes="badge-pill compact">
                                 <TextBlock Classes="badge-text" Text="{Binding ResponseStatusText}" />
                             </Border>
@@ -307,11 +295,11 @@
                             </Border>
                         </WrapPanel>
 
-                        <Border Grid.Row="4" Classes="tool-card-soft" IsVisible="{Binding ShowResponsePlaceholderCard}">
+                        <Border Grid.Row="3" Classes="tool-card-soft" IsVisible="{Binding ShowResponsePlaceholderCard}">
                             <TextBlock Classes="section-copy" Text="点击上方“发送请求”后，这里会展示响应体和响应头。" />
                         </Border>
 
-                        <TabControl Grid.Row="4" IsVisible="{Binding HasResponse}" SelectedIndex="{Binding SelectedResponseTabIndex}">
+                        <TabControl Grid.Row="3" IsVisible="{Binding HasResponse}" SelectedIndex="{Binding SelectedResponseTabIndex}">
                             <TabItem Header="Body">
                                 <TextBox
                                     AcceptsReturn="True"
@@ -323,14 +311,29 @@
                                     TextWrapping="Wrap" />
                             </TabItem>
                             <TabItem Header="Headers">
-                                <TextBox
-                                    AcceptsReturn="True"
-                                    Classes="Standard"
-                                    Height="320"
-                                    IsReadOnly="True"
-                                    PlaceholderText="响应头会显示在这里"
-                                    Text="{Binding ResponseHeadersText}"
-                                    TextWrapping="Wrap" />
+                                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                    <Border Grid.Row="0" Classes="tool-card-soft">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                            <TextBlock Classes="metric-label" Text="完整请求 URL" VerticalAlignment="Center" />
+                                            <TextBox
+                                                Grid.Column="1"
+                                                Classes="flat-readonly"
+                                                IsReadOnly="True"
+                                                Text="{Binding ResponseRequestUrlText}"
+                                                TextWrapping="Wrap" />
+                                        </Grid>
+                                    </Border>
+
+                                    <TextBox
+                                        Grid.Row="1"
+                                        AcceptsReturn="True"
+                                        Classes="Standard"
+                                        Height="276"
+                                        IsReadOnly="True"
+                                        PlaceholderText="响应头会显示在这里"
+                                        Text="{Binding ResponseHeadersText}"
+                                        TextWrapping="Wrap" />
+                                </Grid>
                             </TabItem>
                         </TabControl>
                     </Grid>
