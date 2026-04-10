@@ -26,12 +26,12 @@ internal sealed class Program
 
     private static AppBuilder BuildAvaloniaApp() =>
         AppBuilder.Configure<App>()
-                  .UsePlatformDetect()
+            .UsePlatformDetect()
 #if DEBUG
-                  .WithDeveloperTools()
+            .WithDeveloperTools()
 #endif
-                  .WithInterFont()
-                  .LogToTrace();
+            .WithInterFont()
+            .LogToTrace();
 
     internal static void RegisterUiThreadExceptionHandler()
     {
