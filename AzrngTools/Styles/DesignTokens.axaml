@@ -168,7 +168,7 @@
     <x:Double x:Key="Layout.Badge.BarHeight">4</x:Double>
     <GridLength x:Key="Layout.Shell.SidebarWidth">248</GridLength>
     <x:Double x:Key="Layout.Shell.ContentMaxWidth">1024</x:Double>
-    <x:Double x:Key="Layout.Dashboard.HeroMinHeight">204</x:Double>
+    <x:Double x:Key="Layout.Dashboard.HeroMinHeight">132</x:Double>
 
     <Thickness x:Key="Thickness.4">4</Thickness>
     <Thickness x:Key="Thickness.8">8</Thickness>
