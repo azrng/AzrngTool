@@ -207,8 +207,8 @@
                                       HorizontalScrollBarVisibility="Disabled">
                             <StackPanel Spacing="{StaticResource Space.16}">
                                 <Border Classes="dbWorkbenchHeroCard">
-                                    <Grid ColumnDefinitions="*,280"
-                                          ColumnSpacing="{StaticResource Space.16}">
+                                    <Grid RowDefinitions="Auto,Auto"
+                                          RowSpacing="{StaticResource Space.16}">
                                         <StackPanel Spacing="{StaticResource Space.12}">
                                             <Border Classes="dbWorkbenchHeroBadge"
                                                     HorizontalAlignment="Left">
@@ -263,7 +263,7 @@
                                             </StackPanel>
                                         </StackPanel>
 
-                                        <Border Grid.Column="1"
+                                        <Border Grid.Row="1"
                                                 Classes="dbWorkbenchStatusCard">
                                             <StackPanel Spacing="{StaticResource Space.12}">
                                                 <Border Classes="dbWorkbenchStatePill"
