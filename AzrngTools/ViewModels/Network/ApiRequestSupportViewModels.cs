@@ -27,6 +27,7 @@ public partial class ApiRequestHistoryItemViewModel : ViewModelBase
     public required string Method { get; init; }
     public required string Url { get; init; }
     public required DateTime Timestamp { get; init; }
+    public required string TimestampText { get; init; }
     public required ApiRequestSnapshot Request { get; init; }
     public ApiResponseSnapshot? Response { get; init; }
 

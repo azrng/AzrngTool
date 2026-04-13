@@ -374,7 +374,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:ApiRequestHistoryItemViewModel">
                                     <Border Classes="tool-card-soft" Margin="{StaticResource Thickness.Bottom.10}">
-                                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.8}">
                                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                 <Border Classes="badge-pill compact">
                                                     <TextBlock Classes="badge-text" Text="{Binding Method}" />
@@ -390,23 +390,11 @@
                                                 <TextBlock
                                                     Grid.Column="2"
                                                     Classes="metric-label"
-                                                    Text="{Binding Timestamp, StringFormat='{}{0:HH:mm}'}"
+                                                    Text="{Binding TimestampText}"
                                                     VerticalAlignment="Center" />
                                             </Grid>
 
                                             <WrapPanel Grid.Row="1" Classes="tool-actions">
-                                                <Border Classes="badge-pill compact">
-                                                    <TextBlock Classes="badge-text" Text="{Binding StatusText}" />
-                                                </Border>
-                                                <Border Classes="badge-pill compact">
-                                                    <TextBlock Classes="badge-text" Text="{Binding DurationText}" />
-                                                </Border>
-                                                <Border Classes="badge-pill compact">
-                                                    <TextBlock Classes="badge-text" Text="{Binding SizeText}" />
-                                                </Border>
-                                            </WrapPanel>
-
-                                            <WrapPanel Grid.Row="2" Classes="tool-actions">
                                                 <Button
                                                     Command="{ReflectionBinding #RootPage.DataContext.LoadHistoryItemCommand}"
                                                     CommandParameter="{Binding}"

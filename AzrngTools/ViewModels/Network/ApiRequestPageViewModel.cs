@@ -12,6 +12,8 @@ namespace AzrngTools.ViewModels.Network;
 
 public partial class ApiRequestPageViewModel : ViewModelBase
 {
+    private static readonly TimeZoneInfo ShanghaiTimeZone = ResolveShanghaiTimeZone();
+
     private readonly IApiRequestExecutionService _executionService;
     private readonly IApiRequestStoreService _storeService;
     private readonly IMessageService _messageService;
@@ -571,6 +573,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             Method = item.Request.Method,
             Url = item.Request.Url,
             Timestamp = item.Timestamp,
+            TimestampText = FormatShanghaiTime(item.Timestamp),
             Request = item.Request,
             Response = response,
             StatusText = statusText,
@@ -608,6 +611,30 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         }
 
         return $"{current:0.##} {units[index]}";
+    }
+
+    private static string FormatShanghaiTime(DateTime timestamp)
+    {
+        var normalizedTimestamp = timestamp.Kind switch
+        {
+            DateTimeKind.Unspecified => DateTime.SpecifyKind(timestamp, DateTimeKind.Utc),
+            _ => timestamp
+        };
+
+        var shanghaiTime = TimeZoneInfo.ConvertTime(normalizedTimestamp, ShanghaiTimeZone);
+        return shanghaiTime.ToString("HH:mm");
+    }
+
+    private static TimeZoneInfo ResolveShanghaiTimeZone()
+    {
+        try
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return TimeZoneInfo.FindSystemTimeZoneById("Asia/Shanghai");
+        }
     }
 
     private static TopLevel? GetTopLevel()
