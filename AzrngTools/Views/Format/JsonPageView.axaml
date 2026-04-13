@@ -36,12 +36,11 @@
             </Border>
 
             <Border Grid.Row="1" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="编辑区" />
-                            <TextBlock Classes="section-copy" Text="直接在当前编辑器里粘贴原始 JSON、被转义的 JSON 字符串，或需要压缩的内容；处理结果会原位回写。" />
-                        </StackPanel>
+                        <TextBlock Classes="section-title"
+                                   Text="编辑区"
+                                   VerticalAlignment="Center" />
 
                         <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Button
@@ -67,14 +66,7 @@
                         </WrapPanel>
                     </Grid>
 
-                    <Border Grid.Row="1" Classes="tool-card-subtle">
-                        <TextBlock
-                            Classes="metric-label"
-                            Text="建议先格式化检查层级，再按需要执行压缩、转义或去除转义。"
-                            TextWrapping="Wrap" />
-                    </Border>
-
-                    <Border Grid.Row="2" Classes="tool-card-soft">
+                    <Border Grid.Row="1" Classes="tool-card-soft">
                         <avaloniaEdit:TextEditor
                             FontFamily="Consolas,monospace"
                             HorizontalScrollBarVisibility="Auto"
