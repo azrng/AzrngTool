@@ -87,7 +87,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="{StaticResource Space.8}">
-                                    <TextBlock Classes="metric-label" Text="检查状态" />
+                                    <TextBlock Classes="metric-label" Text="更新状态" />
                                     <TextBlock Classes="section-copy" Text="{Binding UpdateStatus}" />
                                 </StackPanel>
                             </Grid>
@@ -95,15 +95,9 @@
 
                         <WrapPanel Classes="tool-actions">
                             <Button
-                                Command="{Binding CheckForUpdatesCommand}"
-                                IsEnabled="{Binding CanCheckForUpdates}">
-                                检查更新
-                            </Button>
-                            <Button
-                                Command="{Binding StartUpdateCommand}"
-                                IsEnabled="{Binding CanStartUpdate}">
-                                立即更新
-                            </Button>
+                                Command="{Binding PrimaryUpdateActionCommand}"
+                                Content="{Binding PrimaryUpdateActionText}"
+                                IsEnabled="{Binding CanExecutePrimaryUpdateAction}" />
                         </WrapPanel>
 
                         <Border Classes="tool-card-soft">
@@ -111,7 +105,7 @@
                                 <TextBlock Classes="metric-label" Text="更新提示" />
                                 <TextBlock
                                     Classes="section-copy"
-                                    Text="自动更新会下载 GitHub Release 中的便携包 zip。点击“立即更新”后，应用会在关闭后自动覆盖当前目录并重新启动；如果安装目录没有写入权限，请改为手动下载覆盖。" />
+                                    Text="应用启动后会自动异步检查 GitHub Release 元数据，不阻塞主界面。发现新版本后可先后台下载更新包，下载完成后再点击“立即更新”；真正应用更新时，程序会在关闭后自动覆盖当前目录并重新启动。" />
                             </StackPanel>
                         </Border>
                     </StackPanel>

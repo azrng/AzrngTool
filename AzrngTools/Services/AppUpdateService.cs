@@ -65,8 +65,8 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         };
     }
 
-    public async Task<AppUpdateApplyResult> DownloadAndPrepareUpdateAsync(AppUpdateInfo updateInfo,
-                                                                          CancellationToken cancellationToken = default)
+    public async Task<AppUpdatePreparedPackage> DownloadUpdatePackageAsync(AppUpdateInfo updateInfo,
+                                                                           CancellationToken cancellationToken = default)
     {
         if (updateInfo is null)
         {
@@ -75,19 +75,16 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
 
         if (string.IsNullOrWhiteSpace(updateInfo.DownloadUrl))
         {
-            return new AppUpdateApplyResult
-            {
-                IsSuccess = false,
-                Message = "当前版本缺少可用的更新包下载地址。"
-            };
+            throw new InvalidOperationException("当前版本缺少可用的更新包下载地址。");
         }
 
-        var updateRoot = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates",
+        var preparedRoot = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates", "prepared", updateInfo.LatestVersion);
+        var stagingRoot = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates", "staging",
             $"{updateInfo.LatestVersion}-{Guid.NewGuid():N}");
-        var archivePath = Path.Combine(updateRoot, updateInfo.AssetName);
-        var extractDirectory = Path.Combine(updateRoot, "payload");
+        var archivePath = Path.Combine(stagingRoot, updateInfo.AssetName);
+        var extractDirectory = Path.Combine(stagingRoot, "payload");
 
-        Directory.CreateDirectory(updateRoot);
+        Directory.CreateDirectory(stagingRoot);
         Directory.CreateDirectory(extractDirectory);
 
         try
@@ -106,35 +103,65 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 cancellationToken);
 
             ZipFile.ExtractToDirectory(archivePath, extractDirectory);
+            TryDeleteDirectory(preparedRoot);
+            Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
+            Directory.Move(stagingRoot, preparedRoot);
 
-            var payloadDirectory = ResolvePayloadDirectory(extractDirectory);
-            var updaterScriptPath = Path.Combine(updateRoot, "apply-update.ps1");
-            await File.WriteAllTextAsync(updaterScriptPath, BuildUpdateScript(payloadDirectory), Encoding.UTF8,
-                cancellationToken);
-
-            var startInfo = new ProcessStartInfo
+            var finalExtractDirectory = Path.Combine(preparedRoot, "payload");
+            return new AppUpdatePreparedPackage
             {
-                FileName = "powershell.exe",
-                Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{updaterScriptPath}\"",
-                UseShellExecute = true,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = updateRoot
-            };
-
-            Process.Start(startInfo);
-
-            return new AppUpdateApplyResult
-            {
-                IsSuccess = true,
-                Message = "更新包已准备完成，应用关闭后会自动替换并重新启动。"
+                Version = updateInfo.LatestVersion,
+                AssetName = updateInfo.AssetName,
+                PackageRoot = preparedRoot,
+                PayloadDirectory = ResolvePayloadDirectory(finalExtractDirectory),
+                DownloadedAt = DateTimeOffset.UtcNow
             };
         }
         catch
         {
-            TryDeleteDirectory(updateRoot);
+            TryDeleteDirectory(stagingRoot);
             throw;
         }
+    }
+
+    public async Task<AppUpdateApplyResult> ApplyPreparedUpdateAsync(AppUpdatePreparedPackage preparedPackage,
+                                                                     CancellationToken cancellationToken = default)
+    {
+        if (preparedPackage is null)
+        {
+            throw new ArgumentNullException(nameof(preparedPackage));
+        }
+
+        if (!Directory.Exists(preparedPackage.PayloadDirectory))
+        {
+            return new AppUpdateApplyResult
+            {
+                IsSuccess = false,
+                Message = "未找到已下载的更新包，请先重新下载。"
+            };
+        }
+
+        var updaterScriptPath = Path.Combine(preparedPackage.PackageRoot, "apply-update.ps1");
+        await File.WriteAllTextAsync(updaterScriptPath, BuildUpdateScript(preparedPackage.PayloadDirectory), Encoding.UTF8,
+            cancellationToken);
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "powershell.exe",
+            Arguments = $"-NoProfile -ExecutionPolicy Bypass -File \"{updaterScriptPath}\"",
+            UseShellExecute = true,
+            CreateNoWindow = true,
+            WindowStyle = ProcessWindowStyle.Hidden,
+            WorkingDirectory = preparedPackage.PackageRoot
+        };
+
+        Process.Start(startInfo);
+
+        return new AppUpdateApplyResult
+        {
+            IsSuccess = true,
+            Message = "更新包已准备完成，应用关闭后会自动替换并重新启动。"
+        };
     }
 
     private async Task<T> ExecuteWithCompatibilityRetryAsync<T>(Func<HttpClient, Task<T>> operation,

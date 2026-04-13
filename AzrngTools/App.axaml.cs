@@ -91,6 +91,8 @@ public partial class App : Application
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
         }
 
+        _ = Services.GetRequiredService<IAppUpdateCoordinatorService>().EnsureStartupCheckAsync();
+
         base.OnFrameworkInitializationCompleted();
     }
 
