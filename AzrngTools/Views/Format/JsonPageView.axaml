@@ -12,7 +12,7 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="using:AzrngTools.ViewModels.Format"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">

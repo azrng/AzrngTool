@@ -179,7 +179,7 @@
 
                 <Grid Grid.Column="1">
                     <Border Classes="shell-panel">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
                             <Grid HorizontalAlignment="Stretch"
                                   MinWidth="0">
                                 <TransitioningContentControl Content="{Binding CurrentPage}"
