@@ -39,7 +39,7 @@
             </Border>
 
             <Grid Grid.Row="1" ColumnDefinitions="0.92*,1.08*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
+                <Border Grid.Column="0" Classes="tool-card-roomy" VerticalAlignment="Top">
                     <StackPanel Spacing="{StaticResource Space.12}">
                         <TextBlock Classes="section-title" Text="项目信息" />
 
@@ -70,7 +70,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="1" Classes="tool-card-roomy">
+                <Border Grid.Column="1" Classes="tool-card-roomy" VerticalAlignment="Top">
                     <StackPanel Spacing="{StaticResource Space.12}">
                         <TextBlock Classes="section-title" Text="更新中心" />
 
