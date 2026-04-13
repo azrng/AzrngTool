@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using AvaloniaEdit;
@@ -9,6 +8,8 @@ namespace AzrngTools.Views.Format
 {
     public partial class JsonPageView : ViewControlBase
     {
+        private Border? _headerCard;
+        private Grid? _rootGrid;
         private Border? _workspaceCard;
         private ScrollViewer? _hostScrollViewer;
         private readonly TextEditor? _textEditor;
@@ -16,6 +17,8 @@ namespace AzrngTools.Views.Format
         public JsonPageView()
         {
             InitializeComponent();
+            _headerCard = this.FindControl<Border>("JsonHeaderCard");
+            _rootGrid = this.FindControl<Grid>("RootGrid");
             _workspaceCard = this.FindControl<Border>("JsonWorkspaceCard");
             _textEditor = this.FindControl<TextEditor>("JsonText");
             if (_textEditor is not null)
@@ -41,6 +44,10 @@ namespace AzrngTools.Views.Format
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
         {
             BindHostViewportHeight();
+            if (_headerCard != null)
+            {
+                _headerCard.SizeChanged += OnHeaderCardSizeChanged;
+            }
         }
 
         private void OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
@@ -51,6 +58,11 @@ namespace AzrngTools.Views.Format
             }
 
             _hostScrollViewer = null;
+
+            if (_headerCard != null)
+            {
+                _headerCard.SizeChanged -= OnHeaderCardSizeChanged;
+            }
         }
 
         private void BindHostViewportHeight()
@@ -75,21 +87,30 @@ namespace AzrngTools.Views.Format
             ApplyViewportHeight(e.NewSize.Height);
         }
 
+        private void OnHeaderCardSizeChanged(object? sender, SizeChangedEventArgs e)
+        {
+            if (_hostScrollViewer != null)
+            {
+                ApplyViewportHeight(_hostScrollViewer.Bounds.Height);
+            }
+        }
+
         private void ApplyViewportHeight(double hostHeight)
         {
-            if (_workspaceCard == null || _textEditor == null || hostHeight <= 0)
+            if (_rootGrid == null || _headerCard == null || _workspaceCard == null || hostHeight <= 0)
             {
                 return;
             }
 
-            var workspaceHeight = Math.Max(320d, hostHeight - 64d);
-            var editorHeight = Math.Max(240d, workspaceHeight - 78d);
+            const double outerVerticalMargin = 30d;
+            const double pageRowSpacing = 12d;
+            var rootHeight = Math.Max(360d, hostHeight - outerVerticalMargin);
+            var headerHeight = _headerCard.Bounds.Height;
+            var workspaceHeight = Math.Max(260d, rootHeight - headerHeight - pageRowSpacing);
 
-            _workspaceCard.VerticalAlignment = VerticalAlignment.Top;
+            _rootGrid.Height = rootHeight;
             _workspaceCard.MinHeight = 0;
-            _workspaceCard.MaxHeight = workspaceHeight;
-            _textEditor.MinHeight = 0;
-            _textEditor.Height = editorHeight;
+            _workspaceCard.Height = workspaceHeight;
         }
 
         private void InitializeComponent()

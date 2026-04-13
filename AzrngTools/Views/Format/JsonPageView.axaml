@@ -12,83 +12,91 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="using:AzrngTools.ViewModels.Format"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
+    <Grid Margin="{StaticResource Thickness.15}"
+          MinHeight="0"
+          RowDefinitions="Auto,*"
+          RowSpacing="{StaticResource Space.12}"
+          x:Name="RootGrid">
+        <Border Grid.Row="0"
+                Classes="tool-card-roomy"
+                x:Name="JsonHeaderCard">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                <StackPanel Spacing="{StaticResource Space.4}">
+                    <TextBlock Classes="section-title" Text="JSON 格式化工作台" />
+                    <TextBlock Classes="section-copy" Text="把格式化、压缩、转义和去除转义收敛到同一个编辑区，避免在多个输入框之间来回切换。" />
+                </StackPanel>
+
+                <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="格式化" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="压缩" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="转义" />
+                    </Border>
+                </WrapPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1"
+                Classes="tool-card-roomy"
+                MinHeight="0"
+                VerticalAlignment="Top"
+                x:Name="JsonWorkspaceCard">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="JSON 格式化工作台" />
-                        <TextBlock Classes="section-copy" Text="把格式化、压缩、转义和去除转义收敛到同一个编辑区，避免在多个输入框之间来回切换。" />
-                    </StackPanel>
+                    <TextBlock Classes="section-title"
+                               Text="编辑区"
+                               VerticalAlignment="Center" />
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="格式化" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="压缩" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="转义" />
-                        </Border>
+                        <Button
+                            Command="{Binding FormatJsonCommand}"
+                            Content="格式化"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding CompressJsonCommand}"
+                            Content="压缩"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Command="{Binding EscapeJsonCommand}"
+                            Content="转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding CompressEscapeJsonCommand}"
+                            Content="压缩并转义"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Command="{Binding ReplaceEscapeCommand}"
+                            Content="去除转义"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
-            </Border>
 
-            <Border Grid.Row="1" Classes="tool-card-roomy" MinHeight="0" x:Name="JsonWorkspaceCard">
-                <Grid RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                        <TextBlock Classes="section-title"
-                                   Text="编辑区"
-                                   VerticalAlignment="Center" />
-
-                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Button
-                                Command="{Binding FormatJsonCommand}"
-                                Content="格式化"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Command="{Binding CompressJsonCommand}"
-                                Content="压缩"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Command="{Binding EscapeJsonCommand}"
-                                Content="转义"
-                                Theme="{DynamicResource OutlineButton}" />
-                            <Button
-                                Command="{Binding CompressEscapeJsonCommand}"
-                                Content="压缩并转义"
-                                Theme="{DynamicResource OutlineButton}" />
-                            <Button
-                                Command="{Binding ReplaceEscapeCommand}"
-                                Content="去除转义"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-
-                    <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="0">
-                        <avaloniaEdit:TextEditor
-                            FontFamily="Consolas,monospace"
-                            HorizontalScrollBarVisibility="Auto"
-                            MinHeight="0"
-                            Name="JsonText"
-                            Padding="{StaticResource Thickness.8}"
-                            behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
-                            ShowLineNumbers="True"
-                            SyntaxHighlighting="Json"
-                            VerticalScrollBarVisibility="Visible"
-                            WordWrap="True">
-                            <avaloniaEdit:TextEditor.Options>
-                                <avaloniaEdit:TextEditorOptions ShowSpaces="False">
-                                    <avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
-                                        <system:Int32>10</system:Int32>
-                                    </avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
-                                </avaloniaEdit:TextEditorOptions>
-                            </avaloniaEdit:TextEditor.Options>
-                        </avaloniaEdit:TextEditor>
-                    </Border>
-                </Grid>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+                <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="0">
+                    <avaloniaEdit:TextEditor
+                        FontFamily="Consolas,monospace"
+                        HorizontalScrollBarVisibility="Auto"
+                        MinHeight="0"
+                        Name="JsonText"
+                        Padding="{StaticResource Thickness.8}"
+                        behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
+                        ShowLineNumbers="True"
+                        SyntaxHighlighting="Json"
+                        VerticalScrollBarVisibility="Visible"
+                        WordWrap="True">
+                        <avaloniaEdit:TextEditor.Options>
+                            <avaloniaEdit:TextEditorOptions ShowSpaces="False">
+                                <avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                                    <system:Int32>10</system:Int32>
+                                </avaloniaEdit:TextEditorOptions.ColumnRulerPositions>
+                            </avaloniaEdit:TextEditorOptions>
+                        </avaloniaEdit:TextEditor.Options>
+                    </avaloniaEdit:TextEditor>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

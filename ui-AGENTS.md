@@ -86,6 +86,7 @@ src/AppName/
 - 页面状态必须完整：`loading`、`empty`、`error`、`no-permission`。
 - 使用 Ursa.Avalonia 控件库优先，必要时使用 Avalonia 官方控件。
 - 图标统一使用 Avalonia 官方图形能力、Ursa 组件能力或仓库既有素材。
+- 涉及页面宿主滚动条、编辑器内部滚动或分区独立滚动时，必须先确认实际滚动容器层级与可视区约束来源，再决定是否隐藏滚动条或追加高度计算；禁止只靠固定高度常量或猜测性的嵌套 `ScrollViewer` 调整来修复。
 
 ### MVVM 模式规则
 - 所有 ViewModel 必须继承 `ObservableObject`。
