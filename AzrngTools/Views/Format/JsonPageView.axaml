@@ -35,7 +35,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" Classes="tool-card-roomy">
+            <Border Grid.Row="1" Classes="tool-card-roomy" MinHeight="0" x:Name="JsonWorkspaceCard">
                 <Grid RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                         <TextBlock Classes="section-title"
@@ -66,11 +66,11 @@
                         </WrapPanel>
                     </Grid>
 
-                    <Border Grid.Row="1" Classes="tool-card-soft">
+                    <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="0">
                         <avaloniaEdit:TextEditor
                             FontFamily="Consolas,monospace"
                             HorizontalScrollBarVisibility="Auto"
-                            MinHeight="620"
+                            MinHeight="0"
                             Name="JsonText"
                             Padding="{StaticResource Thickness.8}"
                             behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
