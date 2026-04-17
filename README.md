@@ -55,6 +55,8 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contain
 
 - 正式发布默认采用：`SelfContained + PublishSingleFile + PublishReadyToRun`
 - 当前默认发布策略不启用 `AOT` 和 `Trim`，优先保证桌面运行稳定性
+- Release 发布启用 `IncludeNativeLibrariesForSelfExtract=true`，Skia / HarfBuzz / ANGLE 等原生库会随单文件一起打包，并在运行时自解压加载
+- 当前测试产物目录可以收敛为单个 `AzrngTools.exe`，但原生库仍会在运行时落到临时目录，不属于纯内存加载
 
 ### GitHub Actions 自动发布
 1. 将准备好的代码合并到 `main`

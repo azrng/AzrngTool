@@ -353,4 +353,4 @@ docs/
 
 NUL
 !AzrngTools/Roots.xml
-!AzrngTools/FodyWeavers.xml
+.dotnet

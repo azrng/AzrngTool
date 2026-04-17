@@ -25,6 +25,7 @@
         <SelfContained>true</SelfContained>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <PublishReadyToRun>true</PublishReadyToRun>
         <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
         <PublishTrimmed>false</PublishTrimmed>
@@ -63,6 +64,17 @@
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
         <PackageReference Include="NPOI" Version="2.8.0" />
     </ItemGroup>
+
+    <Target Name="RemoveNativeDebugSymbolsFromPublish"
+            AfterTargets="ComputeResolvedFilesToPublishList"
+            Condition="'$(Configuration)' == 'Release'">
+        <ItemGroup>
+            <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                                   Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'libHarfBuzzSharp.pdb'" />
+            <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                                   Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'libSkiaSharp.pdb'" />
+        </ItemGroup>
+    </Target>
 
 </Project>
 
