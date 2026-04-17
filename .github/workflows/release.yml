@@ -89,6 +89,19 @@ jobs:
         shell: pwsh
         run: |
           $packagePath = "${{ steps.release_meta.outputs.package_path }}"
+          $symbolFiles = Get-ChildItem -Path "${{ env.PUBLISH_DIR }}" -Filter *.pdb -File -Recurse
+
+          if ($symbolFiles.Count -gt 0) {
+            Write-Host "清理 $($symbolFiles.Count) 个 .pdb 文件。"
+            foreach ($symbolFile in $symbolFiles) {
+              Remove-Item -LiteralPath $symbolFile.FullName -Force
+            }
+          }
+
+          $remainingSymbolFiles = Get-ChildItem -Path "${{ env.PUBLISH_DIR }}" -Filter *.pdb -File -Recurse
+          if ($remainingSymbolFiles.Count -gt 0) {
+            throw "仍存在未清理的 .pdb 文件，打包终止。"
+          }
 
           if (Test-Path $packagePath) {
             Remove-Item $packagePath -Force
