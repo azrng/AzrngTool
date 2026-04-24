@@ -39,13 +39,16 @@ jobs:
         shell: pwsh
         run: |
           $versionFilePath = Join-Path "${{ github.workspace }}" "${{ env.VERSION_FILE }}"
-          if (-not (Test-Path -LiteralPath $versionFilePath)) {
-            throw "版本文件不存在：$versionFilePath"
+          $legacyVersion = ""
+          if (Test-Path -LiteralPath $versionFilePath) {
+            $legacyVersion = (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8).Trim()
           }
 
-          $version = (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8).Trim()
-          if ([string]::IsNullOrWhiteSpace($version)) {
-            throw "版本文件内容为空：$versionFilePath"
+          if ($legacyVersion -match '^\d+\.\d+\.\d+(?:\.\d+)?$') {
+            $version = $legacyVersion
+          }
+          else {
+            $version = Get-Date -Format "yyyy.M.d"
           }
 
           $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -66,8 +69,7 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ steps.release_meta.outputs.version }}"
-          $shortSha = "${{ github.sha }}".Substring(0, 7)
-          $informationalVersion = "$version+$shortSha"
+          $informationalVersion = $version
           
           if (Test-Path "${{ env.PUBLISH_DIR }}") {
             Remove-Item "${{ env.PUBLISH_DIR }}" -Recurse -Force
@@ -78,6 +80,7 @@ jobs:
             -r win-x64 `
             --self-contained true `
             -o "${{ env.PUBLISH_DIR }}" `
+            -p:AzrngToolsVersionDate=$version `
             -p:PublishAot=false `
             -p:PublishTrimmed=false `
             -p:DebugType=None `

@@ -1,0 +1,18 @@
+<Project>
+  <PropertyGroup>
+    <AzrngToolsVersionFile Condition="'$(AzrngToolsVersionFile)' == ''">$(MSBuildThisFileDirectory)VERSION</AzrngToolsVersionFile>
+    <AzrngToolsLegacyVersion Condition="'$(AzrngToolsLegacyVersion)' == '' and Exists('$(AzrngToolsVersionFile)')">$([System.String]::Copy($([System.IO.File]::ReadAllText('$(AzrngToolsVersionFile)'))).Trim())</AzrngToolsLegacyVersion>
+    <AzrngToolsLegacyVersionIsExplicit Condition="'$(AzrngToolsLegacyVersion)' != ''">$([System.Text.RegularExpressions.Regex]::IsMatch('$(AzrngToolsLegacyVersion)', '^\d+\.\d+\.\d+(?:\.\d+)?$'))</AzrngToolsLegacyVersionIsExplicit>
+    <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == '' and '$(AzrngToolsVersionDate)' != ''">$(AzrngToolsVersionDate)</AzrngToolsResolvedVersion>
+    <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == '' and '$(AzrngToolsLegacyVersionIsExplicit)' == 'True'">$(AzrngToolsLegacyVersion)</AzrngToolsResolvedVersion>
+    <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == ''">$([System.DateTime]::Now.ToString('yyyy.M.d'))</AzrngToolsResolvedVersion>
+    <AzrngToolsResolvedVersionHasRevision Condition="'$(AzrngToolsResolvedVersion)' != ''">$([System.Text.RegularExpressions.Regex]::IsMatch('$(AzrngToolsResolvedVersion)', '^\d+\.\d+\.\d+\.\d+$'))</AzrngToolsResolvedVersionHasRevision>
+    <AzrngToolsAssemblyVersion Condition="'$(AzrngToolsAssemblyVersion)' == '' and '$(AzrngToolsResolvedVersionHasRevision)' == 'True'">$(AzrngToolsResolvedVersion)</AzrngToolsAssemblyVersion>
+    <AzrngToolsAssemblyVersion Condition="'$(AzrngToolsAssemblyVersion)' == ''">$(AzrngToolsResolvedVersion).0</AzrngToolsAssemblyVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Version Condition="'$(Version)' == ''">$(AzrngToolsResolvedVersion)</Version>
+    <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(AzrngToolsResolvedVersion)</InformationalVersion>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(AzrngToolsAssemblyVersion)</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">$(AzrngToolsAssemblyVersion)</FileVersion>
+  </PropertyGroup>
+</Project>
