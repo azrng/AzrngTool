@@ -144,7 +144,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="页面现在把设置区并回左侧工作流，避免旧三栏布局里“设置很窄、输入也很窄”的问题，连续排查字节内容会更顺手。" />
+                            <TextBlock Classes="section-copy" Text="适合检查十六进制字符串、字节数组和普通文本之间的转换结果。" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
@@ -158,7 +158,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="动作分组" />
-                            <TextBlock Classes="section-copy" Text="保留原有四个转换动作，并把复制和清空统一放在同一组，方便在整批编码页中形成一致操作肌肉记忆。" />
+                            <TextBlock Classes="section-copy" Text="覆盖文本向与字节向四种转换，并提供复制与清空辅助操作。" />
                         </StackPanel>
 
                         <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">

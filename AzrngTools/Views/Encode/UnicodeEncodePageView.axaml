@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
@@ -111,46 +111,6 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="工作方式" />
-                            <TextBlock Classes="section-copy" Text="页面现在用更完整的上下结构承接说明和操作，长文本情况下也不再需要挤在第三栏里阅读提示。" />
-                        </StackPanel>
-
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 如果你的输入来自接口 JSON，先确认内容里保留的是原始反斜杠还是已经被反序列化后的文本。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 连续调试多段字符串时，推荐每次处理后先复制结果，再决定是否清空重新输入。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作组成" />
-                            <TextBlock Classes="section-copy" Text="保留现有双向转换与复制清空动作，不增加额外业务逻辑，只把常用入口移动到页头统一展示。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="转换向" />
-                                    <TextBlock Classes="section-copy" Text="Unicode 编码 / 解码" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="辅助向" />
-                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>

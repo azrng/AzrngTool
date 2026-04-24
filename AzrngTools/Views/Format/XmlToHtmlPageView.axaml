@@ -15,7 +15,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                     <StackPanel Spacing="{StaticResource Space.4}">
                         <TextBlock Classes="section-title" Text="XML 转 HTML 工作台" />
-                        <TextBlock Classes="section-copy" Text="继续使用现有 XML 与 XSLT 转换逻辑，把输入、执行和输出整理成更明确的三个区域，减少旧页面的拥挤感。" />
+                        <TextBlock Classes="section-copy" Text="在同一页完成 XML 输入、XSLT 转换和 HTML 结果查看，便于连续调试模板输出。" />
                     </StackPanel>
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">

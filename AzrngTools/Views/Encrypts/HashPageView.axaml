@@ -52,7 +52,7 @@
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="算法与输出格式" />
-                            <TextBlock Classes="section-copy" Text="保留现有输出类型下拉框和五种算法按钮，适合快速横向比对不同散列结果。" />
+                            <TextBlock Classes="section-copy" Text="可按同一输入快速切换不同散列算法，并选择输出格式查看结果。" />
                         </StackPanel>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">

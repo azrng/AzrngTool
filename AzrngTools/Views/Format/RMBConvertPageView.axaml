@@ -103,7 +103,7 @@
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                     <StackPanel Spacing="{StaticResource Space.4}">
                         <TextBlock Classes="section-title" Text="使用规则" />
-                        <TextBlock Classes="section-copy" Text="这里保留原页面的信息提示，但改成统一的说明卡片样式，方便和其他工具页保持一致。" />
+                        <TextBlock Classes="section-copy" Text="适合校验金额输入、查看人民币大写结果，并快速确认字符统计信息。" />
                     </StackPanel>
 
                     <Border Grid.Row="1" Classes="tool-card-soft">

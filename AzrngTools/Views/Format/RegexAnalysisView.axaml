@@ -60,7 +60,7 @@
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="快捷操作" />
-                            <TextBlock Classes="section-copy" Text="可以先加载示例快速验证模式，再切回自己的文本；匹配与替换按钮继续使用现有命令，不新增额外流程。" />
+                            <TextBlock Classes="section-copy" Text="可先加载示例验证表达式，再对当前文本执行匹配或替换。" />
                         </StackPanel>
 
                         <WrapPanel Grid.Row="1" Classes="tool-actions">

@@ -116,7 +116,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="原来的第三栏说明被拆成底部承接区后，输入和结果都获得了更完整的纵向空间，长段落对照时更轻松。" />
+                            <TextBlock Classes="section-copy" Text="适合处理中长段落的繁简互转，并直接在左右两侧对照结果。" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
@@ -130,7 +130,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="动作组成" />
-                            <TextBlock Classes="section-copy" Text="当前页保持双向转换与复制清空的统一结构，和其他编码页的页头操作区保持一致。" />
+                            <TextBlock Classes="section-copy" Text="提供繁简双向转换，并保留复制结果与清空辅助操作。" />
                         </StackPanel>
 
                         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">

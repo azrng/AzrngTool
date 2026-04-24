@@ -123,7 +123,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="把原来的第三栏说明拆到底部以后，输入区和结果区获得了更完整的纵向空间，长链接和多参数场景会更容易检查。" />
+                            <TextBlock Classes="section-copy" Text="适合检查整条 URL、路径片段和多参数链接的编码结果。" />
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
@@ -137,7 +137,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="操作分工" />
-                            <TextBlock Classes="section-copy" Text="当前页面保留原有真实动作，不增加演示性按钮，只把常用操作前置到页头方便连续处理。" />
+                            <TextBlock Classes="section-copy" Text="提供编码、解码、复制和清空等常用操作，便于连续处理多条链接。" />
                         </StackPanel>
 
                         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">

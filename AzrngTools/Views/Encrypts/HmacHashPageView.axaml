@@ -77,7 +77,7 @@
                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="算法与格式" />
-                                <TextBlock Classes="section-copy" Text="保留原有输出格式与四种 HMAC 算法按钮，不改变任何命令绑定。" />
+                                <TextBlock Classes="section-copy" Text="支持切换输出格式和多种 HMAC 算法，便于快速校验摘要结果。" />
                             </StackPanel>
 
                             <Border Grid.Row="1" Classes="tool-card-soft">

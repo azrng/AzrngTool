@@ -52,7 +52,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="实时预览" />
-                            <TextBlock Classes="section-copy" Text="预览区继续使用现有 Markdown 组件，只调整外层容器样式，避免旧页面的黑色硬编码边框。" />
+                            <TextBlock Classes="section-copy" Text="输入 Markdown 后可在右侧实时查看排版效果，便于边写边校对。" />
                         </StackPanel>
 
                         <Border Grid.Row="1" Classes="tool-card-soft" Height="520">

@@ -102,7 +102,7 @@
                         <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="快捷操作" />
-                                <TextBlock Classes="section-copy" Text="保留原有四个动作，先导入或粘贴 Base64，再执行转换；只有成功生成图片后才允许保存。" />
+                                <TextBlock Classes="section-copy" Text="支持粘贴、转换、保存和清空，生成图片后即可直接保存到本地。" />
                             </StackPanel>
 
                             <WrapPanel Grid.Row="1" Classes="tool-actions">
