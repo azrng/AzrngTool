@@ -48,7 +48,7 @@
                 </Border>
 
                 <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="密钥、结果与操作" />
                             <TextBlock Classes="section-copy" Text="把密钥、结果和常用操作收进同一块工作区里，修改后可以直接在当前视线范围内完成验证。" />
@@ -69,7 +69,7 @@
                             Text="{Binding Ciphertext}"
                             PlaceholderText="处理后的内容将显示在这里" />
 
-                        <WrapPanel Grid.Row="3" Classes="tool-actions">
+                        <WrapPanel Grid.Row="3" Classes="tool-actions" VerticalAlignment="Bottom">
                             <Button
                                 Command="{Binding HandlerCommand}"
                                 CommandParameter="true"

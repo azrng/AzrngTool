@@ -102,8 +102,8 @@
                     </Border>
                 </Grid>
 
-                <Border Grid.Column="1" Classes="tool-card-roomy" VerticalAlignment="Top">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                <Border Grid.Column="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="参数设置" />
                             <TextBlock Classes="section-copy" Text="输入格式、输出格式、模式与填充方式都继续沿用原有绑定，不改变底层行为。" />
@@ -169,7 +169,7 @@
                             </Grid>
                         </Border>
 
-                        <WrapPanel Grid.Row="6" Classes="tool-actions">
+                        <WrapPanel Grid.Row="6" Classes="tool-actions" VerticalAlignment="Bottom">
                             <Button Command="{Binding HandlerCommand}" CommandParameter="true" Content="加密" Theme="{DynamicResource SolidButton}" />
                             <Button Command="{Binding HandlerCommand}" CommandParameter="false" Content="解密" Theme="{DynamicResource OutlineButton}" />
                             <Button Command="{Binding ResetCommand}" Content="清空" Theme="{DynamicResource OutlineButton}" />

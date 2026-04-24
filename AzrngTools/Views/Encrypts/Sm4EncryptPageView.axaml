@@ -49,7 +49,7 @@
                 </Border>
 
                 <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="密钥、结果与格式" />
                             <TextBlock Classes="section-copy" Text="把密钥、格式选择和操作按钮都集中到右侧主工作区，避免下方出现割裂的小卡片。" />
@@ -80,7 +80,7 @@
                             </Grid>
                         </Border>
 
-                        <WrapPanel Grid.Row="4" Classes="tool-actions">
+                        <WrapPanel Grid.Row="4" Classes="tool-actions" VerticalAlignment="Bottom">
                             <Button
                                 Command="{Binding Sm4HandlerCommand}"
                                 CommandParameter="true"
