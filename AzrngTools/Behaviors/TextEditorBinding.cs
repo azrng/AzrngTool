@@ -23,7 +23,7 @@ public sealed class TextEditorBinding
 
     public static string? GetText(AvaloniaObject element) => element.GetValue(TextProperty);
 
-    public static void SetText(AvaloniaObject element, string? value) => element.SetValue(TextProperty, value);
+    public static void SetText(AvaloniaObject element, string? value) => element.SetCurrentValue(TextProperty, value);
 
     private static bool GetIsSubscribed(AvaloniaObject element) => element.GetValue(IsSubscribedProperty);
 
