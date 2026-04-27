@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using AvaloniaEdit;
+using AzrngTools.ViewModels.Format;
 
 namespace AzrngTools.Views.Format
 {
@@ -10,6 +12,7 @@ namespace AzrngTools.Views.Format
         private Grid? _rootGrid;
         private Border? _workspaceCard;
         private ScrollViewer? _hostScrollViewer;
+        private readonly TextEditor? _textEditor;
 
         public JsonPageView()
         {
@@ -17,14 +20,29 @@ namespace AzrngTools.Views.Format
             _headerCard = this.FindControl<Border>("JsonHeaderCard");
             _rootGrid = this.FindControl<Grid>("RootGrid");
             _workspaceCard = this.FindControl<Border>("JsonWorkspaceCard");
+            _textEditor = this.FindControl<TextEditor>("JsonText");
 
             AttachedToVisualTree += OnAttachedToVisualTree;
             DetachedFromVisualTree += OnDetachedFromVisualTree;
         }
 
+        private void OnEditorTextChanged(object? sender, EventArgs e)
+        {
+            if (DataContext is JsonPageViewModel viewModel && _textEditor is not null)
+            {
+                viewModel.Original = _textEditor.Text ?? string.Empty;
+            }
+        }
+
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
         {
             BindHostViewportHeight();
+            if (_textEditor is not null)
+            {
+                _textEditor.TextChanged -= OnEditorTextChanged;
+                _textEditor.TextChanged += OnEditorTextChanged;
+            }
+
             if (_headerCard != null)
             {
                 _headerCard.SizeChanged += OnHeaderCardSizeChanged;
@@ -36,6 +54,11 @@ namespace AzrngTools.Views.Format
             if (_hostScrollViewer != null)
             {
                 _hostScrollViewer.SizeChanged -= OnHostScrollViewerSizeChanged;
+            }
+
+            if (_textEditor is not null)
+            {
+                _textEditor.TextChanged -= OnEditorTextChanged;
             }
 
             _hostScrollViewer = null;

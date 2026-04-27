@@ -139,6 +139,35 @@ System.TypeInitializationException : The type initializer for 'AvaloniaEdit.Edit
 
 ---
 
+## [ERR-20260427-004] debug-withdevelopertools-missing
+
+**Logged**: 2026-04-27T14:07:20+08:00
+**Priority**: low
+**Status**: pending
+**Area**: tests
+
+### Summary
+在 `Debug` 配置下编译主项目时，`Program.cs` 中的 `WithDeveloperTools()` 扩展方法当前无法解析，导致 `dotnet test -c Debug` 失败
+
+### Error
+```text
+C:\Work\github\AzrngTool\AzrngTools\Program.cs(31,14): error CS1061: “AppBuilder”未包含“WithDeveloperTools”的定义，并且找不到可接受第一个“AppBuilder”类型参数的可访问扩展方法“WithDeveloperTools”
+```
+
+### Context
+- Command/operation attempted: `dotnet test C:\Work\github\AzrngTool\AzrngTools.Tests\AzrngTools.Tests.csproj -c Debug`
+- Environment details: Windows / PowerShell / .NET 10 / Avalonia 12
+
+### Suggested Fix
+- 单独检查 `WithDeveloperTools()` 相关包引用与 `using` 变化，确认 Avalonia 12 下调试工具扩展方法的来源是否已调整
+- 在问题定位前，测试与构建优先使用 `Release` 配置完成等价验证
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/Program.cs
+
+---
+
 ## [ERR-20260424-002] rg-pattern-escaping
 
 **Logged**: 2026-04-24T13:35:52+08:00
