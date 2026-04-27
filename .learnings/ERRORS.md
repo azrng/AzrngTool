@@ -34,6 +34,75 @@ MSB3021: 无法将文件“...apphost.exe”复制到“bin\Debug\net10.0-window
 
 ---
 
+## [ERR-20260427-001] ambiguous-jsonexception
+
+**Logged**: 2026-04-27T11:06:01+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: backend
+
+### Summary
+在同时引用 `Newtonsoft.Json` 与 `System.Text.Json` 的工具类中直接捕获 `JsonException`，导致编译期类型名冲突
+
+### Error
+```text
+C:\Work\github\AzrngTool\AzrngTools\Utils\JsonHelper.cs(60,28): error CS0104: “JsonException”是“Newtonsoft.Json.JsonException”和“System.Text.Json.JsonException”之间的不明确的引用
+```
+
+### Context
+- Command/operation attempted: `dotnet build C:\Work\github\AzrngTool\AzrngTools.sln -c Debug`
+- Input or parameters used: `JsonHelper` 新增 `try/catch` 处理 `JToken.Parse` 与 `JsonConvert.DeserializeObject`
+- Environment details: Windows / PowerShell / .NET 10
+
+### Suggested Fix
+- 在同时使用两个 JSON 库的文件中，异常类型统一写全名，避免依赖 `using` 推断
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/Utils/JsonHelper.cs
+
+### Resolution
+- **Resolved**: 2026-04-27T11:06:01+08:00
+- **Commit/PR**: pending
+- **Notes**: 将相关 `catch (JsonException)` 全部改为 `catch (Newtonsoft.Json.JsonException)`，与当前解析实现保持一致。
+
+---
+
+## [ERR-20260427-002] dotnet-new-windows-framework-option
+
+**Logged**: 2026-04-27T12:21:52+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+`dotnet new` 模板在当前环境下不接受 `net10.0-windows` 作为 `--framework` 参数，创建测试工程时会直接报参数无效
+
+### Error
+```text
+错误: 无效选项:
+--framework net10.0-windows
+“net10.0-windows”不是“--framework”的有效值。
+```
+
+### Context
+- Command/operation attempted: `dotnet new xunit --framework net10.0-windows --output C:\Work\github\AzrngTool\AzrngTools.Tests`
+- Environment details: Windows / PowerShell / .NET 10 SDK
+
+### Suggested Fix
+- 先用模板支持的 `net10.0` 创建项目，再手动把 `.csproj` 改为 `net10.0-windows`
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools.Tests/AzrngTools.Tests.csproj
+
+### Resolution
+- **Resolved**: 2026-04-27T12:21:52+08:00
+- **Commit/PR**: pending
+- **Notes**: 本次先执行 `dotnet new xunit --framework net10.0`，再手动把测试工程目标框架改为 `net10.0-windows` 并添加主项目引用。
+
+---
+
 ## [ERR-20260424-002] rg-pattern-escaping
 
 **Logged**: 2026-04-24T13:35:52+08:00

@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -15,17 +16,8 @@ namespace AzrngTools.Utils
         /// <returns></returns>
         public static string JsonFormatter(string str)
         {
-            // var formatJson = JsonSerializer.Serialize(str, new JsonSerializerOptions
-            //                                                         {
-            //                                                             // 整齐打印
-            //                                                             WriteIndented = true,
-            //
-            //                                                             //重新编码，解决中文乱码问题
-            //                                                             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            //                                                         });
-            var jObject = JsonConvert.DeserializeObject<object>(str);
-            var formatJson = JsonConvert.SerializeObject(jObject, new JsonSerializerSettings { Formatting = Formatting.Indented });
-            return formatJson;
+            var token = JToken.Parse(str);
+            return token.ToString(Formatting.Indented);
         }
 
         /// <summary>
@@ -35,29 +27,61 @@ namespace AzrngTools.Utils
         /// <returns></returns>
         public static string JsonCompress(string json)
         {
-            var sb = new StringBuilder();
-            using (var reader = new StringReader(json))
+            var token = JToken.Parse(json);
+            return token.ToString(Formatting.None);
+        }
+
+        public static string EscapeJsonText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
             {
-                var ch = -1;
-                var lastch = -1;
-                var isQuoteStart = false;
-                while ((ch = reader.Read()) > -1)
-                {
-                    if ((char)lastch != '\\' && (char)ch == '\"')
-                    {
-                        isQuoteStart = !isQuoteStart;
-                    }
-
-                    if (!char.IsWhiteSpace((char)ch) || isQuoteStart)
-                    {
-                        sb.Append((char)ch);
-                    }
-
-                    lastch = ch;
-                }
+                return string.Empty;
             }
 
-            return sb.ToString();
+            var escaped = JsonConvert.ToString(text) ?? string.Empty;
+            return escaped.Length >= 2 ? escaped[1..^1] : escaped;
+        }
+
+        public static string UnescapeJsonText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return string.Empty;
+            }
+
+            if (TryParseJsonToken(text, out var token))
+            {
+                if (token is JValue { Type: JTokenType.String } stringToken && stringToken.Value<string>() is { } stringValue)
+                {
+                    try
+                    {
+                        return JsonFormatter(stringValue);
+                    }
+                    catch (Newtonsoft.Json.JsonException)
+                    {
+                        return stringValue;
+                    }
+                }
+
+                return token!.ToString(Formatting.Indented);
+            }
+
+            string? decoded;
+            try
+            {
+                decoded = JsonConvert.DeserializeObject<string>(BuildJsonStringLiteral(text));
+            }
+            catch (Newtonsoft.Json.JsonException ex)
+            {
+                throw new FormatException("去除转义失败，输入不是合法的 JSON 转义文本。", ex);
+            }
+
+            if (string.IsNullOrWhiteSpace(decoded))
+            {
+                throw new FormatException("去除转义失败，结果为空。");
+            }
+
+            return JsonFormatter(decoded);
         }
 
         public static string ToJson<T>(T obj)
@@ -88,6 +112,54 @@ namespace AzrngTools.Utils
                               Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, TypeInfoResolver = new DefaultJsonTypeInfoResolver()
                           };
             return System.Text.Json.JsonSerializer.Deserialize<T>(json, options);
+        }
+
+        private static bool TryParseJsonToken(string text, out JToken? token)
+        {
+            try
+            {
+                token = JToken.Parse(text);
+                return true;
+            }
+            catch (Newtonsoft.Json.JsonException)
+            {
+                token = null;
+                return false;
+            }
+        }
+
+        private static string BuildJsonStringLiteral(string text)
+        {
+            var builder = new StringBuilder(text.Length + 2);
+            builder.Append('\"');
+
+            foreach (var ch in text)
+            {
+                switch (ch)
+                {
+                    case '\r':
+                        builder.Append("\\r");
+                        break;
+                    case '\n':
+                        builder.Append("\\n");
+                        break;
+                    case '\t':
+                        builder.Append("\\t");
+                        break;
+                    case '\b':
+                        builder.Append("\\b");
+                        break;
+                    case '\f':
+                        builder.Append("\\f");
+                        break;
+                    default:
+                        builder.Append(ch);
+                        break;
+                }
+            }
+
+            builder.Append('\"');
+            return builder.ToString();
         }
     }
 }

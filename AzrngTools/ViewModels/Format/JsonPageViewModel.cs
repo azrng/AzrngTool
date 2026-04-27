@@ -3,7 +3,6 @@ using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Text.RegularExpressions;
 
 namespace AzrngTools.ViewModels.Format;
 
@@ -87,7 +86,7 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = Original.Replace("\"", @"\""");
+            Original = JsonHelper.EscapeJsonText(Original);
         }
         catch (Exception e)
         {
@@ -109,8 +108,8 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = JsonHelper.JsonCompress(Original);
-            Original = Original.Replace("\"", @"\""");
+            var compressed = JsonHelper.JsonCompress(Original);
+            Original = JsonHelper.EscapeJsonText(compressed);
         }
         catch (Exception e)
         {
@@ -132,30 +131,8 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            // 1. 处理多重转义的引号
-            string result = Original.Replace("\\\\\\\"", "\"");
-
-            // 2. 处理普通转义的引号
-            result = result.Replace("\\\"", "\"");
-
-            // 3. 处理换行符
-            result = result.Replace("\\n", "\n")
-                           .Replace("\\r", "\r");
-
-            // 4. 处理其他常见转义字符
-            result = result.Replace("\\t", "\t")
-                           .Replace("\\\\", "\\")
-                           .Replace("\\/", "/")
-                           .Replace("\\b", "\b")
-                           .Replace("\\f", "\f");
-
-            // 5. 处理HTML标签中的引号
-            result = Regex.Replace(result, @"<([^>]*)\\""([^>]*)>", "<$1\"$2>");
-
+            var result = JsonHelper.UnescapeJsonText(Original);
             Original = result;
-
-            // 6. 格式化JSON
-            Original = JsonHelper.JsonFormatter(result);
         }
         catch (Exception ex)
         {

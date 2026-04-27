@@ -1,8 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
-using AvaloniaEdit;
-using AzrngTools.ViewModels.Format;
 
 namespace AzrngTools.Views.Format
 {
@@ -12,7 +10,6 @@ namespace AzrngTools.Views.Format
         private Grid? _rootGrid;
         private Border? _workspaceCard;
         private ScrollViewer? _hostScrollViewer;
-        private readonly TextEditor? _textEditor;
 
         public JsonPageView()
         {
@@ -20,25 +17,9 @@ namespace AzrngTools.Views.Format
             _headerCard = this.FindControl<Border>("JsonHeaderCard");
             _rootGrid = this.FindControl<Grid>("RootGrid");
             _workspaceCard = this.FindControl<Border>("JsonWorkspaceCard");
-            _textEditor = this.FindControl<TextEditor>("JsonText");
-            if (_textEditor is not null)
-            {
-                _textEditor.TextChanged += OnEditorTextChanged;
-
-                // todo ：格式还有问题
-                //textEditor.TextArea.TextView.ElementGenerators.Add(new TruncateLongLines());
-            }
 
             AttachedToVisualTree += OnAttachedToVisualTree;
             DetachedFromVisualTree += OnDetachedFromVisualTree;
-        }
-
-        private void OnEditorTextChanged(object? sender, EventArgs e)
-        {
-            if (DataContext is JsonPageViewModel viewModel && _textEditor is not null)
-            {
-                viewModel.Original = _textEditor.Text ?? string.Empty;
-            }
         }
 
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
