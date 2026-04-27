@@ -1,7 +1,7 @@
 ---
 rule_id: agents-root
-version: 1.2.0
-last_updated: 2026-04-16
+version: 1.2.1
+last_updated: 2026-04-27
 dependencies: []
 ---
 
@@ -117,6 +117,8 @@ dependencies: []
 - 所有源码、配置、文档统一使用 `UTF-8`
 - 读取或修改含中文文件时，如出现乱码，先判断是显示问题还是文件损坏，未确认前禁止覆盖
 - Windows / PowerShell 下读取中文文件必须显式使用 `UTF-8`
+- Windows / PowerShell 下处理中文 Git 提交信息时，优先使用 `git commit -m` / 多个 `-m` 参数，或使用 `UTF-8` 编码文件配合 `git commit -F <file>`
+- 禁止通过标准输入管道直接传递中文提交信息，如 `git commit -F -`、here-string 管道等，避免编码链路把中文写成 `?`
 - 禁止使用可能隐式改变编码的方式直接改写源码文件，如 shell 重定向、`Out-File`、`Set-Content`
 - 修改含中文内容后，必须重新读取确认关键中文显示正常
 
@@ -163,6 +165,7 @@ dependencies: []
 ### Commit 规范
 - 提交信息优先采用 Conventional Commits
 - Commit 标题格式：`<type>(<scope>): <中文简述>`
+- Windows / PowerShell 下提交前，优先确保当前终端与 Git 日志输出使用 `UTF-8`；若刚执行过中文提交，需回读最近一次提交信息确认标题与正文未乱码
 - Commit 正文默认使用中文；非微小调整应补充以下字段：
   - `任务`
   - `阶段`
