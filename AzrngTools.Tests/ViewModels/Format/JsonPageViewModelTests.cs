@@ -51,4 +51,21 @@ public class JsonPageViewModelTests
         Assert.Single(messageService.Messages);
         Assert.Equal("请输入要处理的内容", messageService.Messages[0].Message);
     }
+
+    [Fact]
+    public void CompressEscapeJsonCommand_ShouldNotifyWhenInputIsAlreadyEscapedJson()
+    {
+        var messageService = new TestMessageService();
+        const string original = """{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\"}""";
+        var viewModel = new JsonPageViewModel(messageService)
+        {
+            Original = original
+        };
+
+        viewModel.CompressEscapeJsonCommand.Execute(null);
+
+        Assert.Equal(original, viewModel.Original);
+        Assert.Single(messageService.Messages);
+        Assert.Equal("当前内容看起来已经是转义后的 JSON。请先点击“去除转义”还原，或直接使用当前结果。", messageService.Messages[0].Message);
+    }
 }

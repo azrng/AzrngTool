@@ -113,6 +113,12 @@ public partial class JsonPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            if (IsLikelyEscapedJsonText(Original))
+            {
+                _messageService.SendMessage("当前内容看起来已经是转义后的 JSON。请先点击“去除转义”还原，或直接使用当前结果。");
+                return;
+            }
+
             _messageService.SendMessage($"Json解析失败，请检查 ：{e.Message}");
         }
     }
@@ -137,6 +143,25 @@ public partial class JsonPageViewModel : ViewModelBase
         catch (Exception ex)
         {
             _messageService.SendMessage($"处理失败：{ex.Message}");
+        }
+    }
+
+    private static bool IsLikelyEscapedJsonText(string text)
+    {
+        if (text.IsNullOrWhiteSpace() || !text.Contains("\\\"", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        try
+        {
+            var unescaped = JsonHelper.UnescapeJsonText(text);
+            JsonHelper.JsonCompress(unescaped);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 }
