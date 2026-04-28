@@ -5,7 +5,7 @@
     <AzrngToolsLegacyVersionIsExplicit Condition="'$(AzrngToolsLegacyVersion)' != ''">$([System.Text.RegularExpressions.Regex]::IsMatch('$(AzrngToolsLegacyVersion)', '^\d+\.\d+\.\d+(?:\.\d+)?$'))</AzrngToolsLegacyVersionIsExplicit>
     <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == '' and '$(AzrngToolsVersionDate)' != ''">$(AzrngToolsVersionDate)</AzrngToolsResolvedVersion>
     <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == '' and '$(AzrngToolsLegacyVersionIsExplicit)' == 'True'">$(AzrngToolsLegacyVersion)</AzrngToolsResolvedVersion>
-    <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == ''">$([System.DateTime]::Now.ToString('yyyy.M.d'))</AzrngToolsResolvedVersion>
+    <AzrngToolsResolvedVersion Condition="'$(AzrngToolsResolvedVersion)' == ''">$([System.DateTime]::UtcNow.ToString('yyyy.M.d.HH'))</AzrngToolsResolvedVersion>
     <AzrngToolsResolvedVersionHasRevision Condition="'$(AzrngToolsResolvedVersion)' != ''">$([System.Text.RegularExpressions.Regex]::IsMatch('$(AzrngToolsResolvedVersion)', '^\d+\.\d+\.\d+\.\d+$'))</AzrngToolsResolvedVersionHasRevision>
     <AzrngToolsAssemblyVersion Condition="'$(AzrngToolsAssemblyVersion)' == '' and '$(AzrngToolsResolvedVersionHasRevision)' == 'True'">$(AzrngToolsResolvedVersion)</AzrngToolsAssemblyVersion>
     <AzrngToolsAssemblyVersion Condition="'$(AzrngToolsAssemblyVersion)' == ''">$(AzrngToolsResolvedVersion).0</AzrngToolsAssemblyVersion>

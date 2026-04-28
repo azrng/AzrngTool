@@ -64,7 +64,7 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contain
 3. 推送 `main`，或在 Actions 中手动运行 `release-win-x64`
 4. 工作流会优先读取 `VERSION`：
    - 当内容是显式版本号时，使用该版本号发布
-   - 当内容是 `auto`、为空或不存在时，自动使用当天日期版本 `YYYY.M.D`
+   - 当内容是 `auto`、为空或不存在时，自动使用 UTC 年月日小时版本 `YYYY.M.D.HH`
 5. 工作流会自动：
    - 执行 `dotnet publish`
    - 生成 `AzrngTools-win-x64-portable.zip`
@@ -72,19 +72,19 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contain
    - 创建带构建时间与短 SHA 的 GitHub Release tag
 
 ## 版本号规则
-- 默认采用三段纯数字日期版本：`YYYY.M.D`
-- `YYYY` 为年份，`M` 为月份，`D` 为日期
+- 默认采用四段纯数字 UTC 时间版本：`YYYY.M.D.HH`
+- `YYYY` 为 UTC 年份，`M` 为 UTC 月份，`D` 为 UTC 日期，`HH` 为 UTC 小时
 - 根目录 `VERSION` 默认建议填写 `auto`
 - 若需要兼容旧流程或临时固定版本，`VERSION` 仍可填写显式版本号
 - GitHub Actions 正式发布时会基于版本号生成带构建信息的 tag，例如：`v2026.4.9-build-20260408-123000-abcd123`
-- 客户端显示版本与更新比较统一使用三段主版本号
-- 为兼容历史安装包，更新检测仍支持识别旧四段版本：`YYYY.M.D.N`
+- 客户端显示版本与更新比较统一使用可比较的数字版本号
+- 为兼容历史安装包，更新检测仍支持识别旧三段版本：`YYYY.M.D`
 - 示例：
   - `VERSION`：`auto`
-  - 自动生成版本：`2026.4.24`
+  - 自动生成版本：`2026.4.28.06`
   - 显式指定版本：`2026.4.9`
-  - 自动生成 tag：`v2026.4.9-build-20260408-123000-abcd123`
-  - 历史兼容版本：`2026.4.8.1221`
+  - 自动生成 tag：`v2026.4.28.06-build-20260428-123000-abcd123`
+  - 历史兼容版本：`2026.4.24`
 
 ## 自动更新
 - 关于页提供“检查更新”和“立即更新”入口
