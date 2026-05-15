@@ -6,15 +6,21 @@ namespace AzrngTools.Tests.Services.Database;
 public class DatabaseQueryPreviewLimiterTests
 {
     [Fact]
+    public void DefaultMaxRows_is_500()
+    {
+        Assert.Equal(500, DatabaseQueryPreviewLimiter.DefaultMaxRows);
+    }
+
+    [Fact]
     public void BuildPreviewQuery_wraps_sqlite_select_with_limit()
     {
         var result = DatabaseQueryPreviewLimiter.BuildPreviewQuery(
             DatabaseType.Sqlite,
             "select id, name from users order by id",
-            1000);
+            DatabaseQueryPreviewLimiter.DefaultMaxRows);
 
         Assert.True(result.WasLimited);
-        Assert.Contains("LIMIT 1000", result.Sql, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("LIMIT 500", result.Sql, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("select id, name from users order by id", result.Sql, StringComparison.OrdinalIgnoreCase);
     }
 

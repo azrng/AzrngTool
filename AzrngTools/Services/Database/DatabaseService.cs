@@ -12,8 +12,6 @@ namespace AzrngTools.Services.Database
     /// </summary>
     public class DatabaseService
     {
-        private const int QueryPreviewMaxRows = 1000;
-
         /// <summary>
         /// 测试数据库连接
         /// </summary>
@@ -911,7 +909,7 @@ namespace AzrngTools.Services.Database
 
                 if (LooksLikeQueryStatement(sql))
                 {
-                    var previewQuery = DatabaseQueryPreviewLimiter.BuildPreviewQuery(dbType, sql, QueryPreviewMaxRows);
+                    var previewQuery = DatabaseQueryPreviewLimiter.BuildPreviewQuery(dbType, sql, DatabaseQueryPreviewLimiter.DefaultMaxRows);
                     var resultArray = await dbHelper.QueryArrayAsync(previewQuery.Sql, null, true);
                     var columns = resultArray.Length > 0
                         ? resultArray[0].Select(FormatQueryCellValue).ToList()
@@ -922,7 +920,7 @@ namespace AzrngTools.Services.Database
                                           .ToList();
 
                     var message = previewQuery.WasLimited
-                        ? $"Query returned first {rows.Count} rows. Preview is limited to {QueryPreviewMaxRows} rows."
+                        ? $"Query returned first {rows.Count} rows. Preview is limited to {DatabaseQueryPreviewLimiter.DefaultMaxRows} rows."
                         : $"Query returned {rows.Count} rows.";
                     return (true, true, columns, rows, rows.Count, message);
                 }

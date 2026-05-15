@@ -5,6 +5,8 @@ namespace AzrngTools.Services.Database;
 
 public static class DatabaseQueryPreviewLimiter
 {
+    public const int DefaultMaxRows = 500;
+
     private static readonly Regex SqlServerSimpleSelectRegex = new(
         @"^\s*select\s+(distinct\s+)?",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
