@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Azrng.Core.Model;
-using Azrng.DataAccess.DbBridge;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AzrngTools.Models.Database;
@@ -136,7 +135,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             // 使用 DatabaseService 加载树形结构
             if (CurrentConnection.DatabaseType == DatabaseType.MySql)
             {
-                var mySqlRootNode = await BuildMySqlTreeAsync(CurrentConnection);
+                var mySqlRootNode = BuildMySqlTreeSkeleton(CurrentConnection);
                 RootNodes.Add(mySqlRootNode);
                 OnPropertyChanged(nameof(FirstRootNode));
                 CollectAllNodes();
@@ -185,154 +184,166 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         OnPropertyChanged(nameof(FirstRootNode));
     }
 
-    /// <summary>
-    /// 展开/折叠节点命令
-    /// </summary>
-    private async Task<TreeNodeItem> BuildMySqlTreeAsync(ConnectionConfig connection)
+    private TreeNodeItem BuildMySqlTreeSkeleton(ConnectionConfig connection)
     {
         var schemaName = string.IsNullOrWhiteSpace(connection.Database)
             ? "default"
             : connection.Database;
-        var dbBridge = new MySqlBasicDbBridge(connection.ToConnectionString());
-
-        var rootNode = new TreeNodeItem(connection.Name, TreeNodeType.Root, "Database")
+        var schemas = new[]
         {
-            DisplayName = connection.Name,
-            IsExpanded = true
-        };
-
-        var schemasFolderNode = new TreeNodeItem("Schemas", TreeNodeType.Folder, "Folder")
-        {
-            DisplayName = "Schemas (1)",
-            IsExpanded = true
-        };
-        rootNode.AddChild(schemasFolderNode);
-
-        var schemaNode = new TreeNodeItem(schemaName, TreeNodeType.Schema, "Schema")
-        {
-            DisplayName = schemaName,
-            Data = new SchemaModel
+            new SchemaModel
             {
                 Name = schemaName,
                 Owner = "MySql",
                 IsDefault = true
-            },
-            IsExpanded = true
+            }
         };
 
-        var tablesResult = await _databaseService.GetTablesAsync(connection, schemaName);
-        if (tablesResult.Success)
+        var rootNode = DatabaseTreeSkeletonBuilder.BuildSkeleton(connection.Name, schemas);
+        var schemaNode = rootNode.Children.FirstOrDefault()?.Children.FirstOrDefault();
+        if (schemaNode?.Data is SchemaModel schema)
         {
-            foreach (var table in tablesResult.Tables.OrderBy(table => table.Name))
+            schemaNode.AddChild(new TreeNodeItem("Functions", TreeNodeType.Folder, "Folder")
             {
-                schemaNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
-                {
-                    DisplayName = table.Name,
-                    Data = table
-                });
-            }
+                DisplayName = "函数",
+                Data = schema,
+                LazyLoadKind = TreeNodeLazyLoadKind.Functions,
+                IsChildrenLoaded = false
+            });
         }
 
-        schemasFolderNode.AddChild(schemaNode);
+        return rootNode;
+    }
 
-        var viewsFolderNode = new TreeNodeItem("Views", TreeNodeType.Folder, "Folder")
+    public async Task EnsureNodeChildrenLoadedAsync(TreeNodeItem? node)
+    {
+        if (node == null ||
+            node.LazyLoadKind == TreeNodeLazyLoadKind.None ||
+            node.IsChildrenLoaded ||
+            CurrentConnection == null)
         {
-            DisplayName = "Views (0)",
-            IsExpanded = false
-        };
+            return;
+        }
 
-        var views = (await dbBridge.GetSchemaViewListAsync(schemaName))
-            .Select(dto => new AzrngTools.Models.Database.ViewModel
+        if (node.Data is not SchemaModel schema || string.IsNullOrWhiteSpace(schema.Name))
+        {
+            return;
+        }
+
+        node.IsLoading = true;
+        try
+        {
+            var loaded = node.LazyLoadKind switch
             {
-                Name = dto.ViewName,
-                Schema = dto.ViewOwner,
-                Definition = dto.ViewDefinition ?? string.Empty,
-                Comment = dto.ViewDescription ?? string.Empty
-            })
-            .OrderBy(view => view.Name)
-            .ToList();
+                TreeNodeLazyLoadKind.Tables => await LoadTableNodesAsync(node, schema.Name),
+                TreeNodeLazyLoadKind.Views => await LoadViewNodesAsync(node, schema.Name),
+                TreeNodeLazyLoadKind.StoredProcedures => await LoadProcedureNodesAsync(node, schema.Name),
+                TreeNodeLazyLoadKind.Functions => await LoadFunctionNodesAsync(node, schema.Name),
+                _ => false
+            };
 
-        foreach (var view in views)
+            if (loaded)
+            {
+                node.IsChildrenLoaded = true;
+                CollectAllNodes();
+            }
+        }
+        finally
         {
-            viewsFolderNode.AddChild(new TreeNodeItem(view.Name, TreeNodeType.View, "View")
+            node.IsLoading = false;
+        }
+    }
+
+    private async Task<bool> LoadTableNodesAsync(TreeNodeItem folderNode, string schemaName)
+    {
+        var result = await _databaseService.GetTablesAsync(CurrentConnection!, schemaName);
+        if (!result.Success)
+        {
+            LoadingText = result.Message;
+            return false;
+        }
+
+        folderNode.ClearChildren();
+        foreach (var table in result.Tables.OrderBy(table => table.Name))
+        {
+            folderNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
+            {
+                DisplayName = table.Name,
+                Data = table
+            });
+        }
+
+        folderNode.DisplayName = $"表 ({result.Tables.Count})";
+        return true;
+    }
+
+    private async Task<bool> LoadViewNodesAsync(TreeNodeItem folderNode, string schemaName)
+    {
+        var result = await _databaseService.GetViewsAsync(CurrentConnection!, schemaName);
+        if (!result.Success)
+        {
+            LoadingText = result.Message;
+            return false;
+        }
+
+        folderNode.ClearChildren();
+        foreach (var view in result.Views.OrderBy(view => view.Name))
+        {
+            folderNode.AddChild(new TreeNodeItem(view.Name, TreeNodeType.View, "View")
             {
                 DisplayName = view.Name,
                 Data = view
             });
         }
 
-        viewsFolderNode.DisplayName = $"Views ({views.Count})";
+        folderNode.DisplayName = $"视图 ({result.Views.Count})";
+        return true;
+    }
 
-        rootNode.AddChild(viewsFolderNode);
-
-        var proceduresFolderNode = new TreeNodeItem("Stored Procedures", TreeNodeType.Folder, "Folder")
+    private async Task<bool> LoadProcedureNodesAsync(TreeNodeItem folderNode, string schemaName)
+    {
+        var result = await _databaseService.GetStoredProceduresAsync(CurrentConnection!, schemaName);
+        if (!result.Success)
         {
-            DisplayName = "Stored Procedures (0)",
-            IsExpanded = false
-        };
+            LoadingText = result.Message;
+            return false;
+        }
 
-        var routines = await dbBridge.GetSchemaRoutineListAsync(schemaName);
-        var procedures = routines
-            .Where(routine => string.Equals(routine.RoutineType, "PROCEDURE", StringComparison.OrdinalIgnoreCase))
-            .Select(routine => new StoredProcedureModel
-            {
-                Name = routine.RoutineName,
-                Schema = routine.SchemaName,
-                Definition = routine.RoutineDefinition ?? string.Empty,
-                Parameters = $"{routine.InputParam ?? string.Empty} {routine.OutputParam ?? string.Empty}".Trim(),
-                Comment = routine.RoutineDescription ?? string.Empty,
-                RoutineType = "PROCEDURE"
-            })
-            .OrderBy(procedure => procedure.Name)
-            .ToList();
-
-        foreach (var procedure in procedures)
+        folderNode.ClearChildren();
+        foreach (var procedure in result.Procedures.OrderBy(procedure => procedure.Name))
         {
-            proceduresFolderNode.AddChild(new TreeNodeItem(procedure.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
+            folderNode.AddChild(new TreeNodeItem(procedure.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
             {
                 DisplayName = procedure.Name,
                 Data = procedure
             });
         }
 
-        proceduresFolderNode.DisplayName = $"Stored Procedures ({procedures.Count})";
+        folderNode.DisplayName = $"存储过程 ({result.Procedures.Count})";
+        return true;
+    }
 
-        rootNode.AddChild(proceduresFolderNode);
-
-        var functionsFolderNode = new TreeNodeItem("Functions", TreeNodeType.Folder, "Folder")
+    private async Task<bool> LoadFunctionNodesAsync(TreeNodeItem folderNode, string schemaName)
+    {
+        var result = await _databaseService.GetFunctionsAsync(CurrentConnection!, schemaName);
+        if (!result.Success)
         {
-            DisplayName = "Functions (0)",
-            IsExpanded = false
-        };
+            LoadingText = result.Message;
+            return false;
+        }
 
-        var functions = routines
-            .Where(routine => string.Equals(routine.RoutineType, "FUNCTION", StringComparison.OrdinalIgnoreCase))
-            .Select(routine => new StoredProcedureModel
-            {
-                Name = routine.RoutineName,
-                Schema = routine.SchemaName,
-                Definition = routine.RoutineDefinition ?? string.Empty,
-                Parameters = $"{routine.InputParam ?? string.Empty} {routine.OutputParam ?? string.Empty}".Trim(),
-                Comment = routine.RoutineDescription ?? string.Empty,
-                RoutineType = "FUNCTION"
-            })
-            .OrderBy(function => function.Name)
-            .ToList();
-
-        foreach (var function in functions)
+        folderNode.ClearChildren();
+        foreach (var function in result.Functions.OrderBy(function => function.Name))
         {
-            functionsFolderNode.AddChild(new TreeNodeItem(function.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
+            folderNode.AddChild(new TreeNodeItem(function.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
             {
                 DisplayName = function.Name,
                 Data = function
             });
         }
 
-        functionsFolderNode.DisplayName = $"Functions ({functions.Count})";
-
-        rootNode.AddChild(functionsFolderNode);
-
-        return rootNode;
+        folderNode.DisplayName = $"函数 ({result.Functions.Count})";
+        return true;
     }
     [RelayCommand]
     private void ToggleNode(TreeNodeItem? node)
@@ -462,7 +473,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             FilteredRootNodes.Clear();
             if (RootNodes.Count > 0)
             {
-                var filteredNodes = SearchNodes(RootNodes[0].Children, searchText.ToLower());
+                var filteredNodes = SearchNodes(RootNodes[0].Children, searchText.Trim());
                 foreach (var node in filteredNodes)
                 {
                     FilteredRootNodes.Add(node);
@@ -486,9 +497,9 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
 
         foreach (var node in nodes)
         {
-            var matchesSearch = node.DisplayName.ToLower().Contains(searchText) ||
-                               node.Name.ToLower().Contains(searchText) ||
-                               (node.Data?.ToString()?.ToLower().Contains(searchText) ?? false);
+            var matchesSearch = node.DisplayName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                                node.Name.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                                (node.Data?.ToString()?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false);
 
             var hasMatchingChildren = false;
             if (node.Children.Count > 0)

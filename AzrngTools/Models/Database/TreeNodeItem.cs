@@ -52,6 +52,15 @@ public enum TreeNodeType
     Folder
 }
 
+public enum TreeNodeLazyLoadKind
+{
+    None,
+    Tables,
+    Views,
+    StoredProcedures,
+    Functions
+}
+
 /// <summary>
 /// 树形节点基类
 /// </summary>
@@ -118,6 +127,12 @@ public partial class TreeNodeItem : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
+    [ObservableProperty]
+    private bool _isChildrenLoaded = true;
+
+    [ObservableProperty]
+    private TreeNodeLazyLoadKind _lazyLoadKind;
+
     /// <summary>
     /// 父节点
     /// </summary>
@@ -137,7 +152,7 @@ public partial class TreeNodeItem : ObservableObject
     /// <summary>
     /// 是否可以展开
     /// </summary>
-    public bool CanExpand => HasChildren || NodeType == TreeNodeType.Schema || NodeType == TreeNodeType.Database;
+    public bool CanExpand => HasChildren || LazyLoadKind != TreeNodeLazyLoadKind.None || NodeType == TreeNodeType.Schema || NodeType == TreeNodeType.Database;
 
     public bool IsExportableLeaf => NodeType == TreeNodeType.Table;
 

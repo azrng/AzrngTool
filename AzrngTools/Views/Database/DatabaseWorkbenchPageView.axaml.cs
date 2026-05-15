@@ -109,6 +109,8 @@ public partial class DatabaseWorkbenchPageView : UserControl
             return;
         }
 
+        await viewModel.BrowserViewModel.EnsureNodeChildrenLoadedAsync(node);
+
         switch (node.NodeType)
         {
             case TreeNodeType.Schema when node.Data is SchemaModel schema:

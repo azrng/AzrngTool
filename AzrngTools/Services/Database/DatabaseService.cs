@@ -760,6 +760,55 @@ namespace AzrngTools.Services.Database
             }
         }
 
+        public async Task<(bool Success, List<StoredProcedureModel> Functions, string Message)> GetFunctionsAsync(
+            ConnectionConfig config, string schemaName)
+        {
+            try
+            {
+                if (config == null)
+                {
+                    return (false, new List<StoredProcedureModel>(), "数据库配置不能为空");
+                }
+
+                if (string.IsNullOrWhiteSpace(schemaName))
+                {
+                    return (false, new List<StoredProcedureModel>(), "Schema 名称不能为空");
+                }
+
+                var dbType = MapDatabaseType(config.DatabaseType);
+                if (dbType != DatabaseType.MySql)
+                {
+                    return (true, new List<StoredProcedureModel>(), "当前数据库类型暂无函数列表");
+                }
+
+                var dbBridge = CreateDbBridge(dbType, config);
+                var routineList = await dbBridge.GetSchemaRoutineListAsync(schemaName);
+                var functions = routineList
+                    .Where(dto => string.Equals(dto.RoutineType, "FUNCTION", StringComparison.OrdinalIgnoreCase))
+                    .Select(dto => new StoredProcedureModel
+                    {
+                        Name = dto.RoutineName,
+                        Schema = dto.SchemaName,
+                        Definition = dto.RoutineDefinition ?? string.Empty,
+                        Parameters = $"{dto.InputParam ?? ""} {dto.OutputParam ?? ""}".Trim(),
+                        Comment = dto.RoutineDescription ?? string.Empty,
+                        RoutineType = dto.RoutineType ?? "FUNCTION"
+                    })
+                    .OrderBy(function => function.Name)
+                    .ToList();
+
+                return (true, functions, $"成功加载 {functions.Count} 个函数");
+            }
+            catch (NotSupportedException ex)
+            {
+                return (false, new List<StoredProcedureModel>(), $"不支持的数据库类型: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return (false, new List<StoredProcedureModel>(), $"加载函数失败: {ex.Message}");
+            }
+        }
+
         public async Task<(bool Success, string Definition, string Message)> GetViewDefinitionAsync(
             ConnectionConfig config,
             string schemaName,
@@ -1229,7 +1278,7 @@ LIMIT 1;";
         }
 
         /// <summary>
-        /// 加载完整的数据库树形结构
+        /// 加载数据库树形结构骨架，具体对象按节点懒加载
         /// </summary>
         /// <param name="config">数据库配置</param>
         /// <returns>根节点</returns>
@@ -1242,121 +1291,13 @@ LIMIT 1;";
                     return (false, null, "数据库配置不能为空");
                 }
 
-                // 创建根节点
-                var rootNode = new TreeNodeItem(config.Name, TreeNodeType.Root, "Database")
-                               {
-                                   DisplayName = config.Name, IsExpanded = true
-                               };
-
-                // 获取所有 Schema
                 var schemaResult = await GetSchemasAsync(config);
                 if (!schemaResult.Success)
                 {
                     return (false, null, schemaResult.Message);
                 }
 
-                // 创建 Schema 集合节点
-                var schemasFolderNode = new TreeNodeItem("Schemas", TreeNodeType.Folder, "Folder")
-                                        {
-                                            DisplayName = $"架构 ({schemaResult.Schemas.Count})", IsExpanded = true
-                                        };
-                rootNode.AddChild(schemasFolderNode);
-
-                // 为每个 Schema 加载表
-                foreach (var schema in schemaResult.Schemas)
-                {
-                    var schemaNode = new TreeNodeItem(schema.Name, TreeNodeType.Schema, "Schema")
-                                     {
-                                         DisplayName = schema.Name, Data = schema
-                                     };
-
-                    // 获取该 Schema 下的表
-                    var tablesResult = await GetTablesAsync(config, schema.Name);
-                    if (tablesResult.Success)
-                    {
-                        foreach (var table in tablesResult.Tables)
-                        {
-                            var tableNode = new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
-                                            {
-                                                DisplayName = table.Name, Data = table
-                                            };
-                            schemaNode.AddChild(tableNode);
-                        }
-                    }
-
-                    schemasFolderNode.AddChild(schemaNode);
-                }
-
-                // 创建 Views 集合节点
-                var viewsFolderNode = new TreeNodeItem("Views", TreeNodeType.Folder, "Folder")
-                                      {
-                                          DisplayName = "视图 (0)", IsExpanded = false
-                                      };
-
-                // 加载所有视图（从第一个 Schema 或默认 Schema）
-                if (schemaResult.Schemas.Count > 0)
-                {
-                    var totalViewCount = 0;
-                    foreach (var schema in schemaResult.Schemas)
-                    {
-                        var viewsResult = await GetViewsAsync(config, schema.Name);
-                        if (!viewsResult.Success || viewsResult.Views.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        foreach (var view in viewsResult.Views.OrderBy(v => v.Name))
-                        {
-                            var viewNode = new TreeNodeItem(view.Name, TreeNodeType.View, "View")
-                                           {
-                                               DisplayName = $"{view.Schema}.{view.Name}", Data = view
-                                           };
-                            viewsFolderNode.AddChild(viewNode);
-                        }
-
-                        totalViewCount += viewsResult.Views.Count;
-                    }
-
-                    viewsFolderNode.DisplayName = $"视图 ({totalViewCount})";
-                }
-
-                rootNode.AddChild(viewsFolderNode);
-
-                // 创建 Stored Procedures 集合节点
-                var proceduresFolderNode = new TreeNodeItem("Stored Procedures", TreeNodeType.Folder, "Folder")
-                                           {
-                                               DisplayName = "存储过程 (0)", IsExpanded = false
-                                           };
-
-                // 加载所有存储过程（从第一个 Schema 或默认 Schema）
-                if (schemaResult.Schemas.Count > 0)
-                {
-                    var totalProcedureCount = 0;
-                    foreach (var schema in schemaResult.Schemas)
-                    {
-                        var proceduresResult = await GetStoredProceduresAsync(config, schema.Name);
-                        if (!proceduresResult.Success || proceduresResult.Procedures.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        foreach (var procedure in proceduresResult.Procedures.OrderBy(p => p.Name))
-                        {
-                            var procNode = new TreeNodeItem(procedure.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
-                                           {
-                                               DisplayName = $"{procedure.Schema}.{procedure.Name}", Data = procedure
-                                           };
-                            proceduresFolderNode.AddChild(procNode);
-                        }
-
-                        totalProcedureCount += proceduresResult.Procedures.Count;
-                    }
-
-                    proceduresFolderNode.DisplayName = $"存储过程 ({totalProcedureCount})";
-                }
-
-                rootNode.AddChild(proceduresFolderNode);
-
+                var rootNode = DatabaseTreeSkeletonBuilder.BuildSkeleton(config.Name, schemaResult.Schemas);
                 return (true, rootNode, $"成功加载数据库树形结构");
             }
             catch (NotSupportedException ex)

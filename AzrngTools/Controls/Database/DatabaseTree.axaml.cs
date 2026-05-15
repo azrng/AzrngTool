@@ -4,13 +4,17 @@ using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Input;
 using AzrngTools.Models.Database;
+using AzrngTools.Utils;
 
 namespace AzrngTools.Controls.Database;
 
 public partial class DatabaseTree : UserControl
 {
+    private readonly DebouncedActionDispatcher _searchDebouncer = new(TimeSpan.FromMilliseconds(250));
+
     public TreeNodeItem? RootNode
     {
         get => GetValue(RootNodeProperty);
@@ -172,7 +176,9 @@ public partial class DatabaseTree : UserControl
             Data = node.Data,
             IsExpanded = filteredChildren.Count > 0,
             IsLoading = node.IsLoading,
-            IsSelected = node.IsSelected
+            IsSelected = node.IsSelected,
+            IsChildrenLoaded = node.IsChildrenLoaded,
+            LazyLoadKind = node.LazyLoadKind
         };
 
         foreach (var child in filteredChildren)
@@ -219,8 +225,16 @@ public partial class DatabaseTree : UserControl
         }
         else if (change.Property == SearchTextProperty)
         {
-            FilterNodes(SearchText);
+            var searchText = SearchText;
+            _searchDebouncer.Debounce(() =>
+                Dispatcher.UIThread.Post(() => FilterNodes(searchText)));
         }
+    }
+
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        _searchDebouncer.Dispose();
+        base.OnDetachedFromVisualTree(e);
     }
 
     private void OnRootNodeChanged()

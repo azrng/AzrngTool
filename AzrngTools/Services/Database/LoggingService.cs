@@ -17,7 +17,11 @@ public static class LoggingService
         LogDirectory,
         $"app_{DateTime.Now:yyyyMMdd}.log");
 
-    private static readonly object LockObject = new();
+    private static readonly QueuedLogWriter LogWriter = new(async entry =>
+    {
+        Directory.CreateDirectory(LogDirectory);
+        await File.AppendAllTextAsync(LogFile, entry + Environment.NewLine);
+    });
 
     /// <summary>
     /// 初始化日志服务
@@ -77,31 +81,24 @@ public static class LoggingService
     /// </summary>
     private static void WriteLog(string level, string message, string caller, Exception? exception)
     {
-        Task.Run(() =>
+        try
         {
-            try
-            {
-                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                var exceptionInfo = exception != null
-                    ? $"\n  异常类型：{exception.GetType().Name}\n  异常消息：{exception.Message}\n  堆栈跟踪：{exception.StackTrace}"
-                    : "";
+            var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
+            var exceptionInfo = exception != null
+                ? $"\n  异常类型：{exception.GetType().Name}\n  异常消息：{exception.Message}\n  堆栈跟踪：{exception.StackTrace}"
+                : "";
 
-                var logEntry = $"[{timestamp}] [{level}] [{caller}] {message}{exceptionInfo}";
+            var logEntry = $"[{timestamp}] [{level}] [{caller}] {message}{exceptionInfo}";
+            LogWriter.Enqueue(logEntry);
 
-                lock (LockObject)
-                {
-                    File.AppendAllText(LogFile, logEntry + Environment.NewLine);
-                }
-
-                // 同时输出到调试控制台
-                System.Diagnostics.Debug.WriteLine(logEntry);
-            }
-            catch (Exception ex)
-            {
-                // 日志写入失败时只输出到调试控制台
-                System.Diagnostics.Debug.WriteLine($"写入日志失败：{ex.Message}");
-            }
-        });
+            // 同时输出到调试控制台
+            System.Diagnostics.Debug.WriteLine(logEntry);
+        }
+        catch (Exception ex)
+        {
+            // 日志写入失败时只输出到调试控制台
+            System.Diagnostics.Debug.WriteLine($"写入日志失败：{ex.Message}");
+        }
     }
 
     /// <summary>
