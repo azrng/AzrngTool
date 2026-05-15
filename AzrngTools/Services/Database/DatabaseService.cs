@@ -12,6 +12,8 @@ namespace AzrngTools.Services.Database
     /// </summary>
     public class DatabaseService
     {
+        private const int QueryPreviewMaxRows = 1000;
+
         /// <summary>
         /// 测试数据库连接
         /// </summary>
@@ -909,7 +911,8 @@ namespace AzrngTools.Services.Database
 
                 if (LooksLikeQueryStatement(sql))
                 {
-                    var resultArray = await dbHelper.QueryArrayAsync(sql, null, true);
+                    var previewQuery = DatabaseQueryPreviewLimiter.BuildPreviewQuery(dbType, sql, QueryPreviewMaxRows);
+                    var resultArray = await dbHelper.QueryArrayAsync(previewQuery.Sql, null, true);
                     var columns = resultArray.Length > 0
                         ? resultArray[0].Select(FormatQueryCellValue).ToList()
                         : new List<string>();
@@ -918,7 +921,10 @@ namespace AzrngTools.Services.Database
                                           .Select(row => row.Select(FormatQueryCellValue).ToList())
                                           .ToList();
 
-                    return (true, true, columns, rows, rows.Count, $"Query returned {rows.Count} rows.");
+                    var message = previewQuery.WasLimited
+                        ? $"Query returned first {rows.Count} rows. Preview is limited to {QueryPreviewMaxRows} rows."
+                        : $"Query returned {rows.Count} rows.";
+                    return (true, true, columns, rows, rows.Count, message);
                 }
 
                 var affectedRows = await dbHelper.ExecuteAsync(sql);
@@ -954,17 +960,13 @@ namespace AzrngTools.Services.Database
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
-                var dbHelper = dbType == DatabaseType.Sqlite
-                    ? CreateSqliteDbHelper(config)
-                    : CreateDbHelper(dbType, config, config.Database);
                 var dbBridge = CreateDbBridge(dbType, config);
 
-                var rowCount = await LoadExactRowCountAsync(dbHelper, config.DatabaseType, schemaName, tableName);
                 var timestamp = await dbBridge.GetTableTimestampAsync(schemaName, tableName);
                 var createTime = timestamp?.CreateTime;
                 var modifyTime = timestamp?.ModifyTime;
 
-                return (true, rowCount, createTime, modifyTime, "Loaded table statistics.");
+                return (true, -1, createTime, modifyTime, "Loaded table metadata. Exact row count is deferred.");
             }
             catch (NotSupportedException ex)
             {
@@ -1000,18 +1002,6 @@ namespace AzrngTools.Services.Database
                 byte[] bytes => BitConverter.ToString(bytes),
                 _ => value.ToString() ?? string.Empty
             };
-        }
-
-        private async Task<long> LoadExactRowCountAsync(
-            IDbHelper dbHelper,
-            DatabaseType databaseType,
-            string schemaName,
-            string tableName)
-        {
-            var qualifiedTableName = BuildQualifiedTableName(databaseType, schemaName, tableName);
-            var sql = $"SELECT COUNT(1) FROM {qualifiedTableName};";
-            var rowCount = await dbHelper.QueryScalarAsync<long?>(sql);
-            return rowCount ?? 0;
         }
 
         private string BuildQualifiedTableName(

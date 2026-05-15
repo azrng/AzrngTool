@@ -17,7 +17,7 @@ public partial class TableDetailViewModel : ViewModelBase
     private readonly DatabaseService _databaseService = new();
 
     public bool HasSelectedTable => SelectedTable != null;
-    public string RowCountDisplay => RowCount <= 0 ? "0" : RowCount.ToString("N0");
+    public string RowCountDisplay => RowCount < 0 ? "未加载" : RowCount.ToString("N0");
     public string TableDefinitionDisplay => string.IsNullOrWhiteSpace(TableDefinition)
         ? "-- 暂无 DDL 定义"
         : TableDefinition;
