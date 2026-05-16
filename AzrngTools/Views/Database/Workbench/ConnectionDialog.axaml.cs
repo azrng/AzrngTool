@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -7,65 +8,48 @@ using Avalonia.Platform.Storage;
 using AzrngTools.Models.Database;
 using AzrngTools.Services.Database;
 using AzrngTools.ViewModels.Database;
+using Ursa.Controls;
 
 namespace AzrngTools.Views.Database.Workbench;
 
-public partial class ConnectionDialog : Window
+public partial class ConnectionDialog : UserControl
 {
-    private Panel? _previousToastContainer;
+    private WindowToastManager? _previousManager;
 
-    public ConnectionDialogViewModel ViewModel => (ConnectionDialogViewModel)DataContext!;
-
-    public ConnectionDialog() : this(null, null, null)
-    {
-    }
-
-    public ConnectionDialog(
-        ObservableCollection<ConnectionConfig>? connections = null,
-        Action? persistConnections = null,
-        ConnectionConfig? selectedConnection = null)
+    public ConnectionDialog()
     {
         InitializeComponent();
-        DataContext = new ConnectionDialogViewModel(connections, persistConnections, selectedConnection);
-        SetupEventHandlers();
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
-    private void SetupEventHandlers()
+    private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        var toastContainer = this.FindControl<StackPanel>("ToastContainer");
-        if (toastContainer != null)
+        _previousManager = ToastService.SetManager(new WindowToastManager(TopLevel.GetTopLevel(this)!));
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        Loaded -= OnLoaded;
+        Unloaded -= OnUnloaded;
+
+        if (_previousManager != null)
         {
-            _previousToastContainer = ToastService.SetContainer(toastContainer);
-        }
-
-        ViewModel.CloseRequested += OnCloseRequested;
-        Closed += OnDialogClosed;
-    }
-
-    private void OnCloseRequested(object? sender, bool dialogResult)
-    {
-        Close(dialogResult ? ViewModel.DialogResultConnection : null);
-    }
-
-    private void OnDialogClosed(object? sender, EventArgs e)
-    {
-        ViewModel.CloseRequested -= OnCloseRequested;
-        Closed -= OnDialogClosed;
-
-        if (_previousToastContainer != null)
-        {
-            ToastService.SetContainer(_previousToastContainer);
-            _previousToastContainer = null;
+            ToastService.SetManager(_previousManager);
+            _previousManager = null;
         }
         else
         {
-            ToastService.ClearContainer();
+            ToastService.ClearManager();
         }
     }
 
     private async void OnBrowseSqliteFileClick(object? sender, RoutedEventArgs e)
     {
-        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel?.StorageProvider == null) return;
+
+        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Select Sqlite database file",
             AllowMultiple = false,
@@ -82,12 +66,10 @@ public partial class ConnectionDialog : Window
             }
         });
 
-        if (files.Count == 0)
-        {
-            return;
-        }
+        if (files.Count == 0) return;
 
-        ViewModel.ConnectionConfig.Database = files[0].Path.LocalPath;
+        var vm = (ConnectionDialogViewModel)DataContext!;
+        vm.ConnectionConfig.Database = files[0].Path.LocalPath;
         ToastService.ShowInfo("Sqlite database file selected.", 2000);
     }
 }

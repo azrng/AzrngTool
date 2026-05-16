@@ -26,8 +26,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Panel>
-        <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
+    <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
             <Border
                 Grid.Row="0"
                 Classes="shell-panel"
@@ -190,14 +189,4 @@
                 </Grid>
             </Grid>
         </Grid>
-
-        <Panel IsHitTestVisible="False"
-               ZIndex="9999">
-            <StackPanel x:Name="GlobalToastContainer"
-                        Margin="{StaticResource Thickness.20}"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Spacing="{StaticResource Space.8}" />
-        </Panel>
-    </Panel>
 </Window>

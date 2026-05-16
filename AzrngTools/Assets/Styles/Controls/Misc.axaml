@@ -135,11 +135,6 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
-    <Style Selector="Border.spacer">
-        <Setter Property="Background" Value="{DynamicResource Brush.Border.Divider}"/>
-        <Setter Property="Height" Value="1"/>
-    </Style>
-
     <!-- Window Control Border Group -->
     <Style Selector="Border.windowControlGroup">
         <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>

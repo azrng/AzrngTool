@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,20 +10,13 @@
         x:CompileBindings="False"
         x:DataType="vm:ExportDialogViewModel"
         x:Name="ExportDialogWindow"
-        Title="导出文档"
-        Width="1080"
-        Height="700"
-        MinWidth="960"
-        MinHeight="620"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False"
-        Icon="/Assets/avalonia-logo.ico">
+        MinWidth="960" MinHeight="620">
 
     <Design.DataContext>
         <vm:ExportDialogViewModel />
     </Design.DataContext>
 
-    <Window.Styles>
+    <UserControl.Styles>
         <Style Selector="Border.exportDialogSurface">
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
@@ -157,18 +150,9 @@
             <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
-    </Window.Styles>
+    </UserControl.Styles>
 
     <Grid Background="{DynamicResource Brush.App.Background}">
-        <Panel IsHitTestVisible="False"
-               ZIndex="9999">
-            <StackPanel x:Name="ToastContainer"
-                        Margin="20"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Spacing="8" />
-        </Panel>
-
         <Border Margin="18"
                 Padding="18"
                 Classes="exportDialogSurface">
@@ -426,4 +410,4 @@
             </Grid>
         </Border>
     </Grid>
-</Window>
+</UserControl>

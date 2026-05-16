@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AzrngTools.Models.Database;
 using AzrngTools.Services.Database;
+using Irihi.Avalonia.Shared.Contracts;
 
 namespace AzrngTools.ViewModels.Database;
 
@@ -24,7 +25,7 @@ public class DatabaseTypeCard
     public string Hint { get; set; } = string.Empty;
 }
 
-public partial class ConnectionDialogViewModel : ViewModelBase
+public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
 {
     private const string NameFieldKey = nameof(ConnectionConfig.Name);
     private const string HostFieldKey = nameof(ConnectionConfig.Host);
@@ -1100,10 +1101,15 @@ public partial class ConnectionDialogViewModel : ViewModelBase
         };
     }
 
-    public event EventHandler<bool>? CloseRequested;
+    public event EventHandler<object?>? RequestClose;
+
+    public void Close()
+    {
+        RequestClose?.Invoke(this, null);
+    }
 
     protected virtual void OnCloseRequested(bool dialogResult)
     {
-        CloseRequested?.Invoke(this, dialogResult);
+        RequestClose?.Invoke(this, dialogResult ? DialogResultConnection : null);
     }
 }

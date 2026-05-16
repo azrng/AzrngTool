@@ -11,10 +11,11 @@ using CommunityToolkit.Mvvm.Input;
 using AzrngTools.Models.Database;
 using AzrngTools.Models.Database.DTOs;
 using AzrngTools.Services.Database;
+using Irihi.Avalonia.Shared.Contracts;
 
 namespace AzrngTools.ViewModels.Database;
 
-public partial class ExportDialogViewModel : ViewModelBase
+public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 {
     private readonly ConnectionConfig _connection;
     private readonly string? _databaseName;
@@ -624,10 +625,15 @@ public partial class ExportDialogViewModel : ViewModelBase
         };
     }
 
-    public event EventHandler? CloseRequested;
+    public event EventHandler<object?>? RequestClose;
+
+    public void Close()
+    {
+        RequestClose?.Invoke(this, null);
+    }
 
     private void OnCloseRequested()
     {
-        CloseRequested?.Invoke(this, EventArgs.Empty);
+        RequestClose?.Invoke(this, DialogResult);
     }
 }

@@ -1,92 +1,63 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using AzrngTools.Services.Database;
 using AzrngTools.ViewModels.Database;
+using Ursa.Controls;
 
 namespace AzrngTools.Views.Database.Workbench;
 
-public partial class ExportDialog : Window
+public partial class ExportDialog : UserControl
 {
-    private Panel? _previousToastContainer;
-
-    public ExportDialogViewModel ViewModel => (ExportDialogViewModel)DataContext!;
+    private WindowToastManager? _previousManager;
 
     public ExportDialog()
-        : this(new ExportDialogViewModel())
-    {
-    }
-
-    public ExportDialog(ExportDialogViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = viewModel;
-        SetupEventHandlers();
+        Loaded += OnLoaded;
+        Unloaded += OnUnloaded;
     }
 
-    private void SetupEventHandlers()
+    private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        if (this.FindControl<StackPanel>("ToastContainer") is { } toastContainer)
+        _previousManager = ToastService.SetManager(new WindowToastManager(TopLevel.GetTopLevel(this)!));
+        if (DataContext is ExportDialogViewModel vm)
         {
-            _previousToastContainer = ToastService.SetContainer(toastContainer);
+            await vm.InitializeAsync();
         }
-
-        ViewModel.CloseRequested += OnCloseRequested;
-        Opened += OnDialogOpened;
-        Closed += OnDialogClosed;
     }
 
-    private async void OnDialogOpened(object? sender, EventArgs e)
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        await ViewModel.InitializeAsync();
-    }
+        Loaded -= OnLoaded;
+        Unloaded -= OnUnloaded;
 
-    private void OnCloseRequested(object? sender, EventArgs e)
-    {
-        Close(ViewModel.DialogResult);
-    }
-
-    private void OnDialogClosed(object? sender, EventArgs e)
-    {
-        ViewModel.CloseRequested -= OnCloseRequested;
-        Opened -= OnDialogOpened;
-        Closed -= OnDialogClosed;
-
-        if (_previousToastContainer != null)
+        if (_previousManager != null)
         {
-            ToastService.SetContainer(_previousToastContainer);
-            _previousToastContainer = null;
+            ToastService.SetManager(_previousManager);
+            _previousManager = null;
         }
         else
         {
-            ToastService.ClearContainer();
+            ToastService.ClearManager();
         }
     }
 
     private async void OnBrowseOutputDirectoryClick(object? sender, RoutedEventArgs e)
     {
-        await BrowseOutputDirectoryAsync();
-    }
+        var topLevel = TopLevel.GetTopLevel(this);
+        if (topLevel?.StorageProvider == null) return;
 
-    private async Task BrowseOutputDirectoryAsync()
-    {
-        if (StorageProvider == null)
-        {
-            return;
-        }
-
-        var folders = await StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = "选择导出目录",
             AllowMultiple = false
         });
 
-        if (folders.Count == 0)
-        {
-            return;
-        }
+        if (folders.Count == 0) return;
 
         var localPath = folders[0].TryGetLocalPath();
         if (string.IsNullOrWhiteSpace(localPath))
@@ -95,6 +66,7 @@ public partial class ExportDialog : Window
             return;
         }
 
-        ViewModel.OutputDirectory = localPath;
+        var vm = (ExportDialogViewModel)DataContext!;
+        vm.OutputDirectory = localPath;
     }
 }

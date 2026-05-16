@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,20 +11,13 @@
         x:CompileBindings="False"
         x:DataType="vm:ConnectionDialogViewModel"
         x:Name="MainWindow"
-        Title="连接管理"
-        Width="1140"
-        Height="720"
-        MinWidth="1040"
-        MinHeight="660"
-        WindowStartupLocation="CenterOwner"
-        CanResize="False"
-        Icon="/Assets/avalonia-logo.ico">
+        MinWidth="1040" MinHeight="660">
 
     <Design.DataContext>
         <vm:ConnectionDialogViewModel />
     </Design.DataContext>
 
-    <Window.Styles>
+    <UserControl.Styles>
         <Style Selector="Border.connectionDialogSurface">
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
@@ -352,18 +345,9 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
         </Style>
-    </Window.Styles>
+    </UserControl.Styles>
 
     <Grid Background="{DynamicResource Brush.App.Background}">
-        <Panel IsHitTestVisible="False"
-               ZIndex="9999">
-            <StackPanel x:Name="ToastContainer"
-                        Margin="20"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Spacing="8" />
-        </Panel>
-
         <Grid Margin="10"
               ColumnDefinitions="286,14,*">
             <Border Grid.Column="0"
@@ -858,4 +842,4 @@
             </Grid>
         </Grid>
     </Grid>
-</Window>
+</UserControl>

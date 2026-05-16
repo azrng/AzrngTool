@@ -283,19 +283,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var dialog = new ConnectionDialog(Connections, SaveConnections, SelectedConnection)
-            {
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-
-            var workbenchToastContainer = ToastService.CurrentContainer;
-            var result = await dialog.ShowDialog<ConnectionConfig?>(MainWindow);
-
-            if (workbenchToastContainer != null)
-            {
-                ToastService.SetContainer(workbenchToastContainer);
-            }
-
+            var vm = new ConnectionDialogViewModel(Connections, SaveConnections, SelectedConnection);
+            var result = await Ursa.Controls.Dialog.ShowCustomAsync<ConnectionDialog, ConnectionDialogViewModel, ConnectionConfig?>(
+                vm, MainWindow, new Ursa.Controls.DialogOptions { Title = "连接管理", CanResize = false });
             if (result == null)
             {
                 return;
@@ -343,16 +333,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var messageBox = new MessageBox
-            {
-                Title = "删除连接",
-                Message = $"确定删除连接“{SelectedConnection.Name}”？\n\n此操作无法撤销。",
-                Buttons = MessageBoxButtons.YesNo,
-                DefaultButton = MessageBoxButtonType.No
-            };
-
-            var result = await messageBox.ShowDialogAsync(MainWindow);
-            if (result != MessageBoxButtonType.Yes)
+            var result = await Ursa.Controls.MessageBox.ShowAsync(
+                MainWindow,
+                string.Concat("确定删除连接“", SelectedConnection.Name, "”？", Environment.NewLine, Environment.NewLine, "此操作无法撤销。"),
+                "删除连接",
+                icon: Ursa.Controls.MessageBoxIcon.Question,
+                button: Ursa.Controls.MessageBoxButton.YesNo);
+            if (result != Ursa.Controls.MessageBoxResult.Yes)
             {
                 return;
             }
@@ -865,20 +852,10 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var workbenchToastContainer = ToastService.CurrentContainer;
+        var workbenchToastManager = ToastService.CurrentManager;
         var dialogViewModel = new ExportDialogViewModel(connection, SelectedDatabaseName, CurrentSchemaName, _lastDocumentExportDirectory);
-        var dialog = new ExportDialog(dialogViewModel)
-        {
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var exportRequest = await dialog.ShowDialog<ExportDialogResultDto?>(MainWindow);
-
-        if (workbenchToastContainer != null)
-        {
-            ToastService.SetContainer(workbenchToastContainer);
-        }
-
+        var exportRequest = await Ursa.Controls.Dialog.ShowCustomAsync<ExportDialog, ExportDialogViewModel, ExportDialogResultDto?>(
+            dialogViewModel, MainWindow, new Ursa.Controls.DialogOptions { Title = "导出文档", CanResize = false });
         if (exportRequest == null)
         {
             return;
@@ -1609,15 +1586,12 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var messageBox = new MessageBox
-            {
-                Title = title,
-                Message = message,
-                Buttons = MessageBoxButtons.OK,
-                DefaultButton = MessageBoxButtonType.OK
-            };
-
-            await messageBox.ShowDialogAsync(MainWindow);
+            await Ursa.Controls.MessageBox.ShowAsync(
+                MainWindow,
+                message,
+                title,
+                icon: Ursa.Controls.MessageBoxIcon.Error,
+                button: Ursa.Controls.MessageBoxButton.OK);
         }
         catch (Exception ex)
         {
