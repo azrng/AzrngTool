@@ -41,7 +41,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private List<MenuBar> _allRootMenus = [];
     private List<MenuBar> _allGroupMenus = [];
     private MenuBar? _homeMenu;
-    private bool _suppressUsageTracking;
+    // 常用入口功能暂未启用
+    // private bool _suppressUsageTracking;
+    // private string? _lastRecordedMenuKey;
 
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
@@ -309,27 +311,52 @@ public partial class MainWindowViewModel : ViewModelBase
             UpdatePageHeader(value);
         }
 
-        if (_suppressUsageTracking || value.MenuType == typeof(OverviewPageViewModel))
-        {
-            return;
-        }
-
-        _toolUsageStatsService.RecordToolUsage(GetMenuKey(value), value.Title);
-        SetSelectionRefreshSilently();
+        // 常用入口功能暂未启用，注释使用记录与重建逻辑
+        // if (_suppressUsageTracking || value.MenuType == typeof(OverviewPageViewModel))
+        // {
+        //     return;
+        // }
+        //
+        // var currentKey = GetMenuKey(value);
+        // if (currentKey == _lastRecordedMenuKey)
+        // {
+        //     return;
+        // }
+        //
+        // _toolUsageStatsService.RecordToolUsage(currentKey, value.Title);
+        // _lastRecordedMenuKey = currentKey;
+        // SetSelectionRefreshSilently();
     }
 
-    private void SetSelectionRefreshSilently()
-    {
-        _suppressUsageTracking = true;
-        try
-        {
-            ApplyMenuFilter();
-        }
-        finally
-        {
-            _suppressUsageTracking = false;
-        }
-    }
+    // 常用入口功能暂未启用，以下方法暂不使用
+    // private void SetSelectionRefreshSilently()
+    // {
+    //     _suppressUsageTracking = true;
+    //     try
+    //     {
+    //         RebuildCommonEntries();
+    //     }
+    //     finally
+    //     {
+    //         _suppressUsageTracking = false;
+    //     }
+    // }
+    //
+    // private void RebuildCommonEntries()
+    // {
+    //     RootMenuItems = new ObservableCollection<MenuBar>(BuildCommonEntries(SearchKeyword));
+    //
+    //     if (SelectedListItem is null)
+    //     {
+    //         return;
+    //     }
+    //
+    //     var selectedRef = FindVisibleMenu(SelectedListItem);
+    //     if (selectedRef is not null && !ReferenceEquals(selectedRef, SelectedListItem))
+    //     {
+    //         SetSelectedListItemSilently(selectedRef);
+    //     }
+    // }
 
     private void SetSelectedListItemSilently(MenuBar? menu)
     {
@@ -338,15 +365,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        _suppressUsageTracking = true;
-        try
-        {
-            SelectedListItem = menu;
-        }
-        finally
-        {
-            _suppressUsageTracking = false;
-        }
+        SelectedListItem = menu;
     }
 
     private IEnumerable<MenuBar> BuildCommonEntries(string keyword)

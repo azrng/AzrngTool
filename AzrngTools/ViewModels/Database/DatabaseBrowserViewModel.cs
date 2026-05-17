@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Azrng.Core.Model;
@@ -8,6 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using AzrngTools.Models.Database;
 using AzrngTools.Services.Database;
+using AzrngTools.Utils;
 
 namespace AzrngTools.ViewModels.Database;
 
@@ -17,7 +19,10 @@ namespace AzrngTools.ViewModels.Database;
 public partial class DatabaseBrowserViewModel : ViewModelBase
 {
     private readonly DatabaseService _databaseService = new();
+    private readonly DebouncedActionDispatcher _searchDebouncer = new(TimeSpan.FromMilliseconds(300));
     private List<TreeNodeItem> _allNodes = new();
+    private ObservableCollection<TreeNodeItem>? _subscribedRootNodes;
+    private NotifyCollectionChangedEventHandler? _rootNodesChangedHandler;
 
     /// <summary>
     /// 根节点集合（树形结构）
@@ -35,16 +40,16 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
     /// </summary>
     partial void OnRootNodesChanged(ObservableCollection<TreeNodeItem> value)
     {
-        // 当 RootNodes 变化时，通知 FirstRootNode 也更新
-        OnPropertyChanged(nameof(FirstRootNode));
-
-        // 订阅集合变化事件
-        if (value != null)
+        if (_subscribedRootNodes != null && _rootNodesChangedHandler != null)
         {
-            value.CollectionChanged += (s, e) => OnPropertyChanged(nameof(FirstRootNode));
+            _subscribedRootNodes.CollectionChanged -= _rootNodesChangedHandler;
         }
 
-        // 收集所有节点
+        _subscribedRootNodes = value;
+        _rootNodesChangedHandler = (s, e) => OnPropertyChanged(nameof(FirstRootNode));
+        value.CollectionChanged += _rootNodesChangedHandler;
+
+        OnPropertyChanged(nameof(FirstRootNode));
         CollectAllNodes();
     }
 
@@ -438,7 +443,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
     /// </summary>
     partial void OnSearchTextChanged(string value)
     {
-        FilterNodes(value);
+        _searchDebouncer.Debounce(() => FilterNodes(value));
     }
 
     /// <summary>

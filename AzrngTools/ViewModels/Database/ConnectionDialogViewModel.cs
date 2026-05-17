@@ -673,7 +673,8 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
                     connection.DatabaseType.ToString().Contains(keyword, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
-        FilteredConnections = new ObservableCollection<ConnectionConfig>(filtered);
+        FilteredConnections.Clear();
+        foreach (var c in filtered) FilteredConnections.Add(c);
 
         if (SelectedSavedConnection != null && !FilteredConnections.Contains(SelectedSavedConnection))
         {
@@ -827,7 +828,8 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
             }
         }
 
-        ValidationErrors = new ObservableCollection<string>(_fieldValidationErrors.Values);
+        ValidationErrors.Clear();
+        foreach (var e in _fieldValidationErrors.Values) ValidationErrors.Add(e);
         OnPropertyChanged(nameof(HasValidationErrors));
         NotifyFieldValidationChanges(previousFieldKeys);
         SaveCommand.NotifyCanExecuteChanged();

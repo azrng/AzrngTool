@@ -8,6 +8,7 @@ namespace AzrngTools.Services.Network;
 
 public sealed class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
 {
+    private static readonly JsonSerializerOptions IndentedOptions = new() { WriteIndented = true };
     private readonly IHttpClientFactory _httpClientFactory;
 
     public ApiRequestExecutionService(IHttpClientFactory httpClientFactory)
@@ -209,10 +210,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         try
         {
             using var document = JsonDocument.Parse(content);
-            return JsonSerializer.Serialize(document.RootElement, new JsonSerializerOptions
-            {
-                WriteIndented = true
-            });
+            return JsonSerializer.Serialize(document.RootElement, IndentedOptions);
         }
         catch
         {

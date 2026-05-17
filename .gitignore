@@ -354,3 +354,5 @@ docs/
 NUL
 !AzrngTools/Roots.xml
 .dotnet
+.claude
+.codex

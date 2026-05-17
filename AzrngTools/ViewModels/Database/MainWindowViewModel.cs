@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -50,6 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<string> _availableDatabases = new();
+    private NotifyCollectionChangedEventHandler? _availableDatabasesChangedHandler;
 
     [ObservableProperty]
     private string? _selectedDatabaseName;
@@ -139,7 +141,8 @@ public partial class MainWindowViewModel : ViewModelBase
         Directory.CreateDirectory(appDataDir);
         _configFilePath = Path.Combine(appDataDir, ConfigFileName);
         _groupsFilePath = Path.Combine(appDataDir, GroupsFileName);
-        AvailableDatabases.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasAvailableDatabases));
+        _availableDatabasesChangedHandler = (_, _) => OnPropertyChanged(nameof(HasAvailableDatabases));
+        AvailableDatabases.CollectionChanged += _availableDatabasesChangedHandler;
 
         LoadGroups();
         LoadConnections();
@@ -168,7 +171,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            Groups = new ObservableCollection<ConnectionGroup>(groups);
+            Groups.Clear();
+            foreach (var g in groups) Groups.Add(g);
             LoggingService.LogInfo($"Loaded {groups.Count} connection groups.");
         }
         catch (Exception ex)
@@ -180,17 +184,15 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void CreateDefaultGroup()
     {
-        Groups = new ObservableCollection<ConnectionGroup>
+        Groups.Clear();
+        Groups.Add(new ConnectionGroup
         {
-            new()
-            {
-                Id = "default",
-                Name = "Default",
-                Description = "Default connection group",
-                Color = "#E3EFE8",
-                IsDefault = true
-            }
-        };
+            Id = "default",
+            Name = "Default",
+            Description = "Default connection group",
+            Color = "#E3EFE8",
+            IsDefault = true
+        });
 
         SaveGroups();
     }
@@ -215,7 +217,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             if (!File.Exists(_configFilePath))
             {
-                Connections = new ObservableCollection<ConnectionConfig>();
+                Connections.Clear();
                 LoggingService.LogInfo("Connection config file does not exist yet.");
                 return;
             }
@@ -229,12 +231,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 DecryptConnectionPassword(connection);
             }
 
-            Connections = new ObservableCollection<ConnectionConfig>(SortConnections(connections));
+            var sortedConnections = SortConnections(connections);
+            Connections.Clear();
+            foreach (var c in sortedConnections) Connections.Add(c);
             LoggingService.LogInfo($"Loaded {Connections.Count} connections.");
         }
         catch (Exception ex)
         {
-            Connections = new ObservableCollection<ConnectionConfig>();
+            Connections.Clear();
             LoggingService.LogError("Failed to load connection configuration.", ex);
         }
     }
@@ -799,7 +803,8 @@ public partial class MainWindowViewModel : ViewModelBase
                     }
                 };
 
-                Schemas = new ObservableCollection<SchemaModel>(mySqlSchemas);
+                Schemas.Clear();
+                foreach (var s in mySqlSchemas) Schemas.Add(s);
                 LoadingText = $"已为 {config.Name} 加载 1 个架构。";
                 LoggingService.LogInfo($"Loaded MySql runtime schema {schemaName} for {config.Name}.");
                 return;
@@ -813,7 +818,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            Schemas = new ObservableCollection<SchemaModel>(schemas);
+            Schemas.Clear();
+            foreach (var s in schemas) Schemas.Add(s);
             LoadingText = message;
             LoggingService.LogInfo($"Loaded {schemas.Count} schemas for {config.Name}.");
         }
@@ -832,7 +838,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private void ChangeSort(string sortMode)
     {
         SortMode = sortMode;
-        Connections = new ObservableCollection<ConnectionConfig>(SortConnections(Connections));
+        var sorted = SortConnections(Connections).ToList();
+        Connections.Clear();
+        foreach (var c in sorted) Connections.Add(c);
         LoggingService.LogInfo($"Changed connection sort mode to {sortMode}.");
     }
 
@@ -1348,35 +1356,47 @@ public partial class MainWindowViewModel : ViewModelBase
                     return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, tableMessage);
                 }
 
-                foreach (var table in schemaTables
-                             .Where(table => selectedTableNames.Contains(table.Name))
-                             .OrderBy(table => table.Name))
+                var matchingTables = schemaTables
+                    .Where(table => selectedTableNames.Contains(table.Name))
+                    .OrderBy(table => table.Name)
+                    .ToList();
+
+                var columnTasks = matchingTables.Select(table =>
+                    _databaseService.GetColumnsAsync(connection, table.Schema, table.Name));
+                var indexTasks = matchingTables.Select(table =>
+                    _databaseService.GetIndexesAsync(connection, table.Schema, table.Name));
+
+                var columnResults = await Task.WhenAll(columnTasks);
+                var indexResults = await Task.WhenAll(indexTasks);
+
+                for (var i = 0; i < matchingTables.Count; i++)
                 {
+                    var table = matchingTables[i];
                     tables.Add(table);
 
-                    LoadingText = $"正在加载字段 {table.Schema}.{table.Name}...";
-                    var (columnSuccess, columns, columnMessage) = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
+                    var (columnSuccess, columns, columnMessage) = columnResults[i];
                     if (!columnSuccess)
                     {
                         LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnMessage}");
-                        tableColumnsMap[BuildTableExportKey(table)] = new List<ColumnModel>();
+                        tableColumnsMap[BuildTableExportKey(table)] = [];
                     }
                     else
                     {
                         tableColumnsMap[BuildTableExportKey(table)] = columns.OrderBy(column => column.OrdinalPosition).ToList();
                     }
 
-                    LoadingText = $"正在加载索引 {table.Schema}.{table.Name}...";
-                    var (indexSuccess, indexes, indexMessage) = await _databaseService.GetIndexesAsync(connection, table.Schema, table.Name);
+                    var (indexSuccess, indexes, indexMessage) = indexResults[i];
                     if (!indexSuccess)
                     {
                         LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexMessage}");
-                        tableIndexesMap[BuildTableExportKey(table)] = new List<IndexModel>();
+                        tableIndexesMap[BuildTableExportKey(table)] = [];
                     }
                     else
                     {
                         tableIndexesMap[BuildTableExportKey(table)] = indexes.ToList();
                     }
+
+                    LoadingText = $"正在加载 {table.Schema}.{table.Name}... ({i + 1}/{matchingTables.Count})";
                 }
             }
 
@@ -1599,14 +1619,13 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private static JsonSerializerOptions CreateJsonOptions()
+    private static readonly JsonSerializerOptions ConnectionJsonOptions = new()
     {
-        return new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        };
-    }
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
+    };
+
+    private static JsonSerializerOptions CreateJsonOptions() => ConnectionJsonOptions;
 
     private static void EncryptPasswordsInPlace(IEnumerable<ConnectionConfig> connections)
     {

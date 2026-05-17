@@ -9,6 +9,18 @@ namespace AzrngTools.Utils
 {
     public static class JsonHelper
     {
+        private static readonly JsonSerializerOptions SerializeOptions = new()
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+        };
+
+        private static readonly JsonSerializerOptions DeserializeOptions = new()
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+        };
         /// <summary>
         /// Json格式化
         /// </summary>
@@ -91,13 +103,7 @@ namespace AzrngTools.Utils
                 return string.Empty;
             }
 
-            var options = new JsonSerializerOptions
-                          {
-                              WriteIndented = true,
-                              Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                              TypeInfoResolver = new DefaultJsonTypeInfoResolver()
-                          };
-            return System.Text.Json.JsonSerializer.Serialize(obj, options);
+            return System.Text.Json.JsonSerializer.Serialize(obj, SerializeOptions);
         }
 
         public static T? FromJson<T>(string json)
@@ -107,11 +113,7 @@ namespace AzrngTools.Utils
                 return default;
             }
 
-            var options = new JsonSerializerOptions
-                          {
-                              Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, TypeInfoResolver = new DefaultJsonTypeInfoResolver()
-                          };
-            return System.Text.Json.JsonSerializer.Deserialize<T>(json, options);
+            return System.Text.Json.JsonSerializer.Deserialize<T>(json, DeserializeOptions);
         }
 
         private static bool TryParseJsonToken(string text, out JToken? token)

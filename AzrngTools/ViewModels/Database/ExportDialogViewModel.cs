@@ -54,9 +54,12 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 
     public IReadOnlyList<TreeNodeItem> ExportRootChildren => ExportRootNode?.Children.ToList() ?? [];
 
-    public int SelectedObjectCount => EnumerateNodes(ExportRootNode).Count(node => node.IsExportableLeaf && node.IsExportChecked == true);
+    private int _cachedSelectedCount;
+    private bool _cachedHasObjects;
 
-    public bool HasObjects => EnumerateNodes(ExportRootNode).Any(node => node.IsExportableLeaf);
+    public int SelectedObjectCount => _cachedSelectedCount;
+
+    public bool HasObjects => _cachedHasObjects;
 
     public string SelectionSummary => SelectedObjectCount == 0
         ? "请选择导出对象"
@@ -347,13 +350,52 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
             return await BuildMySqlTreeAsync(_connection);
         }
 
-        var (success, rootNode, message) = await _databaseService.LoadDatabaseTreeAsync(_connection);
-        if (!success || rootNode == null)
+        var schemaResult = await _databaseService.GetSchemasAsync(_connection);
+        if (!schemaResult.Success)
         {
-            throw new InvalidOperationException(message);
+            throw new InvalidOperationException(schemaResult.Message);
         }
 
-        PruneNonTableNodes(rootNode);
+        var rootNode = new TreeNodeItem(_connection.Name, TreeNodeType.Root, "Database")
+        {
+            DisplayName = _connection.Name,
+            IsExpanded = true
+        };
+
+        var schemasFolderNode = new TreeNodeItem("Schemas", TreeNodeType.Folder, "Folder")
+        {
+            DisplayName = $"架构 ({schemaResult.Schemas.Count})",
+            IsExpanded = true
+        };
+        rootNode.AddChild(schemasFolderNode);
+
+        foreach (var schema in schemaResult.Schemas.OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase))
+        {
+            var schemaNode = new TreeNodeItem(schema.Name, TreeNodeType.Schema, "Schema")
+            {
+                DisplayName = schema.Name,
+                Data = schema,
+                IsExpanded = true
+            };
+
+            var tablesResult = await _databaseService.GetTablesAsync(_connection, schema.Name);
+            if (tablesResult.Success)
+            {
+                foreach (var table in tablesResult.Tables.OrderBy(t => t.Name))
+                {
+                    schemaNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
+                    {
+                        DisplayName = table.Name,
+                        Data = table
+                    });
+                }
+
+                schemaNode.DisplayName = $"{schema.Name} ({tablesResult.Tables.Count})";
+            }
+
+            schemasFolderNode.AddChild(schemaNode);
+        }
+
         return rootNode;
     }
 
@@ -404,34 +446,6 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         schemasFolderNode.AddChild(schemaNode);
 
         return rootNode;
-    }
-
-    private static void PruneNonTableNodes(TreeNodeItem rootNode)
-    {
-        var removableChildren = rootNode.Children
-            .Where(child => child.NodeType == TreeNodeType.Folder &&
-                            !string.Equals(child.Name, "Schemas", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        foreach (var child in removableChildren)
-        {
-            rootNode.RemoveChild(child);
-        }
-
-        foreach (var schemaFolder in rootNode.Children.Where(child => child.NodeType == TreeNodeType.Folder))
-        {
-            foreach (var schemaNode in schemaFolder.Children.Where(child => child.NodeType == TreeNodeType.Schema))
-            {
-                var nonTableChildren = schemaNode.Children
-                    .Where(child => child.NodeType != TreeNodeType.Table)
-                    .ToList();
-
-                foreach (var child in nonTableChildren)
-                {
-                    schemaNode.RemoveChild(child);
-                }
-            }
-        }
     }
 
     private void PrepareExportTree(TreeNodeItem node)
@@ -552,17 +566,28 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 
     private void NotifyExportTreeChanged()
     {
+        RefreshSelectionCache();
         OnPropertyChanged(nameof(ExportRootChildren));
-        NotifySelectionStateChanged();
+        OnPropertyChanged(nameof(SelectedObjectCount));
+        OnPropertyChanged(nameof(SelectionSummary));
+        OnPropertyChanged(nameof(HasObjects));
         ExportCommand.NotifyCanExecuteChanged();
     }
 
     private void NotifySelectionStateChanged()
     {
+        RefreshSelectionCache();
         OnPropertyChanged(nameof(SelectedObjectCount));
         OnPropertyChanged(nameof(SelectionSummary));
         OnPropertyChanged(nameof(HasObjects));
         ExportCommand.NotifyCanExecuteChanged();
+    }
+
+    private void RefreshSelectionCache()
+    {
+        var nodes = ExportRootNode != null ? EnumerateNodes(ExportRootNode) : [];
+        _cachedHasObjects = nodes.Any(node => node.IsExportableLeaf);
+        _cachedSelectedCount = nodes.Count(node => node.IsExportableLeaf && node.IsExportChecked == true);
     }
 
     private static string ResolveInitialOutputDirectory(string? initialOutputDirectory)

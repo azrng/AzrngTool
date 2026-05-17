@@ -123,7 +123,8 @@
                             </Grid>
                         </Border>
 
-                        <TextBlock
+                        <!-- 常用入口功能暂未启用 -->
+                        <!-- <TextBlock
                             Grid.Row="2"
                             Classes="sidebar-section-caption"
                             Text="常用入口" />
@@ -132,13 +133,14 @@
                             Grid.Row="3"
                             Classes="shell-nav"
                             ItemsSource="{Binding RootMenuItems}"
-                            SelectedItem="{Binding SelectedListItem, Mode=TwoWay}">
+                            SelectedItem="{Binding SelectedListItem, Mode=OneWay}"
+                            SelectionChanged="OnCommonListBoxSelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Classes="nav-item-text" Text="{Binding Title}" />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
-                        </ListBox>
+                        </ListBox> -->
 
                         <TextBlock
                             Grid.Row="4"
@@ -161,7 +163,7 @@
                                             <ListBox
                                                 Classes="shell-nav"
                                                 ItemsSource="{Binding Child}"
-                                                SelectedItem="{ReflectionBinding #RootWindow.DataContext.SelectedListItem, Mode=TwoWay}">
+                                                SelectionChanged="OnGroupListBoxSelectionChanged">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock Classes="nav-item-text" Text="{Binding Title}" />

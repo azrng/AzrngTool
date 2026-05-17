@@ -2,6 +2,7 @@
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using AzrngTools.Models;
 using AzrngTools.Services.Database;
 using AzrngTools.Utils.Events;
 using AzrngTools.ViewModels;
@@ -88,6 +89,24 @@ namespace AzrngTools.Views
         private void HeaderBorder_OnDoubleTapped(object sender, TappedEventArgs e)
         {
             this.WindowState = this.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
+        }
+
+        private void OnCommonListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox { SelectedItem: MenuBar menu } && DataContext is MainWindowViewModel vm)
+            {
+                if (!ReferenceEquals(vm.SelectedListItem, menu))
+                    vm.SelectMenuCommand.Execute(menu);
+            }
+        }
+
+        private void OnGroupListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ListBox { SelectedItem: MenuBar menu } && DataContext is MainWindowViewModel vm)
+            {
+                if (!ReferenceEquals(vm.SelectedListItem, menu))
+                    vm.SelectMenuCommand.Execute(menu);
+            }
         }
     }
 }

@@ -83,6 +83,7 @@ public partial class TableDetailViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<TableModel> _tables = new();
+    private ObservableCollection<TableModel>? _subscribedTables;
 
     [ObservableProperty]
     private bool _showObjectList = true;
@@ -476,13 +477,20 @@ public partial class TableDetailViewModel : ViewModelBase
 
     partial void OnTablesChanged(ObservableCollection<TableModel> value)
     {
-        SubscribeToTablesCollection(value);
+        if (_subscribedTables != null)
+        {
+            _subscribedTables.CollectionChanged -= OnTablesCollectionChanged;
+        }
+
+        _subscribedTables = value;
+        value.CollectionChanged += OnTablesCollectionChanged;
         OnPropertyChanged(nameof(ShowEmptyState));
         OnPropertyChanged(nameof(ShowSplitWorkspace));
     }
 
     private void SubscribeToTablesCollection(ObservableCollection<TableModel> tables)
     {
+        _subscribedTables = tables;
         tables.CollectionChanged += OnTablesCollectionChanged;
     }
 

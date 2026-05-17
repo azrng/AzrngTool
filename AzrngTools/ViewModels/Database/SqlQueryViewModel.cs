@@ -95,8 +95,10 @@ public partial class SqlQueryViewModel : ViewModelBase
                 return;
             }
 
-            ResultColumns = new ObservableCollection<string>(columns);
-            ResultRows = new ObservableCollection<string[]>(rows.Select(row => row.ToArray()));
+            ResultColumns.Clear();
+            foreach (var col in columns) ResultColumns.Add(col);
+            ResultRows.Clear();
+            foreach (var row in rows) ResultRows.Add(row.ToArray());
             AffectedRows = affectedRows;
             ResultMessage = message;
             AddToHistory(SqlText);

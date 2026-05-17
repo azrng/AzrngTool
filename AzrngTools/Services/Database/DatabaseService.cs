@@ -12,6 +12,41 @@ namespace AzrngTools.Services.Database
     /// </summary>
     public class DatabaseService
     {
+        private ConnectionConfig? _cachedConfig;
+        private string? _cachedDatabase;
+        private DatabaseType _cachedDbType;
+        private IBasicDbBridge? _cachedBridge;
+
+        /// <summary>
+        /// 获取或创建数据库桥接器，相同连接配置复用实例
+        /// </summary>
+        private IBasicDbBridge GetOrCreateDbBridge(ConnectionConfig config)
+        {
+            var dbType = MapDatabaseType(config.DatabaseType);
+            if (_cachedBridge != null && ReferenceEquals(_cachedConfig, config) &&
+                string.Equals(_cachedDatabase, config.Database, StringComparison.OrdinalIgnoreCase) &&
+                _cachedDbType == dbType)
+            {
+                return _cachedBridge;
+            }
+
+            var bridge = CreateDbBridge(dbType, config);
+            _cachedConfig = config;
+            _cachedDatabase = config.Database;
+            _cachedDbType = dbType;
+            _cachedBridge = bridge;
+            return bridge;
+        }
+
+        /// <summary>
+        /// 连接配置变更时清除缓存
+        /// </summary>
+        public void InvalidateCache()
+        {
+            _cachedConfig = null;
+            _cachedDatabase = null;
+            _cachedBridge = null;
+        }
         /// <summary>
         /// 测试数据库连接
         /// </summary>
@@ -341,8 +376,7 @@ namespace AzrngTools.Services.Database
                     return (true, windowsAuthDatabases, $"Loaded {windowsAuthDatabases.Count} databases successfully.");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var databases = await dbBridge.GetDatabaseNameListAsync();
                 var normalizedDatabases = databases
                     .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -387,7 +421,7 @@ namespace AzrngTools.Services.Database
                     return (true, sqliteSchemas, "成功加载 1 个 Schema");
                 }
 
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
 
                 var schemaList = await dbBridge.GetSchemaListAsync();
 
@@ -437,9 +471,7 @@ namespace AzrngTools.Services.Database
                     return (false, new List<TableModel>(), "Schema 名称不能为空");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
 
                 var tableList = await dbBridge.GetTableInfoListAsync(schemaName);
 
@@ -491,9 +523,7 @@ namespace AzrngTools.Services.Database
                     return (false, new List<ColumnModel>(), "表名不能为空");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
 
                 var columnList = await dbBridge.GetColumnListAsync(schemaName, tableName);
 
@@ -657,9 +687,7 @@ namespace AzrngTools.Services.Database
                     return (false, new List<ViewModel>(), "Schema 名称不能为空");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
 
                 var viewList = await dbBridge.GetSchemaViewListAsync(schemaName);
 
@@ -713,7 +741,7 @@ namespace AzrngTools.Services.Database
                     return (true, new List<StoredProcedureModel>(), "Sqlite 不支持存储过程");
                 }
 
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var procedures = new List<StoredProcedureModel>();
 
                 if (dbType == DatabaseType.MySql)
@@ -781,7 +809,7 @@ namespace AzrngTools.Services.Database
                     return (true, new List<StoredProcedureModel>(), "当前数据库类型暂无函数列表");
                 }
 
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var routineList = await dbBridge.GetSchemaRoutineListAsync(schemaName);
                 var functions = routineList
                     .Where(dto => string.Equals(dto.RoutineType, "FUNCTION", StringComparison.OrdinalIgnoreCase))
@@ -826,9 +854,7 @@ namespace AzrngTools.Services.Database
                     return (false, string.Empty, "视图信息不能为空");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var view = await dbBridge.GetSchemaViewAsync(schemaName, viewName);
                 var ddl = view?.ViewDefinition;
                 return string.IsNullOrWhiteSpace(ddl)
@@ -864,7 +890,7 @@ namespace AzrngTools.Services.Database
                     return (false, string.Empty, "Sqlite 不支持存储过程");
                 }
 
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var routine = await dbBridge.GetSchemaRoutineAsync(schemaName, procedureName);
                 var ddl = routine?.RoutineDefinition;
                 return string.IsNullOrWhiteSpace(ddl)
@@ -894,8 +920,7 @@ namespace AzrngTools.Services.Database
                     return (false, new List<IndexModel>(), "Schema name and table name are required.");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
                 var rawIndexes = await dbBridge.GetIndexListAsync(schemaName, tableName);
 
                 var indexes = rawIndexes
@@ -1006,8 +1031,7 @@ namespace AzrngTools.Services.Database
                     return (false, 0, null, null, "Schema name and table name are required.");
                 }
 
-                var dbType = MapDatabaseType(config.DatabaseType);
-                var dbBridge = CreateDbBridge(dbType, config);
+                var dbBridge = GetOrCreateDbBridge(config);
 
                 var timestamp = await dbBridge.GetTableTimestampAsync(schemaName, tableName);
                 var createTime = timestamp?.CreateTime;

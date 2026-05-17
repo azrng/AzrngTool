@@ -164,6 +164,8 @@ public partial class TreeNodeItem : ObservableObject
     /// <summary>
     /// 构造函数
     /// </summary>
+    private ObservableCollection<TreeNodeItem>? _subscribedChildren;
+
     public TreeNodeItem()
     {
         _name = string.Empty;
@@ -171,7 +173,25 @@ public partial class TreeNodeItem : ObservableObject
         _icon = "Folder";
         _nodeType = TreeNodeType.Folder;
         _children = new ObservableCollection<TreeNodeItem>();
-        _children.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasChildren));
+        _subscribedChildren = _children;
+        _children.CollectionChanged += OnChildrenCollectionChanged;
+    }
+
+    partial void OnChildrenChanged(ObservableCollection<TreeNodeItem> value)
+    {
+        if (_subscribedChildren != null)
+        {
+            _subscribedChildren.CollectionChanged -= OnChildrenCollectionChanged;
+        }
+
+        _subscribedChildren = value;
+        value.CollectionChanged += OnChildrenCollectionChanged;
+        OnPropertyChanged(nameof(HasChildren));
+    }
+
+    private void OnChildrenCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasChildren));
     }
 
     /// <summary>

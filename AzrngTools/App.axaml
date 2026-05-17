@@ -41,8 +41,10 @@
     </Application.DataTemplates>
 
     <Application.Styles>
+        <FluentTheme />
         <semi:SemiTheme />
         <semi:UrsaSemiTheme />
+        <semi:SemiPopupAnimations />
         <StyleInclude Source="avares://AzrngTools/Styles/Global.axaml" />
         <StyleInclude Source="avares://AzrngTools/Assets/Styles/Controls/Buttons.axaml" />
         <StyleInclude Source="avares://AzrngTools/Assets/Styles/Controls/Inputs.axaml" />

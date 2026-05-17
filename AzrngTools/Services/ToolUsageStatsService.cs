@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Timer = System.Timers.Timer;
 
 namespace AzrngTools.Services;
 
@@ -17,14 +18,20 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
         WriteIndented = true
     };
 
+    private const int DebounceIntervalMs = 2000;
+
     private readonly object _syncRoot = new();
     private readonly string _filePath;
+    private readonly Timer _saveTimer;
+    private bool _isDirty;
     private ToolUsageStore _store;
 
     public ToolUsageStatsService()
     {
         _filePath = GetStoreFilePath();
         _store = LoadStore();
+        _saveTimer = new Timer(DebounceIntervalMs) { AutoReset = false };
+        _saveTimer.Elapsed += (_, _) => FlushIfNeeded();
     }
 
     public void RecordToolUsage(string menuKey, string title)
@@ -52,8 +59,24 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
             record.Title = title;
             record.UseCount += 1;
             record.LastUsedUtc = now;
+            _isDirty = true;
+        }
+
+        _saveTimer.Stop();
+        _saveTimer.Start();
+    }
+
+    private void FlushIfNeeded()
+    {
+        lock (_syncRoot)
+        {
+            if (!_isDirty)
+            {
+                return;
+            }
 
             SaveStore(_store);
+            _isDirty = false;
         }
     }
 

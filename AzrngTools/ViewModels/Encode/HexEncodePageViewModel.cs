@@ -181,12 +181,14 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 bytes[i] = Convert.ToByte(byteValue, 16);
             }
 
-            HandleText = $"字节数组长度：{bytes.Length}\r\n";
-            HandleText += "字节数组内容：\r\n";
+            HandleText = $"字节数组长度：{bytes.Length}\r\n字节数组内容：\r\n";
+            var sb = new StringBuilder(HandleText);
             for (var i = 0; i < bytes.Length; i++)
             {
-                HandleText += $"bytes[{i}] = 0x{bytes[i]:X2} ({bytes[i]})\r\n";
+                sb.AppendLine($"bytes[{i}] = 0x{bytes[i]:X2} ({bytes[i]})");
             }
+
+            HandleText = sb.ToString();
         }
         catch (Exception ex)
         {

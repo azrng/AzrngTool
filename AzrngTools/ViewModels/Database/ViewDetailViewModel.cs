@@ -55,6 +55,7 @@ public partial class ViewDetailViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<ViewModel> _views = new();
+    private ObservableCollection<ViewModel>? _subscribedViews;
 
     [ObservableProperty]
     private bool _showObjectList = true;
@@ -214,13 +215,20 @@ public partial class ViewDetailViewModel : ViewModelBase
 
     partial void OnViewsChanged(ObservableCollection<ViewModel> value)
     {
-        SubscribeToViewsCollection(value);
+        if (_subscribedViews != null)
+        {
+            _subscribedViews.CollectionChanged -= OnViewsCollectionChanged;
+        }
+
+        _subscribedViews = value;
+        value.CollectionChanged += OnViewsCollectionChanged;
         OnPropertyChanged(nameof(ShowEmptyState));
         OnPropertyChanged(nameof(ShowSplitWorkspace));
     }
 
     private void SubscribeToViewsCollection(ObservableCollection<ViewModel> views)
     {
+        _subscribedViews = views;
         views.CollectionChanged += OnViewsCollectionChanged;
     }
 

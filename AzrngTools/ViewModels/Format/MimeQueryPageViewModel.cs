@@ -1,4 +1,5 @@
 #nullable disable
+using System.Text;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -202,12 +203,12 @@ public partial class MimeQueryPageViewModel : ViewModelBase
 
             if (matches.Any())
             {
-                var result = $"MIME类型包含 \"{mimeType}\" 的文件扩展名：\r\n\r\n";
+                var sb = new StringBuilder($"MIME类型包含 \"{mimeType}\" 的文件扩展名：\r\n\r\n");
                 foreach (var match in matches)
                 {
-                    result += $"{match.Key} -> {match.Value}\r\n";
+                    sb.AppendLine($"{match.Key} -> {match.Value}");
                 }
-                QueryResult = result;
+                QueryResult = sb.ToString();
                 _messageService.SendMessage($"找到 {matches.Count} 个匹配项");
             }
             else
@@ -230,12 +231,12 @@ public partial class MimeQueryPageViewModel : ViewModelBase
     {
         try
         {
-            var result = "所有文件扩展名及其MIME类型：\r\n\r\n";
+            var sb = new StringBuilder("所有文件扩展名及其MIME类型：\r\n\r\n");
             foreach (var kvp in MimeDatabase.OrderBy(kvp => kvp.Key))
             {
-                result += $"{kvp.Key} -> {kvp.Value}\r\n";
+                sb.AppendLine($"{kvp.Key} -> {kvp.Value}");
             }
-            QueryResult = result;
+            QueryResult = sb.ToString();
             _messageService.SendMessage($"共 {MimeDatabase.Count} 个MIME类型");
         }
         catch (Exception ex)

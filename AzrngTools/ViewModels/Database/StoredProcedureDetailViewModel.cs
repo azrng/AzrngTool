@@ -57,6 +57,7 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
 
     [ObservableProperty]
     private ObservableCollection<StoredProcedureModel> _procedures = new();
+    private ObservableCollection<StoredProcedureModel>? _subscribedProcedures;
 
     [ObservableProperty]
     private bool _showObjectList = true;
@@ -216,13 +217,20 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
 
     partial void OnProceduresChanged(ObservableCollection<StoredProcedureModel> value)
     {
-        SubscribeToProceduresCollection(value);
+        if (_subscribedProcedures != null)
+        {
+            _subscribedProcedures.CollectionChanged -= OnProceduresCollectionChanged;
+        }
+
+        _subscribedProcedures = value;
+        value.CollectionChanged += OnProceduresCollectionChanged;
         OnPropertyChanged(nameof(ShowEmptyState));
         OnPropertyChanged(nameof(ShowSplitWorkspace));
     }
 
     private void SubscribeToProceduresCollection(ObservableCollection<StoredProcedureModel> procedures)
     {
+        _subscribedProcedures = procedures;
         procedures.CollectionChanged += OnProceduresCollectionChanged;
     }
 
