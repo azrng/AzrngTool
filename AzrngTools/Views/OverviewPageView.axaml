@@ -13,18 +13,18 @@
         <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="dashboard-hero">
                 <StackPanel Spacing="{StaticResource Space.10}">
-                    <TextBlock Classes="hero-eyebrow" Text="开发工作台" />
-                    <TextBlock Classes="hero-title" Text="更清晰的导航，更稳定的亮色主题，更现代的 Fluent 视觉底座" />
+                    <TextBlock Classes="hero-eyebrow" Text="AzrngTools 开发工具集" />
+                    <TextBlock Classes="hero-title" Text="覆盖数据库、接口调试、生成加密、编码解码与格式化的日常开发工作台" />
 
                     <WrapPanel Classes="tool-actions">
                         <Border Classes="badge-pill">
                             <TextBlock Classes="badge-text" Text=".NET 10" />
                         </Border>
                         <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Avalonia 11.3" />
+                            <TextBlock Classes="badge-text" Text="Avalonia 12" />
                         </Border>
                         <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="FluentAvalonia + Semi" />
+                            <TextBlock Classes="badge-text" Text="数据库 / 接口 / 文本" />
                         </Border>
                     </WrapPanel>
                 </StackPanel>
@@ -33,14 +33,14 @@
             <Grid Grid.Row="1" ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="dashboard-stat">
                     <StackPanel Spacing="{StaticResource Space.6}">
-                        <TextBlock Classes="stat-value" Text="34" />
+                        <TextBlock Classes="stat-value" Text="33" />
                         <TextBlock Classes="stat-label" Text="可用工具入口" />
                     </StackPanel>
                 </Border>
 
                 <Border Grid.Column="1" Classes="dashboard-stat">
                     <StackPanel Spacing="{StaticResource Space.6}">
-                        <TextBlock Classes="stat-value" Text="5" />
+                        <TextBlock Classes="stat-value" Text="7" />
                         <TextBlock Classes="stat-label" Text="功能分组" />
                     </StackPanel>
                 </Border>
@@ -48,7 +48,7 @@
                 <Border Grid.Column="2" Classes="dashboard-stat">
                     <StackPanel Spacing="{StaticResource Space.6}">
                         <TextBlock Classes="stat-value" Text="Light / Dark" />
-                        <TextBlock Classes="stat-label" Text="主题切换可用" />
+                        <TextBlock Classes="stat-label" Text="亮暗主题" />
                     </StackPanel>
                 </Border>
             </Grid>
@@ -57,28 +57,28 @@
                 <Border Grid.Column="0" Classes="tool-card-roomy">
                     <StackPanel Spacing="{StaticResource Space.12}">
                         <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="如何开始使用" />
-                            <TextBlock Classes="section-copy" Text="先从左侧导航找到工具，再按输入区、操作区、结果区的顺序完成操作。" />
+                            <TextBlock Classes="section-title" Text="当前能力范围" />
+                            <TextBlock Classes="section-copy" Text="左侧导航按场景组织工具，适合在开发、调试、数据查看和文本处理之间快速切换。" />
                         </StackPanel>
 
                         <Border Classes="dashboard-note">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="1. 搜索入口" />
-                                <TextBlock Classes="section-copy" Text="左侧顶部搜索框支持按名称筛选工具，快速定位功能。" />
+                                <TextBlock Classes="metric-label" Text="1. 数据库与接口" />
+                                <TextBlock Classes="section-copy" Text="数据库工作台支持连接浏览、对象详情、查询预览与文档导出；接口调试用于快速组织请求并查看响应。" />
                             </StackPanel>
                         </Border>
 
                         <Border Classes="dashboard-note">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="2. 常用入口" />
-                                <TextBlock Classes="section-copy" Text="侧栏常用入口会优先显示更常访问的工具，首页入口单独保留在统计卡中。" />
+                                <TextBlock Classes="metric-label" Text="2. 编码、生成与加密" />
+                                <TextBlock Classes="section-copy" Text="内置 GUID、密码、JSON Schema、AES、DES、SM4、RSA、Hash、Base64、URL、JWT、Gzip 等常用处理入口。" />
                             </StackPanel>
                         </Border>
 
                         <Border Classes="dashboard-note">
                             <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="3. 结果归位" />
-                                <TextBlock Classes="section-copy" Text="每个工具页面都会尽量把结果区集中到单一位置，避免信息散落。" />
+                                <TextBlock Classes="metric-label" Text="3. 格式化与辅助" />
+                                <TextBlock Classes="section-copy" Text="提供 JSON、SQL、XML、正则、字数统计、人民币大写、时间戳、翻译、硬件信息和关于更新等辅助能力。" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
