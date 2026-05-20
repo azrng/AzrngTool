@@ -9,9 +9,13 @@
     xmlns:encode="clr-namespace:AzrngTools.ViewModels.Encode"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
+    <Grid
+        Margin="{StaticResource Thickness.15}"
+        MinHeight="0"
+        RowDefinitions="Auto,*"
+        RowSpacing="{StaticResource Space.12}"
+        x:Name="RootGrid">
+            <Border Grid.Row="0" Classes="tool-card-roomy" x:Name="HeaderCard">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                         <StackPanel Spacing="{StaticResource Space.4}">
@@ -59,9 +63,14 @@
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+            <Grid
+                Grid.Row="1"
+                ColumnDefinitions="1*,1*"
+                ColumnSpacing="{StaticResource Space.12}"
+                MinHeight="0"
+                x:Name="WorkspaceGrid">
+                <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+                    <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="输入内容" />
@@ -82,14 +91,14 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="500"
+                            MinHeight="0"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
                     </Grid>
                 </Border>
 
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                    <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="处理结果" />
@@ -110,8 +119,8 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="500"
                             IsReadOnly="True"
+                            MinHeight="0"
                             Text="{Binding HandleText}"
                             PlaceholderText="处理后的内容会显示在这里" />
 
@@ -140,5 +149,4 @@
                 </Border>
             </Grid>
         </Grid>
-    </ScrollViewer>
 </UserControl>
