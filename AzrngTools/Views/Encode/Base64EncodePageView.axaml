@@ -61,7 +61,7 @@
 
             <Grid Grid.Row="1" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.12}">
                 <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="输入内容" />
@@ -85,15 +85,6 @@
                             Height="500"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="输入建议" />
-                                <TextBlock Classes="Small" Text="• 普通文本适合直接执行“Base64 编码”，生成可传输的字符串内容。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 已有 Base64 内容可直接执行“Base64 解码”，结果会显示在右侧结果区。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 内容较长时优先用“从剪贴板导入”，可减少手动粘贴时的中断操作。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
                     </Grid>
                 </Border>
 
@@ -119,7 +110,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="360"
+                            Height="500"
                             IsReadOnly="True"
                             Text="{Binding HandleText}"
                             PlaceholderText="处理后的内容会显示在这里" />
