@@ -10,7 +10,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
             <Border Grid.Row="0" Classes="tool-card-roomy">
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
@@ -82,7 +82,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="360"
+                            Height="500"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
 
@@ -148,64 +148,6 @@
                     </Grid>
                 </Border>
             </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                    <Border Classes="tool-card-soft">
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="使用建议" />
-                                <TextBlock Classes="section-copy" Text="把底部区域改成说明和状态面板后，页面在大窗口下会更饱满，也更适合连续处理多段文本。" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 编码前建议先确认输入区内容是否为原始文本，避免把 Base64 再次编码。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 解码后如果结果还需要继续处理，可以直接使用“结果回填到输入区”形成连续工作流。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 当前页的复制、清空和导入操作都只作用于当前工作台，不会影响其他工具页。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <Border Grid.Column="1" Classes="tool-card-soft">
-                        <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="工作状态" />
-                                <TextBlock Classes="section-copy" Text="这里集中展示当前输入和结果规模，方便在长文本、配置片段和接口数据之间快速判断处理量。" />
-                            </StackPanel>
-
-                            <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
-                                <Border Classes="tool-card-roomy">
-                                    <StackPanel Spacing="{StaticResource Space.4}">
-                                        <TextBlock Classes="metric-label" Text="输入字符数" />
-                                        <TextBlock Classes="metric-value compact" Text="{Binding OriginalCharacterCount}" />
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Grid.Column="1" Classes="tool-card-roomy">
-                                    <StackPanel Spacing="{StaticResource Space.4}">
-                                        <TextBlock Classes="metric-label" Text="输入字节数" />
-                                        <TextBlock Classes="metric-value compact" Text="{Binding OriginalByteCount}" />
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Grid.Row="1" Classes="tool-card-roomy">
-                                    <StackPanel Spacing="{StaticResource Space.4}">
-                                        <TextBlock Classes="metric-label" Text="结果字符数" />
-                                        <TextBlock Classes="metric-value compact" Text="{Binding ResultCharacterCount}" />
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
-                                    <StackPanel Spacing="{StaticResource Space.4}">
-                                        <TextBlock Classes="metric-label" Text="结果字节数" />
-                                        <TextBlock Classes="metric-value compact" Text="{Binding ResultByteCount}" />
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>
