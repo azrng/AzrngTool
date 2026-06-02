@@ -39,4 +39,36 @@ public class ConnectionGroupConfigurationService : IConnectionGroupConfiguration
             IsDefault = true
         };
     }
+
+    public ConnectionGroup CreateGroup(string groupName)
+    {
+        return new ConnectionGroup
+        {
+            Name = groupName.Trim(),
+            Color = "#E3EFE8"
+        };
+    }
+
+    public string? RemoveGroupAndClearConnections(
+        ICollection<ConnectionGroup> groups,
+        IEnumerable<ConnectionConfig> connections,
+        string groupId)
+    {
+        var group = groups.FirstOrDefault(item => item.Id == groupId);
+        if (group == null || group.IsDefault)
+        {
+            return null;
+        }
+
+        var groupName = group.Name;
+        groups.Remove(group);
+
+        foreach (var connection in connections.Where(connection => connection.GroupId == groupId))
+        {
+            connection.GroupId = null;
+            connection.GroupName = null;
+        }
+
+        return groupName;
+    }
 }

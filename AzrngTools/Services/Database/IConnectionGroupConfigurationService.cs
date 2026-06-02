@@ -9,4 +9,11 @@ public interface IConnectionGroupConfigurationService
     void SaveGroups(string filePath, IEnumerable<ConnectionGroup> groups);
 
     ConnectionGroup CreateDefaultGroup();
+
+    ConnectionGroup CreateGroup(string groupName);
+
+    string? RemoveGroupAndClearConnections(
+        ICollection<ConnectionGroup> groups,
+        IEnumerable<ConnectionConfig> connections,
+        string groupId);
 }

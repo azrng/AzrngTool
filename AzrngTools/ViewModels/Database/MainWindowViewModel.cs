@@ -1243,11 +1243,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        Groups.Add(new ConnectionGroup
-        {
-            Name = groupName.Trim(),
-            Color = "#E3EFE8"
-        });
+        Groups.Add(_connectionGroupConfigurationService.CreateGroup(groupName));
 
         SaveGroups();
         LoggingService.LogInfo($"Added group: {groupName}");
@@ -1256,19 +1252,10 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void DeleteGroup(string groupId)
     {
-        var group = Groups.FirstOrDefault(item => item.Id == groupId);
-        if (group == null || group.IsDefault)
+        var groupName = _connectionGroupConfigurationService.RemoveGroupAndClearConnections(Groups, Connections, groupId);
+        if (groupName == null)
         {
             return;
-        }
-
-        var groupName = group.Name;
-        Groups.Remove(group);
-
-        foreach (var connection in Connections.Where(connection => connection.GroupId == groupId))
-        {
-            connection.GroupId = null;
-            connection.GroupName = null;
         }
 
         SaveGroups();
