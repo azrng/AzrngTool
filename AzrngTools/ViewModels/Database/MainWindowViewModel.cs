@@ -31,12 +31,18 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private const string ConfigFileName = "connections.json";
     private const string GroupsFileName = "groups.json";
+    private static readonly JsonSerializerOptions GroupJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        WriteIndented = true
+    };
 
     private readonly string _configFilePath;
     private readonly string _groupsFilePath;
     private readonly IDatabaseService _databaseService;
     private readonly IDocumentExportService _documentExportService;
     private readonly ICodeGenerationService _codeGenerationService;
+    private readonly IConnectionConfigurationService _connectionConfigurationService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -148,6 +154,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -156,6 +163,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IDatabaseService databaseService,
         IDocumentExportService? documentExportService = null,
         ICodeGenerationService? codeGenerationService = null,
+        IConnectionConfigurationService? connectionConfigurationService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -165,6 +173,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _databaseService = databaseService;
         _documentExportService = documentExportService ?? new DocumentExportService();
         _codeGenerationService = codeGenerationService ?? new CodeGenerationService();
+        _connectionConfigurationService = connectionConfigurationService ?? new ConnectionConfigurationService();
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -203,8 +212,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var options = CreateJsonOptions();
-            var groups = JsonSerializer.Deserialize<List<ConnectionGroup>>(File.ReadAllText(_groupsFilePath), options);
+            var groups = JsonSerializer.Deserialize<List<ConnectionGroup>>(File.ReadAllText(_groupsFilePath), GroupJsonOptions);
             if (groups == null || groups.Count == 0)
             {
                 CreateDefaultGroup();
@@ -241,7 +249,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            var json = JsonSerializer.Serialize(Groups.ToList(), CreateJsonOptions());
+            var json = JsonSerializer.Serialize(Groups.ToList(), GroupJsonOptions);
             File.WriteAllText(_groupsFilePath, json);
             LoggingService.LogOperation($"Saved {Groups.Count} connection groups.");
         }
@@ -262,14 +270,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var options = CreateJsonOptions();
-            var connections = JsonSerializer.Deserialize<List<ConnectionConfig>>(File.ReadAllText(_configFilePath), options)
-                ?? new List<ConnectionConfig>();
-
-            foreach (var connection in connections)
-            {
-                DecryptConnectionPassword(connection);
-            }
+            var connections = _connectionConfigurationService.LoadConnections(_configFilePath);
 
             var sortedConnections = SortConnections(connections);
             Connections.Clear();
@@ -299,8 +300,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            var json = JsonSerializer.Serialize(CreateEncryptedConnectionCopies(Connections), CreateJsonOptions());
-            File.WriteAllText(_configFilePath, json);
+            _connectionConfigurationService.SaveConnections(_configFilePath, Connections);
             LoggingService.LogOperation($"Saved {Connections.Count} connections.");
         }
         catch (Exception ex)
@@ -1013,7 +1013,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var json = JsonSerializer.Serialize(CreateEncryptedConnectionCopies(Connections), CreateJsonOptions());
+            var json = _connectionConfigurationService.SerializeConnections(Connections);
             await File.WriteAllTextAsync(file.Path.LocalPath, json);
 
             LoggingService.LogOperation($"Exported connection config to {file.Path.LocalPath}.");
@@ -1218,16 +1218,11 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             var json = await File.ReadAllTextAsync(files[0].Path.LocalPath);
-            var importedConnections = JsonSerializer.Deserialize<List<ConnectionConfig>>(json, CreateJsonOptions());
+            var importedConnections = _connectionConfigurationService.DeserializeConnections(json);
             if (importedConnections == null || importedConnections.Count == 0)
             {
                 ToastService.ShowWarning("所选文件中没有有效的连接配置。", 4000);
                 return;
-            }
-
-            foreach (var connection in importedConnections)
-            {
-                DecryptConnectionPassword(connection);
             }
 
             var existingNames = Connections.Select(connection => connection.Name)
@@ -1667,51 +1662,4 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private static readonly JsonSerializerOptions ConnectionJsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true
-    };
-
-    private static JsonSerializerOptions CreateJsonOptions() => ConnectionJsonOptions;
-
-    private static void DecryptConnectionPassword(ConnectionConfig connection)
-    {
-        if (!string.IsNullOrWhiteSpace(connection.Password))
-        {
-            connection.SetDecryptedPassword(connection.Password);
-        }
-    }
-
-    private static List<ConnectionConfig> CreateEncryptedConnectionCopies(IEnumerable<ConnectionConfig> connections)
-    {
-        return connections.Select(CreateEncryptedConnectionCopy).ToList();
-    }
-
-    private static ConnectionConfig CreateEncryptedConnectionCopy(ConnectionConfig source)
-    {
-        var copy = new ConnectionConfig
-        {
-            Name = source.Name,
-            DatabaseType = source.DatabaseType,
-            Host = source.Host,
-            Port = source.Port,
-            Username = source.Username,
-            Password = source.Password,
-            Database = source.Database,
-            UseWindowsAuthentication = source.UseWindowsAuthentication,
-            LastUsedTime = source.LastUsedTime,
-            UseCount = source.UseCount,
-            GroupId = source.GroupId,
-            GroupName = source.GroupName,
-            Color = source.Color
-        };
-
-        if (!string.IsNullOrWhiteSpace(copy.Password))
-        {
-            copy.Password = copy.GetEncryptedPassword();
-        }
-
-        return copy;
-    }
 }

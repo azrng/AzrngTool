@@ -22,6 +22,7 @@
 
 | 任务 ID | 任务名称 | 任务目标 | 当前阶段 | 负责人 AI | 任务状态 | 优先级 | 最近更新时间 | 交接说明 |
 | ------- | -------- | -------- | -------- | --------- | -------- | ------ | ------------ | -------- |
+| T112 | Database 连接配置持久化服务抽取 | 将数据库连接配置读写、导入导出序列化与密码加解密副本逻辑从主 ViewModel 抽到独立服务，继续削减职责耦合 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:53 | 已抽出连接配置服务并接入 DI，补充序列化往返和加密副本测试；未改变配置文件路径、JSON 格式或现有导入导出交互 |
 | T111 | Database 主 ViewModel 服务依赖收口 | 继续处理数据库模块审查剩余专项的低风险切片，将文档导出和代码生成服务改为接口与 DI 注入，并记录需 Azrng.DataAccess 配合优化的事项 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:49 | 已完成导出/代码生成服务接口化与 DI 注入，补充 DI 测试，并新增 Azrng.DataAccess 连接安全改进说明；大规模职责拆分和 ResultModel 统一仍保留专项 |
 | T110 | Database 模块审查剩余问题处理 | 继续处理 `doc/codeReview/2026-06-02-database-module-review.md` 中可低风险落地的问题，收口 MySQL Schema 策略与连接缓存并发风险 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:42 | 已完成 MySql Schema 策略集中化、连接缓存加锁、测试和 review/devlog 同步；MainWindowViewModel 职责拆分与 ResultModel 统一保留为后续专项 |
 | T109 | Database 模块审查问题处理 | 核对 `2026-06-02-database-module-review.md` 中的问题，处理低风险可落地项并更新审查状态 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:37 | 已处理 MapDatabaseType、导出对象映射、Legacy 死代码、重复通知、密码副本序列化、fire-and-forget 异常收口、DatabaseService DI 化和测试覆盖更新；职责拆分、结果包装等保留为后续专项 |

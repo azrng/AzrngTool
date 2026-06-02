@@ -18,11 +18,13 @@ public class DatabaseDependencyInjectionTests
         var databaseService = provider.GetRequiredService<IDatabaseService>();
         var documentExportService = provider.GetRequiredService<IDocumentExportService>();
         var codeGenerationService = provider.GetRequiredService<ICodeGenerationService>();
+        var connectionConfigurationService = provider.GetRequiredService<IConnectionConfigurationService>();
         var viewModel = provider.GetRequiredService<MainWindowViewModel>();
 
         Assert.Same(databaseService, provider.GetRequiredService<IDatabaseService>());
         Assert.Same(documentExportService, provider.GetRequiredService<IDocumentExportService>());
         Assert.Same(codeGenerationService, provider.GetRequiredService<ICodeGenerationService>());
+        Assert.Same(connectionConfigurationService, provider.GetRequiredService<IConnectionConfigurationService>());
         Assert.NotNull(viewModel.BrowserViewModel);
         Assert.NotNull(viewModel.TableDetailViewModel);
         Assert.NotNull(viewModel.ViewDetailViewModel);
