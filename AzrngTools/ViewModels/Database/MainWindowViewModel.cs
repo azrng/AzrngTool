@@ -43,6 +43,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IDocumentExportService _documentExportService;
     private readonly ICodeGenerationService _codeGenerationService;
     private readonly IConnectionConfigurationService _connectionConfigurationService;
+    private readonly IDatabaseExportPayloadService _databaseExportPayloadService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -155,6 +156,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -164,6 +166,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IDocumentExportService? documentExportService = null,
         ICodeGenerationService? codeGenerationService = null,
         IConnectionConfigurationService? connectionConfigurationService = null,
+        IDatabaseExportPayloadService? databaseExportPayloadService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -174,6 +177,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _documentExportService = documentExportService ?? new DocumentExportService();
         _codeGenerationService = codeGenerationService ?? new CodeGenerationService();
         _connectionConfigurationService = connectionConfigurationService ?? new ConnectionConfigurationService();
+        _databaseExportPayloadService = databaseExportPayloadService ?? new DatabaseExportPayloadService(databaseService);
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -916,16 +920,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var (success, tables, views, procedures, tableColumnsMap, tableIndexesMap, message) =
-                await BuildExportPayloadAsync(connection, exportRequest.SelectedObjects);
-            if (!success)
+            var exportPayload = await _databaseExportPayloadService.BuildPayloadAsync(
+                connection,
+                exportRequest.SelectedObjects,
+                progress => LoadingText = progress);
+            if (!exportPayload.Success)
             {
-                LoadingText = message;
-                ToastService.ShowError(message, 5000);
+                LoadingText = exportPayload.Message;
+                ToastService.ShowError(exportPayload.Message, 5000);
                 return;
             }
 
-            if (tables.Count == 0 && views.Count == 0 && procedures.Count == 0)
+            if (exportPayload.TotalObjectCount == 0)
             {
                 LoadingText = "没有可导出的数据。";
                 ToastService.ShowWarning("没有可导出的数据。", 3000);
@@ -938,19 +944,19 @@ public partial class MainWindowViewModel : ViewModelBase
                 ExportDocumentType.Excel => await _documentExportService.ExportToExcelAsync(
                     exportFilePath,
                     exportRequest.DocumentName,
-                    tables,
-                    tableColumnsMap,
-                    views,
-                    procedures,
-                    tableIndexesMap),
+                    exportPayload.Tables,
+                    exportPayload.TableColumnsMap,
+                    exportPayload.Views,
+                    exportPayload.Procedures,
+                    exportPayload.TableIndexesMap),
                 ExportDocumentType.Markdown => await _documentExportService.ExportToMarkdownAsync(
                     exportFilePath,
                     exportRequest.DocumentName,
-                    tables,
-                    tableColumnsMap,
-                    views,
-                    procedures,
-                    tableIndexesMap),
+                    exportPayload.Tables,
+                    exportPayload.TableColumnsMap,
+                    exportPayload.Views,
+                    exportPayload.Procedures,
+                    exportPayload.TableIndexesMap),
                 _ => false
             };
 
@@ -961,10 +967,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var totalObjects = tables.Count + views.Count + procedures.Count;
             var exportedFileName = Path.GetFileName(exportFilePath);
             LoadingText = $"导出成功：{exportedFileName}";
-            ToastService.ShowSuccess($"导出成功\n共 {totalObjects} 个对象", 4000);
+            ToastService.ShowSuccess($"导出成功\n共 {exportPayload.TotalObjectCount} 个对象", 4000);
         }
         catch (Exception ex)
         {
@@ -1344,98 +1349,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async Task<(bool Success, List<TableModel> Tables, List<ViewModel> Views, List<StoredProcedureModel> Procedures, Dictionary<string, List<ColumnModel>> TableColumnsMap, Dictionary<string, List<IndexModel>> TableIndexesMap, string Message)> BuildExportPayloadAsync(
-        ConnectionConfig connection,
-        IReadOnlyCollection<ExportSelectedObjectDto> selectedObjects)
-    {
-        var tables = new List<TableModel>();
-        var views = new List<ViewModel>();
-        var procedures = new List<StoredProcedureModel>();
-        var tableColumnsMap = new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase);
-        var tableIndexesMap = new Dictionary<string, List<IndexModel>>(StringComparer.OrdinalIgnoreCase);
-
-        if (selectedObjects.Count == 0)
-        {
-            return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, "请至少选择一个导出对象。");
-        }
-
-        var selectedTablesBySchema = selectedObjects
-            .Where(item => item.ObjectType == ExportObjectType.Table)
-            .GroupBy(item => item.SchemaName, StringComparer.OrdinalIgnoreCase)
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase),
-                StringComparer.OrdinalIgnoreCase);
-
-        var schemaNames = selectedObjects
-            .Select(item => item.SchemaName)
-            .Where(schemaName => !string.IsNullOrWhiteSpace(schemaName))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        foreach (var schemaName in schemaNames)
-        {
-            if (selectedTablesBySchema.TryGetValue(schemaName, out var selectedTableNames) && selectedTableNames.Count > 0)
-            {
-                LoadingText = $"正在加载表 {schemaName}...";
-                var (tableSuccess, schemaTables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
-                if (!tableSuccess)
-                {
-                    return (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, tableMessage);
-                }
-
-                var matchingTables = schemaTables
-                    .Where(table => selectedTableNames.Contains(table.Name))
-                    .OrderBy(table => table.Name)
-                    .ToList();
-
-                var columnTasks = matchingTables.Select(table =>
-                    _databaseService.GetColumnsAsync(connection, table.Schema, table.Name));
-                var indexTasks = matchingTables.Select(table =>
-                    _databaseService.GetIndexesAsync(connection, table.Schema, table.Name));
-
-                var columnResults = await Task.WhenAll(columnTasks);
-                var indexResults = await Task.WhenAll(indexTasks);
-
-                for (var i = 0; i < matchingTables.Count; i++)
-                {
-                    var table = matchingTables[i];
-                    tables.Add(table);
-
-                    var (columnSuccess, columns, columnMessage) = columnResults[i];
-                    if (!columnSuccess)
-                    {
-                        LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnMessage}");
-                        tableColumnsMap[BuildTableExportKey(table)] = [];
-                    }
-                    else
-                    {
-                        tableColumnsMap[BuildTableExportKey(table)] = columns.OrderBy(column => column.OrdinalPosition).ToList();
-                    }
-
-                    var (indexSuccess, indexes, indexMessage) = indexResults[i];
-                    if (!indexSuccess)
-                    {
-                        LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexMessage}");
-                        tableIndexesMap[BuildTableExportKey(table)] = [];
-                    }
-                    else
-                    {
-                        tableIndexesMap[BuildTableExportKey(table)] = indexes.ToList();
-                    }
-
-                    LoadingText = $"正在加载 {table.Schema}.{table.Name}... ({i + 1}/{matchingTables.Count})";
-                }
-            }
-
-        }
-
-        var totalObjects = tables.Count;
-        return totalObjects == 0
-            ? (false, tables, views, procedures, tableColumnsMap, tableIndexesMap, "未匹配到可导出的对象。")
-            : (true, tables, views, procedures, tableColumnsMap, tableIndexesMap, $"已为导出准备 {totalObjects} 个对象。");
-    }
-
     private async Task<(bool Success, List<TableModel> Tables, Dictionary<string, List<ColumnModel>> TableColumnsMap, string Message)> BuildCodeGenerationPayloadAsync(
         ConnectionConfig connection,
         string schemaName)
@@ -1581,11 +1494,6 @@ public partial class MainWindowViewModel : ViewModelBase
         TableDetailViewModel.SelectedTable = null;
         ViewDetailViewModel.SelectedView = null;
         StoredProcedureDetailViewModel.SelectedProcedure = null;
-    }
-
-    private static string BuildTableExportKey(TableModel table)
-    {
-        return $"{table.Schema}.{table.Name}";
     }
 
     private static string BuildExportFilePath(ExportDialogResultDto exportRequest)
