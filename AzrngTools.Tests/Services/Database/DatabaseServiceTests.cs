@@ -44,7 +44,7 @@ public class DatabaseServiceTests
 
         var result = await service.GetDatabaseNamesAsync(config);
 
-        Assert.False(result.Success);
+        Assert.False(result.IsSuccess);
         Assert.Contains("不支持的数据库类型", result.Message);
     }
 
@@ -65,8 +65,8 @@ public class DatabaseServiceTests
 
         var result = await service.GetSchemasAsync(config);
 
-        Assert.True(result.Success);
-        var schema = Assert.Single(result.Schemas);
+        Assert.True(result.IsSuccess);
+        var schema = Assert.Single(result.Data ?? []);
         Assert.Equal("app_db", schema.Name);
         Assert.Equal("MySql", schema.Owner);
         Assert.True(schema.IsDefault);
@@ -89,8 +89,8 @@ public class DatabaseServiceTests
 
         var result = await service.GetSchemasAsync(config);
 
-        Assert.True(result.Success);
-        var schema = Assert.Single(result.Schemas);
+        Assert.True(result.IsSuccess);
+        var schema = Assert.Single(result.Data ?? []);
         Assert.Equal("default", schema.Name);
     }
 }

@@ -14,7 +14,7 @@
 | `ExportDialogViewModel.MapExportObjectType` 只支持表 | 已处理 | 已补充 View 与 StoredProcedure 到导出对象类型的防御性映射，并补充单元测试覆盖；当前主导出流程仍以表导出为主，完整导出视图 / 存储过程能力需另开专项 |
 | `ValidateFormLegacy` / `ValidateConnectionNameUniqueLegacy` 死代码 | 已处理 | 已删除 Legacy 方法，保留当前实际使用的校验链路 |
 | `ShowDatabaseSelector` 重复属性通知 | 已处理 | 已删除重复通知，保留一次状态刷新 |
-| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、导出负载构建、代码生成负载构建、命名路径策略、连接上下文、连接导入合并、连接分组变更、连接/分组配置序列化、DI 注册和 MySql Schema 策略测试；本次回归 `dotnet test` 通过 63 个测试 |
+| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、导出负载构建、代码生成负载构建、命名路径策略、连接上下文、连接导入合并、连接分组变更、连接/分组配置序列化、DI 注册、MySql Schema 策略和 ResultModel 契约联动测试；本次数据库相关回归 47 个测试通过 |
 | `DatabaseService` 未走 DI | 已处理 | 已抽出 `IDatabaseService`，`DatabaseService` 通过 `ISingletonDependency` 扫描注册；数据库工作台主 ViewModel 与子 ViewModel 改为构造注入共享服务实例 |
 | `MainWindowViewModel` 职责过重 | 需专项 | 属于模块拆分和应用层编排重构，需单独设计拆分边界和回归范围 |
 | `DocumentExportService` / `CodeGenerationService` 直接 new | 已处理 | 已抽出 `IDocumentExportService` 与 `ICodeGenerationService`，服务通过 DI 扫描注册，主 ViewModel 改为构造注入 |
@@ -29,7 +29,7 @@
 | 密码原地加解密序列化 | 已处理 | 保存和导出连接配置时改为序列化加密副本，不再修改内存中的连接密码，并补充测试覆盖 |
 | 连接字符串中的密码明文 | 需包级优化 | 当前受 `Azrng.DataAccess` 部分桥接器构造契约限制，已在 `doc/2026-06-02-Azrng.DataAccess-connection-security-notes.md` 记录包级改进建议 |
 | fire-and-forget 异常处理 | 已处理 | 连接上下文初始化、数据库切换以及表 / 视图 / 存储过程详情自动加载改为安全调度，异常会记录日志并反馈到界面状态 |
-| `ResultModel<T>` / Azrng 异常体系统一 | 需专项 | 涉及服务层返回契约变更和调用方联动，需单独规划 |
+| `ResultModel<T>` / Azrng 异常体系统一 | 已处理 | 已将数据库主服务 `IDatabaseService` / `DatabaseService` 元组返回契约统一为 Azrng.Core `IResultModel<T>`，并联动导出、代码生成、对象树、详情、连接管理和 SQL 查询调用方；另在 `doc/2026-06-02-Azrng.Core-result-and-exception-notes.md` 记录可上移到 Azrng.Core 的公共能力 |
 | MySql Schema 处理集中化、连接缓存线程安全 | 已处理 | MySql 运行时 Schema 名称由 `DatabaseService` 统一生成，主 ViewModel 不再重复硬编码；桥接器缓存读写已加锁，降低后台调用竞态风险 |
 
 ---
@@ -186,8 +186,8 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | 服务类实现接口 + DI 注册 | 违反 | `DatabaseService` 直接 new |
 | ViewModel 不直接写 SQL | 符合 | SQL 在 Service 层 |
 | 异步优先 | 基本符合 | 大部分方法是 async |
-| 统一结果包装 `ResultModel<T>` | 违反 | 使用元组 `(bool, T, string)` 代替 |
-| 异常使用 Azrng 体系 | 违反 | 直接 `catch (Exception)` + 元组返回 |
+| 统一结果包装 `ResultModel<T>` | 已处理 | 数据库主服务返回契约已统一为 Azrng.Core `IResultModel<T>` |
+| 异常使用 Azrng 体系 | 已改善 | 数据库主服务失败结果通过 Azrng.Core `ResultModel<T>.Failure(...)` 承载；底层第三方异常仍在服务边界转换为用户可读失败结果 |
 | 禁止主构造函数 | 符合 | 未使用主构造函数 |
 | 服务层不直接操作 View | 符合 | 通过 ToastService 间接 |
 | 测试覆盖 | 已改善 | 已补充 Database 模块关键单元测试，本轮回归 63 个测试通过 |
@@ -215,6 +215,6 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | P2 | 连接上下文规则留在主 ViewModel | 可维护性 | 已处理 |
 | P2 | 密码加密方式不安全 | 安全 | 已处理 |
 | P2 | 连接字符串中的密码明文 | 安全 | 需包级优化 |
-| P3 | 结果包装统一为 `ResultModel<T>` | 规范对齐 | 需专项 |
+| P3 | 结果包装统一为 `ResultModel<T>` | 规范对齐 | 已处理 |
 | P3 | ShowDatabaseSelector 重复通知 | 代码质量 | 已处理 |
 | P3 | MySql Schema 处理集中化 | 可维护性 | 已处理 |

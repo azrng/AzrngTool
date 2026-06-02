@@ -429,21 +429,22 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
 
         try
         {
-            var (success, message, suggestion) = await _databaseService.TestConnectionAsync(ConnectionConfig);
+            var result = await _databaseService.TestConnectionAsync(ConnectionConfig);
 
-            IsConnectionSuccess = success;
+            IsConnectionSuccess = result.IsSuccess;
 
-            if (success)
+            if (result.IsSuccess)
             {
                 LoggingService.LogOperation($"测试连接成功：{ConnectionConfig.Name}");
                 ToastService.ShowSuccess("连接测试成功", autoCloseDelay: 2000);
             }
             else
             {
+                var suggestion = result.Data?.Suggestion;
                 var fullMessage = suggestion != null
-                    ? $"{message}\n\n{suggestion}"
-                    : message;
-                LoggingService.LogError($"测试连接失败: {ConnectionConfig.Name} - {message}");
+                    ? $"{result.Message}\n\n{suggestion}"
+                    : result.Message;
+                LoggingService.LogError($"测试连接失败: {ConnectionConfig.Name} - {result.Message}");
                 ToastService.ShowError(fullMessage, autoCloseDelay: 5000);
             }
         }
@@ -484,16 +485,16 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         try
         {
             var currentDatabase = ConnectionConfig.Database;
-            var (success, databases, message) = await _databaseService.GetDatabaseNamesAsync(ConnectionConfig);
-            if (!success)
+            var result = await _databaseService.GetDatabaseNamesAsync(ConnectionConfig);
+            if (!result.IsSuccess)
             {
                 IsConnectionSuccess = false;
-                ToastService.ShowError(message, autoCloseDelay: 5000);
+                ToastService.ShowError(result.Message, autoCloseDelay: 5000);
                 return;
             }
 
             AvailableDatabases.Clear();
-            foreach (var database in databases)
+            foreach (var database in result.DataOrEmpty())
             {
                 AvailableDatabases.Add(database);
             }

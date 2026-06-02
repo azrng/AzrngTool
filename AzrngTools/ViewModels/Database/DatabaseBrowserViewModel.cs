@@ -153,20 +153,20 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
                 LoadingText = $"Loaded MySql objects for {CurrentConnection.Database}.";
                 return;
             }
-            var (success, rootNode, message) = await _databaseService.LoadDatabaseTreeAsync(CurrentConnection);
+            var result = await _databaseService.LoadDatabaseTreeAsync(CurrentConnection);
 
-            if (success && rootNode != null)
+            if (result.IsSuccess && result.Data != null)
             {
-                RootNodes.Add(rootNode);
+                RootNodes.Add(result.Data);
                 OnPropertyChanged(nameof(FirstRootNode));
                 CollectAllNodes();
-                LoadingText = message;
-                System.Diagnostics.Debug.WriteLine(message);
+                LoadingText = result.Message;
+                System.Diagnostics.Debug.WriteLine(result.Message);
             }
             else
             {
-                LoadingText = $"加载失败：{message}";
-                System.Diagnostics.Debug.WriteLine($"加载数据库树失败：{message}");
+                LoadingText = $"加载失败：{result.Message}";
+                System.Diagnostics.Debug.WriteLine($"加载数据库树失败：{result.Message}");
             }
         }
         catch (Exception ex)
@@ -268,14 +268,15 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
     private async Task<bool> LoadTableNodesAsync(TreeNodeItem folderNode, string schemaName)
     {
         var result = await _databaseService.GetTablesAsync(CurrentConnection!, schemaName);
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             LoadingText = result.Message;
             return false;
         }
 
         folderNode.ClearChildren();
-        foreach (var table in result.Tables.OrderBy(table => table.Name))
+        var tables = result.DataOrEmpty();
+        foreach (var table in tables.OrderBy(table => table.Name))
         {
             folderNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
             {
@@ -284,21 +285,22 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             });
         }
 
-        folderNode.DisplayName = $"表 ({result.Tables.Count})";
+        folderNode.DisplayName = $"表 ({tables.Count})";
         return true;
     }
 
     private async Task<bool> LoadViewNodesAsync(TreeNodeItem folderNode, string schemaName)
     {
         var result = await _databaseService.GetViewsAsync(CurrentConnection!, schemaName);
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             LoadingText = result.Message;
             return false;
         }
 
         folderNode.ClearChildren();
-        foreach (var view in result.Views.OrderBy(view => view.Name))
+        var views = result.DataOrEmpty();
+        foreach (var view in views.OrderBy(view => view.Name))
         {
             folderNode.AddChild(new TreeNodeItem(view.Name, TreeNodeType.View, "View")
             {
@@ -307,21 +309,22 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             });
         }
 
-        folderNode.DisplayName = $"视图 ({result.Views.Count})";
+        folderNode.DisplayName = $"视图 ({views.Count})";
         return true;
     }
 
     private async Task<bool> LoadProcedureNodesAsync(TreeNodeItem folderNode, string schemaName)
     {
         var result = await _databaseService.GetStoredProceduresAsync(CurrentConnection!, schemaName);
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             LoadingText = result.Message;
             return false;
         }
 
         folderNode.ClearChildren();
-        foreach (var procedure in result.Procedures.OrderBy(procedure => procedure.Name))
+        var procedures = result.DataOrEmpty();
+        foreach (var procedure in procedures.OrderBy(procedure => procedure.Name))
         {
             folderNode.AddChild(new TreeNodeItem(procedure.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
             {
@@ -330,21 +333,22 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             });
         }
 
-        folderNode.DisplayName = $"存储过程 ({result.Procedures.Count})";
+        folderNode.DisplayName = $"存储过程 ({procedures.Count})";
         return true;
     }
 
     private async Task<bool> LoadFunctionNodesAsync(TreeNodeItem folderNode, string schemaName)
     {
         var result = await _databaseService.GetFunctionsAsync(CurrentConnection!, schemaName);
-        if (!result.Success)
+        if (!result.IsSuccess)
         {
             LoadingText = result.Message;
             return false;
         }
 
         folderNode.ClearChildren();
-        foreach (var function in result.Functions.OrderBy(function => function.Name))
+        var functions = result.DataOrEmpty();
+        foreach (var function in functions.OrderBy(function => function.Name))
         {
             folderNode.AddChild(new TreeNodeItem(function.Name, TreeNodeType.StoredProcedure, "StoredProcedure")
             {
@@ -353,7 +357,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
             });
         }
 
-        folderNode.DisplayName = $"函数 ({result.Functions.Count})";
+        folderNode.DisplayName = $"函数 ({functions.Count})";
         return true;
     }
     [RelayCommand]

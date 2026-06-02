@@ -340,3 +340,62 @@ error: unclosed group
 - **Notes**: 后续改用 `Select-String -SimpleMatch` 做固定文本检索，避免 PowerShell 下 `rg` 正则转义歧义。
 
 ---
+## [ERR-20260602-001] dotnet_script_unavailable
+
+**Logged**: 2026-06-02T22:10:00+08:00
+**Priority**: low
+**Status**: pending
+**Area**: infra
+
+### Summary
+Attempted to inspect Azrng.Core metadata with `dotnet script`, but the global tool is not installed in this environment.
+
+### Error
+```text
+无法执行，因为找不到指定的命令或文件。
+```
+
+### Context
+- Command/operation attempted: `dotnet script -`
+- Task: inspect NuGet assembly public API for ResultModel and exception types.
+- Environment: Windows PowerShell, .NET SDK available but dotnet-script unavailable.
+
+### Suggested Fix
+Use PowerShell reflection with dependency resolution, `dotnet exec` against a small compiled helper, or inspect package XML/docs instead of assuming `dotnet-script` exists.
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/AzrngTools.csproj
+
+---
+## [ERR-20260602-002] parallel_dotnet_build_test_file_lock
+
+**Logged**: 2026-06-02T22:23:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+Running `dotnet build` and `dotnet test` in parallel against the same solution caused an Avalonia/MSBuild file lock on the shared obj output DLL.
+
+### Error
+```text
+MSBUILD : Avalonia error AVLN9999: The process cannot access the file 'AzrngTools\obj\Debug\net10.0-windows\AzrngTools.dll' because it is being used by another process.
+```
+
+### Context
+- Commands were launched concurrently through parallel tool execution.
+- The database-filtered test completed successfully; the build failed only due to shared output file contention.
+
+### Suggested Fix
+Do not run `dotnet build` and `dotnet test` concurrently for this solution unless using separate output directories. Run them sequentially for final verification.
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/AzrngTools.csproj
+
+### Resolution
+- **Resolved**: 2026-06-02T22:24:00+08:00
+- **Notes**: Re-ran `dotnet build AzrngTools.sln -v minimal` sequentially after tests completed; build passed with 0 warnings and 0 errors.
+
+---

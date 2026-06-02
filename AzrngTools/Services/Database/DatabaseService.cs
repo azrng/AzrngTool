@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Azrng.Core.Model;
+using Azrng.Core.Results;
 using Azrng.DataAccess;
 using Azrng.DataAccess.DbBridge;
 using Azrng.DataAccess.Helper;
@@ -60,19 +61,19 @@ namespace AzrngTools.Services.Database
         /// </summary>
         /// <param name="config">数据库配置</param>
         /// <returns>连接测试结果</returns>
-        public async Task<(bool Success, string Message, string? Suggestion)> TestConnectionAsync(ConnectionConfig? config)
+        public async Task<IResultModel<DatabaseConnectionTestResult>> TestConnectionAsync(ConnectionConfig? config)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, "数据库配置不能为空", "请检查连接配置是否正确");
+                    return CreateConnectionTestFailure("数据库配置不能为空", "请检查连接配置是否正确");
                 }
 
                 // 验证必填字段
                 if (string.IsNullOrWhiteSpace(config.Name))
                 {
-                    return (false, "连接名称不能为空", "请输入连接名称");
+                    return CreateConnectionTestFailure("连接名称不能为空", "请输入连接名称");
                 }
 
 
@@ -80,12 +81,12 @@ namespace AzrngTools.Services.Database
                 {
                     if (string.IsNullOrWhiteSpace(config.Host))
                     {
-                        return (false, "服务器地址不能为空", "请输入数据库服务器地址");
+                        return CreateConnectionTestFailure("服务器地址不能为空", "请输入数据库服务器地址");
                     }
 
                     if (config.Port <= 0)
                     {
-                        return (false, "端口号无效",
+                        return CreateConnectionTestFailure("端口号无效",
                             $"请输入有效的端口号（{GetDatabaseTypeName(config.DatabaseType)} 默认端口：{GetDefaultPort(config.DatabaseType)}）");
                     }
 
@@ -93,7 +94,7 @@ namespace AzrngTools.Services.Database
 
                     if (requiresUsername && string.IsNullOrWhiteSpace(config.Username))
                     {
-                        return (false, "用户名不能为空", "请输入数据库用户名");
+                        return CreateConnectionTestFailure("用户名不能为空", "请输入数据库用户名");
                     }
                 }
                 else
@@ -101,12 +102,12 @@ namespace AzrngTools.Services.Database
                     // Sqlite 特殊验证
                     if (string.IsNullOrWhiteSpace(config.Database))
                     {
-                        return (false, "Sqlite 数据库文件路径不能为空", "请选择 Sqlite 数据库文件");
+                        return CreateConnectionTestFailure("Sqlite 数据库文件路径不能为空", "请选择 Sqlite 数据库文件");
                     }
 
                     if (!File.Exists(config.Database))
                     {
-                        return (false, $"Sqlite 数据库文件不存在: {config.Database}", "请检查文件路径是否正确，或选择已存在的数据库文件");
+                        return CreateConnectionTestFailure($"Sqlite 数据库文件不存在: {config.Database}", "请检查文件路径是否正确，或选择已存在的数据库文件");
                     }
                 }
 
@@ -119,11 +120,11 @@ namespace AzrngTools.Services.Database
                     if (success)
                     {
                         LoggingService.LogOperation($"测试 Sqlite 连接成功: {config.Name}");
-                        return (true, "连接成功", null);
+                        return CreateConnectionTestSuccess();
                     }
                     else
                     {
-                        return (false, "Sqlite 连接测试失败", "请检查数据库文件是否有效且未被占用");
+                        return CreateConnectionTestFailure("Sqlite 连接测试失败", "请检查数据库文件是否有效且未被占用");
                     }
                 }
 
@@ -135,7 +136,7 @@ namespace AzrngTools.Services.Database
                     await command.ExecuteScalarAsync();
 
                     LoggingService.LogOperation($"测试 SQL Server Windows 身份认证连接成功: {config.Name}");
-                    return (true, "连接成功", null);
+                    return CreateConnectionTestSuccess();
                 }
 
                 var testConfig = CreateCatalogConnectionConfig(config);
@@ -145,18 +146,39 @@ namespace AzrngTools.Services.Database
                 _ = await dbBridge.GetSchemaListAsync();
 
                 LoggingService.LogOperation($"测试数据库连接成功: {config.Name} ({config.DatabaseType})");
-                return (true, "连接成功", null);
+                return CreateConnectionTestSuccess();
             }
             catch (NotSupportedException ex)
             {
                 LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
-                return (false, $"不支持的数据库类型: {config?.DatabaseType}", "当前版本暂不支持此数据库类型");
+                return CreateConnectionTestFailure($"不支持的数据库类型: {config?.DatabaseType}", "当前版本暂不支持此数据库类型", ex);
             }
             catch (Exception ex)
             {
                 LoggingService.LogError($"连接测试失败: {config?.Name}", ex);
-                return (false, $"连接测试失败: {ex.Message}", GetConnectionErrorSuggestion(ex.Message));
+                return CreateConnectionTestFailure($"连接测试失败: {ex.Message}", GetConnectionErrorSuggestion(ex.Message), ex);
             }
+        }
+
+        private static IResultModel<DatabaseConnectionTestResult> CreateConnectionTestSuccess()
+        {
+            return DatabaseResultModel.Success(new DatabaseConnectionTestResult(null), "连接成功");
+        }
+
+        private static IResultModel<DatabaseConnectionTestResult> CreateConnectionTestFailure(
+            string message,
+            string? suggestion,
+            Exception? exception = null)
+        {
+            var result = exception == null
+                ? ResultModel<DatabaseConnectionTestResult>.Failure(message, "DATABASE_ERROR")
+                : ResultModel<DatabaseConnectionTestResult>.Failure(
+                    message,
+                    exception is Azrng.Core.Exceptions.BaseException baseException
+                        ? baseException.ErrorCode
+                        : "DATABASE_ERROR");
+            result.Data = new DatabaseConnectionTestResult(suggestion);
+            return result;
         }
 
         /// <summary>
@@ -354,13 +376,13 @@ namespace AzrngTools.Services.Database
         /// <summary>
         /// 获取数据库名称列表
         /// </summary>
-        public async Task<(bool Success, List<string> Databases, string Message)> GetDatabaseNamesAsync(ConnectionConfig config)
+        public async Task<IResultModel<List<string>>> GetDatabaseNamesAsync(ConnectionConfig config)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<string>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<string>>("数据库配置不能为空");
                 }
 
                 if (config.DatabaseType == DatabaseType.SqlServer && config.UseWindowsAuthentication)
@@ -381,7 +403,7 @@ namespace AzrngTools.Services.Database
                         }
                     }
 
-                    return (true, windowsAuthDatabases, $"Loaded {windowsAuthDatabases.Count} databases successfully.");
+                    return DatabaseResultModel.Success(windowsAuthDatabases, $"Loaded {windowsAuthDatabases.Count} databases successfully.");
                 }
 
                 var catalogConfig = CreateCatalogConnectionConfig(config);
@@ -392,15 +414,15 @@ namespace AzrngTools.Services.Database
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
 
-                return (true, normalizedDatabases, $"成功加载 {normalizedDatabases.Count} 个数据库");
+                return DatabaseResultModel.Success(normalizedDatabases, $"成功加载 {normalizedDatabases.Count} 个数据库");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<string>(), ex.Message);
+                return DatabaseResultModel.Failure<List<string>>(ex, ex.Message);
             }
             catch (Exception ex)
             {
-                return (false, new List<string>(), $"加载数据库列表失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<string>>(ex, $"加载数据库列表失败: {ex.Message}");
             }
         }
 
@@ -452,13 +474,13 @@ namespace AzrngTools.Services.Database
         /// </summary>
         /// <param name="config">数据库配置</param>
         /// <returns>Schema 列表</returns>
-        public async Task<(bool Success, List<SchemaModel> Schemas, string Message)> GetSchemasAsync(ConnectionConfig config)
+        public async Task<IResultModel<List<SchemaModel>>> GetSchemasAsync(ConnectionConfig config)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<SchemaModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<SchemaModel>>("数据库配置不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
@@ -466,7 +488,7 @@ namespace AzrngTools.Services.Database
                 if (dbType == DatabaseType.MySql)
                 {
                     var mySqlSchema = CreateMySqlRuntimeSchema(config);
-                    return (true, new List<SchemaModel> { mySqlSchema }, "成功加载 1 个 Schema");
+                    return DatabaseResultModel.Success(new List<SchemaModel> { mySqlSchema }, "成功加载 1 个 Schema");
                 }
 
                 if (dbType == DatabaseType.Sqlite)
@@ -476,7 +498,7 @@ namespace AzrngTools.Services.Database
                                             new() { Name = "main", Owner = "Sqlite", TableCount = 0, IsDefault = true }
                                         };
 
-                    return (true, sqliteSchemas, "成功加载 1 个 Schema");
+                    return DatabaseResultModel.Success(sqliteSchemas, "成功加载 1 个 Schema");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -496,15 +518,15 @@ namespace AzrngTools.Services.Database
                                                        })
                                         .ToList();
 
-                return (true, schemas, $"成功加载 {schemas.Count} 个 Schema");
+                return DatabaseResultModel.Success(schemas, $"成功加载 {schemas.Count} 个 Schema");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<SchemaModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<SchemaModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<SchemaModel>(), $"加载 Schema 失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<SchemaModel>>(ex, $"加载 Schema 失败: {ex.Message}");
             }
         }
 
@@ -514,19 +536,19 @@ namespace AzrngTools.Services.Database
         /// <param name="config">数据库配置</param>
         /// <param name="schemaName">Schema 名称</param>
         /// <returns>表列表</returns>
-        public async Task<(bool Success, List<TableModel> Tables, string Message)> GetTablesAsync(
+        public async Task<IResultModel<List<TableModel>>> GetTablesAsync(
             ConnectionConfig config, string schemaName)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<TableModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<TableModel>>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName))
                 {
-                    return (false, new List<TableModel>(), "Schema 名称不能为空");
+                    return DatabaseResultModel.Failure<List<TableModel>>("Schema 名称不能为空");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -542,15 +564,15 @@ namespace AzrngTools.Services.Database
                                                      })
                                       .ToList();
 
-                return (true, tables, $"成功加载 {tables.Count} 个表");
+                return DatabaseResultModel.Success(tables, $"成功加载 {tables.Count} 个表");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<TableModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<TableModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<TableModel>(), $"加载表失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<TableModel>>(ex, $"加载表失败: {ex.Message}");
             }
         }
 
@@ -561,24 +583,24 @@ namespace AzrngTools.Services.Database
         /// <param name="schemaName">Schema 名称</param>
         /// <param name="tableName">表名</param>
         /// <returns>列列表</returns>
-        public async Task<(bool Success, List<ColumnModel> Columns, string Message)> GetColumnsAsync(
+        public async Task<IResultModel<List<ColumnModel>>> GetColumnsAsync(
             ConnectionConfig config, string schemaName, string tableName)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<ColumnModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<ColumnModel>>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName))
                 {
-                    return (false, new List<ColumnModel>(), "Schema 名称不能为空");
+                    return DatabaseResultModel.Failure<List<ColumnModel>>("Schema 名称不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(tableName))
                 {
-                    return (false, new List<ColumnModel>(), "表名不能为空");
+                    return DatabaseResultModel.Failure<List<ColumnModel>>("表名不能为空");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -600,19 +622,19 @@ namespace AzrngTools.Services.Database
                                         .OrderBy(c => c.OrdinalPosition)
                                         .ToList();
 
-                return (true, columns, $"成功加载 {columns.Count} 个列");
+                return DatabaseResultModel.Success(columns, $"成功加载 {columns.Count} 个列");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<ColumnModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<ColumnModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<ColumnModel>(), $"加载列失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<ColumnModel>>(ex, $"加载列失败: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, string Message)> UpdateTableCommentAsync(
+        public async Task<IResultModel<bool>> UpdateTableCommentAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName,
@@ -622,18 +644,18 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<bool>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(tableName))
                 {
-                    return (false, "表名不能为空");
+                    return DatabaseResultModel.Failure<bool>("表名不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
                 if (dbType is not (DatabaseType.PostgresSql or DatabaseType.MySql))
                 {
-                    return (false, "当前连接类型暂不支持修改备注");
+                    return DatabaseResultModel.Failure<bool>("当前连接类型暂不支持修改备注");
                 }
 
                 var normalizedComment = NormalizeComment(comment);
@@ -650,16 +672,16 @@ namespace AzrngTools.Services.Database
                 };
 
                 await dbHelper.ExecuteAsync(sql);
-                return (true, "表备注已更新");
+                return DatabaseResultModel.Success(true, "表备注已更新");
             }
             catch (Exception ex)
             {
                 LoggingService.LogError($"更新表备注失败：{schemaName}.{tableName}", ex);
-                return (false, $"更新表备注失败：{ex.Message}");
+                return DatabaseResultModel.Failure<bool>(ex, $"更新表备注失败：{ex.Message}");
             }
         }
 
-        public async Task<(bool Success, string Message)> UpdateColumnCommentAsync(
+        public async Task<IResultModel<bool>> UpdateColumnCommentAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName,
@@ -670,23 +692,23 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<bool>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(tableName))
                 {
-                    return (false, "表名不能为空");
+                    return DatabaseResultModel.Failure<bool>("表名不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(columnName))
                 {
-                    return (false, "字段名不能为空");
+                    return DatabaseResultModel.Failure<bool>("字段名不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
                 if (dbType is not (DatabaseType.PostgresSql or DatabaseType.MySql))
                 {
-                    return (false, "当前连接类型暂不支持修改备注");
+                    return DatabaseResultModel.Failure<bool>("当前连接类型暂不支持修改备注");
                 }
 
                 var normalizedComment = NormalizeComment(comment);
@@ -700,28 +722,28 @@ namespace AzrngTools.Services.Database
                         : $"COMMENT ON COLUMN {qualifiedColumnName} IS '{EscapeSqlLiteral(normalizedComment)}';";
 
                     await dbHelper.ExecuteAsync(sql);
-                    return (true, "字段备注已更新");
+                    return DatabaseResultModel.Success(true, "字段备注已更新");
                 }
 
                 var columnDefinition = await LoadMySqlColumnDefinitionAsync(dbHelper, schemaName, tableName, columnName);
                 if (columnDefinition == null)
                 {
-                    return (false, "无法获取字段当前定义，已取消保存");
+                    return DatabaseResultModel.Failure<bool>("无法获取字段当前定义，已取消保存");
                 }
 
                 if (IsMySqlGeneratedColumn(columnDefinition))
                 {
-                    return (false, "暂不支持修改生成列备注");
+                    return DatabaseResultModel.Failure<bool>("暂不支持修改生成列备注");
                 }
 
                 var modifySql = BuildMySqlModifyColumnCommentSql(schemaName, tableName, columnDefinition, normalizedComment);
                 await dbHelper.ExecuteAsync(modifySql);
-                return (true, "字段备注已更新");
+                return DatabaseResultModel.Success(true, "字段备注已更新");
             }
             catch (Exception ex)
             {
                 LoggingService.LogError($"更新字段备注失败：{schemaName}.{tableName}.{columnName}", ex);
-                return (false, $"更新字段备注失败：{ex.Message}");
+                return DatabaseResultModel.Failure<bool>(ex, $"更新字段备注失败：{ex.Message}");
             }
         }
 
@@ -731,18 +753,18 @@ namespace AzrngTools.Services.Database
         /// <param name="config">数据库配置</param>
         /// <param name="schemaName">Schema 名称</param>
         /// <returns>视图列表</returns>
-        public async Task<(bool Success, List<ViewModel> Views, string Message)> GetViewsAsync(ConnectionConfig config, string schemaName)
+        public async Task<IResultModel<List<ViewModel>>> GetViewsAsync(ConnectionConfig config, string schemaName)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<ViewModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<ViewModel>>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName))
                 {
-                    return (false, new List<ViewModel>(), "Schema 名称不能为空");
+                    return DatabaseResultModel.Failure<List<ViewModel>>("Schema 名称不能为空");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -759,15 +781,15 @@ namespace AzrngTools.Services.Database
                                     .OrderBy(v => v.Name)
                                     .ToList();
 
-                return (true, views, $"成功加载 {views.Count} 个视图");
+                return DatabaseResultModel.Success(views, $"成功加载 {views.Count} 个视图");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<ViewModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<ViewModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<ViewModel>(), $"加载视图失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<ViewModel>>(ex, $"加载视图失败: {ex.Message}");
             }
         }
 
@@ -777,26 +799,26 @@ namespace AzrngTools.Services.Database
         /// <param name="config">数据库配置</param>
         /// <param name="schemaName">Schema 名称</param>
         /// <returns>存储过程列表</returns>
-        public async Task<(bool Success, List<StoredProcedureModel> Procedures, string Message)> GetStoredProceduresAsync(
+        public async Task<IResultModel<List<StoredProcedureModel>>> GetStoredProceduresAsync(
             ConnectionConfig config, string schemaName)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<StoredProcedureModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<StoredProcedureModel>>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName))
                 {
-                    return (false, new List<StoredProcedureModel>(), "Schema 名称不能为空");
+                    return DatabaseResultModel.Failure<List<StoredProcedureModel>>("Schema 名称不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
 
                 if (dbType == DatabaseType.Sqlite)
                 {
-                    return (true, new List<StoredProcedureModel>(), "Sqlite 不支持存储过程");
+                    return DatabaseResultModel.Success(new List<StoredProcedureModel>(), "Sqlite 不支持存储过程");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -834,37 +856,37 @@ namespace AzrngTools.Services.Database
                                          .ToList();
                 }
 
-                return (true, procedures, $"成功加载 {procedures.Count} 个存储过程");
+                return DatabaseResultModel.Success(procedures, $"成功加载 {procedures.Count} 个存储过程");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<StoredProcedureModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<StoredProcedureModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<StoredProcedureModel>(), $"加载存储过程失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<StoredProcedureModel>>(ex, $"加载存储过程失败: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, List<StoredProcedureModel> Functions, string Message)> GetFunctionsAsync(
+        public async Task<IResultModel<List<StoredProcedureModel>>> GetFunctionsAsync(
             ConnectionConfig config, string schemaName)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, new List<StoredProcedureModel>(), "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<List<StoredProcedureModel>>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName))
                 {
-                    return (false, new List<StoredProcedureModel>(), "Schema 名称不能为空");
+                    return DatabaseResultModel.Failure<List<StoredProcedureModel>>("Schema 名称不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
                 if (dbType != DatabaseType.MySql)
                 {
-                    return (true, new List<StoredProcedureModel>(), "当前数据库类型暂无函数列表");
+                    return DatabaseResultModel.Success(new List<StoredProcedureModel>(), "当前数据库类型暂无函数列表");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -883,19 +905,19 @@ namespace AzrngTools.Services.Database
                     .OrderBy(function => function.Name)
                     .ToList();
 
-                return (true, functions, $"成功加载 {functions.Count} 个函数");
+                return DatabaseResultModel.Success(functions, $"成功加载 {functions.Count} 个函数");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<StoredProcedureModel>(), $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<List<StoredProcedureModel>>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, new List<StoredProcedureModel>(), $"加载函数失败: {ex.Message}");
+                return DatabaseResultModel.Failure<List<StoredProcedureModel>>(ex, $"加载函数失败: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, string Definition, string Message)> GetViewDefinitionAsync(
+        public async Task<IResultModel<string>> GetViewDefinitionAsync(
             ConnectionConfig config,
             string schemaName,
             string viewName)
@@ -904,28 +926,28 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, string.Empty, "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<string>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName) || string.IsNullOrWhiteSpace(viewName))
                 {
-                    return (false, string.Empty, "视图信息不能为空");
+                    return DatabaseResultModel.Failure<string>("视图信息不能为空");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
                 var view = await dbBridge.GetSchemaViewAsync(schemaName, viewName);
                 var ddl = view?.ViewDefinition;
                 return string.IsNullOrWhiteSpace(ddl)
-                    ? (false, string.Empty, "未查询到视图定义")
-                    : (true, ddl!, "成功加载视图定义");
+                    ? DatabaseResultModel.Failure<string>("未查询到视图定义")
+                    : DatabaseResultModel.Success(ddl!, "成功加载视图定义");
             }
             catch (Exception ex)
             {
-                return (false, string.Empty, $"加载视图定义失败: {ex.Message}");
+                return DatabaseResultModel.Failure<string>(ex, $"加载视图定义失败: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, string Definition, string Message)> GetStoredProcedureDefinitionAsync(
+        public async Task<IResultModel<string>> GetStoredProcedureDefinitionAsync(
             ConnectionConfig config,
             string schemaName,
             string procedureName)
@@ -934,34 +956,34 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, string.Empty, "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<string>("数据库配置不能为空");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName) || string.IsNullOrWhiteSpace(procedureName))
                 {
-                    return (false, string.Empty, "存储过程信息不能为空");
+                    return DatabaseResultModel.Failure<string>("存储过程信息不能为空");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
                 if (dbType == DatabaseType.Sqlite)
                 {
-                    return (false, string.Empty, "Sqlite 不支持存储过程");
+                    return DatabaseResultModel.Failure<string>("Sqlite 不支持存储过程");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
                 var routine = await dbBridge.GetSchemaRoutineAsync(schemaName, procedureName);
                 var ddl = routine?.RoutineDefinition;
                 return string.IsNullOrWhiteSpace(ddl)
-                    ? (false, string.Empty, "未查询到存储过程定义")
-                    : (true, ddl!, "成功加载存储过程定义");
+                    ? DatabaseResultModel.Failure<string>("未查询到存储过程定义")
+                    : DatabaseResultModel.Success(ddl!, "成功加载存储过程定义");
             }
             catch (Exception ex)
             {
-                return (false, string.Empty, $"加载存储过程定义失败: {ex.Message}");
+                return DatabaseResultModel.Failure<string>(ex, $"加载存储过程定义失败: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, List<IndexModel> Indexes, string Message)> GetIndexesAsync(
+        public async Task<IResultModel<List<IndexModel>>> GetIndexesAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName)
@@ -970,12 +992,12 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, new List<IndexModel>(), "Database configuration cannot be null.");
+                    return DatabaseResultModel.Failure<List<IndexModel>>("Database configuration cannot be null.");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName) || string.IsNullOrWhiteSpace(tableName))
                 {
-                    return (false, new List<IndexModel>(), "Schema name and table name are required.");
+                    return DatabaseResultModel.Failure<List<IndexModel>>("Schema name and table name are required.");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -1005,20 +1027,19 @@ namespace AzrngTools.Services.Database
                               .ThenBy(index => index.Name)
                               .ToList();
 
-                return (true, indexes, $"Loaded {indexes.Count} indexes.");
+                return DatabaseResultModel.Success(indexes, $"Loaded {indexes.Count} indexes.");
             }
             catch (NotSupportedException ex)
             {
-                return (false, new List<IndexModel>(), ex.Message);
+                return DatabaseResultModel.Failure<List<IndexModel>>(ex, ex.Message);
             }
             catch (Exception ex)
             {
-                return (false, new List<IndexModel>(), $"Failed to load indexes: {ex.Message}");
+                return DatabaseResultModel.Failure<List<IndexModel>>(ex, $"Failed to load indexes: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, bool HasResultSet, List<string> Columns, List<List<string>> Rows, int AffectedRows, string Message
-            )> ExecuteSqlAsync(
+        public async Task<IResultModel<DatabaseSqlExecutionResult>> ExecuteSqlAsync(
             ConnectionConfig config,
             string sql)
         {
@@ -1026,12 +1047,12 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, false, new List<string>(), new List<List<string>>(), 0, "Database configuration cannot be null.");
+                    return DatabaseResultModel.Failure<DatabaseSqlExecutionResult>("Database configuration cannot be null.");
                 }
 
                 if (string.IsNullOrWhiteSpace(sql))
                 {
-                    return (false, false, new List<string>(), new List<List<string>>(), 0, "SQL text cannot be empty.");
+                    return DatabaseResultModel.Failure<DatabaseSqlExecutionResult>("SQL text cannot be empty.");
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
@@ -1054,24 +1075,27 @@ namespace AzrngTools.Services.Database
                     var message = previewQuery.WasLimited
                         ? $"Query returned first {rows.Count} rows. Preview is limited to {DatabaseQueryPreviewLimiter.DefaultMaxRows} rows."
                         : $"Query returned {rows.Count} rows.";
-                    return (true, true, columns, rows, rows.Count, message);
+                    return DatabaseResultModel.Success(
+                        new DatabaseSqlExecutionResult(true, columns, rows, rows.Count),
+                        message);
                 }
 
                 var affectedRows = await dbHelper.ExecuteAsync(sql);
-                return (true, false, new List<string>(), new List<List<string>>(), affectedRows,
+                return DatabaseResultModel.Success(
+                    new DatabaseSqlExecutionResult(false, new List<string>(), new List<List<string>>(), affectedRows),
                     $"Statement executed successfully. Affected rows: {affectedRows}.");
             }
             catch (NotSupportedException ex)
             {
-                return (false, false, new List<string>(), new List<List<string>>(), 0, ex.Message);
+                return DatabaseResultModel.Failure<DatabaseSqlExecutionResult>(ex, ex.Message);
             }
             catch (Exception ex)
             {
-                return (false, false, new List<string>(), new List<List<string>>(), 0, $"SQL execution failed: {ex.Message}");
+                return DatabaseResultModel.Failure<DatabaseSqlExecutionResult>(ex, $"SQL execution failed: {ex.Message}");
             }
         }
 
-        public async Task<(bool Success, long RowCount, DateTime? CreateTime, DateTime? ModifyTime, string Message)>
+        public async Task<IResultModel<DatabaseTableStatisticsResult>>
             GetTableStatisticsAsync(
                 ConnectionConfig config,
                 string schemaName,
@@ -1081,12 +1105,12 @@ namespace AzrngTools.Services.Database
             {
                 if (config == null)
                 {
-                    return (false, 0, null, null, "Database configuration cannot be null.");
+                    return DatabaseResultModel.Failure<DatabaseTableStatisticsResult>("Database configuration cannot be null.");
                 }
 
                 if (string.IsNullOrWhiteSpace(schemaName) || string.IsNullOrWhiteSpace(tableName))
                 {
-                    return (false, 0, null, null, "Schema name and table name are required.");
+                    return DatabaseResultModel.Failure<DatabaseTableStatisticsResult>("Schema name and table name are required.");
                 }
 
                 var dbBridge = GetOrCreateDbBridge(config);
@@ -1095,15 +1119,17 @@ namespace AzrngTools.Services.Database
                 var createTime = timestamp?.CreateTime;
                 var modifyTime = timestamp?.ModifyTime;
 
-                return (true, -1, createTime, modifyTime, "Loaded table metadata. Exact row count is deferred.");
+                return DatabaseResultModel.Success(
+                    new DatabaseTableStatisticsResult(-1, createTime, modifyTime),
+                    "Loaded table metadata. Exact row count is deferred.");
             }
             catch (NotSupportedException ex)
             {
-                return (false, 0, null, null, ex.Message);
+                return DatabaseResultModel.Failure<DatabaseTableStatisticsResult>(ex, ex.Message);
             }
             catch (Exception ex)
             {
-                return (false, 0, null, null, $"Failed to load table statistics: {ex.Message}");
+                return DatabaseResultModel.Failure<DatabaseTableStatisticsResult>(ex, $"Failed to load table statistics: {ex.Message}");
             }
         }
 
@@ -1364,31 +1390,31 @@ LIMIT 1;";
         /// </summary>
         /// <param name="config">数据库配置</param>
         /// <returns>根节点</returns>
-        public async Task<(bool Success, TreeNodeItem? RootNode, string Message)> LoadDatabaseTreeAsync(ConnectionConfig config)
+        public async Task<IResultModel<TreeNodeItem?>> LoadDatabaseTreeAsync(ConnectionConfig config)
         {
             try
             {
                 if (config == null)
                 {
-                    return (false, null, "数据库配置不能为空");
+                    return DatabaseResultModel.Failure<TreeNodeItem?>("数据库配置不能为空");
                 }
 
                 var schemaResult = await GetSchemasAsync(config);
-                if (!schemaResult.Success)
+                if (!schemaResult.IsSuccess)
                 {
-                    return (false, null, schemaResult.Message);
+                    return DatabaseResultModel.Failure<TreeNodeItem?>(schemaResult.Message);
                 }
 
-                var rootNode = DatabaseTreeSkeletonBuilder.BuildSkeleton(config.Name, schemaResult.Schemas);
-                return (true, rootNode, $"成功加载数据库树形结构");
+                var rootNode = DatabaseTreeSkeletonBuilder.BuildSkeleton(config.Name, schemaResult.DataOrEmpty());
+                return DatabaseResultModel.Success<TreeNodeItem?>(rootNode, "成功加载数据库树形结构");
             }
             catch (NotSupportedException ex)
             {
-                return (false, null, $"不支持的数据库类型: {ex.Message}");
+                return DatabaseResultModel.Failure<TreeNodeItem?>(ex, $"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
-                return (false, null, $"加载数据库树形结构失败: {ex.Message}");
+                return DatabaseResultModel.Failure<TreeNodeItem?>(ex, $"加载数据库树形结构失败: {ex.Message}");
             }
         }
     }

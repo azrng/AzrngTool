@@ -158,14 +158,14 @@ public partial class TableDetailViewModel : ViewModelBase
         try
         {
             var result = await _databaseService.GetTablesAsync(CurrentConnection, schemaName);
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 LoadingText = result.Message;
                 LoggingService.LogError($"加载数据表失败：{result.Message}");
                 return;
             }
 
-            foreach (var table in result.Tables.OrderBy(table => table.Name))
+            foreach (var table in result.DataOrEmpty().OrderBy(table => table.Name))
             {
                 Tables.Add(table);
             }
@@ -210,11 +210,11 @@ public partial class TableDetailViewModel : ViewModelBase
             LoggingService.LogInfo($"Loading columns for {schemaName}.{SelectedTable.Name}...");
 
             var columnsResult = await _databaseService.GetColumnsAsync(CurrentConnection, schemaName, SelectedTable.Name);
-            LoggingService.LogInfo($"GetColumnsAsync result: Success={columnsResult.Success}, Count={columnsResult.Columns?.Count ?? 0}, Message={columnsResult.Message}");
+            LoggingService.LogInfo($"GetColumnsAsync result: Success={columnsResult.IsSuccess}, Count={columnsResult.Data?.Count ?? 0}, Message={columnsResult.Message}");
 
-            if (columnsResult.Success)
+            if (columnsResult.IsSuccess)
             {
-                foreach (var column in (columnsResult.Columns ?? Enumerable.Empty<ColumnModel>())
+                foreach (var column in (columnsResult.Data ?? Enumerable.Empty<ColumnModel>())
                              .OrderBy(column => column.OrdinalPosition))
                 {
                     Columns.Add(column);
@@ -229,11 +229,11 @@ public partial class TableDetailViewModel : ViewModelBase
 
             LoggingService.LogInfo($"Loading indexes for {schemaName}.{SelectedTable.Name}...");
             var indexesResult = await _databaseService.GetIndexesAsync(CurrentConnection, schemaName, SelectedTable.Name);
-            LoggingService.LogInfo($"GetIndexesAsync result: Success={indexesResult.Success}, Count={indexesResult.Indexes?.Count ?? 0}, Message={indexesResult.Message}");
+            LoggingService.LogInfo($"GetIndexesAsync result: Success={indexesResult.IsSuccess}, Count={indexesResult.Data?.Count ?? 0}, Message={indexesResult.Message}");
 
-            if (indexesResult.Success)
+            if (indexesResult.IsSuccess)
             {
-                foreach (var index in indexesResult.Indexes ?? Enumerable.Empty<IndexModel>())
+                foreach (var index in indexesResult.Data ?? Enumerable.Empty<IndexModel>())
                 {
                     Indexes.Add(index);
                 }
@@ -246,11 +246,11 @@ public partial class TableDetailViewModel : ViewModelBase
             }
 
             var statsResult = await _databaseService.GetTableStatisticsAsync(CurrentConnection, schemaName, SelectedTable.Name);
-            if (statsResult.Success)
+            if (statsResult.IsSuccess && statsResult.Data != null)
             {
-                RowCount = statsResult.RowCount;
-                CreateTime = statsResult.CreateTime;
-                ModifyTime = statsResult.ModifyTime;
+                RowCount = statsResult.Data.RowCount;
+                CreateTime = statsResult.Data.CreateTime;
+                ModifyTime = statsResult.Data.ModifyTime;
             }
             else
             {
@@ -343,7 +343,7 @@ public partial class TableDetailViewModel : ViewModelBase
                 SelectedTable.Name,
                 normalizedComment);
 
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 ToastService.ShowError(result.Message, 5000);
                 return (false, result.Message);
@@ -391,7 +391,7 @@ public partial class TableDetailViewModel : ViewModelBase
                 column.Name,
                 normalizedComment);
 
-            if (!result.Success)
+            if (!result.IsSuccess)
             {
                 ToastService.ShowError(result.Message, 5000);
                 return (false, result.Message);

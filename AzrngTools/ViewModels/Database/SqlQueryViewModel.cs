@@ -90,27 +90,27 @@ public partial class SqlQueryViewModel : ViewModelBase
 
         try
         {
-            var (success, hasResultSet, columns, rows, affectedRows, message) = await _databaseService.ExecuteSqlAsync(CurrentConnection, SqlText);
-            if (!success)
+            var result = await _databaseService.ExecuteSqlAsync(CurrentConnection, SqlText);
+            if (!result.IsSuccess || result.Data == null)
             {
                 ResultColumns.Clear();
                 ResultRows.Clear();
-                ResultMessage = message;
+                ResultMessage = result.Message;
                 OnPropertyChanged(nameof(HasResults));
-                ToastService.ShowError(message, 5000);
+                ToastService.ShowError(result.Message, 5000);
                 return;
             }
 
             ResultColumns.Clear();
-            foreach (var col in columns) ResultColumns.Add(col);
+            foreach (var col in result.Data.Columns) ResultColumns.Add(col);
             ResultRows.Clear();
-            foreach (var row in rows) ResultRows.Add(row.ToArray());
-            AffectedRows = affectedRows;
-            ResultMessage = message;
+            foreach (var row in result.Data.Rows) ResultRows.Add(row.ToArray());
+            AffectedRows = result.Data.AffectedRows;
+            ResultMessage = result.Message;
             AddToHistory(SqlText);
 
             OnPropertyChanged(nameof(HasResults));
-            ToastService.ShowSuccess(hasResultSet ? message : $"SQL executed. {affectedRows} rows affected.", 3000);
+            ToastService.ShowSuccess(result.Data.HasResultSet ? result.Message : $"SQL executed. {result.Data.AffectedRows} rows affected.", 3000);
         }
         catch (Exception ex)
         {

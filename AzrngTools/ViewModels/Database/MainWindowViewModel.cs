@@ -398,22 +398,23 @@ public partial class MainWindowViewModel : ViewModelBase
             IsLoading = true;
             LoadingText = "正在测试连接...";
 
-            var (success, message, suggestion) = await _databaseService.TestConnectionAsync(connection);
-            if (success)
+            var result = await _databaseService.TestConnectionAsync(connection);
+            if (result.IsSuccess)
             {
                 LoadingText = $"连接测试成功：{connection.Name}";
                 LoggingService.LogOperation($"连接测试成功：{connection.Name}");
                 await InitializeConnectionContextAsync(connection);
-                ToastService.ShowSuccess($"连接成功：{connection.Name}\n{message}", 3000);
+                ToastService.ShowSuccess($"连接成功：{connection.Name}\n{result.Message}", 3000);
                 return;
             }
 
             LoadingText = $"连接测试失败：{connection.Name}";
-            LoggingService.LogError($"连接测试失败：{connection.Name} - {message}");
+            LoggingService.LogError($"连接测试失败：{connection.Name} - {result.Message}");
 
+            var suggestion = result.Data?.Suggestion;
             var fullMessage = string.IsNullOrWhiteSpace(suggestion)
-                ? message
-                : $"{message}\n\n建议：\n{suggestion}";
+                ? result.Message
+                : $"{result.Message}\n\n建议：\n{suggestion}";
 
             ToastService.ShowError($"连接失败：{connection.Name}\n\n{fullMessage}", 6000);
         }
@@ -834,17 +835,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var (success, schemas, message) = await _databaseService.GetSchemasAsync(config);
-            if (!success)
+            var result = await _databaseService.GetSchemasAsync(config);
+            if (!result.IsSuccess)
             {
-                LoadingText = message;
-                LoggingService.LogError($"Failed to load schemas for {config.Name}: {message}");
+                LoadingText = result.Message;
+                LoggingService.LogError($"Failed to load schemas for {config.Name}: {result.Message}");
                 return;
             }
 
             Schemas.Clear();
+            var schemas = result.DataOrEmpty();
             foreach (var s in schemas) Schemas.Add(s);
-            LoadingText = message;
+            LoadingText = result.Message;
             LoggingService.LogInfo($"Loaded {schemas.Count} schemas for {config.Name}.");
         }
         catch (Exception ex)
@@ -1317,13 +1319,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var (success, databases, _) = await _databaseService.GetDatabaseNamesAsync(connection);
+            var result = await _databaseService.GetDatabaseNamesAsync(connection);
             if (SelectedConnection != connection)
             {
                 return;
             }
 
-            var selectionResult = _databaseConnectionContextService.BuildDatabaseSelection(databases, preferredDatabase, success);
+            var selectionResult = _databaseConnectionContextService.BuildDatabaseSelection(result.DataOrEmpty(), preferredDatabase, result.IsSuccess);
             foreach (var database in selectionResult.Databases)
             {
                 AvailableDatabases.Add(database);

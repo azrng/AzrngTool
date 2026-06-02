@@ -362,7 +362,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         }
 
         var schemaResult = await _databaseService.GetSchemasAsync(_connection);
-        if (!schemaResult.Success)
+        if (!schemaResult.IsSuccess)
         {
             throw new InvalidOperationException(schemaResult.Message);
         }
@@ -375,12 +375,12 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 
         var schemasFolderNode = new TreeNodeItem("Schemas", TreeNodeType.Folder, "Folder")
         {
-            DisplayName = $"架构 ({schemaResult.Schemas.Count})",
+            DisplayName = $"架构 ({schemaResult.DataOrEmpty().Count})",
             IsExpanded = true
         };
         rootNode.AddChild(schemasFolderNode);
 
-        foreach (var schema in schemaResult.Schemas.OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase))
+        foreach (var schema in schemaResult.DataOrEmpty().OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase))
         {
             var schemaNode = new TreeNodeItem(schema.Name, TreeNodeType.Schema, "Schema")
             {
@@ -390,9 +390,9 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
             };
 
             var tablesResult = await _databaseService.GetTablesAsync(_connection, schema.Name);
-            if (tablesResult.Success)
+            if (tablesResult.IsSuccess)
             {
-                foreach (var table in tablesResult.Tables.OrderBy(t => t.Name))
+                foreach (var table in tablesResult.DataOrEmpty().OrderBy(t => t.Name))
                 {
                     schemaNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
                     {
@@ -401,7 +401,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
                     });
                 }
 
-                schemaNode.DisplayName = $"{schema.Name} ({tablesResult.Tables.Count})";
+                schemaNode.DisplayName = $"{schema.Name} ({tablesResult.DataOrEmpty().Count})";
             }
 
             schemasFolderNode.AddChild(schemaNode);
@@ -442,9 +442,9 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         };
 
         var tablesResult = await _databaseService.GetTablesAsync(connection, schemaName);
-        if (tablesResult.Success)
+        if (tablesResult.IsSuccess)
         {
-            foreach (var table in tablesResult.Tables.OrderBy(table => table.Name))
+            foreach (var table in tablesResult.DataOrEmpty().OrderBy(table => table.Name))
             {
                 schemaNode.AddChild(new TreeNodeItem(table.Name, TreeNodeType.Table, "Table")
                 {

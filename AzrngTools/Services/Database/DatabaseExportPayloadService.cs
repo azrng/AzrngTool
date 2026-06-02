@@ -79,13 +79,13 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
         }
 
         progress?.Invoke($"正在加载表 {schemaName}...");
-        var (tableSuccess, schemaTables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
-        if (!tableSuccess)
+        var tableResult = await _databaseService.GetTablesAsync(connection, schemaName);
+        if (!tableResult.IsSuccess)
         {
-            return result.WithFailure(tableMessage);
+            return result.WithFailure(tableResult.Message);
         }
 
-        var matchingTables = schemaTables
+        var matchingTables = tableResult.DataOrEmpty()
             .Where(table => selectedTableNames.Contains(table.Name))
             .OrderBy(table => table.Name)
             .ToList();
@@ -103,26 +103,26 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
             var table = matchingTables[i];
             result.Tables.Add(table);
 
-            var (columnSuccess, columns, columnMessage) = columnResults[i];
-            if (!columnSuccess)
+            var columnResult = columnResults[i];
+            if (!columnResult.IsSuccess)
             {
-                LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnMessage}");
+                LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnResult.Message}");
                 result.TableColumnsMap[BuildTableExportKey(table)] = [];
             }
             else
             {
-                result.TableColumnsMap[BuildTableExportKey(table)] = columns.OrderBy(column => column.OrdinalPosition).ToList();
+                result.TableColumnsMap[BuildTableExportKey(table)] = columnResult.DataOrEmpty().OrderBy(column => column.OrdinalPosition).ToList();
             }
 
-            var (indexSuccess, indexes, indexMessage) = indexResults[i];
-            if (!indexSuccess)
+            var indexResult = indexResults[i];
+            if (!indexResult.IsSuccess)
             {
-                LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexMessage}");
+                LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexResult.Message}");
                 result.TableIndexesMap[BuildTableExportKey(table)] = [];
             }
             else
             {
-                result.TableIndexesMap[BuildTableExportKey(table)] = indexes.ToList();
+                result.TableIndexesMap[BuildTableExportKey(table)] = indexResult.DataOrEmpty().ToList();
             }
 
             progress?.Invoke($"正在加载 {table.Schema}.{table.Name}... ({i + 1}/{matchingTables.Count})");
@@ -145,13 +145,13 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
         }
 
         progress?.Invoke($"正在加载视图 {schemaName}...");
-        var (viewSuccess, schemaViews, viewMessage) = await _databaseService.GetViewsAsync(connection, schemaName);
-        if (!viewSuccess)
+        var viewResult = await _databaseService.GetViewsAsync(connection, schemaName);
+        if (!viewResult.IsSuccess)
         {
-            return result.WithFailure(viewMessage);
+            return result.WithFailure(viewResult.Message);
         }
 
-        result.Views.AddRange(schemaViews
+        result.Views.AddRange(viewResult.DataOrEmpty()
             .Where(view => selectedViewNames.Contains(view.Name))
             .OrderBy(view => view.Name));
 
@@ -172,14 +172,13 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
         }
 
         progress?.Invoke($"正在加载存储过程 {schemaName}...");
-        var (procedureSuccess, schemaProcedures, procedureMessage) =
-            await _databaseService.GetStoredProceduresAsync(connection, schemaName);
-        if (!procedureSuccess)
+        var procedureResult = await _databaseService.GetStoredProceduresAsync(connection, schemaName);
+        if (!procedureResult.IsSuccess)
         {
-            return result.WithFailure(procedureMessage);
+            return result.WithFailure(procedureResult.Message);
         }
 
-        result.Procedures.AddRange(schemaProcedures
+        result.Procedures.AddRange(procedureResult.DataOrEmpty()
             .Where(procedure => selectedProcedureNames.Contains(procedure.Name))
             .OrderBy(procedure => procedure.Name));
 

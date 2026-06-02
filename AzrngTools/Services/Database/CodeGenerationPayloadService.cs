@@ -16,30 +16,30 @@ public class CodeGenerationPayloadService : ICodeGenerationPayloadService, ISing
         string schemaName,
         Action<string>? progress = null)
     {
-        var (tableSuccess, tables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
-        if (!tableSuccess)
+        var tableResult = await _databaseService.GetTablesAsync(connection, schemaName);
+        if (!tableResult.IsSuccess)
         {
             return new CodeGenerationPayloadResult
             {
                 Success = false,
-                Message = tableMessage
+                Message = tableResult.Message
             };
         }
 
+        var tables = tableResult.DataOrEmpty();
         var tableColumnsMap = new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase);
         foreach (var table in tables.OrderBy(table => table.Name))
         {
             progress?.Invoke($"正在加载 {table.Schema}.{table.Name} 的字段...");
-            var (columnSuccess, columns, columnMessage) =
-                await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
-            if (!columnSuccess)
+            var columnResult = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
+            if (!columnResult.IsSuccess)
             {
-                LoggingService.LogWarning($"Code generation column fallback for {table.Schema}.{table.Name}: {columnMessage}");
+                LoggingService.LogWarning($"Code generation column fallback for {table.Schema}.{table.Name}: {columnResult.Message}");
                 tableColumnsMap[table.Name] = [];
                 continue;
             }
 
-            tableColumnsMap[table.Name] = columns.OrderBy(column => column.OrdinalPosition).ToList();
+            tableColumnsMap[table.Name] = columnResult.DataOrEmpty().OrderBy(column => column.OrdinalPosition).ToList();
         }
 
         return new CodeGenerationPayloadResult

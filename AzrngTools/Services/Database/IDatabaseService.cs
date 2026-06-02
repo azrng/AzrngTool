@@ -1,4 +1,5 @@
 using Azrng.Core.Model;
+using Azrng.Core.Results;
 using AzrngTools.Models.Database;
 
 namespace AzrngTools.Services.Database;
@@ -7,65 +8,65 @@ public interface IDatabaseService
 {
     void InvalidateCache();
 
-    Task<(bool Success, string Message, string? Suggestion)> TestConnectionAsync(ConnectionConfig? config);
+    Task<IResultModel<DatabaseConnectionTestResult>> TestConnectionAsync(ConnectionConfig? config);
 
-    Task<(bool Success, List<string> Databases, string Message)> GetDatabaseNamesAsync(ConnectionConfig config);
+    Task<IResultModel<List<string>>> GetDatabaseNamesAsync(ConnectionConfig config);
 
-    Task<(bool Success, TreeNodeItem? RootNode, string Message)> LoadDatabaseTreeAsync(ConnectionConfig config);
+    Task<IResultModel<TreeNodeItem?>> LoadDatabaseTreeAsync(ConnectionConfig config);
 
-    Task<(bool Success, List<SchemaModel> Schemas, string Message)> GetSchemasAsync(ConnectionConfig config);
+    Task<IResultModel<List<SchemaModel>>> GetSchemasAsync(ConnectionConfig config);
 
-    Task<(bool Success, List<TableModel> Tables, string Message)> GetTablesAsync(ConnectionConfig config, string schemaName);
+    Task<IResultModel<List<TableModel>>> GetTablesAsync(ConnectionConfig config, string schemaName);
 
-    Task<(bool Success, List<ViewModel> Views, string Message)> GetViewsAsync(ConnectionConfig config, string schemaName);
+    Task<IResultModel<List<ViewModel>>> GetViewsAsync(ConnectionConfig config, string schemaName);
 
-    Task<(bool Success, List<StoredProcedureModel> Procedures, string Message)> GetStoredProceduresAsync(
+    Task<IResultModel<List<StoredProcedureModel>>> GetStoredProceduresAsync(
         ConnectionConfig config,
         string schemaName);
 
-    Task<(bool Success, List<StoredProcedureModel> Functions, string Message)> GetFunctionsAsync(
+    Task<IResultModel<List<StoredProcedureModel>>> GetFunctionsAsync(
         ConnectionConfig config,
         string schemaName);
 
-    Task<(bool Success, List<ColumnModel> Columns, string Message)> GetColumnsAsync(
+    Task<IResultModel<List<ColumnModel>>> GetColumnsAsync(
         ConnectionConfig config,
         string schemaName,
         string tableName);
 
-    Task<(bool Success, List<IndexModel> Indexes, string Message)> GetIndexesAsync(
+    Task<IResultModel<List<IndexModel>>> GetIndexesAsync(
         ConnectionConfig config,
         string schemaName,
         string tableName);
 
-    Task<(bool Success, long RowCount, DateTime? CreateTime, DateTime? ModifyTime, string Message)> GetTableStatisticsAsync(
+    Task<IResultModel<DatabaseTableStatisticsResult>> GetTableStatisticsAsync(
         ConnectionConfig config,
         string schemaName,
         string tableName);
 
-    Task<(bool Success, string Definition, string Message)> GetViewDefinitionAsync(
+    Task<IResultModel<string>> GetViewDefinitionAsync(
         ConnectionConfig config,
         string schemaName,
         string viewName);
 
-    Task<(bool Success, string Definition, string Message)> GetStoredProcedureDefinitionAsync(
+    Task<IResultModel<string>> GetStoredProcedureDefinitionAsync(
         ConnectionConfig config,
         string schemaName,
         string procedureName);
 
-    Task<(bool Success, string Message)> UpdateTableCommentAsync(
+    Task<IResultModel<bool>> UpdateTableCommentAsync(
         ConnectionConfig config,
         string schemaName,
         string tableName,
         string? comment);
 
-    Task<(bool Success, string Message)> UpdateColumnCommentAsync(
+    Task<IResultModel<bool>> UpdateColumnCommentAsync(
         ConnectionConfig config,
         string schemaName,
         string tableName,
         string columnName,
         string? comment);
 
-    Task<(bool Success, bool HasResultSet, List<string> Columns, List<List<string>> Rows, int AffectedRows, string Message)> ExecuteSqlAsync(
+    Task<IResultModel<DatabaseSqlExecutionResult>> ExecuteSqlAsync(
         ConnectionConfig config,
         string sql);
 }

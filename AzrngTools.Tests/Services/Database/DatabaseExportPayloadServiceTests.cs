@@ -1,4 +1,5 @@
 using Azrng.Core.Model;
+using Azrng.Core.Results;
 using AzrngTools.Models.Database;
 using AzrngTools.Models.Database.DTOs;
 using AzrngTools.Services.Database;
@@ -55,11 +56,11 @@ public class DatabaseExportPayloadServiceTests
         {
         }
 
-        public Task<(bool Success, List<TableModel> Tables, string Message)> GetTablesAsync(
+        public Task<IResultModel<List<TableModel>>> GetTablesAsync(
             ConnectionConfig config,
             string schemaName)
         {
-            return Task.FromResult<(bool, List<TableModel>, string)>((true,
+            return Task.FromResult(Success(
                 new List<TableModel>
                 {
                     new() { Schema = schemaName, Name = "users" }
@@ -67,11 +68,11 @@ public class DatabaseExportPayloadServiceTests
                 "ok"));
         }
 
-        public Task<(bool Success, List<DatabaseViewModel> Views, string Message)> GetViewsAsync(
+        public Task<IResultModel<List<DatabaseViewModel>>> GetViewsAsync(
             ConnectionConfig config,
             string schemaName)
         {
-            return Task.FromResult<(bool, List<DatabaseViewModel>, string)>((true,
+            return Task.FromResult(Success(
                 new List<DatabaseViewModel>
                 {
                     new() { Schema = schemaName, Name = "active_users" }
@@ -79,11 +80,11 @@ public class DatabaseExportPayloadServiceTests
                 "ok"));
         }
 
-        public Task<(bool Success, List<StoredProcedureModel> Procedures, string Message)> GetStoredProceduresAsync(
+        public Task<IResultModel<List<StoredProcedureModel>>> GetStoredProceduresAsync(
             ConnectionConfig config,
             string schemaName)
         {
-            return Task.FromResult<(bool, List<StoredProcedureModel>, string)>((true,
+            return Task.FromResult(Success(
                 new List<StoredProcedureModel>
                 {
                     new() { Schema = schemaName, Name = "refresh_user_stats" }
@@ -91,12 +92,12 @@ public class DatabaseExportPayloadServiceTests
                 "ok"));
         }
 
-        public Task<(bool Success, List<ColumnModel> Columns, string Message)> GetColumnsAsync(
+        public Task<IResultModel<List<ColumnModel>>> GetColumnsAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName)
         {
-            return Task.FromResult<(bool, List<ColumnModel>, string)>((true,
+            return Task.FromResult(Success(
                 new List<ColumnModel>
                 {
                     new() { Name = "id", OrdinalPosition = 1 }
@@ -104,12 +105,12 @@ public class DatabaseExportPayloadServiceTests
                 "ok"));
         }
 
-        public Task<(bool Success, List<IndexModel> Indexes, string Message)> GetIndexesAsync(
+        public Task<IResultModel<List<IndexModel>>> GetIndexesAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName)
         {
-            return Task.FromResult<(bool, List<IndexModel>, string)>((true,
+            return Task.FromResult(Success(
                 new List<IndexModel>
                 {
                     new() { Name = "pk_users" }
@@ -117,49 +118,49 @@ public class DatabaseExportPayloadServiceTests
                 "ok"));
         }
 
-        public Task<(bool Success, string Message, string? Suggestion)> TestConnectionAsync(ConnectionConfig? config) =>
+        public Task<IResultModel<DatabaseConnectionTestResult>> TestConnectionAsync(ConnectionConfig? config) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, List<string> Databases, string Message)> GetDatabaseNamesAsync(ConnectionConfig config) =>
+        public Task<IResultModel<List<string>>> GetDatabaseNamesAsync(ConnectionConfig config) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, TreeNodeItem? RootNode, string Message)> LoadDatabaseTreeAsync(ConnectionConfig config) =>
+        public Task<IResultModel<TreeNodeItem?>> LoadDatabaseTreeAsync(ConnectionConfig config) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, List<SchemaModel> Schemas, string Message)> GetSchemasAsync(ConnectionConfig config) =>
+        public Task<IResultModel<List<SchemaModel>>> GetSchemasAsync(ConnectionConfig config) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, List<StoredProcedureModel> Functions, string Message)> GetFunctionsAsync(
+        public Task<IResultModel<List<StoredProcedureModel>>> GetFunctionsAsync(
             ConnectionConfig config,
             string schemaName) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, long RowCount, DateTime? CreateTime, DateTime? ModifyTime, string Message)> GetTableStatisticsAsync(
+        public Task<IResultModel<DatabaseTableStatisticsResult>> GetTableStatisticsAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, string Definition, string Message)> GetViewDefinitionAsync(
+        public Task<IResultModel<string>> GetViewDefinitionAsync(
             ConnectionConfig config,
             string schemaName,
             string viewName) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, string Definition, string Message)> GetStoredProcedureDefinitionAsync(
+        public Task<IResultModel<string>> GetStoredProcedureDefinitionAsync(
             ConnectionConfig config,
             string schemaName,
             string procedureName) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, string Message)> UpdateTableCommentAsync(
+        public Task<IResultModel<bool>> UpdateTableCommentAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName,
             string? comment) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, string Message)> UpdateColumnCommentAsync(
+        public Task<IResultModel<bool>> UpdateColumnCommentAsync(
             ConnectionConfig config,
             string schemaName,
             string tableName,
@@ -167,9 +168,14 @@ public class DatabaseExportPayloadServiceTests
             string? comment) =>
             throw new NotSupportedException();
 
-        public Task<(bool Success, bool HasResultSet, List<string> Columns, List<List<string>> Rows, int AffectedRows, string Message)> ExecuteSqlAsync(
+        public Task<IResultModel<DatabaseSqlExecutionResult>> ExecuteSqlAsync(
             ConnectionConfig config,
             string sql) =>
             throw new NotSupportedException();
+
+        private static IResultModel<List<T>> Success<T>(List<T> data, string message)
+        {
+            return ResultModel<List<T>>.Success(data);
+        }
     }
 }

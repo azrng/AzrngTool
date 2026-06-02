@@ -98,9 +98,9 @@ public partial class ViewDetailViewModel : ViewModelBase
             LoggingService.LogInfo($"开始调用 DatabaseService.GetViewsAsync: {CurrentConnection.Name}, schema={schemaName}");
             var result = await _databaseService.GetViewsAsync(CurrentConnection, schemaName);
 
-            if (result.Success)
+            if (result.IsSuccess)
             {
-                foreach (var view in result.Views)
+                foreach (var view in result.DataOrEmpty())
                 {
                     Views.Add(view);
                 }
@@ -151,14 +151,14 @@ public partial class ViewDetailViewModel : ViewModelBase
 
             if (string.IsNullOrWhiteSpace(ViewDefinition))
             {
-                var (success, definition, _) = await _databaseService.GetViewDefinitionAsync(
+                var definitionResult = await _databaseService.GetViewDefinitionAsync(
                     CurrentConnection,
                     SelectedView.Schema ?? "dbo",
                     SelectedView.Name);
 
-                if (success)
+                if (definitionResult.IsSuccess)
                 {
-                    ViewDefinition = definition;
+                    ViewDefinition = definitionResult.Data;
                 }
             }
 

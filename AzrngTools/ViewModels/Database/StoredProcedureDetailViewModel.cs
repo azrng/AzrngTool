@@ -100,9 +100,9 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
             LoggingService.LogInfo($"开始调用 DatabaseService.GetStoredProceduresAsync: {CurrentConnection.Name}, schema={schemaName}");
             var result = await _databaseService.GetStoredProceduresAsync(CurrentConnection, schemaName);
 
-            if (result.Success)
+            if (result.IsSuccess)
             {
-                foreach (var procedure in result.Procedures)
+                foreach (var procedure in result.DataOrEmpty())
                 {
                     Procedures.Add(procedure);
                 }
@@ -153,14 +153,14 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
 
             if (string.IsNullOrWhiteSpace(ProcedureDefinition))
             {
-                var (success, definition, _) = await _databaseService.GetStoredProcedureDefinitionAsync(
+                var definitionResult = await _databaseService.GetStoredProcedureDefinitionAsync(
                     CurrentConnection,
                     SelectedProcedure.Schema ?? "dbo",
                     SelectedProcedure.Name);
 
-                if (success)
+                if (definitionResult.IsSuccess)
                 {
-                    ProcedureDefinition = definition;
+                    ProcedureDefinition = definitionResult.Data;
                 }
             }
 
