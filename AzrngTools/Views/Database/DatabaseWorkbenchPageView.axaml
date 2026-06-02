@@ -135,13 +135,17 @@
 
                                 <Grid RowDefinitions="Auto,Auto"
                                       RowSpacing="{StaticResource Space.12}">
-                                    <ComboBox ItemsSource="{Binding AvailableDatabases}"
+                                    <ComboBox ItemsSource="{Binding FilteredAvailableDatabases}"
                                               SelectedItem="{Binding SelectedDatabaseName}"
-                                              PlaceholderText="请选择数据库"
+                                              Text="{Binding DatabaseSearchText, Mode=TwoWay}"
+                                              PlaceholderText="搜索或选择数据库"
+                                              IsEditable="True"
+                                              IsTextSearchEnabled="False"
                                               IsEnabled="{Binding SelectedConnection, Converter={StaticResource NullToBoolConverter}}"
                                               Classes="modern"
                                               HorizontalAlignment="Stretch"
-                                              MinHeight="36" />
+                                              MinHeight="36"
+                                              MaxDropDownHeight="260" />
                                     <TextBox Grid.Row="1"
                                              Text="{Binding #DatabaseTree.SearchText, Mode=TwoWay}"
                                              PlaceholderText="搜索表、视图、存储过程..."

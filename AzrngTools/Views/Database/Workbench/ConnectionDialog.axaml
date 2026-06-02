@@ -440,17 +440,19 @@
                     <Border Grid.Row="2"
                             Padding="16"
                             Classes="connectionDialogDivider">
-                        <Grid ColumnDefinitions="*,Auto">
+                        <Grid ColumnDefinitions="*,Auto"
+                              ColumnSpacing="12">
                             <TextBlock Text="已保存连接"
-                                       VerticalAlignment="Center"
-                                       Classes="connectionDialogMeta" />
+                                        VerticalAlignment="Center"
+                                        Classes="connectionDialogMeta" />
                             <Button Grid.Column="1"
-                                    Width="42"
-                                    Height="36"
+                                    MinWidth="64"
+                                    Height="40"
                                     Command="{Binding DeleteConnectionCommand}"
-                                    Classes="connectionAction secondary">
-                                <TextBlock Text="🗑"
-                                           FontSize="14"
+                                    Classes="connectionAction secondary"
+                                    VerticalAlignment="Center">
+                                <TextBlock Text="删除"
+                                           FontWeight="Medium"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                             </Button>

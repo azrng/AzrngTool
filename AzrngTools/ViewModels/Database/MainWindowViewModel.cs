@@ -54,6 +54,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private NotifyCollectionChangedEventHandler? _availableDatabasesChangedHandler;
 
     [ObservableProperty]
+    private ObservableCollection<string> _filteredAvailableDatabases = new();
+
+    [ObservableProperty]
+    private string _databaseSearchText = string.Empty;
+
+    [ObservableProperty]
     private string? _selectedDatabaseName;
 
     [ObservableProperty]
@@ -141,7 +147,11 @@ public partial class MainWindowViewModel : ViewModelBase
         Directory.CreateDirectory(appDataDir);
         _configFilePath = Path.Combine(appDataDir, ConfigFileName);
         _groupsFilePath = Path.Combine(appDataDir, GroupsFileName);
-        _availableDatabasesChangedHandler = (_, _) => OnPropertyChanged(nameof(HasAvailableDatabases));
+        _availableDatabasesChangedHandler = (_, _) =>
+        {
+            OnPropertyChanged(nameof(HasAvailableDatabases));
+            RefreshFilteredAvailableDatabases();
+        };
         AvailableDatabases.CollectionChanged += _availableDatabasesChangedHandler;
 
         LoadGroups();
@@ -289,7 +299,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var vm = new ConnectionDialogViewModel(Connections, SaveConnections, SelectedConnection);
             var result = await Ursa.Controls.Dialog.ShowCustomAsync<ConnectionDialog, ConnectionDialogViewModel, ConnectionConfig?>(
-                vm, MainWindow, new Ursa.Controls.DialogOptions { Title = "连接管理", CanResize = false });
+                vm, MainWindow, new Ursa.Controls.DialogOptions { CanResize = false });
             if (result == null)
             {
                 return;
@@ -467,6 +477,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(CurrentConnectionLabel));
         OnPropertyChanged(nameof(CompactConnectionLabel));
+        DatabaseSearchText = value ?? string.Empty;
 
         if (_suppressDatabaseSelectionChanged || SelectedConnection == null || string.IsNullOrWhiteSpace(value))
         {
@@ -474,6 +485,11 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         _ = SwitchDatabaseAsync(value);
+    }
+
+    partial void OnDatabaseSearchTextChanged(string value)
+    {
+        RefreshFilteredAvailableDatabases();
     }
 
     partial void OnShowOverviewPageChanged(bool value)
@@ -1502,6 +1518,21 @@ public partial class MainWindowViewModel : ViewModelBase
                 SelectedDatabaseName = preferredDatabase;
                 _suppressDatabaseSelectionChanged = false;
             }
+        }
+    }
+
+    private void RefreshFilteredAvailableDatabases()
+    {
+        var searchText = DatabaseSearchText.Trim();
+        var filteredDatabases = string.IsNullOrWhiteSpace(searchText)
+            ? AvailableDatabases
+            : AvailableDatabases
+                .Where(database => database.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+        FilteredAvailableDatabases.Clear();
+        foreach (var database in filteredDatabases)
+        {
+            FilteredAvailableDatabases.Add(database);
         }
     }
 

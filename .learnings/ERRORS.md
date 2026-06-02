@@ -34,6 +34,107 @@ MSB3021: 无法将文件“...apphost.exe”复制到“bin\Debug\net10.0-window
 
 ---
 
+## [ERR-20260602-001] wrong-xaml-path-read
+
+**Logged**: 2026-06-02T15:55:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: frontend
+
+### Summary
+读取数据库工作台 XAML 时把文件路径误写到 `Views\Database\Workbench` 子目录，导致 `Get-Content` 返回路径不存在
+
+### Error
+```text
+Cannot find path 'AzrngTools\Views\Database\Workbench\DatabaseWorkbenchPageView.axaml' because it does not exist.
+```
+
+### Context
+- Command/operation attempted: 读取 `DatabaseWorkbenchPageView.axaml` 前 140 行
+- Environment details: Windows / PowerShell / AzrngTool
+
+### Suggested Fix
+- 读取非 C# 视图文件前优先以 `rg --files` 的真实结果为准
+- 相邻文件路径只作为线索，不把目录层级当成事实
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/Views/Database/DatabaseWorkbenchPageView.axaml
+
+### Resolution
+- **Resolved**: 2026-06-02T15:55:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 已使用 `rg --files` 输出中的真实路径重新读取目标文件。
+
+---
+
+## [ERR-20260602-002] databasetype-namespace-test
+
+**Logged**: 2026-06-02T16:16:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+新增 `DatabaseServiceTests` 时只引用 `AzrngTools.Models.Database`，误以为 `DatabaseType` 定义在项目模型命名空间，导致测试编译失败
+
+### Error
+```text
+error CS0103: 当前上下文中不存在名称“DatabaseType”
+```
+
+### Context
+- Command/operation attempted: `dotnet test AzrngTools.Tests\AzrngTools.Tests.csproj -c Release -v minimal`
+- Environment details: Windows / PowerShell / .NET 10
+
+### Suggested Fix
+- 使用项目中真实引用来源，`DatabaseType` 当前来自 `Azrng.Core.Model`
+- 遇到同名旧文件或注释文件时，以实际编译引用和现有源文件 using 为准
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools.Tests/Services/Database/DatabaseServiceTests.cs
+
+### Resolution
+- **Resolved**: 2026-06-02T16:16:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 已为测试文件补充 `using Azrng.Core.Model;`。
+
+---
+
+## [ERR-20260602-003] static-helper-instance-call
+
+**Logged**: 2026-06-02T16:27:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+将 `CreateCatalogConnectionConfig` 改成 `internal static` 供测试覆盖后，内部仍调用实例方法 `GetCatalogDatabaseName`，导致编译失败
+
+### Error
+```text
+error CS0120: 对象引用对于非静态的字段、方法或属性“DatabaseService.GetCatalogDatabaseName(DatabaseType, string)”是必需的
+```
+
+### Context
+- Command/operation attempted: `dotnet test AzrngTools.Tests\AzrngTools.Tests.csproj -c Release -v minimal`
+- Environment details: Windows / PowerShell / .NET 10
+
+### Suggested Fix
+- 静态化 helper 时同步检查它直接调用的私有 helper 是否也应静态化
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/Services/Database/DatabaseService.cs
+
+### Resolution
+- **Resolved**: 2026-06-02T16:27:00+08:00
+- **Commit/PR**: pending
+- **Notes**: 已将 `GetCatalogDatabaseName` 同步调整为 `static`。
+
+---
+
 ## [ERR-20260427-001] ambiguous-jsonexception
 
 **Logged**: 2026-04-27T11:06:01+08:00

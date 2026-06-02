@@ -130,7 +130,8 @@ namespace AzrngTools.Services.Database
                     return (true, "连接成功", null);
                 }
 
-                var dbBridge = CreateDbBridge(dbType, config);
+                var testConfig = CreateCatalogConnectionConfig(config);
+                var dbBridge = CreateDbBridge(dbType, testConfig);
 
                 // 调用获取 Schema 列表来测试连接
                 _ = await dbBridge.GetSchemaListAsync();
@@ -331,7 +332,7 @@ namespace AzrngTools.Services.Database
             };
         }
 
-        private string GetCatalogDatabaseName(DatabaseType dbType, string currentDatabaseName)
+        private static string GetCatalogDatabaseName(DatabaseType dbType, string currentDatabaseName)
         {
             return dbType switch
             {
@@ -376,7 +377,8 @@ namespace AzrngTools.Services.Database
                     return (true, windowsAuthDatabases, $"Loaded {windowsAuthDatabases.Count} databases successfully.");
                 }
 
-                var dbBridge = GetOrCreateDbBridge(config);
+                var catalogConfig = CreateCatalogConnectionConfig(config);
+                var dbBridge = GetOrCreateDbBridge(catalogConfig);
                 var databases = await dbBridge.GetDatabaseNameListAsync();
                 var normalizedDatabases = databases
                     .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -393,6 +395,31 @@ namespace AzrngTools.Services.Database
             {
                 return (false, new List<string>(), $"加载数据库列表失败: {ex.Message}");
             }
+        }
+
+        internal static ConnectionConfig CreateCatalogConnectionConfig(ConnectionConfig config)
+        {
+            var catalogDatabase = GetCatalogDatabaseName(config.DatabaseType, string.Empty);
+            if (string.IsNullOrWhiteSpace(catalogDatabase) ||
+                string.Equals(catalogDatabase, config.Database, StringComparison.OrdinalIgnoreCase))
+            {
+                return config;
+            }
+
+            return new ConnectionConfig
+            {
+                Name = config.Name,
+                DatabaseType = config.DatabaseType,
+                Host = config.Host,
+                Port = config.Port,
+                Username = config.Username,
+                Password = config.Password,
+                Database = catalogDatabase,
+                UseWindowsAuthentication = config.UseWindowsAuthentication,
+                GroupId = config.GroupId,
+                GroupName = config.GroupName,
+                Color = config.Color
+            };
         }
 
         /// <summary>

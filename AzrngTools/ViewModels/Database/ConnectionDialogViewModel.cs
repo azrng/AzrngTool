@@ -144,7 +144,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
 
     public string DatabaseSelectionHint => IsConnecting
         ? "正在加载数据库列表..."
-        : "点击刷新自动获取数据库列表，也可以直接输入数据库名称。";
+        : "点击刷新自动获取数据库列表；保存或连接前需要选择默认数据库。";
 
     public string DatabaseFilePathHint => "请输入 Sqlite 数据库文件路径";
 
@@ -224,9 +224,10 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         ConnectionConfig = CreateDefaultConnectionConfig();
         RefreshFilteredConnections();
 
-        if (selectedConnection != null && _savedConnections.Contains(selectedConnection))
+        var matchedSelectedConnection = ResolveSavedConnection(selectedConnection);
+        if (matchedSelectedConnection != null)
         {
-            SelectedSavedConnection = selectedConnection;
+            SelectedSavedConnection = matchedSelectedConnection;
         }
         else if (_savedConnections.Count > 0)
         {
@@ -236,6 +237,22 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         {
             BeginCreateNewConnection();
         }
+    }
+
+    private ConnectionConfig? ResolveSavedConnection(ConnectionConfig? selectedConnection)
+    {
+        if (selectedConnection == null)
+        {
+            return null;
+        }
+
+        return _savedConnections.FirstOrDefault(connection => ReferenceEquals(connection, selectedConnection))
+            ?? _savedConnections.FirstOrDefault(connection =>
+                string.Equals(connection.Name, selectedConnection.Name, StringComparison.OrdinalIgnoreCase) &&
+                connection.DatabaseType == selectedConnection.DatabaseType &&
+                string.Equals(connection.Host, selectedConnection.Host, StringComparison.OrdinalIgnoreCase) &&
+                connection.Port == selectedConnection.Port &&
+                string.Equals(connection.Database, selectedConnection.Database, StringComparison.OrdinalIgnoreCase));
     }
 
     private void InitializeDatabaseTypeCards()
@@ -400,7 +417,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
     [RelayCommand(CanExecute = nameof(CanTestConnection))]
     private async Task TestConnectionAsync()
     {
-        if (!ValidateForm(showAllErrors: true, showToast: true))
+        if (!ValidateForm(showAllErrors: true, showToast: true, requireDatabase: false, requireUniqueName: false))
         {
             return;
         }
@@ -760,7 +777,11 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         NotifyAllFieldValidationStateChanged();
     }
 
-    private bool ValidateForm(bool showAllErrors = false, bool showToast = false)
+    internal bool ValidateForm(
+        bool showAllErrors = false,
+        bool showToast = false,
+        bool requireDatabase = true,
+        bool requireUniqueName = true)
     {
         if (showAllErrors)
         {
@@ -774,7 +795,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         {
             AddFieldValidationError(NameFieldKey, "连接名称不能为空");
         }
-        else
+        else if (requireUniqueName)
         {
             var duplicateConnection = _savedConnections.FirstOrDefault(c =>
                 c.Name.Equals(ConnectionConfig.Name, StringComparison.OrdinalIgnoreCase) &&
@@ -822,7 +843,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(ConnectionConfig?.Database))
+            if (requireDatabase && string.IsNullOrWhiteSpace(ConnectionConfig?.Database))
             {
                 AddFieldValidationError(DatabaseFieldKey, "数据库名称不能为空");
             }
