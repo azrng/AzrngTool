@@ -34,7 +34,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
     private const string PasswordFieldKey = nameof(ConnectionConfig.Password);
     private const string DatabaseFieldKey = nameof(ConnectionConfig.Database);
 
-    private readonly DatabaseService _databaseService;
+    private readonly IDatabaseService _databaseService;
     private readonly ObservableCollection<ConnectionConfig> _savedConnections;
     private readonly Action? _persistConnections;
     private readonly Dictionary<string, string> _fieldValidationErrors = new(StringComparer.Ordinal);
@@ -209,9 +209,10 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
     public ConnectionDialogViewModel(
         ObservableCollection<ConnectionConfig>? savedConnections = null,
         Action? persistConnections = null,
-        ConnectionConfig? selectedConnection = null)
+        ConnectionConfig? selectedConnection = null,
+        IDatabaseService? databaseService = null)
     {
-        _databaseService = new DatabaseService();
+        _databaseService = databaseService ?? new DatabaseService();
         _savedConnections = savedConnections ?? new ObservableCollection<ConnectionConfig>();
         _persistConnections = persistConnections;
 
@@ -769,7 +770,6 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         OnPropertyChanged(nameof(IsPostgreSqlSelected));
         OnPropertyChanged(nameof(IsMySqlSelected));
         OnPropertyChanged(nameof(ShowUsernameField));
-        OnPropertyChanged(nameof(ShowDatabaseSelector));
         OnPropertyChanged(nameof(CurrentBrandMonogram));
         OnPropertyChanged(nameof(CurrentBrandWordmark));
         OnPropertyChanged(nameof(CurrentEditorTitle));
@@ -862,67 +862,6 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         {
             ShowValidationSummaryToast();
         }
-
-        return ValidationErrors.Count == 0;
-    }
-
-    private bool ValidateFormLegacy()
-    {
-        ValidationErrors.Clear();
-
-        if (string.IsNullOrWhiteSpace(ConnectionConfig?.Name))
-        {
-            ValidationErrors.Add("连接名称不能为空");
-        }
-
-        if (IsSQLiteSelected)
-        {
-            if (string.IsNullOrWhiteSpace(ConnectionConfig?.Database))
-            {
-                ValidationErrors.Add("数据库文件路径不能为空");
-            }
-            else if (!File.Exists(ConnectionConfig.Database))
-            {
-                AddFieldValidationError(DatabaseFieldKey, $"Sqlite 数据库文件不存在：{ConnectionConfig.Database}");
-            }
-        }
-        else
-        {
-            if (string.IsNullOrWhiteSpace(ConnectionConfig?.Host))
-            {
-                ValidationErrors.Add("主机地址不能为空");
-            }
-
-            if (ConnectionConfig?.Port <= 0)
-            {
-                ValidationErrors.Add("端口必须大于 0");
-            }
-
-            // Windows 身份验证时不需要用户名和密码
-            if (ConnectionConfig is { UseWindowsAuthentication: false })
-            {
-                if (string.IsNullOrWhiteSpace(ConnectionConfig.Username))
-                {
-                    ValidationErrors.Add("用户名不能为空");
-                }
-
-                if (string.IsNullOrWhiteSpace(ConnectionConfig.Password))
-                {
-                    ValidationErrors.Add("密码不能为空");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(ConnectionConfig?.Database))
-            {
-                ValidationErrors.Add("数据库名称不能为空");
-            }
-        }
-
-        OnPropertyChanged(nameof(HasValidationErrors));
-        SaveCommand.NotifyCanExecuteChanged();
-        ConnectCommand.NotifyCanExecuteChanged();
-        TestConnectionCommand.NotifyCanExecuteChanged();
-        RefreshDatabasesCommand.NotifyCanExecuteChanged();
 
         return ValidationErrors.Count == 0;
     }
@@ -1030,28 +969,6 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
             nameof(ConnectionConfig.Database) => DatabaseFieldKey,
             _ => null
         };
-    }
-
-    private bool ValidateConnectionNameUniqueLegacy()
-    {
-        if (ConnectionConfig == null || string.IsNullOrWhiteSpace(ConnectionConfig.Name))
-        {
-            return false;
-        }
-
-        // 检查是否存在同名连接（排除当前正在编辑的连接）
-        var duplicateConnection = _savedConnections.FirstOrDefault(c =>
-            c.Name.Equals(ConnectionConfig.Name, StringComparison.OrdinalIgnoreCase) &&
-            c != SelectedSavedConnection);
-
-        if (duplicateConnection != null)
-        {
-            ValidationErrors.Add($"连接名称 '{ConnectionConfig.Name}' 已存在，请使用其他名称");
-            OnPropertyChanged(nameof(HasValidationErrors));
-            return false;
-        }
-
-        return true;
     }
 
     private void PersistConnections()

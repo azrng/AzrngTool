@@ -11,7 +11,7 @@ namespace AzrngTools.ViewModels.Database;
 
 public partial class ViewDetailViewModel : ViewModelBase
 {
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
 
     public bool HasSelectedView => SelectedView != null;
     public bool HasViewDefinition => !string.IsNullOrWhiteSpace(ViewDefinition);
@@ -67,7 +67,13 @@ public partial class ViewDetailViewModel : ViewModelBase
     public bool ShowSplitWorkspace => ShowObjectList && Views.Count > 0;
 
     public ViewDetailViewModel()
+        : this(new DatabaseService())
     {
+    }
+
+    public ViewDetailViewModel(IDatabaseService databaseService)
+    {
+        _databaseService = databaseService;
         SubscribeToViewsCollection(Views);
     }
 
@@ -202,7 +208,20 @@ public partial class ViewDetailViewModel : ViewModelBase
         if (value != null)
         {
             System.Diagnostics.Debug.WriteLine($"选中视图: {value.Name}");
-            _ = LoadDataAsync();
+            RunSelectedViewLoadAsync();
+        }
+    }
+
+    private async void RunSelectedViewLoadAsync()
+    {
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            LoadingText = $"加载视图详情失败: {ex.Message}";
+            LoggingService.LogError("Selected view detail load failed.", ex);
         }
     }
 

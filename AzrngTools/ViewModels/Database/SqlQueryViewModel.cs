@@ -12,7 +12,7 @@ namespace AzrngTools.ViewModels.Database;
 
 public partial class SqlQueryViewModel : ViewModelBase
 {
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
 
     [ObservableProperty]
     private ConnectionConfig? _currentConnection;
@@ -50,7 +50,13 @@ public partial class SqlQueryViewModel : ViewModelBase
     public bool HasResults => ResultColumns.Count > 0 || ResultRows.Count > 0 || AffectedRows > 0;
 
     public SqlQueryViewModel()
+        : this(new DatabaseService())
     {
+    }
+
+    public SqlQueryViewModel(IDatabaseService databaseService)
+    {
+        _databaseService = databaseService;
         Templates = new ObservableCollection<SqlTemplateItem>
         {
             new("Select All", "SELECT * FROM table_name;"),

@@ -18,7 +18,7 @@ namespace AzrngTools.ViewModels.Database;
 /// </summary>
 public partial class DatabaseBrowserViewModel : ViewModelBase
 {
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
     private readonly DebouncedActionDispatcher _searchDebouncer = new(TimeSpan.FromMilliseconds(300));
     private List<TreeNodeItem> _allNodes = new();
     private ObservableCollection<TreeNodeItem>? _subscribedRootNodes;
@@ -105,7 +105,13 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
     /// 构造函数
     /// </summary>
     public DatabaseBrowserViewModel()
+        : this(new DatabaseService())
     {
+    }
+
+    public DatabaseBrowserViewModel(IDatabaseService databaseService)
+    {
+        _databaseService = databaseService;
     }
 
     /// <summary>

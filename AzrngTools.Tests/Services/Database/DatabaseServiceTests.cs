@@ -26,4 +26,25 @@ public class DatabaseServiceTests
         Assert.Equal("postgres", catalogConfig.Database);
         Assert.Equal("zhangyunpeng", source.Database);
     }
+
+    [Fact]
+    public async Task Unsupported_database_type_returns_not_supported_message()
+    {
+        var service = new DatabaseService();
+        var config = new ConnectionConfig
+        {
+            Name = "dm",
+            DatabaseType = DatabaseType.Dm,
+            Host = "127.0.0.1",
+            Port = 5236,
+            Username = "user",
+            Password = "pwd",
+            Database = "test"
+        };
+
+        var result = await service.GetDatabaseNamesAsync(config);
+
+        Assert.False(result.Success);
+        Assert.Contains("不支持的数据库类型", result.Message);
+    }
 }

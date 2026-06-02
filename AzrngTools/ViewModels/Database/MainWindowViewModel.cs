@@ -34,7 +34,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private readonly string _configFilePath;
     private readonly string _groupsFilePath;
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
     private readonly DocumentExportService _documentExportService = new();
     private readonly CodeGenerationService _codeGenerationService = new();
     private bool _suppressDatabaseSelectionChanged;
@@ -84,19 +84,19 @@ public partial class MainWindowViewModel : ViewModelBase
     private ObservableCollection<SchemaModel> _schemas = new();
 
     [ObservableProperty]
-    private DatabaseBrowserViewModel _browserViewModel = new();
+    private DatabaseBrowserViewModel _browserViewModel;
 
     [ObservableProperty]
-    private TableDetailViewModel _tableDetailViewModel = new();
+    private TableDetailViewModel _tableDetailViewModel;
 
     [ObservableProperty]
-    private ViewDetailViewModel _viewDetailViewModel = new();
+    private ViewDetailViewModel _viewDetailViewModel;
 
     [ObservableProperty]
-    private StoredProcedureDetailViewModel _storedProcedureDetailViewModel = new();
+    private StoredProcedureDetailViewModel _storedProcedureDetailViewModel;
 
     [ObservableProperty]
-    private SqlQueryViewModel _sqlQueryViewModel = new();
+    private SqlQueryViewModel _sqlQueryViewModel;
 
     [ObservableProperty]
     private int _selectedMainTabIndex;
@@ -140,7 +140,31 @@ public partial class MainWindowViewModel : ViewModelBase
     public Window? MainWindow { get; set; }
 
     public MainWindowViewModel()
+        : this(
+            new DatabaseService(),
+            null,
+            null,
+            null,
+            null,
+            null)
     {
+    }
+
+    public MainWindowViewModel(
+        IDatabaseService databaseService,
+        DatabaseBrowserViewModel? browserViewModel = null,
+        TableDetailViewModel? tableDetailViewModel = null,
+        ViewDetailViewModel? viewDetailViewModel = null,
+        StoredProcedureDetailViewModel? storedProcedureDetailViewModel = null,
+        SqlQueryViewModel? sqlQueryViewModel = null)
+    {
+        _databaseService = databaseService;
+        BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
+        TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
+        ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
+        StoredProcedureDetailViewModel = storedProcedureDetailViewModel ?? new StoredProcedureDetailViewModel(databaseService);
+        SqlQueryViewModel = sqlQueryViewModel ?? new SqlQueryViewModel(databaseService);
+
         var appDataDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "SmartDbSql");
@@ -269,9 +293,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            EncryptPasswordsInPlace(Connections);
-
-            var json = JsonSerializer.Serialize(Connections.ToList(), CreateJsonOptions());
+            var json = JsonSerializer.Serialize(CreateEncryptedConnectionCopies(Connections), CreateJsonOptions());
             File.WriteAllText(_configFilePath, json);
             LoggingService.LogOperation($"Saved {Connections.Count} connections.");
         }
@@ -279,10 +301,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             LoggingService.LogError("Failed to save connection configuration.", ex);
             throw;
-        }
-        finally
-        {
-            DecryptPasswordsInPlace(Connections);
         }
     }
 
@@ -297,7 +315,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var vm = new ConnectionDialogViewModel(Connections, SaveConnections, SelectedConnection);
+            var vm = new ConnectionDialogViewModel(Connections, SaveConnections, SelectedConnection, _databaseService);
             var result = await Ursa.Controls.Dialog.ShowCustomAsync<ConnectionDialog, ConnectionDialogViewModel, ConnectionConfig?>(
                 vm, MainWindow, new Ursa.Controls.DialogOptions { CanResize = false });
             if (result == null)
@@ -432,7 +450,10 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        _ = InitializeConnectionContextAsync(value);
+        RunConnectionContextTask(
+            InitializeConnectionContextAsync(value),
+            $"初始化连接上下文失败：{value.Name}",
+            "连接初始化失败");
     }
 
     private void ResetConnectionContextState(ConnectionConfig? nextConnection)
@@ -484,7 +505,10 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        _ = SwitchDatabaseAsync(value);
+        RunConnectionContextTask(
+            SwitchDatabaseAsync(value),
+            $"切换数据库失败：{value}",
+            "数据库切换失败");
     }
 
     partial void OnDatabaseSearchTextChanged(string value)
@@ -544,6 +568,20 @@ public partial class MainWindowViewModel : ViewModelBase
         var runtimeConnection = CreateRuntimeConnection(connection, SelectedDatabaseName);
         ActiveConnectionContext = runtimeConnection;
         await LoadConnectionContextAsync(runtimeConnection);
+    }
+
+    private async void RunConnectionContextTask(Task task, string logMessage, string userMessage)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            LoadingText = $"{userMessage}：{ex.Message}";
+            LoggingService.LogError(logMessage, ex);
+            ToastService.ShowError($"{userMessage}：{ex.Message}", 5000);
+        }
     }
 
     private async Task SwitchDatabaseAsync(string databaseName)
@@ -877,7 +915,12 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         var workbenchToastManager = ToastService.CurrentManager;
-        var dialogViewModel = new ExportDialogViewModel(connection, SelectedDatabaseName, CurrentSchemaName, _lastDocumentExportDirectory);
+        var dialogViewModel = new ExportDialogViewModel(
+            connection,
+            SelectedDatabaseName,
+            CurrentSchemaName,
+            _lastDocumentExportDirectory,
+            _databaseService);
         var exportRequest = await Ursa.Controls.Dialog.ShowCustomAsync<ExportDialog, ExportDialogViewModel, ExportDialogResultDto?>(
             dialogViewModel, MainWindow, new Ursa.Controls.DialogOptions { Title = "导出文档", CanResize = false });
         if (exportRequest == null)
@@ -988,16 +1031,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            EncryptPasswordsInPlace(Connections);
-            try
-            {
-                var json = JsonSerializer.Serialize(Connections.ToList(), CreateJsonOptions());
-                await File.WriteAllTextAsync(file.Path.LocalPath, json);
-            }
-            finally
-            {
-                DecryptPasswordsInPlace(Connections);
-            }
+            var json = JsonSerializer.Serialize(CreateEncryptedConnectionCopies(Connections), CreateJsonOptions());
+            await File.WriteAllTextAsync(file.Path.LocalPath, json);
 
             LoggingService.LogOperation($"Exported connection config to {file.Path.LocalPath}.");
             ToastService.ShowSuccess($"已导出 {Connections.Count} 个连接。", 3000);
@@ -1658,30 +1693,43 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private static JsonSerializerOptions CreateJsonOptions() => ConnectionJsonOptions;
 
-    private static void EncryptPasswordsInPlace(IEnumerable<ConnectionConfig> connections)
-    {
-        foreach (var connection in connections)
-        {
-            if (!string.IsNullOrWhiteSpace(connection.Password))
-            {
-                connection.Password = connection.GetEncryptedPassword();
-            }
-        }
-    }
-
-    private static void DecryptPasswordsInPlace(IEnumerable<ConnectionConfig> connections)
-    {
-        foreach (var connection in connections)
-        {
-            DecryptConnectionPassword(connection);
-        }
-    }
-
     private static void DecryptConnectionPassword(ConnectionConfig connection)
     {
         if (!string.IsNullOrWhiteSpace(connection.Password))
         {
             connection.SetDecryptedPassword(connection.Password);
         }
+    }
+
+    private static List<ConnectionConfig> CreateEncryptedConnectionCopies(IEnumerable<ConnectionConfig> connections)
+    {
+        return connections.Select(CreateEncryptedConnectionCopy).ToList();
+    }
+
+    private static ConnectionConfig CreateEncryptedConnectionCopy(ConnectionConfig source)
+    {
+        var copy = new ConnectionConfig
+        {
+            Name = source.Name,
+            DatabaseType = source.DatabaseType,
+            Host = source.Host,
+            Port = source.Port,
+            Username = source.Username,
+            Password = source.Password,
+            Database = source.Database,
+            UseWindowsAuthentication = source.UseWindowsAuthentication,
+            LastUsedTime = source.LastUsedTime,
+            UseCount = source.UseCount,
+            GroupId = source.GroupId,
+            GroupName = source.GroupName,
+            Color = source.Color
+        };
+
+        if (!string.IsNullOrWhiteSpace(copy.Password))
+        {
+            copy.Password = copy.GetEncryptedPassword();
+        }
+
+        return copy;
     }
 }

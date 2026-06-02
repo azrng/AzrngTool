@@ -34,6 +34,40 @@ MSB3021: 无法将文件“...apphost.exe”复制到“bin\Debug\net10.0-window
 
 ---
 
+## [ERR-20260602-001] parallel-release-build-test-pdb-lock
+
+**Logged**: 2026-06-02T17:02:00+08:00
+**Priority**: low
+**Status**: resolved
+**Area**: tests
+
+### Summary
+并行执行 `dotnet test -c Release` 和 `dotnet build -c Release` 时，主项目 Release PDB 被 `.NET Host` 占用，导致构建临时失败。
+
+### Error
+```text
+CSC : error CS2012: 无法打开“AzrngTools.pdb”以进行写入 - The process cannot access the file because it is being used by another process.;文件可能被 '.NET Host' 锁定
+```
+
+### Context
+- Command/operation attempted: 同时执行 `dotnet test AzrngTools.Tests\AzrngTools.Tests.csproj -c Release -v minimal` 和 `dotnet build AzrngTools.sln -c Release -v minimal`
+- Environment details: Windows / PowerShell / .NET 10 / Release 配置
+
+### Suggested Fix
+- 对同一解决方案的 Release 测试和 Release 构建优先顺序执行，避免同时写入 `obj/Release` 下的 PDB / 编译中间产物。
+- 如果已经遇到锁文件失败，等待测试进程退出后重跑构建确认结果。
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools.sln
+
+### Resolution
+- **Resolved**: 2026-06-02T17:02:30+08:00
+- **Commit/PR**: pending
+- **Notes**: 顺序重跑 `dotnet build AzrngTools.sln -c Release -v minimal` 后构建通过，0 warning / 0 error。
+
+---
+
 ## [ERR-20260602-001] wrong-xaml-path-read
 
 **Logged**: 2026-06-02T15:55:00+08:00

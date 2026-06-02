@@ -14,7 +14,7 @@ namespace AzrngTools.ViewModels.Database;
 
 public partial class TableDetailViewModel : ViewModelBase
 {
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
 
     public bool HasSelectedTable => SelectedTable != null;
     public string RowCountDisplay => RowCount < 0 ? "未加载" : RowCount.ToString("N0");
@@ -132,7 +132,13 @@ public partial class TableDetailViewModel : ViewModelBase
         : TableComment!;
 
     public TableDetailViewModel()
+        : this(new DatabaseService())
     {
+    }
+
+    public TableDetailViewModel(IDatabaseService databaseService)
+    {
+        _databaseService = databaseService;
         SubscribeToTablesCollection(Tables);
     }
 
@@ -414,7 +420,21 @@ public partial class TableDetailViewModel : ViewModelBase
 
         if (value != null)
         {
-            _ = LoadDataAsync();
+            RunSelectedTableLoadAsync();
+        }
+    }
+
+    private async void RunSelectedTableLoadAsync()
+    {
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            LoadingText = $"加载数据表详情失败：{ex.Message}";
+            LoggingService.LogError("Selected table detail load failed.", ex);
+            ToastService.ShowError($"加载数据表详情失败：{ex.Message}", 5000);
         }
     }
 

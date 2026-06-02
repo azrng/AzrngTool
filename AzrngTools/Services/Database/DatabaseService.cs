@@ -10,7 +10,7 @@ namespace AzrngTools.Services.Database
     /// <summary>
     /// 数据库服务
     /// </summary>
-    public class DatabaseService
+    public class DatabaseService : IDatabaseService, ISingletonDependency
     {
         private ConnectionConfig? _cachedConfig;
         private string? _cachedDatabase;
@@ -327,8 +327,7 @@ namespace AzrngTools.Services.Database
                 DatabaseType.PostgresSql => DatabaseType.PostgresSql,
                 DatabaseType.Oracle => DatabaseType.Oracle,
                 DatabaseType.Sqlite => DatabaseType.Sqlite,
-                DatabaseType.Dm => DatabaseType.SqlServer,
-                _ => DatabaseType.SqlServer
+                _ => throw new NotSupportedException($"不支持的数据库类型: {type}")
             };
         }
 

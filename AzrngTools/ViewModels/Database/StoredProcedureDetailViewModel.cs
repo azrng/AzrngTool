@@ -11,7 +11,7 @@ namespace AzrngTools.ViewModels.Database;
 
 public partial class StoredProcedureDetailViewModel : ViewModelBase
 {
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
 
     public bool HasSelectedProcedure => SelectedProcedure != null;
     public bool HasProcedureDefinition => !string.IsNullOrWhiteSpace(ProcedureDefinition);
@@ -69,7 +69,13 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
     public bool ShowSplitWorkspace => ShowObjectList && Procedures.Count > 0;
 
     public StoredProcedureDetailViewModel()
+        : this(new DatabaseService())
     {
+    }
+
+    public StoredProcedureDetailViewModel(IDatabaseService databaseService)
+    {
+        _databaseService = databaseService;
         SubscribeToProceduresCollection(Procedures);
     }
 
@@ -204,7 +210,20 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase
         if (value != null)
         {
             System.Diagnostics.Debug.WriteLine($"选中存储过程: {value.Name}");
-            _ = LoadDataAsync();
+            RunSelectedProcedureLoadAsync();
+        }
+    }
+
+    private async void RunSelectedProcedureLoadAsync()
+    {
+        try
+        {
+            await LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            LoadingText = $"加载存储过程详情失败: {ex.Message}";
+            LoggingService.LogError("Selected procedure detail load failed.", ex);
         }
     }
 

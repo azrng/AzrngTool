@@ -19,7 +19,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 {
     private readonly ConnectionConfig _connection;
     private readonly string? _databaseName;
-    private readonly DatabaseService _databaseService = new();
+    private readonly IDatabaseService _databaseService;
     private bool _isSynchronizingChecks;
 
     [ObservableProperty]
@@ -136,9 +136,20 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
     }
 
     public ExportDialogViewModel(ConnectionConfig connection, string? databaseName, string? preferredSchemaName, string? initialOutputDirectory = null)
+        : this(connection, databaseName, preferredSchemaName, initialOutputDirectory, new DatabaseService())
+    {
+    }
+
+    public ExportDialogViewModel(
+        ConnectionConfig connection,
+        string? databaseName,
+        string? preferredSchemaName,
+        string? initialOutputDirectory,
+        IDatabaseService databaseService)
     {
         _connection = connection;
         _databaseName = databaseName;
+        _databaseService = databaseService;
         DocumentName = SuggestedFileName;
         OutputDirectory = ResolveInitialOutputDirectory(initialOutputDirectory);
     }
@@ -646,6 +657,8 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         return nodeType switch
         {
             TreeNodeType.Table => ExportObjectType.Table,
+            TreeNodeType.View => ExportObjectType.View,
+            TreeNodeType.StoredProcedure => ExportObjectType.Procedure,
             _ => throw new InvalidOperationException($"Unsupported export node type: {nodeType}")
         };
     }
