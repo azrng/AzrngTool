@@ -44,6 +44,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ICodeGenerationService _codeGenerationService;
     private readonly IConnectionConfigurationService _connectionConfigurationService;
     private readonly IDatabaseExportPayloadService _databaseExportPayloadService;
+    private readonly ICodeGenerationPayloadService _codeGenerationPayloadService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -157,6 +158,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -167,6 +169,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ICodeGenerationService? codeGenerationService = null,
         IConnectionConfigurationService? connectionConfigurationService = null,
         IDatabaseExportPayloadService? databaseExportPayloadService = null,
+        ICodeGenerationPayloadService? codeGenerationPayloadService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -178,6 +181,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _codeGenerationService = codeGenerationService ?? new CodeGenerationService();
         _connectionConfigurationService = connectionConfigurationService ?? new ConnectionConfigurationService();
         _databaseExportPayloadService = databaseExportPayloadService ?? new DatabaseExportPayloadService(databaseService);
+        _codeGenerationPayloadService = codeGenerationPayloadService ?? new CodeGenerationPayloadService(databaseService);
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -1094,15 +1098,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            var (success, tables, tableColumnsMap, message) = await BuildCodeGenerationPayloadAsync(connection, CurrentSchemaName);
-            if (!success)
+            var payload = await _codeGenerationPayloadService.BuildPayloadAsync(
+                connection,
+                CurrentSchemaName,
+                progress => LoadingText = progress);
+            if (!payload.Success)
             {
-                LoadingText = message;
-                ToastService.ShowError(message, 5000);
+                LoadingText = payload.Message;
+                ToastService.ShowError(payload.Message, 5000);
                 return;
             }
 
-            if (tables.Count == 0)
+            if (payload.Tables.Count == 0)
             {
                 LoadingText = "没有可生成代码的数据表。";
                 ToastService.ShowWarning("没有可生成代码的数据表。", 3000);
@@ -1113,9 +1120,9 @@ public partial class MainWindowViewModel : ViewModelBase
             var generatedFileCount = 0;
             var failedItems = new List<string>();
 
-            foreach (var table in tables.OrderBy(table => table.Name))
+            foreach (var table in payload.Tables.OrderBy(table => table.Name))
             {
-                tableColumnsMap.TryGetValue(table.Name, out var columns);
+                payload.TableColumnsMap.TryGetValue(table.Name, out var columns);
                 columns ??= new List<ColumnModel>();
 
                 if (generateEntities)
@@ -1347,34 +1354,6 @@ public partial class MainWindowViewModel : ViewModelBase
             LoggingService.LogError("Failed to load the selected schema.", ex);
             ToastService.ShowError($"架构加载失败：{ex.Message}", 3000);
         }
-    }
-
-    private async Task<(bool Success, List<TableModel> Tables, Dictionary<string, List<ColumnModel>> TableColumnsMap, string Message)> BuildCodeGenerationPayloadAsync(
-        ConnectionConfig connection,
-        string schemaName)
-    {
-        var (tableSuccess, tables, tableMessage) = await _databaseService.GetTablesAsync(connection, schemaName);
-        if (!tableSuccess)
-        {
-            return (false, new List<TableModel>(), new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase), tableMessage);
-        }
-
-        var tableColumnsMap = new Dictionary<string, List<ColumnModel>>(StringComparer.OrdinalIgnoreCase);
-        foreach (var table in tables.OrderBy(table => table.Name))
-        {
-            LoadingText = $"正在加载 {table.Schema}.{table.Name} 的字段...";
-            var (columnSuccess, columns, columnMessage) = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
-            if (!columnSuccess)
-            {
-                LoggingService.LogWarning($"Code generation column fallback for {table.Schema}.{table.Name}: {columnMessage}");
-                tableColumnsMap[table.Name] = new List<ColumnModel>();
-                continue;
-            }
-
-            tableColumnsMap[table.Name] = columns.OrderBy(column => column.OrdinalPosition).ToList();
-        }
-
-        return (true, tables, tableColumnsMap, $"Prepared {tables.Count} tables for code generation.");
     }
 
     private ConnectionConfig? GetActiveConnection()

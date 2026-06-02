@@ -14,11 +14,12 @@
 | `ExportDialogViewModel.MapExportObjectType` 只支持表 | 已处理 | 已补充 View 与 StoredProcedure 到导出对象类型的防御性映射，并补充单元测试覆盖；当前主导出流程仍以表导出为主，完整导出视图 / 存储过程能力需另开专项 |
 | `ValidateFormLegacy` / `ValidateConnectionNameUniqueLegacy` 死代码 | 已处理 | 已删除 Legacy 方法，保留当前实际使用的校验链路 |
 | `ShowDatabaseSelector` 重复属性通知 | 已处理 | 已删除重复通知，保留一次状态刷新 |
-| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、导出负载构建、连接配置序列化、DI 注册和 MySql Schema 策略测试；本次回归 `dotnet test` 通过 41 个测试 |
+| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、导出负载构建、代码生成负载构建、连接配置序列化、DI 注册和 MySql Schema 策略测试；本次回归 `dotnet test` 通过 43 个测试 |
 | `DatabaseService` 未走 DI | 已处理 | 已抽出 `IDatabaseService`，`DatabaseService` 通过 `ISingletonDependency` 扫描注册；数据库工作台主 ViewModel 与子 ViewModel 改为构造注入共享服务实例 |
 | `MainWindowViewModel` 职责过重 | 需专项 | 属于模块拆分和应用层编排重构，需单独设计拆分边界和回归范围 |
 | `DocumentExportService` / `CodeGenerationService` 直接 new | 已处理 | 已抽出 `IDocumentExportService` 与 `ICodeGenerationService`，服务通过 DI 扫描注册，主 ViewModel 改为构造注入 |
 | 文档导出负载构建留在主 ViewModel | 已处理 | 已抽出 `IDatabaseExportPayloadService`，主 ViewModel 不再直接编排表字段/索引加载 |
+| 代码生成负载构建留在主 ViewModel | 已处理 | 已抽出 `ICodeGenerationPayloadService`，主 ViewModel 不再直接编排代码生成前的表与字段加载 |
 | 连接配置读写和密码加密副本逻辑留在主 ViewModel | 已处理 | 已抽出 `IConnectionConfigurationService`，连接配置文件读写、JSON 导入导出和密码加密副本逻辑改由服务层承载 |
 | 密码原地加解密序列化 | 已处理 | 保存和导出连接配置时改为序列化加密副本，不再修改内存中的连接密码，并补充测试覆盖 |
 | 连接字符串中的密码明文 | 需包级优化 | 当前受 `Azrng.DataAccess` 部分桥接器构造契约限制，已在 `doc/2026-06-02-Azrng.DataAccess-connection-security-notes.md` 记录包级改进建议 |
@@ -184,7 +185,7 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | 异常使用 Azrng 体系 | 违反 | 直接 `catch (Exception)` + 元组返回 |
 | 禁止主构造函数 | 符合 | 未使用主构造函数 |
 | 服务层不直接操作 View | 符合 | 通过 ToastService 间接 |
-| 测试覆盖 | 已改善 | 已补充 Database 模块关键单元测试，本轮回归 41 个测试通过 |
+| 测试覆盖 | 已改善 | 已补充 Database 模块关键单元测试，本轮回归 43 个测试通过 |
 
 ---
 
@@ -200,6 +201,7 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | P2 | MainWindowViewModel 职责拆分 | 可维护性 | 需专项 |
 | P2 | 文档导出与代码生成服务直接实例化 | 架构规范 | 已处理 |
 | P2 | 文档导出负载构建留在主 ViewModel | 可维护性 | 已处理 |
+| P2 | 代码生成负载构建留在主 ViewModel | 可维护性 | 已处理 |
 | P2 | 连接配置持久化逻辑留在主 ViewModel | 可维护性 | 已处理 |
 | P2 | 密码加密方式不安全 | 安全 | 已处理 |
 | P2 | 连接字符串中的密码明文 | 安全 | 需包级优化 |
