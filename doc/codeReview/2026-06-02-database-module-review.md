@@ -17,7 +17,9 @@
 | Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、连接加密副本、DI 注册和 MySql Schema 策略测试；本次回归 `dotnet test` 通过 38 个测试 |
 | `DatabaseService` 未走 DI | 已处理 | 已抽出 `IDatabaseService`，`DatabaseService` 通过 `ISingletonDependency` 扫描注册；数据库工作台主 ViewModel 与子 ViewModel 改为构造注入共享服务实例 |
 | `MainWindowViewModel` 职责过重 | 需专项 | 属于模块拆分和应用层编排重构，需单独设计拆分边界和回归范围 |
+| `DocumentExportService` / `CodeGenerationService` 直接 new | 已处理 | 已抽出 `IDocumentExportService` 与 `ICodeGenerationService`，服务通过 DI 扫描注册，主 ViewModel 改为构造注入 |
 | 密码原地加解密序列化 | 已处理 | 保存和导出连接配置时改为序列化加密副本，不再修改内存中的连接密码，并补充测试覆盖 |
+| 连接字符串中的密码明文 | 需包级优化 | 当前受 `Azrng.DataAccess` 部分桥接器构造契约限制，已在 `doc/2026-06-02-Azrng.DataAccess-connection-security-notes.md` 记录包级改进建议 |
 | fire-and-forget 异常处理 | 已处理 | 连接上下文初始化、数据库切换以及表 / 视图 / 存储过程详情自动加载改为安全调度，异常会记录日志并反馈到界面状态 |
 | `ResultModel<T>` / Azrng 异常体系统一 | 需专项 | 涉及服务层返回契约变更和调用方联动，需单独规划 |
 | MySql Schema 处理集中化、连接缓存线程安全 | 已处理 | MySql 运行时 Schema 名称由 `DatabaseService` 统一生成，主 ViewModel 不再重复硬编码；桥接器缓存读写已加锁，降低后台调用竞态风险 |
@@ -76,6 +78,8 @@
 ### 建议处理：连接字符串中的密码明文
 
 `BuildConnectionString`（行 247-265）将明文密码直接拼入连接字符串。虽然连接字符串不落盘，但在内存中以明文存在。
+
+**当前处理**：已记录到 `doc/2026-06-02-Azrng.DataAccess-connection-security-notes.md`。该问题更适合在 `Azrng.DataAccess` 包内统一补齐 `DataSourceConfig` 构造入口、连接字符串 builder 与敏感字段脱敏能力，避免当前应用层继续散落字符串模板。
 
 ---
 
@@ -192,7 +196,9 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | P1 | fire-and-forget 异常吞没 | 可靠性 | 已处理 |
 | P2 | DatabaseService 未走 DI | 架构规范 | 已处理 |
 | P2 | MainWindowViewModel 职责拆分 | 可维护性 | 需专项 |
+| P2 | 文档导出与代码生成服务直接实例化 | 架构规范 | 已处理 |
 | P2 | 密码加密方式不安全 | 安全 | 已处理 |
+| P2 | 连接字符串中的密码明文 | 安全 | 需包级优化 |
 | P3 | 结果包装统一为 `ResultModel<T>` | 规范对齐 | 需专项 |
 | P3 | ShowDatabaseSelector 重复通知 | 代码质量 | 已处理 |
 | P3 | MySql Schema 处理集中化 | 可维护性 | 已处理 |

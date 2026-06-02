@@ -14,7 +14,7 @@ namespace AzrngTools.Services.Database;
 /// <summary>
 /// 文档导出服务 - 支持 Excel 和 Markdown 格式
 /// </summary>
-public class DocumentExportService
+public class DocumentExportService : IDocumentExportService, ISingletonDependency
 {
     /// <summary>
     /// 导出到 Excel（完整架构：表、视图、存储过程）

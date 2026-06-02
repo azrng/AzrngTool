@@ -35,8 +35,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly string _configFilePath;
     private readonly string _groupsFilePath;
     private readonly IDatabaseService _databaseService;
-    private readonly DocumentExportService _documentExportService = new();
-    private readonly CodeGenerationService _codeGenerationService = new();
+    private readonly IDocumentExportService _documentExportService;
+    private readonly ICodeGenerationService _codeGenerationService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -146,12 +146,16 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
+            null,
             null)
     {
     }
 
     public MainWindowViewModel(
         IDatabaseService databaseService,
+        IDocumentExportService? documentExportService = null,
+        ICodeGenerationService? codeGenerationService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -159,6 +163,8 @@ public partial class MainWindowViewModel : ViewModelBase
         SqlQueryViewModel? sqlQueryViewModel = null)
     {
         _databaseService = databaseService;
+        _documentExportService = documentExportService ?? new DocumentExportService();
+        _codeGenerationService = codeGenerationService ?? new CodeGenerationService();
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);

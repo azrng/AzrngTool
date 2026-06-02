@@ -11,7 +11,7 @@ namespace AzrngTools.Services.Database;
 /// <summary>
 /// 代码生成服务
 /// </summary>
-public class CodeGenerationService
+public class CodeGenerationService : ICodeGenerationService, ISingletonDependency
 {
     /// <summary>
     /// 生成 C# 实体类
