@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -31,11 +30,6 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private const string ConfigFileName = "connections.json";
     private const string GroupsFileName = "groups.json";
-    private static readonly JsonSerializerOptions GroupJsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true
-    };
 
     private readonly string _configFilePath;
     private readonly string _groupsFilePath;
@@ -45,6 +39,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IConnectionConfigurationService _connectionConfigurationService;
     private readonly IDatabaseExportPayloadService _databaseExportPayloadService;
     private readonly ICodeGenerationPayloadService _codeGenerationPayloadService;
+    private readonly IConnectionGroupConfigurationService _connectionGroupConfigurationService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -159,6 +154,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -170,6 +166,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IConnectionConfigurationService? connectionConfigurationService = null,
         IDatabaseExportPayloadService? databaseExportPayloadService = null,
         ICodeGenerationPayloadService? codeGenerationPayloadService = null,
+        IConnectionGroupConfigurationService? connectionGroupConfigurationService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -182,6 +179,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _connectionConfigurationService = connectionConfigurationService ?? new ConnectionConfigurationService();
         _databaseExportPayloadService = databaseExportPayloadService ?? new DatabaseExportPayloadService(databaseService);
         _codeGenerationPayloadService = codeGenerationPayloadService ?? new CodeGenerationPayloadService(databaseService);
+        _connectionGroupConfigurationService = connectionGroupConfigurationService ?? new ConnectionGroupConfigurationService();
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -214,14 +212,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            if (!File.Exists(_groupsFilePath))
-            {
-                CreateDefaultGroup();
-                return;
-            }
-
-            var groups = JsonSerializer.Deserialize<List<ConnectionGroup>>(File.ReadAllText(_groupsFilePath), GroupJsonOptions);
-            if (groups == null || groups.Count == 0)
+            var groups = _connectionGroupConfigurationService.LoadGroups(_groupsFilePath);
+            if (groups.Count == 0)
             {
                 CreateDefaultGroup();
                 return;
@@ -241,14 +233,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private void CreateDefaultGroup()
     {
         Groups.Clear();
-        Groups.Add(new ConnectionGroup
-        {
-            Id = "default",
-            Name = "Default",
-            Description = "Default connection group",
-            Color = "#E3EFE8",
-            IsDefault = true
-        });
+        Groups.Add(_connectionGroupConfigurationService.CreateDefaultGroup());
 
         SaveGroups();
     }
@@ -257,8 +242,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            var json = JsonSerializer.Serialize(Groups.ToList(), GroupJsonOptions);
-            File.WriteAllText(_groupsFilePath, json);
+            _connectionGroupConfigurationService.SaveGroups(_groupsFilePath, Groups);
             LoggingService.LogOperation($"Saved {Groups.Count} connection groups.");
         }
         catch (Exception ex)
