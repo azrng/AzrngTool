@@ -840,30 +840,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         try
         {
-            if (config.DatabaseType == DatabaseType.MySql)
-            {
-                var schemaName = string.IsNullOrWhiteSpace(config.Database)
-                    ? "default"
-                    : config.Database;
-
-                var mySqlSchemas = new List<SchemaModel>
-                {
-                    new()
-                    {
-                        Name = schemaName,
-                        Owner = "MySql",
-                        TableCount = 0,
-                        IsDefault = true
-                    }
-                };
-
-                Schemas.Clear();
-                foreach (var s in mySqlSchemas) Schemas.Add(s);
-                LoadingText = $"已为 {config.Name} 加载 1 个架构。";
-                LoggingService.LogInfo($"Loaded MySql runtime schema {schemaName} for {config.Name}.");
-                return;
-            }
-
             var (success, schemas, message) = await _databaseService.GetSchemasAsync(config);
             if (!success)
             {

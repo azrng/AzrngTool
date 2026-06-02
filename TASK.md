@@ -22,6 +22,7 @@
 
 | 任务 ID | 任务名称 | 任务目标 | 当前阶段 | 负责人 AI | 任务状态 | 优先级 | 最近更新时间 | 交接说明 |
 | ------- | -------- | -------- | -------- | --------- | -------- | ------ | ------------ | -------- |
+| T110 | Database 模块审查剩余问题处理 | 继续处理 `doc/codeReview/2026-06-02-database-module-review.md` 中可低风险落地的问题，收口 MySQL Schema 策略与连接缓存并发风险 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:42 | 已完成 MySql Schema 策略集中化、连接缓存加锁、测试和 review/devlog 同步；MainWindowViewModel 职责拆分与 ResultModel 统一保留为后续专项 |
 | T109 | Database 模块审查问题处理 | 核对 `2026-06-02-database-module-review.md` 中的问题，处理低风险可落地项并更新审查状态 | 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 17:37 | 已处理 MapDatabaseType、导出对象映射、Legacy 死代码、重复通知、密码副本序列化、fire-and-forget 异常收口、DatabaseService DI 化和测试覆盖更新；职责拆分、结果包装等保留为后续专项 |
 | T108 | 数据库工作台左侧选择体验修复 | 修复导出文档弹窗对象树滚动、数据库下拉搜索、连接管理测试/刷新/保存/连接逻辑、标题重复、编辑已有连接误报重名和底部删除按钮遮挡问题 | 阶段 1 / 阶段 2 / 阶段 3 | Codex | DONE | 高 | 2026-06-02 16:54 | Release 构建通过，Release 测试 30 个通过；未执行真实 PostgreSQL 人工 smoke test |
 | T107 | Base64文本页工作区占满高度 | 修复 Base64 文本页底部空白问题，让左右工作区随主窗口内容视口拉伸 | 阶段 1 / 阶段 3 | Codex | DONE | 中 | 2026-05-20 14:44 | 已构建通过，未执行人工界面 smoke test |

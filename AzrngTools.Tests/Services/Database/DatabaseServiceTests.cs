@@ -47,4 +47,50 @@ public class DatabaseServiceTests
         Assert.False(result.Success);
         Assert.Contains("不支持的数据库类型", result.Message);
     }
+
+    [Fact]
+    public async Task MySql_schema_uses_runtime_database_name_without_bridge_call()
+    {
+        var service = new DatabaseService();
+        var config = new ConnectionConfig
+        {
+            Name = "mysql",
+            DatabaseType = DatabaseType.MySql,
+            Host = "127.0.0.1",
+            Port = 3306,
+            Username = "user",
+            Password = "pwd",
+            Database = "app_db"
+        };
+
+        var result = await service.GetSchemasAsync(config);
+
+        Assert.True(result.Success);
+        var schema = Assert.Single(result.Schemas);
+        Assert.Equal("app_db", schema.Name);
+        Assert.Equal("MySql", schema.Owner);
+        Assert.True(schema.IsDefault);
+    }
+
+    [Fact]
+    public async Task MySql_schema_falls_back_to_default_when_database_is_empty()
+    {
+        var service = new DatabaseService();
+        var config = new ConnectionConfig
+        {
+            Name = "mysql",
+            DatabaseType = DatabaseType.MySql,
+            Host = "127.0.0.1",
+            Port = 3306,
+            Username = "user",
+            Password = "pwd",
+            Database = string.Empty
+        };
+
+        var result = await service.GetSchemasAsync(config);
+
+        Assert.True(result.Success);
+        var schema = Assert.Single(result.Schemas);
+        Assert.Equal("default", schema.Name);
+    }
 }

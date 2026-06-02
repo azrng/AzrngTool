@@ -12,6 +12,7 @@ namespace AzrngTools.Services.Database
     /// </summary>
     public class DatabaseService : IDatabaseService, ISingletonDependency
     {
+        private readonly object _bridgeCacheLock = new();
         private ConnectionConfig? _cachedConfig;
         private string? _cachedDatabase;
         private DatabaseType _cachedDbType;
@@ -23,19 +24,23 @@ namespace AzrngTools.Services.Database
         private IBasicDbBridge GetOrCreateDbBridge(ConnectionConfig config)
         {
             var dbType = MapDatabaseType(config.DatabaseType);
-            if (_cachedBridge != null && ReferenceEquals(_cachedConfig, config) &&
-                string.Equals(_cachedDatabase, config.Database, StringComparison.OrdinalIgnoreCase) &&
-                _cachedDbType == dbType)
-            {
-                return _cachedBridge;
-            }
 
-            var bridge = CreateDbBridge(dbType, config);
-            _cachedConfig = config;
-            _cachedDatabase = config.Database;
-            _cachedDbType = dbType;
-            _cachedBridge = bridge;
-            return bridge;
+            lock (_bridgeCacheLock)
+            {
+                if (_cachedBridge != null && ReferenceEquals(_cachedConfig, config) &&
+                    string.Equals(_cachedDatabase, config.Database, StringComparison.OrdinalIgnoreCase) &&
+                    _cachedDbType == dbType)
+                {
+                    return _cachedBridge;
+                }
+
+                var bridge = CreateDbBridge(dbType, config);
+                _cachedConfig = config;
+                _cachedDatabase = config.Database;
+                _cachedDbType = dbType;
+                _cachedBridge = bridge;
+                return bridge;
+            }
         }
 
         /// <summary>
@@ -43,9 +48,12 @@ namespace AzrngTools.Services.Database
         /// </summary>
         public void InvalidateCache()
         {
-            _cachedConfig = null;
-            _cachedDatabase = null;
-            _cachedBridge = null;
+            lock (_bridgeCacheLock)
+            {
+                _cachedConfig = null;
+                _cachedDatabase = null;
+                _cachedBridge = null;
+            }
         }
         /// <summary>
         /// 测试数据库连接
@@ -421,6 +429,24 @@ namespace AzrngTools.Services.Database
             };
         }
 
+        internal static string GetMySqlRuntimeSchemaName(ConnectionConfig config)
+        {
+            return string.IsNullOrWhiteSpace(config.Database)
+                ? "default"
+                : config.Database;
+        }
+
+        private static SchemaModel CreateMySqlRuntimeSchema(ConnectionConfig config)
+        {
+            return new SchemaModel
+            {
+                Name = GetMySqlRuntimeSchemaName(config),
+                Owner = "MySql",
+                TableCount = 0,
+                IsDefault = true
+            };
+        }
+
         /// <summary>
         /// 获取数据库 Schema 列表
         /// </summary>
@@ -436,6 +462,12 @@ namespace AzrngTools.Services.Database
                 }
 
                 var dbType = MapDatabaseType(config.DatabaseType);
+
+                if (dbType == DatabaseType.MySql)
+                {
+                    var mySqlSchema = CreateMySqlRuntimeSchema(config);
+                    return (true, new List<SchemaModel> { mySqlSchema }, "成功加载 1 个 Schema");
+                }
 
                 if (dbType == DatabaseType.Sqlite)
                 {

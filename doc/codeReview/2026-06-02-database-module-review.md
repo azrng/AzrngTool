@@ -14,13 +14,13 @@
 | `ExportDialogViewModel.MapExportObjectType` 只支持表 | 已处理 | 已补充 View 与 StoredProcedure 到导出对象类型的防御性映射，并补充单元测试覆盖；当前主导出流程仍以表导出为主，完整导出视图 / 存储过程能力需另开专项 |
 | `ValidateFormLegacy` / `ValidateConnectionNameUniqueLegacy` 死代码 | 已处理 | 已删除 Legacy 方法，保留当前实际使用的校验链路 |
 | `ShowDatabaseSelector` 重复属性通知 | 已处理 | 已删除重复通知，保留一次状态刷新 |
-| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、连接加密副本和 DI 注册测试；本次回归 `dotnet test` 通过 36 个测试 |
+| Database 模块测试覆盖缺失 | 已改善 | 已补充数据库服务、导出对象映射、连接加密副本、DI 注册和 MySql Schema 策略测试；本次回归 `dotnet test` 通过 38 个测试 |
 | `DatabaseService` 未走 DI | 已处理 | 已抽出 `IDatabaseService`，`DatabaseService` 通过 `ISingletonDependency` 扫描注册；数据库工作台主 ViewModel 与子 ViewModel 改为构造注入共享服务实例 |
 | `MainWindowViewModel` 职责过重 | 需专项 | 属于模块拆分和应用层编排重构，需单独设计拆分边界和回归范围 |
 | 密码原地加解密序列化 | 已处理 | 保存和导出连接配置时改为序列化加密副本，不再修改内存中的连接密码，并补充测试覆盖 |
 | fire-and-forget 异常处理 | 已处理 | 连接上下文初始化、数据库切换以及表 / 视图 / 存储过程详情自动加载改为安全调度，异常会记录日志并反馈到界面状态 |
 | `ResultModel<T>` / Azrng 异常体系统一 | 需专项 | 涉及服务层返回契约变更和调用方联动，需单独规划 |
-| MySql Schema 处理集中化、连接缓存线程安全 | 暂不处理 | 当前未发现直接用户可见故障，作为可维护性风险保留 |
+| MySql Schema 处理集中化、连接缓存线程安全 | 已处理 | MySql 运行时 Schema 名称由 `DatabaseService` 统一生成，主 ViewModel 不再重复硬编码；桥接器缓存读写已加锁，降低后台调用竞态风险 |
 
 ---
 
@@ -195,4 +195,4 @@ private static ExportObjectType MapExportObjectType(TreeNodeType nodeType)
 | P2 | 密码加密方式不安全 | 安全 | 已处理 |
 | P3 | 结果包装统一为 `ResultModel<T>` | 规范对齐 | 需专项 |
 | P3 | ShowDatabaseSelector 重复通知 | 代码质量 | 已处理 |
-| P3 | MySql Schema 处理集中化 | 可维护性 | 暂不处理 |
+| P3 | MySql Schema 处理集中化 | 可维护性 | 已处理 |
