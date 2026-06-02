@@ -44,11 +44,52 @@ public class ConnectionConfigurationServiceTests
         Assert.Equal(source.GroupName, connection.GroupName);
     }
 
+    [Fact]
+    public void BuildImportResult_skips_existing_and_batch_duplicate_connection_names()
+    {
+        var service = new ConnectionConfigurationService();
+        var existing = new[]
+        {
+            CreateConnection("prod")
+        };
+        var imported = new[]
+        {
+            CreateConnection("PROD"),
+            CreateConnection("stage"),
+            CreateConnection("Stage"),
+            CreateConnection("test")
+        };
+
+        var result = service.BuildImportResult(existing, imported);
+
+        Assert.Equal(2, result.ImportedCount);
+        Assert.Equal(2, result.SkippedCount);
+        Assert.Equal(["stage", "test"], result.ImportedConnections.Select(connection => connection.Name));
+        Assert.Equal("已导入 2 个连接，跳过 2 个重复项。", result.Message);
+    }
+
+    [Fact]
+    public void BuildImportResult_uses_imported_count_message_when_no_duplicates()
+    {
+        var service = new ConnectionConfigurationService();
+
+        var result = service.BuildImportResult([], [CreateConnection("prod")]);
+
+        Assert.Equal(1, result.ImportedCount);
+        Assert.Equal(0, result.SkippedCount);
+        Assert.Equal("已导入 1 个连接。", result.Message);
+    }
+
     private static ConnectionConfig CreateConnection()
+    {
+        return CreateConnection("pg");
+    }
+
+    private static ConnectionConfig CreateConnection(string name)
     {
         return new ConnectionConfig
         {
-            Name = "pg",
+            Name = name,
             DatabaseType = DatabaseType.PostgresSql,
             Host = "127.0.0.1",
             Port = 5432,

@@ -1217,33 +1217,16 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var existingNames = Connections.Select(connection => connection.Name)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            var importedCount = 0;
-            var skippedCount = 0;
-
-            foreach (var connection in importedConnections)
+            var importResult = _connectionConfigurationService.BuildImportResult(Connections, importedConnections);
+            foreach (var connection in importResult.ImportedConnections)
             {
-                if (existingNames.Contains(connection.Name))
-                {
-                    skippedCount++;
-                    continue;
-                }
-
                 Connections.Add(connection);
-                existingNames.Add(connection.Name);
-                importedCount++;
             }
 
             SaveConnections();
 
-            var message = skippedCount > 0
-                ? $"已导入 {importedCount} 个连接，跳过 {skippedCount} 个重复项。"
-                : $"已导入 {importedCount} 个连接。";
-
-            LoggingService.LogOperation(message);
-            ToastService.ShowSuccess(message, 4000);
+            LoggingService.LogOperation(importResult.Message);
+            ToastService.ShowSuccess(importResult.Message, 4000);
         }
         catch (Exception ex)
         {

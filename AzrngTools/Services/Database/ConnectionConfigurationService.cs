@@ -51,6 +51,32 @@ public class ConnectionConfigurationService : IConnectionConfigurationService, I
         return connections.Select(CreateEncryptedConnectionCopy).ToList();
     }
 
+    public ConnectionImportResult BuildImportResult(
+        IEnumerable<ConnectionConfig> existingConnections,
+        IEnumerable<ConnectionConfig> importedConnections)
+    {
+        var existingNames = existingConnections
+            .Select(connection => connection.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var importableConnections = new List<ConnectionConfig>();
+        var skippedCount = 0;
+
+        foreach (var connection in importedConnections)
+        {
+            if (existingNames.Contains(connection.Name))
+            {
+                skippedCount++;
+                continue;
+            }
+
+            importableConnections.Add(connection);
+            existingNames.Add(connection.Name);
+        }
+
+        return new ConnectionImportResult(importableConnections, skippedCount);
+    }
+
     private static void DecryptConnectionPassword(ConnectionConfig connection)
     {
         if (!string.IsNullOrWhiteSpace(connection.Password))

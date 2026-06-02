@@ -13,4 +13,8 @@ public interface IConnectionConfigurationService
     string SerializeConnections(IEnumerable<ConnectionConfig> connections);
 
     List<ConnectionConfig> CreateEncryptedConnectionCopies(IEnumerable<ConnectionConfig> connections);
+
+    ConnectionImportResult BuildImportResult(
+        IEnumerable<ConnectionConfig> existingConnections,
+        IEnumerable<ConnectionConfig> importedConnections);
 }
