@@ -40,6 +40,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IDatabaseExportPayloadService _databaseExportPayloadService;
     private readonly ICodeGenerationPayloadService _codeGenerationPayloadService;
     private readonly IConnectionGroupConfigurationService _connectionGroupConfigurationService;
+    private readonly IDatabaseWorkbenchNamingService _databaseWorkbenchNamingService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -155,6 +156,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -167,6 +169,7 @@ public partial class MainWindowViewModel : ViewModelBase
         IDatabaseExportPayloadService? databaseExportPayloadService = null,
         ICodeGenerationPayloadService? codeGenerationPayloadService = null,
         IConnectionGroupConfigurationService? connectionGroupConfigurationService = null,
+        IDatabaseWorkbenchNamingService? databaseWorkbenchNamingService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -180,6 +183,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _databaseExportPayloadService = databaseExportPayloadService ?? new DatabaseExportPayloadService(databaseService);
         _codeGenerationPayloadService = codeGenerationPayloadService ?? new CodeGenerationPayloadService(databaseService);
         _connectionGroupConfigurationService = connectionGroupConfigurationService ?? new ConnectionGroupConfigurationService();
+        _databaseWorkbenchNamingService = databaseWorkbenchNamingService ?? new DatabaseWorkbenchNamingService();
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -926,7 +930,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var exportFilePath = BuildExportFilePath(exportRequest);
+            var exportFilePath = _databaseWorkbenchNamingService.BuildExportFilePath(exportRequest);
             var exported = exportRequest.DocumentType switch
             {
                 ExportDocumentType.Excel => await _documentExportService.ExportToExcelAsync(
@@ -1100,7 +1104,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var namespaceRoot = BuildCodeGenerationNamespace(connection.Name, CurrentSchemaName);
+            var namespaceRoot = _databaseWorkbenchNamingService.BuildCodeGenerationNamespace(connection.Name, CurrentSchemaName);
             var generatedFileCount = 0;
             var failedItems = new List<string>();
 
@@ -1112,7 +1116,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (generateEntities)
                 {
                     LoadingText = $"正在生成实体类：{table.Name} ...";
-                    var entityPath = Path.Combine(outputRootPath, "Entities", $"{SanitizeCodeIdentifier(table.Name)}.cs");
+                    var entityPath = Path.Combine(outputRootPath, "Entities", $"{_databaseWorkbenchNamingService.SanitizeCodeIdentifier(table.Name)}.cs");
                     var entitySuccess = await _codeGenerationService.GenerateEntityClassAsync(entityPath, table.Name, columns, $"{namespaceRoot}.Entities");
                     if (entitySuccess)
                     {
@@ -1127,7 +1131,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (generateRepositories)
                 {
                     LoadingText = $"正在生成仓储类：{table.Name} ...";
-                    var repositoryPath = Path.Combine(outputRootPath, "Repositories", $"{SanitizeCodeIdentifier(table.Name)}Repository.cs");
+                    var repositoryPath = Path.Combine(outputRootPath, "Repositories", $"{_databaseWorkbenchNamingService.SanitizeCodeIdentifier(table.Name)}Repository.cs");
                     var repositorySuccess = await _codeGenerationService.GenerateRepositoryAsync(repositoryPath, table.Name, $"{namespaceRoot}.Repositories");
                     if (repositorySuccess)
                     {
@@ -1142,7 +1146,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (generateControllers)
                 {
                     LoadingText = $"正在生成控制器：{table.Name} ...";
-                    var controllerPath = Path.Combine(outputRootPath, "Controllers", $"{SanitizeCodeIdentifier(table.Name)}Controller.cs");
+                    var controllerPath = Path.Combine(outputRootPath, "Controllers", $"{_databaseWorkbenchNamingService.SanitizeCodeIdentifier(table.Name)}Controller.cs");
                     var controllerSuccess = await _codeGenerationService.GenerateControllerAsync(controllerPath, table.Name, $"{namespaceRoot}.Controllers");
                     if (controllerSuccess)
                     {
@@ -1457,58 +1461,6 @@ public partial class MainWindowViewModel : ViewModelBase
         TableDetailViewModel.SelectedTable = null;
         ViewDetailViewModel.SelectedView = null;
         StoredProcedureDetailViewModel.SelectedProcedure = null;
-    }
-
-    private static string BuildExportFilePath(ExportDialogResultDto exportRequest)
-    {
-        var safeDocumentName = SanitizeFileName(exportRequest.DocumentName);
-        var extension = exportRequest.DocumentType switch
-        {
-            ExportDocumentType.Markdown => ".md",
-            _ => ".xlsx"
-        };
-
-        var targetFilePath = Path.Combine(exportRequest.OutputDirectory, $"{safeDocumentName}{extension}");
-
-        if (!File.Exists(targetFilePath))
-        {
-            return targetFilePath;
-        }
-
-        return Path.Combine(exportRequest.OutputDirectory, $"{safeDocumentName}_{DateTime.Now:yyyyMMdd_HHmmss}{extension}");
-    }
-
-    private static string BuildCodeGenerationNamespace(string connectionName, string schemaName)
-    {
-        var safeConnection = SanitizeCodeIdentifier(connectionName);
-        var safeSchema = SanitizeCodeIdentifier(schemaName);
-        return $"SmartSQL.Generated.{safeConnection}.{safeSchema}";
-    }
-
-    private static string SanitizeFileName(string value)
-    {
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = new string(value.Select(character => invalidChars.Contains(character) ? '_' : character).ToArray());
-        return string.IsNullOrWhiteSpace(sanitized) ? "export" : sanitized;
-    }
-
-    private static string SanitizeCodeIdentifier(string value)
-    {
-        var sanitized = SanitizeFileName(value)
-            .Replace(' ', '_')
-            .Replace('-', '_');
-
-        if (string.IsNullOrWhiteSpace(sanitized))
-        {
-            return "GeneratedItem";
-        }
-
-        if (!char.IsLetter(sanitized[0]) && sanitized[0] != '_')
-        {
-            sanitized = $"Generated_{sanitized}";
-        }
-
-        return sanitized;
     }
 
     private async Task ShowErrorMessageAsync(string title, string message)

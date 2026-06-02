@@ -22,6 +22,7 @@ public class DatabaseDependencyInjectionTests
         var databaseExportPayloadService = provider.GetRequiredService<IDatabaseExportPayloadService>();
         var codeGenerationPayloadService = provider.GetRequiredService<ICodeGenerationPayloadService>();
         var connectionGroupConfigurationService = provider.GetRequiredService<IConnectionGroupConfigurationService>();
+        var databaseWorkbenchNamingService = provider.GetRequiredService<IDatabaseWorkbenchNamingService>();
         var viewModel = provider.GetRequiredService<MainWindowViewModel>();
 
         Assert.Same(databaseService, provider.GetRequiredService<IDatabaseService>());
@@ -31,6 +32,7 @@ public class DatabaseDependencyInjectionTests
         Assert.Same(databaseExportPayloadService, provider.GetRequiredService<IDatabaseExportPayloadService>());
         Assert.Same(codeGenerationPayloadService, provider.GetRequiredService<ICodeGenerationPayloadService>());
         Assert.Same(connectionGroupConfigurationService, provider.GetRequiredService<IConnectionGroupConfigurationService>());
+        Assert.Same(databaseWorkbenchNamingService, provider.GetRequiredService<IDatabaseWorkbenchNamingService>());
         Assert.NotNull(viewModel.BrowserViewModel);
         Assert.NotNull(viewModel.TableDetailViewModel);
         Assert.NotNull(viewModel.ViewDetailViewModel);
