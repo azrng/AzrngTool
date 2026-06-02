@@ -41,6 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly ICodeGenerationPayloadService _codeGenerationPayloadService;
     private readonly IConnectionGroupConfigurationService _connectionGroupConfigurationService;
     private readonly IDatabaseWorkbenchNamingService _databaseWorkbenchNamingService;
+    private readonly IDatabaseConnectionContextService _databaseConnectionContextService;
     private bool _suppressDatabaseSelectionChanged;
     private string? _lastDocumentExportDirectory;
 
@@ -157,6 +158,7 @@ public partial class MainWindowViewModel : ViewModelBase
             null,
             null,
             null,
+            null,
             null)
     {
     }
@@ -170,6 +172,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ICodeGenerationPayloadService? codeGenerationPayloadService = null,
         IConnectionGroupConfigurationService? connectionGroupConfigurationService = null,
         IDatabaseWorkbenchNamingService? databaseWorkbenchNamingService = null,
+        IDatabaseConnectionContextService? databaseConnectionContextService = null,
         DatabaseBrowserViewModel? browserViewModel = null,
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
@@ -184,6 +187,7 @@ public partial class MainWindowViewModel : ViewModelBase
         _codeGenerationPayloadService = codeGenerationPayloadService ?? new CodeGenerationPayloadService(databaseService);
         _connectionGroupConfigurationService = connectionGroupConfigurationService ?? new ConnectionGroupConfigurationService();
         _databaseWorkbenchNamingService = databaseWorkbenchNamingService ?? new DatabaseWorkbenchNamingService();
+        _databaseConnectionContextService = databaseConnectionContextService ?? new DatabaseConnectionContextService();
         BrowserViewModel = browserViewModel ?? new DatabaseBrowserViewModel(databaseService);
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
@@ -268,7 +272,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
             var connections = _connectionConfigurationService.LoadConnections(_configFilePath);
 
-            var sortedConnections = SortConnections(connections);
+            var sortedConnections = _databaseConnectionContextService.SortConnections(connections, SortMode);
             Connections.Clear();
             foreach (var c in sortedConnections) Connections.Add(c);
             LoggingService.LogInfo($"Loaded {Connections.Count} connections.");
@@ -278,18 +282,6 @@ public partial class MainWindowViewModel : ViewModelBase
             Connections.Clear();
             LoggingService.LogError("Failed to load connection configuration.", ex);
         }
-    }
-
-    private List<ConnectionConfig> SortConnections(IEnumerable<ConnectionConfig> connections)
-    {
-        return SortMode switch
-        {
-            "Name" => connections.OrderBy(connection => connection.Name).ToList(),
-            "Type" => connections.OrderBy(connection => connection.DatabaseType).ToList(),
-            "LastUsed" => connections.OrderByDescending(connection => connection.LastUsedTime ?? DateTime.MinValue).ToList(),
-            "UsageCount" => connections.OrderByDescending(connection => connection.UseCount).ToList(),
-            _ => connections.OrderBy(connection => connection.Name).ToList()
-        };
     }
 
     private void SaveConnections()
@@ -326,7 +318,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             result.UpdateUsageStats();
-            var targetConnection = ResolveConnectionFromCollection(result);
+            var targetConnection = _databaseConnectionContextService.ResolveConnectionFromCollection(Connections, result);
             await ApplySelectedConnectionAsync(targetConnection);
 
             ToastService.ShowSuccess($"已切换到连接：{targetConnection.Name}", 2000);
@@ -567,7 +559,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var runtimeConnection = CreateRuntimeConnection(connection, SelectedDatabaseName);
+        var runtimeConnection = _databaseConnectionContextService.CreateRuntimeConnection(connection, SelectedDatabaseName);
         ActiveConnectionContext = runtimeConnection;
         await LoadConnectionContextAsync(runtimeConnection);
     }
@@ -593,7 +585,7 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var runtimeConnection = CreateRuntimeConnection(SelectedConnection, databaseName);
+        var runtimeConnection = _databaseConnectionContextService.CreateRuntimeConnection(SelectedConnection, databaseName);
         ActiveConnectionContext = runtimeConnection;
         ResetWorkspaceState();
         await LoadConnectionContextAsync(runtimeConnection);
@@ -870,7 +862,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private void ChangeSort(string sortMode)
     {
         SortMode = sortMode;
-        var sorted = SortConnections(Connections).ToList();
+        var sorted = _databaseConnectionContextService.SortConnections(Connections, SortMode);
         Connections.Clear();
         foreach (var c in sorted) Connections.Add(c);
         LoggingService.LogInfo($"Changed connection sort mode to {sortMode}.");
@@ -1349,14 +1341,6 @@ public partial class MainWindowViewModel : ViewModelBase
         return ActiveConnectionContext ?? SelectedConnection;
     }
 
-    private ConnectionConfig ResolveConnectionFromCollection(ConnectionConfig connection)
-    {
-        return Connections.FirstOrDefault(item => ReferenceEquals(item, connection))
-               ?? Connections.FirstOrDefault(item =>
-                   string.Equals(item.Name, connection.Name, StringComparison.OrdinalIgnoreCase))
-               ?? connection;
-    }
-
     private async Task LoadAvailableDatabasesAsync(ConnectionConfig connection, string? preferredDatabase)
     {
         AvailableDatabases.Clear();
@@ -1369,34 +1353,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var mergedDatabases = databases
-                .Where(database => !string.IsNullOrWhiteSpace(database))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            if (!string.IsNullOrWhiteSpace(preferredDatabase) &&
-                !mergedDatabases.Contains(preferredDatabase, StringComparer.OrdinalIgnoreCase))
-            {
-                mergedDatabases.Insert(0, preferredDatabase);
-            }
-
-            foreach (var database in mergedDatabases)
+            var selectionResult = _databaseConnectionContextService.BuildDatabaseSelection(databases, preferredDatabase, success);
+            foreach (var database in selectionResult.Databases)
             {
                 AvailableDatabases.Add(database);
             }
 
-            if (!success && !string.IsNullOrWhiteSpace(preferredDatabase) && AvailableDatabases.Count == 0)
-            {
-                AvailableDatabases.Add(preferredDatabase);
-            }
-
-            if (string.IsNullOrWhiteSpace(preferredDatabase))
-            {
-                preferredDatabase = AvailableDatabases.FirstOrDefault();
-            }
-
             _suppressDatabaseSelectionChanged = true;
-            SelectedDatabaseName = preferredDatabase;
+            SelectedDatabaseName = selectionResult.SelectedDatabase;
             _suppressDatabaseSelectionChanged = false;
         }
         catch (Exception ex)
@@ -1426,26 +1390,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             FilteredAvailableDatabases.Add(database);
         }
-    }
-
-    private static ConnectionConfig CreateRuntimeConnection(ConnectionConfig source, string? databaseName)
-    {
-        return new ConnectionConfig
-        {
-            Name = source.Name,
-            DatabaseType = source.DatabaseType,
-            Host = source.Host,
-            Port = source.Port,
-            Username = source.Username,
-            Password = source.Password,
-            Database = string.IsNullOrWhiteSpace(databaseName) ? source.Database : databaseName,
-            UseWindowsAuthentication = source.UseWindowsAuthentication,
-            GroupId = source.GroupId,
-            GroupName = source.GroupName,
-            Color = source.Color,
-            LastUsedTime = source.LastUsedTime,
-            UseCount = source.UseCount
-        };
     }
 
     private void ResetWorkspaceState()
