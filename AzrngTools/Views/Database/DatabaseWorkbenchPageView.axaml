@@ -25,7 +25,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0"
+            <Border x:Name="WorkbenchToolbarStrip"
+                    Grid.Row="0"
                     Classes="toolbarStrip">
                 <Border Classes="toolbarCommandBar">
                     <Grid ColumnDefinitions="Auto,240,Auto,Auto,*"
@@ -112,7 +113,8 @@
                         MinHeight="0">
                     <Grid RowDefinitions="Auto,*,Auto"
                           MinHeight="0">
-                        <Border Grid.Row="0"
+                        <Border x:Name="BrowserHeaderSection"
+                                Grid.Row="0"
                                 Classes="browserCompactSection">
                             <StackPanel Spacing="{StaticResource Space.12}">
                                 <Grid ColumnDefinitions="*,Auto"
@@ -155,10 +157,12 @@
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Row="1"
+                        <Border x:Name="BrowserTreeSurface"
+                                Grid.Row="1"
                                 Classes="browserTreeSurface"
                                 MinHeight="0">
-                            <ScrollViewer Classes="browserTreeScroll"
+                            <ScrollViewer x:Name="BrowserTreeScroll"
+                                          Classes="browserTreeScroll"
                                           MinHeight="0"
                                           VerticalScrollBarVisibility="Auto"
                                           HorizontalScrollBarVisibility="Disabled"
@@ -172,7 +176,8 @@
                             </ScrollViewer>
                         </Border>
 
-                        <Border Grid.Row="2"
+                        <Border x:Name="BrowserActionsBar"
+                                Grid.Row="2"
                                 Padding="{StaticResource Thickness.12}"
                                 BorderBrush="{DynamicResource Brush.Panel.Stroke}"
                                 BorderThickness="0,1,0,0">

@@ -399,3 +399,58 @@ Do not run `dotnet build` and `dotnet test` concurrently for this solution unles
 - **Notes**: Re-ran `dotnet build AzrngTools.sln -v minimal` sequentially after tests completed; build passed with 0 warnings and 0 errors.
 
 ---
+## [ERR-20260603-001] powershell_rg_path_glob_mismatch
+
+**Logged**: 2026-06-03T09:25:44+08:00
+**Priority**: low
+**Status**: pending
+**Area**: infra
+
+### Summary
+PowerShell 下把类 Unix 的 `rg` 参数直接用于仓库检索，导致不存在的 `src` 路径和通配符参数报错。
+
+### Error
+```text
+rg: src: 系统找不到指定的文件。 (os error 2)
+rg: *.axaml: 文件名、目录名或卷标语法不正确。 (os error 123)
+```
+
+### Context
+- Command/operation attempted: `rg -n "对象浏览器|存储过程|搜索表|Database" -S src *.axaml *.csproj design-system.yaml`
+- Environment details: Windows PowerShell，当前仓库实际工程目录为 `AzrngTools/`，不是 `src/`。
+
+### Suggested Fix
+先用 `rg --files` 或 CodeGraph 文件索引确认仓库结构；在 PowerShell 下优先传入真实目录，例如 `rg -n "pattern" AzrngTools -S`，不要假设 Unix shell 风格 glob 会按预期展开。
+
+### Metadata
+- Reproducible: yes
+- Related Files: AGENTS.md
+
+---
+## [ERR-20260603-002] msbuild_intermediate_output_inside_project
+
+**Logged**: 2026-06-03T09:31:00+08:00
+**Priority**: low
+**Status**: pending
+**Area**: infra
+
+### Summary
+把 `BaseIntermediateOutputPath` 设置到项目目录内的 `artifacts/verify-build/obj/` 后，SDK 风格项目把生成的 AssemblyInfo 等中间文件纳入编译，触发重复特性错误。
+
+### Error
+```text
+error CS0579: “System.Reflection.AssemblyCompanyAttribute”特性重复
+```
+
+### Context
+- Command/operation attempted: `dotnet build AzrngTools.sln -v minimal -p:BaseOutputPath=artifacts\verify-build\bin\ -p:BaseIntermediateOutputPath=artifacts\verify-build\obj\`
+- Environment details: Windows PowerShell，SDK-style .NET 项目。
+
+### Suggested Fix
+需要绕开被锁定的默认输出时，优先切换配置（如 `-c Release`）或把临时中间目录放到项目目录外；不要把 `BaseIntermediateOutputPath` 放进项目源码树下。
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/AzrngTools.csproj
+
+---

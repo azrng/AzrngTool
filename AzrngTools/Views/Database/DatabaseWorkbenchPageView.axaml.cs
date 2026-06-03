@@ -16,6 +16,11 @@ namespace AzrngTools.Views.Database;
 public partial class DatabaseWorkbenchPageView : UserControl
 {
     private DatabaseTree? _databaseTree;
+    private Border? _browserActionsBar;
+    private Border? _browserHeaderSection;
+    private Border? _browserTreeSurface;
+    private Border? _workbenchToolbarStrip;
+    private ScrollViewer? _browserTreeScroll;
     private ScrollViewer? _hostScrollViewer;
 
     public DatabaseWorkbenchPageView()
@@ -28,6 +33,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
     private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
     {
         RegisterNodeSelectedHandler();
+        RegisterViewportSizingTargets();
         BindHostViewportHeight();
 
         if (DataContext is MainWindowViewModel viewModel &&
@@ -50,7 +56,14 @@ public partial class DatabaseWorkbenchPageView : UserControl
             _hostScrollViewer.SizeChanged -= OnHostScrollViewerSizeChanged;
         }
 
+        UnregisterViewportSizingEvents();
+
         _hostScrollViewer = null;
+        _browserActionsBar = null;
+        _browserHeaderSection = null;
+        _browserTreeScroll = null;
+        _browserTreeSurface = null;
+        _workbenchToolbarStrip = null;
     }
 
     private void RegisterNodeSelectedHandler()
@@ -85,6 +98,63 @@ public partial class DatabaseWorkbenchPageView : UserControl
         _hostScrollViewer.SizeChanged += OnHostScrollViewerSizeChanged;
     }
 
+    private void RegisterViewportSizingTargets()
+    {
+        UnregisterViewportSizingEvents();
+
+        _browserActionsBar = this.FindControl<Border>("BrowserActionsBar");
+        _browserHeaderSection = this.FindControl<Border>("BrowserHeaderSection");
+        _browserTreeScroll = this.FindControl<ScrollViewer>("BrowserTreeScroll");
+        _browserTreeSurface = this.FindControl<Border>("BrowserTreeSurface");
+        _workbenchToolbarStrip = this.FindControl<Border>("WorkbenchToolbarStrip");
+
+        RegisterViewportSizingEvents();
+    }
+
+    private void RegisterViewportSizingEvents()
+    {
+        if (_browserActionsBar != null)
+        {
+            _browserActionsBar.SizeChanged += OnBrowserPanelPartSizeChanged;
+        }
+
+        if (_browserHeaderSection != null)
+        {
+            _browserHeaderSection.SizeChanged += OnBrowserPanelPartSizeChanged;
+        }
+
+        if (_workbenchToolbarStrip != null)
+        {
+            _workbenchToolbarStrip.SizeChanged += OnBrowserPanelPartSizeChanged;
+        }
+    }
+
+    private void UnregisterViewportSizingEvents()
+    {
+        if (_browserActionsBar != null)
+        {
+            _browserActionsBar.SizeChanged -= OnBrowserPanelPartSizeChanged;
+        }
+
+        if (_browserHeaderSection != null)
+        {
+            _browserHeaderSection.SizeChanged -= OnBrowserPanelPartSizeChanged;
+        }
+
+        if (_workbenchToolbarStrip != null)
+        {
+            _workbenchToolbarStrip.SizeChanged -= OnBrowserPanelPartSizeChanged;
+        }
+    }
+
+    private void OnBrowserPanelPartSizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        if (_hostScrollViewer != null)
+        {
+            ApplyViewportHeight(_hostScrollViewer.Bounds.Height);
+        }
+    }
+
     private void OnHostScrollViewerSizeChanged(object? sender, SizeChangedEventArgs e)
     {
         ApplyViewportHeight(e.NewSize.Height);
@@ -100,6 +170,38 @@ public partial class DatabaseWorkbenchPageView : UserControl
         Height = height;
         MinHeight = 0;
         MaxHeight = height;
+        ApplyBrowserTreeViewportHeight(height);
+    }
+
+    private void ApplyBrowserTreeViewportHeight(double hostHeight)
+    {
+        if (_browserHeaderSection == null ||
+            _browserActionsBar == null ||
+            _browserTreeSurface == null ||
+            _browserTreeScroll == null ||
+            _workbenchToolbarStrip == null ||
+            hostHeight <= 0)
+        {
+            return;
+        }
+
+        const double contentMargin = 40d;
+        const double treeSurfaceVerticalMargin = 20d;
+        var availablePanelHeight = hostHeight - _workbenchToolbarStrip.Bounds.Height - contentMargin;
+        var treeSurfaceHeight = Math.Max(
+            260d,
+            availablePanelHeight -
+            _browserHeaderSection.Bounds.Height -
+            _browserActionsBar.Bounds.Height -
+            treeSurfaceVerticalMargin);
+
+        _browserTreeSurface.MinHeight = 0;
+        _browserTreeSurface.Height = treeSurfaceHeight;
+        _browserTreeSurface.MaxHeight = treeSurfaceHeight;
+
+        var treeScrollHeight = Math.Max(240d, treeSurfaceHeight - 8d);
+        _browserTreeScroll.MinHeight = 0;
+        _browserTreeScroll.MaxHeight = treeScrollHeight;
     }
 
     private async void OnNodeSelected(object? sender, TreeNodeItem? node)
