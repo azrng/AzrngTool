@@ -12,7 +12,7 @@ using AzrngTools.Services.Database;
 
 namespace AzrngTools.ViewModels.Database;
 
-public partial class TableDetailViewModel : ViewModelBase
+public partial class TableDetailViewModel : ViewModelBase, IDetailWorkspaceViewModel
 {
     private readonly IDatabaseService _databaseService;
 

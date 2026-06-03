@@ -9,7 +9,7 @@ using AzrngTools.Services.Database;
 
 namespace AzrngTools.ViewModels.Database;
 
-public partial class ViewDetailViewModel : ViewModelBase
+public partial class ViewDetailViewModel : ViewModelBase, IDetailWorkspaceViewModel
 {
     private readonly IDatabaseService _databaseService;
 
