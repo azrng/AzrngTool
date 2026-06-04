@@ -358,3 +358,6 @@ NUL
 .codex
 .cursor
 .codegraph
+
+# 临时测试项目
+temp-test/
