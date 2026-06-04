@@ -1,0 +1,206 @@
+<UserControl
+    d:DesignHeight="860"
+    d:DesignWidth="1240"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Pdf.PdfManagementPageView"
+    x:DataType="vm:PdfManagementPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AzrngTools.ViewModels.Pdf"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
+        <Border Grid.Row="0" Classes="tool-card-roomy">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+                <StackPanel Spacing="{StaticResource Space.4}">
+                    <TextBlock Classes="section-title" Text="PDF 管理工作台" />
+                    <TextBlock Classes="section-copy" Text="选择本地 PDF 后，可按页码范围分割 PDF，或导出为 Word 文档。" />
+                </StackPanel>
+
+                <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="分割 PDF" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="导出 Word" />
+                    </Border>
+                    <Border Classes="badge-pill">
+                        <TextBlock Classes="badge-text" Text="本地处理" />
+                    </Border>
+                </WrapPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="0.9*,1.1*" ColumnSpacing="{StaticResource Space.12}" MinHeight="0">
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.12}" MinHeight="0">
+                <Border Grid.Row="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="PDF 文件" />
+                                <TextBlock Classes="section-copy" Text="载入后会显示文件大小、路径和总页数。" />
+                            </StackPanel>
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChoosePdfFileCommand}"
+                                Content="选择 PDF"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                Theme="{DynamicResource SolidButton}" />
+                        </Grid>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                <TextBlock Classes="section-title" Text="{Binding FileName}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="1" Classes="section-copy" Text="{Binding FilePath}" TextWrapping="Wrap" />
+                                <WrapPanel Grid.Row="2" Classes="tool-actions">
+                                    <Border Classes="badge-pill compact">
+                                        <TextBlock Classes="badge-text" Text="{Binding PageCountText}" />
+                                    </Border>
+                                    <Border Classes="badge-pill compact">
+                                        <TextBlock Classes="badge-text" Text="{Binding FileSizeText}" />
+                                    </Border>
+                                </WrapPanel>
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Classes="section-copy"
+                                    IsVisible="{Binding !HasFile}"
+                                    Text="还没有选择 PDF 文件。"
+                                    TextWrapping="Wrap" />
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="页码范围" />
+                            <TextBlock Classes="section-copy" Text="支持单页和范围组合，例如 1,3-5,8。" />
+                        </StackPanel>
+
+                        <TextBox
+                            Grid.Row="1"
+                            IsEnabled="{Binding CanOperate}"
+                            PlaceholderText="1,3-5,8"
+                            Text="{Binding PageRangeText}" />
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding SelectedPageSummary}" />
+                            </Border>
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding SplitModeText}" />
+                            </Border>
+                        </WrapPanel>
+
+                        <CheckBox
+                            Grid.Row="3"
+                            Content="逐页导出为多个 PDF"
+                            IsChecked="{Binding IsIndividualPagesMode}"
+                            IsEnabled="{Binding CanOperate}" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Classes="tool-card-roomy" MinHeight="0">
+                    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理状态" />
+                            <TextBlock Classes="section-copy" Text="{Binding StatusText}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft" IsVisible="{Binding IsBusy}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <ProgressBar Width="32" Height="18" IsIndeterminate="True" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Classes="section-copy" Text="{Binding BusyText}" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding HasLastResult}">
+                            <TextBlock Classes="section-copy" Text="{Binding LastResultText}" TextWrapping="Wrap" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                <Border Grid.Row="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="分割 PDF" />
+                            <TextBlock Classes="section-copy" Text="按当前页码范围导出。关闭逐页导出时合并为单个 PDF，开启后每页生成一个 PDF。" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <TextBox
+                                IsReadOnly="True"
+                                PlaceholderText="请选择输出文件或目录"
+                                Text="{Binding SplitOutputPath}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChooseSplitOutputCommand}"
+                                Content="选择"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </Grid>
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Button
+                                Command="{Binding SplitPdfCommand}"
+                                Content="开始分割"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource SolidButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="导出 Word" />
+                            <TextBlock Classes="section-copy" Text="将 PDF 文本内容导出为 .docx，复杂版式和扫描件效果以实际转换结果为准。" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <TextBox
+                                IsReadOnly="True"
+                                PlaceholderText="请选择 Word 输出文件"
+                                Text="{Binding WordOutputPath}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChooseWordOutputCommand}"
+                                Content="选择"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </Grid>
+
+                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                            <Button
+                                Command="{Binding ExportWordCommand}"
+                                Content="导出 Word"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource SolidButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="快捷操作" />
+                            <TextBlock Classes="section-copy" Text="操作会在本机完成，不上传文件。" />
+                        </StackPanel>
+
+                        <WrapPanel Grid.Row="1" Classes="tool-actions">
+                            <Button
+                                Command="{Binding ClearCommand}"
+                                Content="清空当前"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                Theme="{DynamicResource OutlineButton}" />
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

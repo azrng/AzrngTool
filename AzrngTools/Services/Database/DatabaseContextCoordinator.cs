@@ -223,16 +223,13 @@ public partial class DatabaseContextCoordinator : ObservableObject, IDatabaseCon
     public void RefreshFilteredAvailableDatabases()
     {
         var searchText = DatabaseSearchText.Trim();
-        var filteredDatabases = string.IsNullOrWhiteSpace(searchText)
+        var filteredDatabases = (string.IsNullOrWhiteSpace(searchText)
             ? AvailableDatabases
             : AvailableDatabases
-                .Where(database => database.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+                .Where(database => database.Contains(searchText, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
 
-        FilteredAvailableDatabases.Clear();
-        foreach (var database in filteredDatabases)
-        {
-            FilteredAvailableDatabases.Add(database);
-        }
+        FilteredAvailableDatabases = new ObservableCollection<string>(filteredDatabases);
     }
 
     public void ResetWorkspaceState()

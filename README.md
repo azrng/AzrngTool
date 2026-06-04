@@ -48,6 +48,12 @@ dotnet build AzrngTools.sln -v minimal
 dotnet run --project AzrngTools\AzrngTools.csproj
 ```
 
+### PDF 管理依赖
+- PDF 管理功能使用项目内本地 DLL 引用：`AzrngTools/Libs/Aspose/Aspose.Pdf.dll`
+- 不通过 NuGet 引用 `Aspose.PDF`，更新 Aspose 版本时需替换该 DLL 并完成构建与发布验证
+- Aspose 授权文件默认放在应用程序目录，文件名为 `Aspose.Pdf.lic`
+- 未放置有效授权文件时，PDF 分割和 Word 导出会以 Aspose 评估模式运行，可能出现评估水印或页数限制
+
 ### 本地发布
 ```bash
 dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contained true -p:PublishAot=false -p:PublishTrimmed=false

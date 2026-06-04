@@ -241,6 +241,9 @@ public partial class MainWindowViewModel : ViewModelBase
             case nameof(IDatabaseContextCoordinator.DatabaseSearchText):
                 OnPropertyChanged(nameof(DatabaseSearchText));
                 break;
+            case nameof(IDatabaseContextCoordinator.FilteredAvailableDatabases):
+                OnPropertyChanged(nameof(FilteredAvailableDatabases));
+                break;
             case nameof(IDatabaseContextCoordinator.HasAvailableDatabases):
                 OnPropertyChanged(nameof(HasAvailableDatabases));
                 break;

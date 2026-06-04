@@ -43,8 +43,8 @@
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Azrng.Core" Version="1.16.0" />
-        <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta3" />
+        <PackageReference Include="Azrng.Core" Version="1.18.0" />
+        <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta4" />
         <PackageReference Include="Common.Windows.Core" Version="0.0.6" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
@@ -59,6 +59,9 @@
         <PackageReference Include="GTranslate" Version="2.3.1" />
         <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
         <PackageReference Include="NPOI" Version="2.8.0" />
+        <PackageReference Include="PdfPig" Version="0.1.10" />
+        <PackageReference Include="PdfSharp" Version="6.2.0" />
+        <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
     </ItemGroup>
 
     <Target Name="RemoveNativeDebugSymbolsFromPublish"

@@ -34,6 +34,42 @@ MSB3021: 无法将文件“...apphost.exe”复制到“bin\Debug\net10.0-window
 
 ---
 
+## [ERR-20260604-001] dotnet-test-baseintermediateoutputpath-gotcha
+
+**Logged**: 2026-06-04T13:34:45+08:00
+**Priority**: medium
+**Status**: resolved
+**Area**: tests
+
+### Summary
+为绕开运行中桌面应用锁定 `bin\Debug`，将 `BaseIntermediateOutputPath` 指到项目外后，SDK 默认 `Compile` 排除规则失效，项目内旧 `obj` 被当作源码编译并产生重复 AssemblyInfo 错误。
+
+### Error
+```text
+CS0579: “TargetFrameworkAttribute”特性重复
+CS0579: “AssemblyCompanyAttribute”特性重复
+```
+
+### Context
+- Command/operation attempted: `dotnet test ... -p:BaseOutputPath=... -p:BaseIntermediateOutputPath=...`
+- Environment details: Windows / PowerShell / .NET 10
+- Trigger: `AzrngTools.exe` 正在运行并锁定默认 Debug 输出目录
+
+### Suggested Fix
+- 遇到桌面应用锁定默认输出目录时，优先只设置 `OutputPath` 到系统临时目录。
+- 不要随意把 `BaseIntermediateOutputPath` 改到项目外；这会让 SDK 不再默认排除项目内 `obj/**`。
+
+### Metadata
+- Reproducible: yes
+- Related Files: AzrngTools/AzrngTools.csproj
+- See Also: ERR-20260424-001
+
+### Resolution
+- **Resolved**: 2026-06-04T13:34:45+08:00
+- **Notes**: 改用 `dotnet test ... -p:OutputPath="%TEMP%\\AzrngToolTests-T124-Output\\bin\\"` 后，数据库相关 49 个测试通过。
+
+---
+
 ## [ERR-20260602-001] parallel-release-build-test-pdb-lock
 
 **Logged**: 2026-06-02T17:02:00+08:00
