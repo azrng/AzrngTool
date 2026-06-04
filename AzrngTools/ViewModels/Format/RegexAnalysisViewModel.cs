@@ -80,10 +80,12 @@ public partial class RegexAnalysisViewModel : ViewModelBase
         }
         catch (ArgumentException ex)
         {
+            LocalLogHelper.LogError($"正则表达式无效: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"正则表达式无效：{ex.Message}");
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"正则匹配失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"匹配失败：{ex.Message}");
         }
     }
@@ -111,10 +113,12 @@ public partial class RegexAnalysisViewModel : ViewModelBase
         }
         catch (ArgumentException ex)
         {
+            LocalLogHelper.LogError($"正则表达式无效: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"正则表达式无效：{ex.Message}");
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"正则替换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"替换失败：{ex.Message}");
         }
     }

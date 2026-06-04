@@ -414,10 +414,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<string>>(ex.Message);
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载数据库列表失败: {config?.Name}", ex);
                 return ex.ToFailureResult<List<string>>($"加载数据库列表失败: {ex.Message}");
             }
         }
@@ -518,10 +520,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<SchemaModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载 Schema 失败: {config?.Name}", ex);
                 return ex.ToFailureResult<List<SchemaModel>>($"加载 Schema 失败: {ex.Message}");
             }
         }
@@ -564,10 +568,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<TableModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载表失败: {config?.Name}.{schemaName}", ex);
                 return ex.ToFailureResult<List<TableModel>>($"加载表失败: {ex.Message}");
             }
         }
@@ -622,10 +628,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<ColumnModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载列失败: {config?.Name}.{schemaName}.{tableName}", ex);
                 return ex.ToFailureResult<List<ColumnModel>>($"加载列失败: {ex.Message}");
             }
         }
@@ -781,10 +789,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<ViewModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载视图失败: {config?.Name}.{schemaName}", ex);
                 return ex.ToFailureResult<List<ViewModel>>($"加载视图失败: {ex.Message}");
             }
         }
@@ -856,10 +866,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<StoredProcedureModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载存储过程失败: {config?.Name}.{schemaName}", ex);
                 return ex.ToFailureResult<List<StoredProcedureModel>>($"加载存储过程失败: {ex.Message}");
             }
         }
@@ -905,10 +917,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<StoredProcedureModel>>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载函数失败: {config?.Name}.{schemaName}", ex);
                 return ex.ToFailureResult<List<StoredProcedureModel>>($"加载函数失败: {ex.Message}");
             }
         }
@@ -939,6 +953,7 @@ namespace AzrngTools.Services.Database
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载视图定义失败: {config?.Name}.{schemaName}.{viewName}", ex);
                 return ex.ToFailureResult<string>($"加载视图定义失败: {ex.Message}");
             }
         }
@@ -975,6 +990,7 @@ namespace AzrngTools.Services.Database
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载存储过程定义失败: {config?.Name}.{schemaName}.{procedureName}", ex);
                 return ex.ToFailureResult<string>($"加载存储过程定义失败: {ex.Message}");
             }
         }
@@ -1027,10 +1043,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<List<IndexModel>>(ex.Message);
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载索引失败: {config?.Name}.{schemaName}.{tableName}", ex);
                 return ex.ToFailureResult<List<IndexModel>>($"Failed to load indexes: {ex.Message}");
             }
         }
@@ -1083,10 +1101,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<DatabaseSqlExecutionResult>(ex.Message);
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"SQL 执行失败: {config?.Name}", ex);
                 return ex.ToFailureResult<DatabaseSqlExecutionResult>($"SQL execution failed: {ex.Message}");
             }
         }
@@ -1121,10 +1141,12 @@ namespace AzrngTools.Services.Database
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<DatabaseTableStatisticsResult>(ex.Message);
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载表统计信息失败: {config?.Name}.{schemaName}.{tableName}", ex);
                 return ex.ToFailureResult<DatabaseTableStatisticsResult>($"Failed to load table statistics: {ex.Message}");
             }
         }
@@ -1406,10 +1428,12 @@ LIMIT 1;";
             }
             catch (NotSupportedException ex)
             {
+                LoggingService.LogError($"不支持的数据库类型: {config?.DatabaseType}", ex);
                 return ex.ToFailureResult<TreeNodeItem?>($"不支持的数据库类型: {ex.Message}");
             }
             catch (Exception ex)
             {
+                LoggingService.LogError($"加载数据库树形结构失败: {config?.Name}", ex);
                 return ex.ToFailureResult<TreeNodeItem?>($"加载数据库树形结构失败: {ex.Message}");
             }
         }

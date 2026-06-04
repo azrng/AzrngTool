@@ -170,7 +170,7 @@ public partial class ViewDetailViewModel : ViewModelBase, IDetailWorkspaceViewMo
         catch (Exception ex)
         {
             LoadingText = $"加载视图详情失败: {ex.Message}";
-            System.Diagnostics.Debug.WriteLine($"加载视图详情失败: {ex.Message}");
+            LoggingService.LogError($"加载视图详情失败: {SelectedView?.Name}", ex);
         }
         finally
         {

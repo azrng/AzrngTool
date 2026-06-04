@@ -43,8 +43,9 @@ public sealed class ThemePreferenceService : IThemePreferenceService
                 _ => ThemeVariant.Default
             };
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"加载主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return ThemeVariant.Default;
         }
     }

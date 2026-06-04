@@ -59,8 +59,9 @@ public sealed class DebouncedActionDispatcher : IDisposable
         catch (OperationCanceledException)
         {
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"DebouncedAction 执行失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
         }
     }
 }

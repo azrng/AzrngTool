@@ -27,8 +27,9 @@ namespace AzrngTools.Utils
                 formater.Options.UppercaseKeywords = caseWrite;
                 result = formaterManager.Format(strSql, ref errorsEncountered);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                LocalLogHelper.LogError($"SQL 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 result = strSql;
             }
 

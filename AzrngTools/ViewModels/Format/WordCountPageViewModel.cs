@@ -143,6 +143,7 @@ public partial class WordCountPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"字数统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"统计失败：{ex.Message}");
         }
     }
@@ -233,6 +234,7 @@ public partial class WordCountPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制统计结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

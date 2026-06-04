@@ -64,8 +64,9 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
             var snapshot = JsonSerializer.Deserialize<HardwareInfoSnapshot>(json, JsonOptions);
             return IsUsable(snapshot) ? snapshot : null;
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"加载硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return null;
         }
     }
@@ -86,9 +87,9 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
             File.WriteAllText(tempFilePath, json);
             File.Move(tempFilePath, _filePath, true);
         }
-        catch
+        catch (Exception ex)
         {
-            // 缓存写入失败时仍然允许页面使用本次采集到的结果。
+            LocalLogHelper.LogError($"保存硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
         }
     }
 

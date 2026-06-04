@@ -180,6 +180,7 @@ public partial class MimeQueryPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"MIME扩展名查询失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"查询失败：{ex.Message}");
         }
     }
@@ -219,6 +220,7 @@ public partial class MimeQueryPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"MIME类型反向查询失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"查询失败：{ex.Message}");
         }
     }
@@ -241,6 +243,7 @@ public partial class MimeQueryPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"获取所有MIME类型失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"获取失败：{ex.Message}");
         }
     }
@@ -278,6 +281,7 @@ public partial class MimeQueryPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制MIME查询结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

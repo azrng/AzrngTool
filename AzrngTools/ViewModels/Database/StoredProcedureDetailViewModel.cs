@@ -172,7 +172,7 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase, IDetailWork
         catch (Exception ex)
         {
             LoadingText = $"加载存储过程详情失败: {ex.Message}";
-            System.Diagnostics.Debug.WriteLine($"加载存储过程详情失败: {ex.Message}");
+            LoggingService.LogError($"加载存储过程详情失败: {SelectedProcedure?.Name}", ex);
         }
         finally
         {

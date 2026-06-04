@@ -84,6 +84,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"JWT解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             HeaderText = string.Empty;
             PayloadText = string.Empty;
             _messageService.SendMessage($"解析失败：{ex.Message}");
@@ -131,6 +132,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制Header失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制 Header 失败：{ex.Message}");
         }
     }
@@ -156,6 +158,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制Payload失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制 Payload 失败：{ex.Message}");
         }
     }

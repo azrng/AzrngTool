@@ -84,6 +84,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"Base64转图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             PreviewImage = null;
             ImageBytes = null;
             HasImage = false;
@@ -118,6 +119,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"粘贴失败：{ex.Message}");
         }
     }
@@ -176,6 +178,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"保存图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"保存失败：{ex.Message}");
         }
     }

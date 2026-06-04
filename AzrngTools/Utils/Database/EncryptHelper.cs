@@ -50,9 +50,9 @@ public static class EncryptHelper
 
             return Convert.ToBase64String(cipherBytes);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // 加密失败时返回原文（降级处理）
+            LocalLogHelper.LogError($"AES 加密失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return plainText;
         }
     }
@@ -88,9 +88,9 @@ public static class EncryptHelper
 
             return Encoding.UTF8.GetString(plainBytes);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // 解密失败时返回原文（可能是旧版本未加密的数据）
+            LocalLogHelper.LogError($"AES 解密失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return cipherText;
         }
     }

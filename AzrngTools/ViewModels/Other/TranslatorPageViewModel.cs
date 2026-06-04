@@ -64,6 +64,7 @@ public partial class TranslatorPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            LocalLogHelper.LogError($"翻译处理失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{e.Message}");
         }
     }

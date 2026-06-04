@@ -2,6 +2,7 @@
 using AzrngTools.Utils.Events;
 using Common.Security;
 using Common.Security.Enums;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -10,10 +11,12 @@ namespace AzrngTools.ViewModels.Encrypts
     public partial class HashPageViewModel : ViewModelBase
     {
         private readonly IMessageService _messageService;
+        private readonly ILogger<HashPageViewModel> _logger;
 
-        public HashPageViewModel(IMessageService messageService)
+        public HashPageViewModel(IMessageService messageService, ILogger<HashPageViewModel> logger)
         {
             _messageService = messageService;
+            _logger = logger;
             OutTypeValue = (int)OutType.Hex;
         }
 
@@ -65,6 +68,7 @@ namespace AzrngTools.ViewModels.Encrypts
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"Hash处理失败: {ex.Message}");
                 _messageService.SendMessage($"处理失败：{ex.Message}");
             }
         }

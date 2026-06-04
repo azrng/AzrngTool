@@ -93,10 +93,12 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (JsonException ex)
         {
+            LocalLogHelper.LogError($"JSON 转 C# 解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"JSON 解析失败：{ex.Message}");
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"JSON 转 C# 转换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -129,6 +131,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制 C# 转换结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }
@@ -153,10 +156,12 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (JsonException ex)
         {
+            LocalLogHelper.LogError($"JSON 格式化解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"JSON 格式化失败：{ex.Message}");
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"JSON 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"格式化失败：{ex.Message}");
         }
     }

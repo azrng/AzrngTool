@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using AzrngTools.Models.Network;
 
@@ -8,7 +9,11 @@ namespace AzrngTools.Services.Network;
 
 public sealed class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
 {
-    private static readonly JsonSerializerOptions IndentedOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions IndentedOptions = new()
+    {
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
     private readonly IHttpClientFactory _httpClientFactory;
 
     public ApiRequestExecutionService(IHttpClientFactory httpClientFactory)
@@ -67,6 +72,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         }
         catch (Exception exception)
         {
+            LocalLogHelper.LogError($"HTTP 请求失败: {request.Method} {finalUrl}\n{exception.GetExceptionAndStack()}");
             var effectiveUrl = string.IsNullOrWhiteSpace(finalUrl) ? request.Url : finalUrl;
             var failureResponse = new ApiResponseSnapshot
             {
@@ -212,8 +218,9 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
             using var document = JsonDocument.Parse(content);
             return JsonSerializer.Serialize(document.RootElement, IndentedOptions);
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"JSON 格式化失败: {ex.Message}");
             return content;
         }
     }

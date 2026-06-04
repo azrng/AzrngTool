@@ -169,6 +169,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         }
         catch (Exception exception)
         {
+            LocalLogHelper.LogError($"接口调试工作台初始化失败: {exception.Message}\n{exception.GetExceptionAndStack()}");
             StatusMessage = $"初始化失败：{exception.Message}";
             _messageService.SendMessage(StatusMessage);
         }

@@ -519,6 +519,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         catch (Exception ex)
         {
             IsConnectionSuccess = false;
+            LoggingService.LogError($"刷新数据库列表失败: {ex.Message}", ex);
             ToastService.ShowError($"加载数据库列表失败: {ex.Message}", autoCloseDelay: 5000);
         }
         finally

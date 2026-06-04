@@ -114,8 +114,9 @@ public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingleton
             var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
             return JsonSerializer.Deserialize<ApiRequestToolStore>(json, JsonOptions) ?? new ApiRequestToolStore();
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"加载接口调试历史记录失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return new ApiRequestToolStore();
         }
     }

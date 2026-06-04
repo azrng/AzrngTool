@@ -56,6 +56,7 @@ public partial class UrlEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"URL编码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"编码失败：{ex.Message}");
         }
     }
@@ -78,6 +79,7 @@ public partial class UrlEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"URL解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"解码失败：{ex.Message}");
         }
     }
@@ -100,6 +102,7 @@ public partial class UrlEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"URL路径组件编码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"编码失败：{ex.Message}");
         }
     }
@@ -137,6 +140,7 @@ public partial class UrlEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

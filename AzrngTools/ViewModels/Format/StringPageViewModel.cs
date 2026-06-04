@@ -47,6 +47,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            LocalLogHelper.LogError($"字符串压缩失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -69,6 +70,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            LocalLogHelper.LogError($"字符串转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -92,6 +94,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
+            LocalLogHelper.LogError($"字符串压缩转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -114,6 +117,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"字符串去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }

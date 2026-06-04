@@ -62,6 +62,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"Base64编码/解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }
@@ -94,6 +95,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制结果失败：{ex.Message}");
         }
     }
@@ -116,6 +118,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"粘贴失败：{ex.Message}");
         }
     }

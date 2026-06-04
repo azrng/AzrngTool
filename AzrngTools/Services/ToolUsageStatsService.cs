@@ -127,8 +127,9 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
             var json = File.ReadAllText(_filePath);
             return JsonSerializer.Deserialize<ToolUsageStore>(json, JsonOptions) ?? new ToolUsageStore();
         }
-        catch
+        catch (Exception ex)
         {
+            LocalLogHelper.LogError($"加载工具使用统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return new ToolUsageStore();
         }
     }

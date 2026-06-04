@@ -86,6 +86,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"字符串转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -124,6 +125,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"十六进制转字符串失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -147,6 +149,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"字节数组转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -192,6 +195,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"十六进制转字节数组失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -229,6 +233,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

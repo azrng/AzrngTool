@@ -173,7 +173,7 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
         catch (Exception ex)
         {
             LoadingText = $"加载异常：{ex.Message}";
-            System.Diagnostics.Debug.WriteLine($"加载数据库树异常：{ex.Message}");
+            LoggingService.LogError($"加载数据库树异常: {CurrentConnection?.Name}", ex);
         }
         finally
         {

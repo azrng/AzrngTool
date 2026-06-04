@@ -86,6 +86,7 @@ namespace AzrngTools.ViewModels.Format
             }
             catch (Exception ex)
             {
+                LocalLogHelper.LogError($"XML转HTML失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 _messageService.SendMessage($"处理失败：{ex.Message}");
             }
         }

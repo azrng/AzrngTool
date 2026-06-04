@@ -342,6 +342,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         }
         catch (Exception ex)
         {
+            LoggingService.LogError($"验证导出输出目录失败: {ex.Message}", ex);
             ToastService.ShowError($"输出目录无效：{ex.Message}", 4000);
             return false;
         }

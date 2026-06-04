@@ -58,10 +58,12 @@ public partial class RMBConvertPageViewModel : ViewModelBase
         }
         catch (ArgumentException ex)
         {
+            LocalLogHelper.LogError($"人民币转换输入格式不正确: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"输入格式不正确：{ex.Message}");
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"人民币转换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -99,6 +101,7 @@ public partial class RMBConvertPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            LocalLogHelper.LogError($"复制人民币转换结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }
