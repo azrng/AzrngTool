@@ -9,6 +9,7 @@ using AzrngTools.ViewModels.Encrypts;
 using AzrngTools.ViewModels.Format;
 using AzrngTools.ViewModels.Network;
 using AzrngTools.ViewModels.Other;
+using AzrngTools.ViewModels.Pdf;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -131,6 +132,14 @@ public partial class MainWindowViewModel : ViewModelBase
                 Child =
                 [
                     new MenuBar("接口调试", typeof(ApiRequestPageViewModel))
+                ]
+            },
+            new MenuBar
+            {
+                Title = "文档工具",
+                Child =
+                [
+                    new MenuBar("PDF管理", typeof(PdfManagementPageViewModel))
                 ]
             },
             new MenuBar

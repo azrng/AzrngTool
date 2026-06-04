@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Azrng.Core.Model;
+using Azrng.Core.Results;
 using CommunityToolkit.Mvvm.ComponentModel;
 using AzrngTools.Models.Database;
 using AzrngTools.ViewModels.Database;
