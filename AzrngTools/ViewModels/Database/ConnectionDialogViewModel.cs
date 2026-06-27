@@ -207,13 +207,20 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         ? "暂无已保存连接，点击右上角 + 新建连接"
         : "没有匹配的连接";
 
+    /// <summary>
+    /// 未显式注入数据库服务时复用的共享占位实例。
+    /// 避免每次构造（如单元测试、设计时）都新建独立 <see cref="DatabaseService"/>，
+    /// 保证桥接器缓存等内部状态在单进程内共享。
+    /// </summary>
+    private static readonly IDatabaseService SharedDatabaseService = new DatabaseService();
+
     public ConnectionDialogViewModel(
         ObservableCollection<ConnectionConfig>? savedConnections = null,
         Action? persistConnections = null,
         ConnectionConfig? selectedConnection = null,
         IDatabaseService? databaseService = null)
     {
-        _databaseService = databaseService ?? new DatabaseService();
+        _databaseService = databaseService ?? SharedDatabaseService;
         _savedConnections = savedConnections ?? new ObservableCollection<ConnectionConfig>();
         _persistConnections = persistConnections;
 

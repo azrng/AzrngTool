@@ -93,4 +93,57 @@ public class DatabaseServiceTests
         var schema = Assert.Single(result.Data ?? []);
         Assert.Equal("default", schema.Name);
     }
+
+    [Fact]
+    public void BuildConnectionKey_is_equal_for_equivalent_connection_copies()
+    {
+        // 运行时连接每次都是新副本（CreateRuntimeConnection），缓存命中必须基于等值比较而非引用相等。
+        var original = CreatePostgresConnection("app_db", "secret");
+        var runtimeCopy = CreatePostgresConnection("app_db", "secret");
+
+        var keyA = DatabaseService.BuildConnectionKey(DatabaseType.PostgresSql, original);
+        var keyB = DatabaseService.BuildConnectionKey(DatabaseType.PostgresSql, runtimeCopy);
+
+        Assert.NotSame(original, runtimeCopy);
+        Assert.Equal(keyA, keyB);
+    }
+
+    [Theory]
+    [InlineData("Host", "other-host")]
+    [InlineData("Port", "5433")]
+    [InlineData("Database", "other_db")]
+    [InlineData("Username", "other_user")]
+    [InlineData("Password", "other_pwd")]
+    public void BuildConnectionKey_differs_when_connection_identity_changes(string field, string value)
+    {
+        var baseline = CreatePostgresConnection("app_db", "secret");
+        var modified = CreatePostgresConnection("app_db", "secret");
+        switch (field)
+        {
+            case "Host": modified.Host = value; break;
+            case "Port": modified.Port = int.Parse(value); break;
+            case "Database": modified.Database = value; break;
+            case "Username": modified.Username = value; break;
+            case "Password": modified.Password = value; break;
+        }
+
+        var baselineKey = DatabaseService.BuildConnectionKey(DatabaseType.PostgresSql, baseline);
+        var modifiedKey = DatabaseService.BuildConnectionKey(DatabaseType.PostgresSql, modified);
+
+        Assert.NotEqual(baselineKey, modifiedKey);
+    }
+
+    private static ConnectionConfig CreatePostgresConnection(string database, string password)
+    {
+        return new ConnectionConfig
+        {
+            Name = "test",
+            DatabaseType = DatabaseType.PostgresSql,
+            Host = "127.0.0.1",
+            Port = 5432,
+            Username = "user",
+            Password = password,
+            Database = database
+        };
+    }
 }

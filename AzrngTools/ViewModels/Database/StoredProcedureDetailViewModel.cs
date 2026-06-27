@@ -69,11 +69,6 @@ public partial class StoredProcedureDetailViewModel : ViewModelBase, IDetailWork
 
     public bool ShowSplitWorkspace => ShowObjectList && Procedures.Count > 0;
 
-    public StoredProcedureDetailViewModel()
-        : this(new DatabaseService())
-    {
-    }
-
     public StoredProcedureDetailViewModel(IDatabaseService databaseService)
     {
         _databaseService = databaseService;

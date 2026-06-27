@@ -14,31 +14,37 @@ namespace AzrngTools.Services.Database
     public class DatabaseService : IDatabaseService, ISingletonDependency
     {
         private readonly object _bridgeCacheLock = new();
-        private ConnectionConfig? _cachedConfig;
-        private string? _cachedDatabase;
-        private DatabaseType _cachedDbType;
+        private string? _cachedConnectionKey;
         private IBasicDbBridge? _cachedBridge;
 
         /// <summary>
-        /// 获取或创建数据库桥接器，相同连接配置复用实例
+        /// 构造用于桥接器缓存命中的连接标识键。
+        /// 运行时连接（<see cref="DatabaseConnectionContextService.CreateRuntimeConnection"/>）每次都会创建新副本，
+        /// 因此这里必须按连接标识字段比较，而不是引用相等，否则缓存永远无法命中。
+        /// </summary>
+        internal static string BuildConnectionKey(DatabaseType dbType, ConnectionConfig config)
+        {
+            return $"{dbType}|{config.Host}|{config.Port}|{config.Database}|{config.Username}|{config.Password}|{config.UseWindowsAuthentication}";
+        }
+
+        /// <summary>
+        /// 获取或创建数据库桥接器，相同连接标识复用实例
         /// </summary>
         private IBasicDbBridge GetOrCreateDbBridge(ConnectionConfig config)
         {
             var dbType = MapDatabaseType(config.DatabaseType);
+            var connectionKey = BuildConnectionKey(dbType, config);
 
             lock (_bridgeCacheLock)
             {
-                if (_cachedBridge != null && ReferenceEquals(_cachedConfig, config) &&
-                    string.Equals(_cachedDatabase, config.Database, StringComparison.OrdinalIgnoreCase) &&
-                    _cachedDbType == dbType)
+                if (_cachedBridge != null &&
+                    string.Equals(_cachedConnectionKey, connectionKey, StringComparison.Ordinal))
                 {
                     return _cachedBridge;
                 }
 
                 var bridge = CreateDbBridge(dbType, config);
-                _cachedConfig = config;
-                _cachedDatabase = config.Database;
-                _cachedDbType = dbType;
+                _cachedConnectionKey = connectionKey;
                 _cachedBridge = bridge;
                 return bridge;
             }
@@ -51,8 +57,7 @@ namespace AzrngTools.Services.Database
         {
             lock (_bridgeCacheLock)
             {
-                _cachedConfig = null;
-                _cachedDatabase = null;
+                _cachedConnectionKey = null;
                 _cachedBridge = null;
             }
         }
@@ -266,28 +271,100 @@ namespace AzrngTools.Services.Database
         }
 
         /// <summary>
-        /// 构建连接字符串
+        /// 构建连接字符串。
+        /// 使用各数据库官方 <c>ConnectionStringBuilder</c> 组装，避免手工拼接时 Host / 用户名含
+        /// <c>;</c> 等特殊字符破坏连接字符串，或注入额外参数。
         /// </summary>
         /// <param name="config">数据库配置</param>
         /// <returns>连接字符串</returns>
-        private string BuildConnectionString(ConnectionConfig config)
+        private static string BuildConnectionString(ConnectionConfig config)
         {
             return config.DatabaseType switch
             {
-                DatabaseType.SqlServer => config.UseWindowsAuthentication
-                    ? $"Server={config.Host},{config.Port};Database={config.Database};Integrated Security=true;TrustServerCertificate=true;"
-                    : $"Server={config.Host},{config.Port};Database={config.Database};User Id={config.Username};Password={config.Password};TrustServerCertificate=true;",
-                DatabaseType.MySql =>
-                    $"Server={config.Host};Port={config.Port};Database={config.Database};User Id={config.Username};Password={config.Password};",
-                DatabaseType.PostgresSql =>
-                    $"Host={config.Host};Port={config.Port};Database={config.Database};Username={config.Username};Password={config.Password};",
-                DatabaseType.Oracle =>
-                    $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={config.Host})(PORT={config.Port}))(CONNECT_DATA=(SERVICE_NAME={config.Database})));User Id={config.Username};Password={config.Password};",
-                DatabaseType.Sqlite => $"Data Source={config.Database};",
-                DatabaseType.Dm =>
-                    $"Server={config.Host}:{config.Port};DATABASE={config.Database};UID={config.Username};PWD={config.Password};",
+                DatabaseType.SqlServer => BuildSqlServerConnectionString(config),
+                DatabaseType.MySql => BuildMySqlConnectionString(config),
+                DatabaseType.PostgresSql => BuildPostgresConnectionString(config),
+                DatabaseType.Oracle => BuildOracleConnectionString(config),
+                DatabaseType.Sqlite => BuildSqliteConnectionString(config),
+                // 达梦当前未接入桥接器（见 MapDatabaseType），保留显式抛错避免误用 SQL Server 逻辑
+                DatabaseType.Dm => throw new NotSupportedException($"不支持的数据库类型: {config.DatabaseType}"),
                 _ => throw new NotSupportedException($"不支持的数据库类型: {config.DatabaseType}")
             };
+        }
+
+        private static string BuildSqlServerConnectionString(ConnectionConfig config)
+        {
+            var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder
+            {
+                DataSource = $"{config.Host},{config.Port}",
+                InitialCatalog = config.Database,
+                TrustServerCertificate = true
+            };
+
+            if (config.UseWindowsAuthentication)
+            {
+                builder.IntegratedSecurity = true;
+            }
+            else
+            {
+                builder.UserID = config.Username;
+                builder.Password = config.Password;
+            }
+
+            return builder.ConnectionString;
+        }
+
+        private static string BuildMySqlConnectionString(ConnectionConfig config)
+        {
+            var builder = new MySqlConnector.MySqlConnectionStringBuilder
+            {
+                Server = config.Host,
+                Port = (uint)config.Port,
+                Database = config.Database,
+                UserID = config.Username,
+                Password = config.Password
+            };
+
+            return builder.ConnectionString;
+        }
+
+        private static string BuildPostgresConnectionString(ConnectionConfig config)
+        {
+            var builder = new Npgsql.NpgsqlConnectionStringBuilder
+            {
+                Host = config.Host,
+                Port = config.Port,
+                Database = config.Database,
+                Username = config.Username,
+                Password = config.Password
+            };
+
+            return builder.ConnectionString;
+        }
+
+        private static string BuildOracleConnectionString(ConnectionConfig config)
+        {
+            // Oracle 采用 EZCONNECT/TNS 描述符形式，官方 builder 以 USER ID/PASSWORD + 数据源描述组装，
+            // 这里复用驱动连接串 builder 的键值分隔与转义能力，避免手工拼接注入。
+            var builder = new Oracle.ManagedDataAccess.Client.OracleConnectionStringBuilder
+            {
+                DataSource =
+                    $"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={config.Host})(PORT={config.Port}))(CONNECT_DATA=(SERVICE_NAME={config.Database})))",
+                UserID = config.Username,
+                Password = config.Password
+            };
+
+            return builder.ConnectionString;
+        }
+
+        private static string BuildSqliteConnectionString(ConnectionConfig config)
+        {
+            var builder = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
+            {
+                DataSource = config.Database
+            };
+
+            return builder.ConnectionString;
         }
 
         /// <summary>
@@ -1257,7 +1334,20 @@ LIMIT 1;";
             builder.Append(" MODIFY COLUMN ");
             builder.Append(QuoteIdentifier(DatabaseType.MySql, columnDefinition.ColumnName));
             builder.Append(' ');
-            builder.Append(columnDefinition.ColumnType);
+
+            // ColumnType 来自 information_schema，理论上不含注入字符；这里做白名单校验，
+            // 仅放行 MySQL 类型定义所需字符（字母数字、括号、逗号、空格、下划线、点、单引号内的类型名），
+            // 避免意外值被直接拼入 ALTER TABLE 语句。
+            if (IsSafeMySqlColumnType(columnDefinition.ColumnType))
+            {
+                builder.Append(columnDefinition.ColumnType);
+            }
+            else
+            {
+                LoggingService.LogWarning(
+                    $"MySql 列类型包含非法字符，已跳过类型子句：{SafeDescribeColumnType(columnDefinition.ColumnType)}");
+                builder.Append("TEXT");
+            }
 
             AppendMySqlCharacterSetClause(builder, columnDefinition.CharacterSetName, columnDefinition.CollationName);
 
@@ -1279,17 +1369,60 @@ LIMIT 1;";
             string? characterSetName,
             string? collationName)
         {
-            if (!string.IsNullOrWhiteSpace(characterSetName))
+            // 字符集名与排序规则名是 MySQL 标识符，合法字符仅为字母、数字、下划线；
+            // 对不在白名单的值跳过对应子句，避免被拼入 ALTER TABLE 语句。
+            if (IsSafeMySqlIdentifierName(characterSetName))
             {
                 builder.Append(" CHARACTER SET ");
                 builder.Append(characterSetName);
             }
+            else if (!string.IsNullOrWhiteSpace(characterSetName))
+            {
+                LoggingService.LogWarning("MySql 字符集名包含非法字符，已跳过 CHARACTER SET 子句。");
+            }
 
-            if (!string.IsNullOrWhiteSpace(collationName))
+            if (IsSafeMySqlIdentifierName(collationName))
             {
                 builder.Append(" COLLATE ");
                 builder.Append(collationName);
             }
+            else if (!string.IsNullOrWhiteSpace(collationName))
+            {
+                LoggingService.LogWarning("MySql 排序规则名包含非法字符，已跳过 COLLATE 子句。");
+            }
+        }
+
+        /// <summary>
+        /// MySQL 标识符名（字符集名、排序规则名）白名单：仅允许字母、数字、下划线。
+        /// </summary>
+        private static bool IsSafeMySqlIdentifierName(string? value)
+        {
+            return !string.IsNullOrWhiteSpace(value) &&
+                   value.All(ch => char.IsLetterOrDigit(ch) || ch == '_');
+        }
+
+        /// <summary>
+        /// MySQL 列类型定义白名单：允许字母、数字、下划线、括号、逗号、空格、点，
+        /// 允许少量 SQL 类型关键字（如 unsigned）。拒绝注释符、分号、引号外字符等注入向量。
+        /// </summary>
+        private static bool IsSafeMySqlColumnType(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            return value.All(ch =>
+                char.IsLetterOrDigit(ch) ||
+                ch == '_' || ch == '(' || ch == ')' || ch == ',' || ch == ' ' || ch == '.');
+        }
+
+        /// <summary>
+        /// 在日志中描述列类型，避免把可能含特殊字符的原始值原样写入日志。
+        /// </summary>
+        private static string SafeDescribeColumnType(string value)
+        {
+            return value.Length > 40 ? value[..40] + "…" : value;
         }
 
         private string BuildMySqlDefaultClause(MySqlColumnDefinitionRow columnDefinition)

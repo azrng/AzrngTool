@@ -157,9 +157,16 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public Window? MainWindow { get; set; }
 
+    /// <summary>
+    /// 未显式注入数据库服务时复用的共享占位实例。
+    /// 避免每次构造（如单元测试、设计时）都新建独立 <see cref="DatabaseService"/>，
+    /// 保证桥接器缓存等内部状态在单进程内共享。
+    /// </summary>
+    private static readonly IDatabaseService SharedDatabaseService = new DatabaseService();
+
     public MainWindowViewModel()
         : this(
-            new DatabaseService(),
+            SharedDatabaseService,
             null,
             null,
             null,
@@ -211,6 +218,8 @@ public partial class MainWindowViewModel : ViewModelBase
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
         StoredProcedureDetailViewModel = storedProcedureDetailViewModel ?? new StoredProcedureDetailViewModel(databaseService);
         SqlQueryViewModel = sqlQueryViewModel ?? new SqlQueryViewModel(databaseService);
+        // 注入危险 SQL 二次确认弹窗，避免 ViewModel 直接依赖 Window
+        SqlQueryViewModel.ConfirmDangerousSqlAsync = ConfirmDangerousSqlExecutionAsync;
         _databaseContextManager = databaseContextManager ?? new DatabaseContextCoordinator(
             _databaseService,
             resolvedConnectionContextService,
@@ -872,6 +881,34 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception ex)
         {
             LoggingService.LogError("Failed to show message box.", ex);
+        }
+    }
+
+    /// <summary>
+    /// SQL 工作台执行危险语句（DROP/TRUNCATE/DELETE）前的二次确认。
+    /// 由 <see cref="SqlQueryViewModel.ConfirmDangerousSqlAsync"/> 调用。
+    /// </summary>
+    private async Task<bool> ConfirmDangerousSqlExecutionAsync(string dangerDescription)
+    {
+        if (MainWindow == null)
+        {
+            return false;
+        }
+
+        try
+        {
+            var result = await Ursa.Controls.MessageBox.ShowAsync(
+                MainWindow,
+                $"{dangerDescription}{Environment.NewLine}{Environment.NewLine}此操作无法撤销。",
+                "确认执行危险操作",
+                icon: Ursa.Controls.MessageBoxIcon.Warning,
+                button: Ursa.Controls.MessageBoxButton.YesNo);
+            return result == Ursa.Controls.MessageBoxResult.Yes;
+        }
+        catch (Exception ex)
+        {
+            LoggingService.LogError("Failed to show dangerous SQL confirmation.", ex);
+            return false;
         }
     }
 

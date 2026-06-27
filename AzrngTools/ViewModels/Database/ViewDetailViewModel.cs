@@ -67,11 +67,6 @@ public partial class ViewDetailViewModel : ViewModelBase, IDetailWorkspaceViewMo
 
     public bool ShowSplitWorkspace => ShowObjectList && Views.Count > 0;
 
-    public ViewDetailViewModel()
-        : this(new DatabaseService())
-    {
-    }
-
     public ViewDetailViewModel(IDatabaseService databaseService)
     {
         _databaseService = databaseService;

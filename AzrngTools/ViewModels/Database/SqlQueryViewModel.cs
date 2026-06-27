@@ -14,6 +14,13 @@ public partial class SqlQueryViewModel : ViewModelBase
 {
     private readonly IDatabaseService _databaseService;
 
+    /// <summary>
+    /// 危险 SQL 语句的二次确认回调。
+    /// 参数为检测到的危险动作描述，返回 true 表示用户确认继续执行。
+    /// 由宿主（MainWindowViewModel）注入 UI 弹窗实现，避免 ViewModel 直接依赖 Window。
+    /// </summary>
+    public Func<string, Task<bool>>? ConfirmDangerousSqlAsync { get; set; }
+
     [ObservableProperty]
     private ConnectionConfig? _currentConnection;
 
@@ -49,11 +56,6 @@ public partial class SqlQueryViewModel : ViewModelBase
 
     public bool HasResults => ResultColumns.Count > 0 || ResultRows.Count > 0 || AffectedRows > 0;
 
-    public SqlQueryViewModel()
-        : this(new DatabaseService())
-    {
-    }
-
     public SqlQueryViewModel(IDatabaseService databaseService)
     {
         _databaseService = databaseService;
@@ -81,6 +83,19 @@ public partial class SqlQueryViewModel : ViewModelBase
         {
             ToastService.ShowWarning("Please enter SQL to execute.", 2000);
             return;
+        }
+
+        // 对 DROP / TRUNCATE / DELETE 等不可逆语句做二次确认，避免误操作破坏数据
+        if (TryDescribeDangerousStatement(SqlText, out var dangerDescription))
+        {
+            var confirmed = ConfirmDangerousSqlAsync == null
+                ? false
+                : await ConfirmDangerousSqlAsync(dangerDescription);
+            if (!confirmed)
+            {
+                ToastService.ShowInfo("已取消执行危险语句。", 2000);
+                return;
+            }
         }
 
         IsLoading = true;
@@ -184,6 +199,60 @@ public partial class SqlQueryViewModel : ViewModelBase
         {
             QueryHistory.RemoveAt(QueryHistory.Count - 1);
         }
+    }
+
+    /// <summary>
+    /// 检测 SQL 是否包含不可逆的危险动作（DROP / TRUNCATE / DELETE 等）。
+    /// 通过分号拆分语句后逐条匹配关键字，避免在含 "delete" 字样的注释或字符串里误报。
+    /// </summary>
+    internal static bool TryDescribeDangerousStatement(string sql, out string description)
+    {
+        const string defaultDescription = "即将执行不可逆的数据破坏操作。";
+        description = defaultDescription;
+
+        if (string.IsNullOrWhiteSpace(sql))
+        {
+            return false;
+        }
+
+        var statements = sql.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var dangerKinds = new List<string>(capacity: statements.Length);
+
+        foreach (var statement in statements)
+        {
+            if (string.IsNullOrWhiteSpace(statement))
+            {
+                continue;
+            }
+
+            var firstWord = statement
+                .Split((char[]?)null, 2, StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault()?
+                .ToLowerInvariant();
+
+            switch (firstWord)
+            {
+                case "drop":
+                    dangerKinds.Add("删除对象（DROP）");
+                    break;
+                case "truncate":
+                    dangerKinds.Add("清空表数据（TRUNCATE）");
+                    break;
+                case "delete":
+                    dangerKinds.Add("删除数据（DELETE）");
+                    break;
+            }
+        }
+
+        if (dangerKinds.Count == 0)
+        {
+            return false;
+        }
+
+        description = dangerKinds.Count == 1
+            ? $"检测到不可逆操作：{dangerKinds[0]}，确定要继续执行吗？"
+            : $"检测到 {dangerKinds.Count} 处不可逆操作（{string.Join("、", dangerKinds.Distinct())}），确定要继续执行吗？";
+        return true;
     }
 }
 

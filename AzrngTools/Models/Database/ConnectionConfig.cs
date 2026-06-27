@@ -110,25 +110,6 @@ public partial class ConnectionConfig : ObservableObject
     }
 
     /// <summary>
-    /// 转换为连接字符串
-    /// </summary>
-    public string ToConnectionString()
-    {
-        return DatabaseType switch
-        {
-            DatabaseType.SqlServer => UseWindowsAuthentication
-                ? $"Server={Host},{Port};Database={Database};Integrated Security=true;"
-                : $"Server={Host},{Port};Database={Database};User Id={Username};Password={Password};",
-            DatabaseType.MySql => $"Server={Host};Port={Port};Database={Database};User Id={Username};Password={Password};",
-            DatabaseType.PostgresSql => $"Host={Host};Port={Port};Database={Database};Username={Username};Password={Password};",
-            DatabaseType.Oracle => $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={Host})(PORT={Port}))(CONNECT_DATA=(SERVICE_NAME={Database})));User Id={Username};Password={Password};",
-            DatabaseType.Sqlite => $"Data Source={Database};",
-            DatabaseType.Dm => $"Server={Host}:{Port};DATABASE={Database};UID={Username};PWD={Password};",
-            _ => throw new NotSupportedException($"Database type {DatabaseType} is not supported.")
-        };
-    }
-
-    /// <summary>
     /// 获取数据库类型图标
     /// </summary>
     public string DatabaseTypeIcon => DatabaseType switch

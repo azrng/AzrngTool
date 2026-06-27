@@ -132,11 +132,6 @@ public partial class TableDetailViewModel : ViewModelBase, IDetailWorkspaceViewM
         ? "暂无备注"
         : TableComment!;
 
-    public TableDetailViewModel()
-        : this(new DatabaseService())
-    {
-    }
-
     public TableDetailViewModel(IDatabaseService databaseService)
     {
         _databaseService = databaseService;

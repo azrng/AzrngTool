@@ -98,6 +98,11 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         _ => "Excel 适合结构化整理表结构信息。"
     };
 
+    /// <summary>
+    /// 设计时数据占位的数据库服务实例，避免设计时触发真实数据库调用。
+    /// </summary>
+    private static readonly IDatabaseService DesignTimeDatabaseService = new DatabaseService();
+
     public ExportDialogViewModel()
         : this(
             new ConnectionConfig
@@ -107,7 +112,9 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
                 DatabaseType = DatabaseType.PostgresSql
             },
             "chat",
-            null)
+            null,
+            null,
+            DesignTimeDatabaseService)
     {
         var root = new TreeNodeItem("pgsql", TreeNodeType.Root, "Database")
         {
@@ -134,11 +141,6 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         ExportRootNode = root;
         PrepareExportTree(root);
         NotifyExportTreeChanged();
-    }
-
-    public ExportDialogViewModel(ConnectionConfig connection, string? databaseName, string? preferredSchemaName, string? initialOutputDirectory = null)
-        : this(connection, databaseName, preferredSchemaName, initialOutputDirectory, new DatabaseService())
-    {
     }
 
     public ExportDialogViewModel(

@@ -6,6 +6,22 @@
 
 ---
 
+## 处理状态更新（2026-06-27）
+
+本轮对数据库操作代码做二次审查，发现并修复了以下此前未覆盖的问题（详见 `doc/devlog/2026-06-27-150000-数据库操作安全审查修复.md`）：
+
+| 问题 | 优先级 | 当前状态 | 处理结论 |
+|------|--------|----------|----------|
+| 桥接器缓存命中条件用 `ReferenceEquals`，运行时连接每次新建副本导致缓存永不命中 | P0 | 已处理 | 改为按连接标识（Type+Host+Port+Database+Username+Password+UseWindowsAuthentication）生成 key 比较；`BuildConnectionKey` 设为 `internal static` 便于单测 |
+| `ExecuteSqlAsync` 对 DROP/TRUNCATE/DELETE 无二次确认 | P0 | 已处理 | `SqlQueryViewModel` 新增 `TryDescribeDangerousStatement` + `ConfirmDangerousSqlAsync` 回调，`MainWindowViewModel` 注入 Ursa MessageBox 二次确认 |
+| `EncryptHelper` AES 密钥/IV 硬编码在源码，IV 固定导致密码保护形同虚设 | P1 | 已处理 | 改用 Windows DPAPI（`CryptProtectData`/`CryptUnprotectData`，当前用户作用域 + 应用级熵盐）；旧 AES 密文不再兼容（用户确认不考虑历史兼容） |
+| 7 个 ViewModel 仍保留 `new DatabaseService()` 无参后备构造，绕过 DI 单例共享 | P1 | 已处理 | 删除 6 个 ViewModel 的无参/降级构造，保留的 3 个无参构造改为复用 `static readonly SharedDatabaseService` |
+| `BuildConnectionString` 字符串插值拼接，Host/用户名含 `;` 可破坏连接串 | P2 | 已处理 | 改用各官方 `ConnectionStringBuilder`（SqlClient/MySqlConnector/Npgsql/Oracle/Microsoft.Data.Sqlite） |
+| MySQL `ALTER TABLE MODIFY COLUMN` 直接拼 `ColumnType`/`CharacterSetName`/`CollationName` | P2 | 已处理 | 增加白名单校验，非法值跳过对应子句并记日志 |
+| `ConnectionConfig.ToConnectionString` 死代码（无调用方，且为拼接版） | P2 | 已处理 | 已删除 |
+
+---
+
 ## 处理状态更新（2026-06-02）
 
 | 问题 | 当前状态 | 处理结论 |

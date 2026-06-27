@@ -105,11 +105,6 @@ public partial class DatabaseBrowserViewModel : ViewModelBase
     /// <summary>
     /// 构造函数
     /// </summary>
-    public DatabaseBrowserViewModel()
-        : this(new DatabaseService())
-    {
-    }
-
     public DatabaseBrowserViewModel(IDatabaseService databaseService)
     {
         _databaseService = databaseService;
