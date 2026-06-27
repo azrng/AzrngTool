@@ -203,7 +203,7 @@ public partial class SqlQueryViewModel : ViewModelBase
 
     /// <summary>
     /// 检测 SQL 是否包含不可逆的危险动作（DROP / TRUNCATE / DELETE 等）。
-    /// 通过分号拆分语句后逐条匹配关键字，避免在含 "delete" 字样的注释或字符串里误报。
+    /// 通过分号拆分语句后逐条匹配首个有效动作，避免在含 "delete" 字样的注释或字符串里误报。
     /// </summary>
     internal static bool TryDescribeDangerousStatement(string sql, out string description)
     {
@@ -225,10 +225,7 @@ public partial class SqlQueryViewModel : ViewModelBase
                 continue;
             }
 
-            var firstWord = statement
-                .Split((char[]?)null, 2, StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault()?
-                .ToLowerInvariant();
+            var firstWord = GetDangerousActionToken(statement);
 
             switch (firstWord)
             {
@@ -253,6 +250,88 @@ public partial class SqlQueryViewModel : ViewModelBase
             ? $"检测到不可逆操作：{dangerKinds[0]}，确定要继续执行吗？"
             : $"检测到 {dangerKinds.Count} 处不可逆操作（{string.Join("、", dangerKinds.Distinct())}），确定要继续执行吗？";
         return true;
+    }
+
+    private static string? GetDangerousActionToken(string statement)
+    {
+        var normalized = StripLeadingSqlComments(statement).TrimStart();
+        if (string.IsNullOrWhiteSpace(normalized))
+        {
+            return null;
+        }
+
+        var firstWord = ReadFirstWord(normalized);
+        if (!string.Equals(firstWord, "with", StringComparison.OrdinalIgnoreCase))
+        {
+            return firstWord.ToLowerInvariant();
+        }
+
+        var cteAction = TryReadActionAfterCommonTableExpression(normalized);
+        return cteAction?.ToLowerInvariant();
+    }
+
+    private static string StripLeadingSqlComments(string sql)
+    {
+        var remaining = sql.TrimStart();
+        while (remaining.StartsWith("--", StringComparison.Ordinal) ||
+               remaining.StartsWith("/*", StringComparison.Ordinal))
+        {
+            if (remaining.StartsWith("--", StringComparison.Ordinal))
+            {
+                var lineEnd = remaining.IndexOfAny(['\r', '\n']);
+                if (lineEnd < 0)
+                {
+                    return string.Empty;
+                }
+
+                remaining = remaining[lineEnd..].TrimStart();
+                continue;
+            }
+
+            var blockEnd = remaining.IndexOf("*/", StringComparison.Ordinal);
+            if (blockEnd < 0)
+            {
+                return string.Empty;
+            }
+
+            remaining = remaining[(blockEnd + 2)..].TrimStart();
+        }
+
+        return remaining;
+    }
+
+    private static string ReadFirstWord(string sql)
+    {
+        return sql.Split((char[]?)null, 2, StringSplitOptions.RemoveEmptyEntries)
+            .FirstOrDefault() ?? string.Empty;
+    }
+
+    private static string? TryReadActionAfterCommonTableExpression(string sql)
+    {
+        var depth = 0;
+        for (var i = 0; i < sql.Length; i++)
+        {
+            var ch = sql[i];
+            if (ch == '(')
+            {
+                depth++;
+            }
+            else if (ch == ')' && depth > 0)
+            {
+                depth--;
+            }
+            else if (depth == 0 && i > 0 && char.IsWhiteSpace(ch))
+            {
+                var rest = sql[i..].TrimStart();
+                var word = ReadFirstWord(rest);
+                if (word is "delete" or "DELETE" or "drop" or "DROP" or "truncate" or "TRUNCATE")
+                {
+                    return word;
+                }
+            }
+        }
+
+        return null;
     }
 }
 

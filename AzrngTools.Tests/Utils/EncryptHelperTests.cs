@@ -27,7 +27,7 @@ public class EncryptHelperTests
 
         Assert.NotEmpty(cipher);
         // DPAPI 输出是二进制的 Base64，应能还原为字节数组
-        Assert.True(Convert.TryFromBase64String(cipher, Span<byte>.Empty, out _));
+        Assert.NotEmpty(Convert.FromBase64String(cipher));
     }
 
     [Theory]

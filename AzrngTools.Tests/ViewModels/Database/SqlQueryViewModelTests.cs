@@ -51,4 +51,18 @@ public class SqlQueryViewModelTests
 
         Assert.False(detected);
     }
+
+    [Theory]
+    [InlineData("-- review note\r\nDELETE FROM users WHERE id = 1", "DELETE")]
+    [InlineData("/* review note */ DROP TABLE users", "DROP")]
+    [InlineData("WITH target AS (SELECT id FROM users) DELETE FROM users WHERE id IN (SELECT id FROM target)", "DELETE")]
+    public void TryDescribeDangerousStatement_detects_dangerous_statement_after_comments_or_cte(
+        string sql,
+        string expectedKeyword)
+    {
+        var detected = SqlQueryViewModel.TryDescribeDangerousStatement(sql, out var description);
+
+        Assert.True(detected);
+        Assert.Contains(expectedKeyword, description, StringComparison.OrdinalIgnoreCase);
+    }
 }

@@ -133,6 +133,31 @@ public class DatabaseServiceTests
         Assert.NotEqual(baselineKey, modifiedKey);
     }
 
+    [Fact]
+    public void TryBuildMySqlModifyColumnCommentSql_rejects_enum_type_without_fallback_to_text()
+    {
+        var service = new DatabaseService();
+        var columnDefinition = new DatabaseService.MySqlColumnDefinitionRow
+        {
+            ColumnName = "status",
+            ColumnType = "enum('new','done')",
+            IsNullable = "NO"
+        };
+
+        var built = service.TryBuildMySqlModifyColumnCommentSql(
+            "app_db",
+            "orders",
+            columnDefinition,
+            "状态",
+            out var sql,
+            out var failureMessage);
+
+        Assert.False(built);
+        Assert.Empty(sql);
+        Assert.Contains("暂不支持安全重建", failureMessage, StringComparison.Ordinal);
+        Assert.DoesNotContain("TEXT", sql, StringComparison.OrdinalIgnoreCase);
+    }
+
     private static ConnectionConfig CreatePostgresConnection(string database, string password)
     {
         return new ConnectionConfig

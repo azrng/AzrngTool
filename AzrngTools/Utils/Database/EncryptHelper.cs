@@ -86,8 +86,19 @@ public static class EncryptHelper
         var entropy = CreateDataBlob(Entropy);
         try
         {
-            return CryptProtectData(ref plain, null, ref entropy, IntPtr.Zero, IntPtr.Zero, 0, out var cipher)
-                   && TryReadDataBlob(cipher, out cipherBytes);
+            if (!CryptProtectData(ref plain, null, ref entropy, IntPtr.Zero, IntPtr.Zero, 0, out var cipher))
+            {
+                return false;
+            }
+
+            try
+            {
+                return TryReadDataBlob(cipher, out cipherBytes);
+            }
+            finally
+            {
+                FreeProtectedDataBlob(ref cipher);
+            }
         }
         finally
         {
@@ -103,8 +114,19 @@ public static class EncryptHelper
         var entropy = CreateDataBlob(Entropy);
         try
         {
-            return CryptUnprotectData(ref cipher, out _, ref entropy, IntPtr.Zero, IntPtr.Zero, 0, out var plain)
-                   && TryReadDataBlob(plain, out plainBytes);
+            if (!CryptUnprotectData(ref cipher, out _, ref entropy, IntPtr.Zero, IntPtr.Zero, 0, out var plain))
+            {
+                return false;
+            }
+
+            try
+            {
+                return TryReadDataBlob(plain, out plainBytes);
+            }
+            finally
+            {
+                FreeProtectedDataBlob(ref plain);
+            }
         }
         finally
         {
@@ -146,6 +168,15 @@ public static class EncryptHelper
         }
     }
 
+    private static void FreeProtectedDataBlob(ref DataBlob blob)
+    {
+        if (blob.pbData != IntPtr.Zero)
+        {
+            LocalFree(blob.pbData);
+            blob.pbData = IntPtr.Zero;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential)]
     private struct DataBlob
     {
@@ -176,4 +207,7 @@ public static class EncryptHelper
         IntPtr prompt,
         int flags,
         out DataBlob dataOut);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern IntPtr LocalFree(IntPtr handle);
 }

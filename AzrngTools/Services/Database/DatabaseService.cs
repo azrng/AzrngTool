@@ -817,7 +817,18 @@ namespace AzrngTools.Services.Database
                     return ResultModelFactory.Failure<bool>("暂不支持修改生成列备注", "DATABASE_ERROR");
                 }
 
-                var modifySql = BuildMySqlModifyColumnCommentSql(schemaName, tableName, columnDefinition, normalizedComment);
+                if (!TryBuildMySqlModifyColumnCommentSql(
+                        schemaName,
+                        tableName,
+                        columnDefinition,
+                        normalizedComment,
+                        out var modifySql,
+                        out var failureMessage))
+                {
+                    LoggingService.LogWarning(failureMessage);
+                    return ResultModelFactory.Failure<bool>(failureMessage, "DATABASE_ERROR");
+                }
+
                 await dbHelper.ExecuteAsync(modifySql);
                 return ResultModelFactory.Success(true, "字段备注已更新");
             }
@@ -1322,32 +1333,30 @@ LIMIT 1;";
                 });
         }
 
-        private string BuildMySqlModifyColumnCommentSql(
+        internal bool TryBuildMySqlModifyColumnCommentSql(
             string schemaName,
             string tableName,
             MySqlColumnDefinitionRow columnDefinition,
-            string comment)
+            string comment,
+            out string sql,
+            out string failureMessage)
         {
+            sql = string.Empty;
+            failureMessage = string.Empty;
+
+            if (!IsSafeMySqlColumnType(columnDefinition.ColumnType))
+            {
+                failureMessage = $"字段类型暂不支持安全重建，已取消保存字段备注：{SafeDescribeColumnType(columnDefinition.ColumnType)}";
+                return false;
+            }
+
             var builder = new System.Text.StringBuilder();
             builder.Append("ALTER TABLE ");
             builder.Append(BuildQualifiedTableName(DatabaseType.MySql, schemaName, tableName));
             builder.Append(" MODIFY COLUMN ");
             builder.Append(QuoteIdentifier(DatabaseType.MySql, columnDefinition.ColumnName));
             builder.Append(' ');
-
-            // ColumnType 来自 information_schema，理论上不含注入字符；这里做白名单校验，
-            // 仅放行 MySQL 类型定义所需字符（字母数字、括号、逗号、空格、下划线、点、单引号内的类型名），
-            // 避免意外值被直接拼入 ALTER TABLE 语句。
-            if (IsSafeMySqlColumnType(columnDefinition.ColumnType))
-            {
-                builder.Append(columnDefinition.ColumnType);
-            }
-            else
-            {
-                LoggingService.LogWarning(
-                    $"MySql 列类型包含非法字符，已跳过类型子句：{SafeDescribeColumnType(columnDefinition.ColumnType)}");
-                builder.Append("TEXT");
-            }
+            builder.Append(columnDefinition.ColumnType);
 
             AppendMySqlCharacterSetClause(builder, columnDefinition.CharacterSetName, columnDefinition.CollationName);
 
@@ -1361,7 +1370,8 @@ LIMIT 1;";
             builder.Append(EscapeSqlLiteral(comment));
             builder.Append("';");
 
-            return builder.ToString();
+            sql = builder.ToString();
+            return true;
         }
 
         private void AppendMySqlCharacterSetClause(
@@ -1402,8 +1412,8 @@ LIMIT 1;";
         }
 
         /// <summary>
-        /// MySQL 列类型定义白名单：允许字母、数字、下划线、括号、逗号、空格、点，
-        /// 允许少量 SQL 类型关键字（如 unsigned）。拒绝注释符、分号、引号外字符等注入向量。
+        /// MySQL 列类型定义白名单：允许字母、数字、下划线、括号、逗号、空格、点。
+        /// enum/set 等包含引号的复杂类型暂不重建，避免备注保存误改列定义。
         /// </summary>
         private static bool IsSafeMySqlColumnType(string? value)
         {
@@ -1517,7 +1527,7 @@ LIMIT 1;";
                    columnType.Contains("json", StringComparison.OrdinalIgnoreCase);
         }
 
-        private sealed class MySqlColumnDefinitionRow
+        internal sealed class MySqlColumnDefinitionRow
         {
             public string ColumnName { get; set; } = string.Empty;
 
