@@ -61,6 +61,7 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contain
 
 - 正式发布默认采用：`SelfContained + PublishSingleFile + PublishReadyToRun`
 - 当前默认发布策略不启用 `AOT` 和 `Trim`，优先保证桌面运行稳定性
+- 单文件内压缩（`EnableCompressionInSingleFile`）已关闭：压缩会导致每次启动全量解压，实测启动约慢 4 倍、运行内存接近翻倍；关闭后本地 exe 体积变大，但发布 zip 经外层压缩后下载体积基本不变
 - Release 发布启用 `IncludeNativeLibrariesForSelfExtract=true`，Skia / HarfBuzz / ANGLE 等原生库会随单文件一起打包，并在运行时自解压加载
 - 当前测试产物目录可以收敛为单个 `AzrngTools.exe`，但原生库仍会在运行时落到临时目录，不属于纯内存加载
 

@@ -5,6 +5,7 @@ if (Test-Path -LiteralPath $publishDir) {
     Remove-Item -LiteralPath $publishDir -Recurse -Force
 }
 
+# --ignore-failed-sources：私有源不可达（如 403）时仍可用本地缓存还原，保证发布链路可复现
 dotnet publish $projectPath `
     -c Release `
     -r win-x64 `
@@ -13,6 +14,7 @@ dotnet publish $projectPath `
     -p:PublishAot=false `
     -p:PublishTrimmed=false `
     -p:DebugType=None `
-    -p:DebugSymbols=false
+    -p:DebugSymbols=false `
+    --ignore-failed-sources
 
 # makensis installer.nsi

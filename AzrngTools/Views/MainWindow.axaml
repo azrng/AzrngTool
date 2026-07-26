@@ -183,8 +183,11 @@
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
                             <Grid HorizontalAlignment="Stretch"
                                   MinWidth="0">
-                                <TransitioningContentControl Content="{Binding CurrentPage}"
-                                                             HorizontalAlignment="Stretch" />
+                                <!-- 使用 ContentControl 而非 TransitioningContentControl：
+                                     页面 View 已按实例缓存复用，过渡动画会在新旧页面交叠期间双份渲染并与复用的
+                                     View 产生父子冲突，同时也是切换卡顿来源之一 -->
+                                <ContentControl Content="{Binding CurrentPage}"
+                                                HorizontalAlignment="Stretch" />
                             </Grid>
                         </ScrollViewer>
                     </Border>

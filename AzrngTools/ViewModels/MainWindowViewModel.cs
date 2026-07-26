@@ -39,6 +39,11 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly Dictionary<string, MenuBar> _toolMenuLookup = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _groupExpansionStates = new(StringComparer.Ordinal);
 
+    /// <summary>
+    /// 页面 ViewModel 缓存：同一工具页复用同一实例，避免每次切换重建整个页面对象图导致卡顿。
+    /// </summary>
+    private readonly Dictionary<Type, object> _pageCache = new();
+
     private List<MenuBar> _allRootMenus = [];
     private List<MenuBar> _allGroupMenus = [];
     private MenuBar? _homeMenu;
@@ -313,12 +318,19 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var service = _serviceProvider.GetService(value.MenuType);
-        if (service is not null)
+        if (!_pageCache.TryGetValue(value.MenuType, out var page))
         {
-            CurrentPage = service;
-            UpdatePageHeader(value);
+            page = _serviceProvider.GetService(value.MenuType);
+            if (page is null)
+            {
+                return;
+            }
+
+            _pageCache[value.MenuType] = page;
         }
+
+        CurrentPage = page;
+        UpdatePageHeader(value);
 
         // 常用入口功能暂未启用，注释使用记录与重建逻辑
         // if (_suppressUsageTracking || value.MenuType == typeof(OverviewPageViewModel))
