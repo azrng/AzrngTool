@@ -1,0 +1,317 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:AzrngTools.ViewModels.Database"
+        xmlns:dto="using:AzrngTools.Models.Database.DTOs"
+        mc:Ignorable="d"
+        x:Class="AzrngTools.Views.Database.Workbench.PgDumpExportDialog"
+        x:CompileBindings="False"
+        x:DataType="vm:PgDumpExportDialogViewModel"
+        x:Name="PgDumpExportDialogWindow"
+        MinWidth="960"
+        MinHeight="600"
+        Height="600">
+
+    <Design.DataContext>
+        <vm:PgDumpExportDialogViewModel />
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <Style Selector="Border.exportDialogSurface">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
+            <Setter Property="BoxShadow" Value="{DynamicResource Shadow.LG}" />
+        </Style>
+
+        <Style Selector="Border.exportSectionCard">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+
+        <Style Selector="Border.exportTag">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.Pill}" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+
+        <Style Selector="TextBlock.exportTagText">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportSectionTitle">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodyLarge}" />
+            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+        </Style>
+
+        <Style Selector="TextBlock.exportSectionHint">
+            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Background="{DynamicResource Brush.App.Background}">
+        <Border Margin="18"
+                Padding="18"
+                Classes="exportDialogSurface">
+            <Grid RowDefinitions="Auto,*,Auto"
+                  RowSpacing="18">
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="pg_dump 导出"
+                                   Classes="heading" />
+                        <TextBlock Text="选择数据库、导出内容与 schema，指定 pg_dump.exe 和保存位置后导出。仅支持 PostgreSQL。"
+                                   Classes="caption" />
+                    </StackPanel>
+
+                    <Border Grid.Column="1"
+                            Classes="exportTag"
+                            VerticalAlignment="Top">
+                        <TextBlock Text="{Binding ConnectionSummary}"
+                                   Classes="exportTagText" />
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Row="1"
+                      ColumnDefinitions="1.2*,0.8*"
+                      ColumnSpacing="18"
+                      MinHeight="0">
+                    <!-- 左：选库 + schema 多选 -->
+                    <Border Grid.Column="0"
+                            Classes="exportSectionCard"
+                            MinHeight="0">
+                        <Grid RowDefinitions="Auto,Auto,Auto,*"
+                              RowSpacing="12"
+                              MinHeight="0">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="数据库与 schema"
+                                           Classes="exportSectionTitle" />
+                                <TextBlock Text="先选择数据库，再勾选要导出的 schema（支持搜索、全选）。"
+                                           Classes="exportSectionHint" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1"
+                                        Spacing="8">
+                                <TextBlock Text="数据库"
+                                           Classes="label" />
+                                <ComboBox ItemsSource="{Binding AvailableDatabases}"
+                                          SelectedItem="{Binding SelectedDatabase, Mode=TwoWay}"
+                                          PlaceholderText="选择数据库"
+                                          Classes="modern"
+                                          IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}" />
+                            </StackPanel>
+
+                            <Grid Grid.Row="2"
+                                  ColumnDefinitions="*,Auto,Auto"
+                                  ColumnSpacing="8">
+                                <TextBox Grid.Column="0"
+                                         Text="{Binding SchemaSearchText}"
+                                         PlaceholderText="搜索 schema..."
+                                         Classes="modern" />
+                                <Button Grid.Column="1"
+                                        Command="{Binding SelectAllSchemasCommand}"
+                                        Classes="secondary">
+                                    <TextBlock Text="全选"
+                                               FontWeight="Medium" />
+                                </Button>
+                                <Button Grid.Column="2"
+                                        Command="{Binding ClearSchemaSelectionCommand}"
+                                        Classes="secondary">
+                                    <TextBlock Text="清空"
+                                               FontWeight="Medium" />
+                                </Button>
+                            </Grid>
+
+                            <Border Grid.Row="3"
+                                    Classes="browserTreeSurface"
+                                    MinHeight="0">
+                                <Grid MinHeight="0">
+                                    <ScrollViewer Classes="browserTreeScroll"
+                                                  MinHeight="0"
+                                                  VerticalScrollBarVisibility="Auto"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  IsScrollChainingEnabled="False"
+                                                  IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                                        <StackPanel Margin="6"
+                                                    Spacing="10">
+                                            <Border Classes="exportSectionCard"
+                                                    IsVisible="{Binding HasLoadError}">
+                                                <StackPanel Spacing="10">
+                                                    <TextBlock Text="加载失败"
+                                                               Classes="exportSectionTitle" />
+                                                    <TextBlock Text="{Binding LoadErrorMessage}"
+                                                               Classes="exportSectionHint" />
+                                                    <Button Command="{Binding RetryLoadCommand}"
+                                                            Classes="modern"
+                                                            HorizontalAlignment="Left">
+                                                        <TextBlock Text="重新加载" />
+                                                    </Button>
+                                                </StackPanel>
+                                            </Border>
+
+                                            <ItemsControl ItemsSource="{Binding FilteredSchemas}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate DataType="dto:PgDumpSchemaSelectionDto">
+                                                        <Grid ColumnDefinitions="Auto,*,Auto"
+                                                              Margin="0,3"
+                                                              ColumnSpacing="10">
+                                                            <CheckBox Grid.Column="0"
+                                                                      IsChecked="{Binding IsSelected}"
+                                                                      VerticalAlignment="Center" />
+                                                            <TextBlock Grid.Column="1"
+                                                                       Text="{Binding DisplayLabel}"
+                                                                       VerticalAlignment="Center"
+                                                                       FontSize="14"
+                                                                       Foreground="{DynamicResource Brush.Text.Primary}" />
+                                                            <TextBlock Grid.Column="2"
+                                                                       Text="{Binding MetaText}"
+                                                                       Classes="caption"
+                                                                       VerticalAlignment="Center" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </ScrollViewer>
+
+                                    <StackPanel IsVisible="{Binding IsLoading}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Spacing="12">
+                                        <ProgressBar Width="220"
+                                                     IsIndeterminate="True" />
+                                        <TextBlock Text="{Binding LoadingText}"
+                                                   Classes="caption"
+                                                   HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- 右：导出参数 -->
+                    <Border Grid.Column="1"
+                            Classes="exportSectionCard"
+                            MinHeight="0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Spacing="14">
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="导出参数"
+                                               Classes="exportSectionTitle" />
+                                    <TextBlock Text="选择导出内容范围与输出格式。"
+                                               Classes="exportSectionHint" />
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="导出内容"
+                                               Classes="label" />
+                                    <StackPanel Spacing="6">
+                                        <RadioButton Content="结构 + 数据（默认）"
+                                                     GroupName="PgDumpContentMode"
+                                                     IsChecked="{Binding IsSchemaAndDataMode}" />
+                                        <RadioButton Content="仅结构（--schema-only）"
+                                                     GroupName="PgDumpContentMode"
+                                                     IsChecked="{Binding IsSchemaOnlyMode}" />
+                                        <RadioButton Content="仅数据（--data-only）"
+                                                     GroupName="PgDumpContentMode"
+                                                     IsChecked="{Binding IsDataOnlyMode}" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="输出格式"
+                                               Classes="label" />
+                                    <StackPanel Spacing="6">
+                                        <RadioButton Content="SQL 脚本（plain，.sql，可用 psql 恢复）"
+                                                     GroupName="PgDumpFormat"
+                                                     IsChecked="{Binding IsPlainFormat}" />
+                                        <RadioButton Content="压缩归档（custom，.dump，需 pg_restore 恢复）"
+                                                     GroupName="PgDumpFormat"
+                                                     IsChecked="{Binding IsCustomFormat}" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="pg_dump 可执行文件"
+                                               Classes="label" />
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="10">
+                                        <TextBox Grid.Column="0"
+                                                 Text="{Binding PgDumpExePath}"
+                                                 PlaceholderText="选择 pg_dump.exe"
+                                                 Classes="modern" />
+                                        <Button Grid.Column="1"
+                                                Click="OnBrowsePgDumpExeClick"
+                                                Classes="secondary">
+                                            <TextBlock Text="浏览..."
+                                                       FontWeight="Medium" />
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="保存位置"
+                                               Classes="label" />
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          ColumnSpacing="10">
+                                        <TextBox Grid.Column="0"
+                                                 Text="{Binding OutputFilePath}"
+                                                 IsReadOnly="True"
+                                                 PlaceholderText="选择导出文件保存位置"
+                                                 Classes="modern" />
+                                        <Button Grid.Column="1"
+                                                Click="OnBrowseOutputFileClick"
+                                                Classes="secondary">
+                                            <TextBlock Text="浏览..."
+                                                       FontWeight="Medium" />
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Row="2"
+                        BorderBrush="{DynamicResource Brush.Panel.Stroke}"
+                        BorderThickness="0,1,0,0"
+                        Padding="0,16,0,0">
+                    <Grid ColumnDefinitions="*,Auto,Auto"
+                          ColumnSpacing="12">
+                        <TextBlock Text="{Binding SelectionSummary}"
+                                   Classes="caption"
+                                   VerticalAlignment="Center" />
+
+                        <Button Grid.Column="1"
+                                Command="{Binding CancelCommand}"
+                                Classes="secondary"
+                                Padding="20,10">
+                            <TextBlock Text="取消"
+                                       FontWeight="Medium" />
+                        </Button>
+
+                        <Button Grid.Column="2"
+                                Command="{Binding ExportCommand}"
+                                Classes="modern"
+                                Padding="24,10">
+                            <TextBlock Text="导出"
+                                       FontWeight="SemiBold" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

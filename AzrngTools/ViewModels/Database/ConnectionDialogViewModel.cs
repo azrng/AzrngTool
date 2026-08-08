@@ -269,10 +269,7 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         DatabaseTypeCards = new ObservableCollection<DatabaseTypeCard>
         {
             new() { Type = DatabaseType.PostgresSql, Icon = "PG", Name = "PostgresSql", Hint = "可配置" },
-            new() { Type = DatabaseType.MySql, Icon = "MY", Name = "MySql", Hint = "可配置" },
-            new() { Type = DatabaseType.SqlServer, Icon = "MS", Name = "SQL Server", IsEnabled = false, Hint = "待接入" },
-            new() { Type = DatabaseType.Sqlite, Icon = "SQ", Name = "Sqlite", IsEnabled = false, Hint = "待接入" },
-            new() { Type = DatabaseType.Oracle, Icon = "OR", Name = "Oracle", IsEnabled = false, Hint = "待接入" }
+            new() { Type = DatabaseType.MySql, Icon = "MY", Name = "MySql", Hint = "可配置" }
         };
     }
 
@@ -594,7 +591,11 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
     [RelayCommand(CanExecute = nameof(CanConnect))]
     private void Connect()
     {
-        var savedConnection = SaveCurrentConnection();
+        var savedConnection = !IsCreatingNewConnection &&
+                              SelectedSavedConnection != null &&
+                              IsSameConnectionConfig(ConnectionConfig, SelectedSavedConnection)
+            ? SelectedSavedConnection
+            : SaveCurrentConnection();
         if (savedConnection == null)
         {
             return;
@@ -650,22 +651,16 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
             return null;
         }
 
-        // 检查连接名称唯一性
-        if (!ValidateConnectionNameUnique())
-        {
-            return null;
-        }
-
         SearchText = string.Empty;
 
         if (IsCreatingNewConnection || SelectedSavedConnection == null)
         {
             var newConnection = CloneConnection(ConnectionConfig);
             _savedConnections.Add(newConnection);
-            PersistConnections();
-            RefreshFilteredConnections();
             SelectedSavedConnection = newConnection;
             IsCreatingNewConnection = false;
+            PersistConnections();
+            RefreshFilteredConnections();
             ToastService.ShowSuccess($"连接已保存：{newConnection.Name}", autoCloseDelay: 2000);
             return newConnection;
         }
@@ -1035,6 +1030,18 @@ public partial class ConnectionDialogViewModel : ViewModelBase, IDialogContext
         target.Color = source.Color;
         target.LastUsedTime = source.LastUsedTime;
         target.UseCount = source.UseCount;
+    }
+
+    private static bool IsSameConnectionConfig(ConnectionConfig source, ConnectionConfig target)
+    {
+        return string.Equals(source.Name, target.Name, StringComparison.Ordinal) &&
+               source.DatabaseType == target.DatabaseType &&
+               string.Equals(source.Host, target.Host, StringComparison.Ordinal) &&
+               source.Port == target.Port &&
+               string.Equals(source.Username, target.Username, StringComparison.Ordinal) &&
+               string.Equals(source.Password, target.Password, StringComparison.Ordinal) &&
+               string.Equals(source.Database, target.Database, StringComparison.Ordinal) &&
+               source.UseWindowsAuthentication == target.UseWindowsAuthentication;
     }
 
     private static string GetDatabaseTypeDisplayName(DatabaseType dbType)

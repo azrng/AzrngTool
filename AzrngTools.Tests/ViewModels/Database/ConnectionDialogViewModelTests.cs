@@ -8,6 +8,74 @@ namespace AzrngTools.Tests.ViewModels.Database;
 public class ConnectionDialogViewModelTests
 {
     [Fact]
+    public void Create_new_connection_then_select_postgresql_opens_editor_with_default_port()
+    {
+        var viewModel = new ConnectionDialogViewModel();
+
+        viewModel.CreateNewConnectionCommand.Execute(null);
+
+        Assert.True(viewModel.ShowDatabaseTypeSelector);
+        Assert.False(viewModel.ShowEditor);
+
+        viewModel.SelectDatabaseTypeCommand.Execute(DatabaseType.PostgresSql);
+
+        Assert.False(viewModel.ShowDatabaseTypeSelector);
+        Assert.True(viewModel.ShowEditor);
+        Assert.Equal(DatabaseType.PostgresSql, viewModel.ConnectionConfig.DatabaseType);
+        Assert.Equal(5432, viewModel.ConnectionConfig.Port);
+        Assert.True(viewModel.IsPostgreSqlSelected);
+        Assert.True(viewModel.ShowServerFields);
+        Assert.True(viewModel.ShowDatabaseSelector);
+    }
+
+    [Fact]
+    public void Saving_new_postgresql_connection_persists_and_selects_saved_connection()
+    {
+        var savedConnections = new ObservableCollection<ConnectionConfig>();
+        var persistCount = 0;
+        var viewModel = new ConnectionDialogViewModel(savedConnections, () => persistCount++);
+
+        viewModel.SelectDatabaseTypeCommand.Execute(DatabaseType.PostgresSql);
+        viewModel.ConnectionConfig.Name = "local-pg";
+        viewModel.ConnectionConfig.Host = "127.0.0.1";
+        viewModel.ConnectionConfig.Username = "postgres";
+        viewModel.ConnectionConfig.Password = "secret";
+        viewModel.ConnectionConfig.Database = "postgres";
+
+        viewModel.SaveCommand.Execute(null);
+
+        Assert.Single(savedConnections);
+        Assert.Same(savedConnections[0], viewModel.SelectedSavedConnection);
+        Assert.Equal("local-pg", savedConnections[0].Name);
+        Assert.Equal(DatabaseType.PostgresSql, savedConnections[0].DatabaseType);
+        Assert.Equal(1, persistCount);
+        Assert.False(viewModel.IsCreatingNewConnection);
+    }
+
+    [Fact]
+    public void Connecting_immediately_after_saving_uses_the_saved_connection_without_duplicate_validation()
+    {
+        var savedConnections = new ObservableCollection<ConnectionConfig>();
+        var persistCount = 0;
+        var viewModel = new ConnectionDialogViewModel(savedConnections, () => persistCount++);
+
+        viewModel.SelectDatabaseTypeCommand.Execute(DatabaseType.PostgresSql);
+        viewModel.ConnectionConfig.Name = "local-pg";
+        viewModel.ConnectionConfig.Host = "127.0.0.1";
+        viewModel.ConnectionConfig.Username = "postgres";
+        viewModel.ConnectionConfig.Password = "secret";
+        viewModel.ConnectionConfig.Database = "postgres";
+        viewModel.SaveCommand.Execute(null);
+
+        viewModel.ConnectCommand.Execute(null);
+
+        Assert.Single(savedConnections);
+        Assert.Same(savedConnections[0], viewModel.DialogResultConnection);
+        Assert.Equal(1, persistCount);
+        Assert.DoesNotContain(viewModel.ValidationErrors, error => error.Contains("已存在", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Test_connection_validation_does_not_require_default_database()
     {
         var viewModel = new ConnectionDialogViewModel();

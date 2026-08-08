@@ -23,7 +23,10 @@ public partial class ExportDialog : UserControl
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        _previousManager = ToastService.SetManager(new WindowToastManager(TopLevel.GetTopLevel(this)!));
+        if (TopLevel.GetTopLevel(this) is TopLevel topLevel)
+        {
+            _previousManager = ToastService.SetManager(new WindowToastManager(topLevel));
+        }
         if (DataContext is ExportDialogViewModel vm)
         {
             await vm.InitializeAsync();
@@ -32,9 +35,6 @@ public partial class ExportDialog : UserControl
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        Loaded -= OnLoaded;
-        Unloaded -= OnUnloaded;
-
         if (_previousManager != null)
         {
             ToastService.SetManager(_previousManager);

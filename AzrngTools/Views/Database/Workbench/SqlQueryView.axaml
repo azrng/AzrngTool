@@ -1,4 +1,4 @@
-﻿<UserControl xmlns="https://github.com/avaloniaui"
+<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,160 +13,166 @@
         <vm:SqlQueryViewModel />
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,220,Auto,*">
+    <Grid RowDefinitions="Auto,*,Auto,*"
+          RowSpacing="{StaticResource Space.12}"
+          MinHeight="0">
         <Border Grid.Row="0"
-                Padding="12"
-                BorderBrush="{DynamicResource BorderLight}"
-                BorderThickness="0,0,0,1"
+                Classes="tool-card-subtle"
                 IsVisible="{Binding IsLoading}">
             <StackPanel Orientation="Horizontal"
-                        Spacing="10">
+                        Spacing="{StaticResource Space.8}">
                 <ProgressBar Width="24"
                              Height="18"
                              IsIndeterminate="True" />
                 <TextBlock Text="{Binding LoadingText}"
+                           Classes="body"
                            VerticalAlignment="Center" />
             </StackPanel>
         </Border>
 
         <Border Grid.Row="1"
-                Classes="card"
-                Margin="0,0,0,12">
-            <Grid ColumnDefinitions="*,*,Auto,Auto,Auto"
-                  RowDefinitions="Auto,Auto"
-                  ColumnSpacing="12"
-                  RowSpacing="10">
-                <StackPanel Grid.Column="0"
-                            Spacing="6">
-                    <TextBlock Text="Connection"
-                               Classes="caption" />
-                    <TextBlock Text="{Binding CurrentConnection.Name, FallbackValue=No connection selected}"
-                               FontWeight="SemiBold" />
-                </StackPanel>
+                Classes="workspaceQueryEditor"
+                MinHeight="220">
+            <Grid RowDefinitions="Auto,*"
+                  MinHeight="0">
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto"
+                      RowDefinitions="Auto,Auto"
+                      ColumnSpacing="{StaticResource Space.10}"
+                      RowSpacing="{StaticResource Space.8}">
+                    <StackPanel Grid.Row="0"
+                                Grid.Column="0"
+                                Spacing="{StaticResource Space.2}">
+                        <TextBlock Text="SQL 查询"
+                                   Classes="subheading" />
+                        <TextBlock Text="{Binding CurrentConnection.Name, FallbackValue=未选择连接}"
+                                   Classes="caption"
+                                   MaxWidth="220"
+                                   TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
 
-                <StackPanel Grid.Column="1"
-                            Spacing="6">
-                    <TextBlock Text="Schema"
-                               Classes="caption" />
-                    <TextBlock Text="{Binding CurrentSchemaName, FallbackValue=No schema selected}"
-                               FontWeight="SemiBold" />
-                </StackPanel>
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Text="{Binding CurrentSchemaName, FallbackValue=未选择架构}"
+                               Classes="caption"
+                               VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
 
-                <Button Grid.Column="2"
-                        Command="{Binding ExecuteQueryCommand}"
-                        Classes="modern"
-                        Padding="16,10"
-                        VerticalAlignment="Bottom">
-                    <TextBlock Text="Execute" />
-                </Button>
+                    <Button Grid.Row="0"
+                            Grid.Column="2"
+                            Command="{Binding ExecuteQueryCommand}"
+                            Classes="workbenchAccentAction"
+                            Padding="{StaticResource Thickness.14.4}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="执行"
+                                   FontWeight="SemiBold" />
+                    </Button>
 
-                <Button Grid.Column="3"
-                        Command="{Binding ClearResultsCommand}"
-                        Classes="secondary"
-                        Padding="16,10"
-                        VerticalAlignment="Bottom">
-                    <TextBlock Text="Clear Results" />
-                </Button>
+                    <Button Grid.Row="0"
+                            Grid.Column="3"
+                            Click="OnFormatSqlClick"
+                            Classes="workbenchToolbarAction"
+                            Padding="{StaticResource Thickness.14.4}"
+                            ToolTip.Tip="整理 SQL 排版">
+                        <TextBlock Text="格式化" />
+                    </Button>
 
-                <Button Grid.Column="4"
-                        Click="OnFormatSqlClick"
-                        Classes="secondary"
-                        Padding="16,10"
-                        VerticalAlignment="Bottom">
-                    <TextBlock Text="Format SQL" />
-                </Button>
+                    <Button Grid.Row="0"
+                            Grid.Column="4"
+                            Command="{Binding ClearResultsCommand}"
+                            Classes="workbenchToolbarAction"
+                            Padding="{StaticResource Thickness.14.4}">
+                        <TextBlock Text="清空结果" />
+                    </Button>
 
-                <ComboBox Grid.Row="1"
-                          Grid.Column="0"
-                          ItemsSource="{Binding Templates}"
-                          SelectedItem="{Binding SelectedTemplate}"
-                          PlaceholderText="Choose a common template">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Text="快速带入"
+                               Classes="caption"
+                               VerticalAlignment="Center" />
 
-                <Button Grid.Row="1"
-                        Grid.Column="2"
-                        Command="{Binding ApplyTemplateCommand}"
-                        CommandParameter="{Binding SelectedTemplate}"
-                        Classes="secondary"
-                        Padding="16,10">
-                    <TextBlock Text="Use Template" />
-                </Button>
+                    <ComboBox Grid.Row="1"
+                              Grid.Column="1"
+                              ItemsSource="{Binding Templates}"
+                              SelectedItem="{Binding SelectedTemplate}"
+                              PlaceholderText="选择模板"
+                              Classes="modern">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
-                <ComboBox Grid.Row="1"
-                          Grid.Column="1"
-                          ItemsSource="{Binding QueryHistory}"
-                          SelectedItem="{Binding SelectedHistoryItem}"
-                          PlaceholderText="Recent SQL history" />
+                    <Button Grid.Row="1"
+                            Grid.Column="2"
+                            Command="{Binding ApplyTemplateCommand}"
+                            CommandParameter="{Binding SelectedTemplate}"
+                            Classes="workbenchToolbarAction">
+                        <TextBlock Text="使用模板" />
+                    </Button>
 
-                <Button Grid.Row="1"
-                        Grid.Column="3"
-                        Command="{Binding LoadHistoryCommand}"
-                        CommandParameter="{Binding SelectedHistoryItem}"
-                        Classes="secondary"
-                        Padding="16,10">
-                    <TextBlock Text="Reuse SQL" />
-                </Button>
-            </Grid>
-        </Border>
+                    <ComboBox Grid.Row="1"
+                              Grid.Column="3"
+                              Grid.ColumnSpan="2"
+                              ItemsSource="{Binding QueryHistory}"
+                              SelectedItem="{Binding SelectedHistoryItem}"
+                              PlaceholderText="最近执行记录"
+                              Classes="modern" />
 
-        <Border Grid.Row="2"
-                Classes="card"
-                Margin="0,0,0,12">
-            <Grid RowDefinitions="Auto,*">
-                <Border Grid.Row="0"
-                        Padding="16"
-                        BorderBrush="{DynamicResource BorderLight}"
-                        BorderThickness="0,0,0,1">
-                    <TextBlock Text="SQL Editor"
-                               Classes="subheading" />
-                </Border>
+                    <Button Grid.Row="1"
+                            Grid.Column="5"
+                            Command="{Binding LoadHistoryCommand}"
+                            CommandParameter="{Binding SelectedHistoryItem}"
+                            Classes="workbenchToolbarAction">
+                        <TextBlock Text="复用" />
+                    </Button>
+                </Grid>
+
                 <TextBox Grid.Row="1"
                          x:Name="SqlEditor"
                          Text="{Binding SqlText, Mode=TwoWay}"
                          AcceptsReturn="True"
                          TextWrapping="NoWrap"
-                         FontFamily="Consolas"
-                         Padding="16" />
+                         FontFamily="{DynamicResource Font.Family.Monospace}"
+                         Classes="sqlEditor"
+                         MinHeight="160" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2"
+                Classes="queryResultHeader">
+            <Grid ColumnDefinitions="*,Auto"
+                  ColumnSpacing="{StaticResource Space.12}">
+                <StackPanel Spacing="{StaticResource Space.2}">
+                    <TextBlock Text="结果"
+                               Classes="subheading" />
+                    <TextBlock Text="{Binding ResultMessage, FallbackValue=执行查询后，结果会显示在这里。}"
+                               Classes="caption"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding AffectedRows, StringFormat=影响行数：{0}}"
+                           Classes="caption"
+                           VerticalAlignment="Center" />
             </Grid>
         </Border>
 
         <Border Grid.Row="3"
-                Classes="card"
-                Margin="0,0,0,12">
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Execution Result"
-                               Classes="subheading" />
-                    <TextBlock Text="{Binding ResultMessage, FallbackValue=Run a SQL statement to see results.}"
-                               Foreground="{DynamicResource TextSecondary}"
-                               TextWrapping="Wrap" />
-                </StackPanel>
-                <TextBlock Grid.Column="1"
-                           Text="{Binding AffectedRows, StringFormat=Affected Rows: {0}}"
-                           VerticalAlignment="Center"
-                           Foreground="{DynamicResource TextSecondary}" />
-            </Grid>
-        </Border>
-
-        <Border Grid.Row="4"
-                Classes="card">
-            <Grid>
-                <Border Padding="40"
+                Classes="queryResultSurface"
+                MinHeight="180"
+                MinWidth="0">
+            <Grid MinHeight="0">
+                <Border Padding="{StaticResource Thickness.24}"
                         IsVisible="{Binding HasResults, Converter={StaticResource InvertedBoolConverter}}">
                     <StackPanel HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Spacing="12">
-                        <TextBlock Text="No result set yet"
-                                   FontSize="24"
-                                   FontWeight="SemiBold"
+                                Spacing="{StaticResource Space.8}">
+                        <TextBlock Text="暂无结果"
+                                   Classes="subheading"
                                    HorizontalAlignment="Center" />
-                        <TextBlock Text="Execute a SELECT statement to populate the result grid. Non-query statements will report affected rows above."
-                                   Foreground="{DynamicResource TextSecondary}"
+                        <TextBlock Text="执行 SELECT 查看结果集；写入类语句会在上方显示影响行数。"
+                                   Classes="caption"
                                    HorizontalAlignment="Center"
                                    MaxWidth="520"
                                    TextAlignment="Center"

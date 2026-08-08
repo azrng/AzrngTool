@@ -508,7 +508,7 @@
                                                 Background="Transparent"
                                                 BorderThickness="0"
                                                 IsEnabled="{Binding IsEnabled}"
-                                                Command="{Binding $parent[Window].DataContext.SelectDatabaseTypeCommand}"
+                                                Command="{Binding #MainWindow.DataContext.SelectDatabaseTypeCommand}"
                                                 CommandParameter="{Binding Type}">
                                             <Border Classes="connectionTypeSurface">
                                                 <Grid RowDefinitions="4,*">

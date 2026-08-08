@@ -246,6 +246,38 @@
         <Setter Property="Padding" Value="0"/>
     </Style>
 
+    <Style Selector="Border.workspaceQueryEditor">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.16}"/>
+    </Style>
+
+    <Style Selector="TextBox.sqlEditor">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.LG}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}"/>
+    </Style>
+
+    <Style Selector="Border.queryResultHeader">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.LG}"/>
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}"/>
+    </Style>
+
+    <Style Selector="Border.queryResultSurface">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
+        <Setter Property="ClipToBounds" Value="True"/>
+    </Style>
+
     <Style Selector="Border.overviewHeroCard">
         <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}"/>
         <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}"/>

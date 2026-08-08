@@ -21,6 +21,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
     private readonly ConnectionConfig _connection;
     private readonly string? _databaseName;
     private readonly IDatabaseService _databaseService;
+    private readonly string? _preferredSchemaName;
     private bool _isSynchronizingChecks;
 
     [ObservableProperty]
@@ -152,6 +153,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
     {
         _connection = connection;
         _databaseName = databaseName;
+        _preferredSchemaName = preferredSchemaName;
         _databaseService = databaseService;
         DocumentName = SuggestedFileName;
         OutputDirectory = ResolveInitialOutputDirectory(initialOutputDirectory);
@@ -174,6 +176,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
             var rootNode = await LoadExportTreeAsync();
             ExportRootNode = rootNode;
             PrepareExportTree(rootNode);
+            PreselectPreferredSchema();
             NotifyExportTreeChanged();
         }
         catch (Exception ex)
@@ -473,6 +476,29 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
         {
             PrepareExportTree(child);
         }
+    }
+
+    /// <summary>
+    /// 预选当前浏览的 schema：展开并勾选该 schema 节点（联动勾选其下表/视图/过程），
+    /// 让导出对话框复用对象浏览器的当前上下文，避免二次重选。
+    /// </summary>
+    private void PreselectPreferredSchema()
+    {
+        if (ExportRootNode == null || string.IsNullOrWhiteSpace(_preferredSchemaName))
+        {
+            return;
+        }
+
+        var schemaNode = EnumerateNodes(ExportRootNode).FirstOrDefault(node =>
+            node.NodeType == TreeNodeType.Schema &&
+            string.Equals(node.Name, _preferredSchemaName, StringComparison.OrdinalIgnoreCase));
+        if (schemaNode == null)
+        {
+            return;
+        }
+
+        schemaNode.IsExpanded = true;
+        schemaNode.IsExportChecked = true;
     }
 
     private void UnsubscribeTree(TreeNodeItem? node)

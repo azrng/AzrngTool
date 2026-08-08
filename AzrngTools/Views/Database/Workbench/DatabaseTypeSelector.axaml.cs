@@ -14,12 +14,8 @@ public partial class DatabaseTypeSelector : UserControl
 
     private void SetupCardClickHandlers()
     {
-        RegisterCardTap("SqlCard", DatabaseType.SqlServer);
         RegisterCardTap("MySqlCard", DatabaseType.MySql);
         RegisterCardTap("PostgreCard", DatabaseType.PostgresSql);
-        RegisterCardTap("SqliteCard", DatabaseType.Sqlite);
-        RegisterCardTap("OracleCard", DatabaseType.Oracle);
-        RegisterCardTap("DamengCard", DatabaseType.Dm);
     }
 
     private void RegisterCardTap(string controlName, DatabaseType dbType)

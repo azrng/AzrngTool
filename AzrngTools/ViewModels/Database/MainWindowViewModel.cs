@@ -18,7 +18,8 @@ public enum DetailWorkspaceMode
     Schema,
     Table,
     View,
-    Procedure
+    Procedure,
+    SqlQuery
 }
 
 public partial class MainWindowViewModel : ViewModelBase
@@ -27,6 +28,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IConnectionManagementCoordinator _connectionManager;
     private readonly IDatabaseContextCoordinator _databaseContextManager;
     private readonly IExportCoordinator _exportCoordinator;
+    private readonly IPgDumpExportCoordinator _pgDumpExportCoordinator;
 
     public ObservableCollection<ConnectionConfig> Connections => _connectionManager.Connections;
 
@@ -139,6 +141,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public bool ShowProcedureWorkspace => !ShowOverviewPage && CurrentWorkspaceMode == DetailWorkspaceMode.Procedure;
 
+    public bool ShowSqlQueryWorkspace => !ShowOverviewPage && CurrentWorkspaceMode == DetailWorkspaceMode.SqlQuery;
+
     public bool HasAvailableDatabases => _databaseContextManager.HasAvailableDatabases;
 
     public string CurrentConnectionLabel => SelectedConnection == null
@@ -233,6 +237,7 @@ public partial class MainWindowViewModel : ViewModelBase
             databaseExportPayloadService,
             codeGenerationPayloadService,
             databaseWorkbenchNamingService);
+        _pgDumpExportCoordinator = new PgDumpExportCoordinator(_databaseService);
 
         _databaseContextManager.PropertyChanged += OnDatabaseContextManagerPropertyChanged;
     }
@@ -284,8 +289,14 @@ public partial class MainWindowViewModel : ViewModelBase
             }
 
             var vm = new ConnectionDialogViewModel(Connections, _connectionManager.SaveConnections, SelectedConnection, _databaseService);
-            var result = await Ursa.Controls.Dialog.ShowCustomAsync<ConnectionDialog, ConnectionDialogViewModel, ConnectionConfig?>(
-                vm, MainWindow, new Ursa.Controls.DialogOptions { CanResize = false });
+            var result = await Ursa.Controls.OverlayDrawer.ShowCustomAsync<ConnectionDialog, ConnectionDialogViewModel, ConnectionConfig?>(
+                vm, "wbDrawer", new Ursa.Controls.Options.DrawerOptions
+                {
+                    Position = Ursa.Common.Position.Left,
+                    MinWidth = 480,
+                    IsCloseButtonVisible = true,
+                    CanLightDismiss = true
+                });
             if (result == null)
             {
                 return;
@@ -456,6 +467,7 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowTableWorkspace));
         OnPropertyChanged(nameof(ShowViewWorkspace));
         OnPropertyChanged(nameof(ShowProcedureWorkspace));
+        OnPropertyChanged(nameof(ShowSqlQueryWorkspace));
     }
 
     partial void OnCurrentWorkspaceModeChanged(DetailWorkspaceMode value)
@@ -464,6 +476,7 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowTableWorkspace));
         OnPropertyChanged(nameof(ShowViewWorkspace));
         OnPropertyChanged(nameof(ShowProcedureWorkspace));
+        OnPropertyChanged(nameof(ShowSqlQueryWorkspace));
     }
 
     [RelayCommand]
@@ -554,7 +567,7 @@ public partial class MainWindowViewModel : ViewModelBase
         await StoredProcedureDetailViewModel.LoadProceduresBySchemaAsync(schema.Name);
 
         ShowOverviewPage = false;
-        CurrentWorkspaceMode = DetailWorkspaceMode.Schema;
+        CurrentWorkspaceMode = DetailWorkspaceMode.Table;
     }
 
     public void ActivateWorkspaceFolder(string? nodeName)
@@ -585,6 +598,21 @@ public partial class MainWindowViewModel : ViewModelBase
                 TableDetailViewModel.SelectedTable = null;
                 break;
         }
+    }
+
+    [RelayCommand]
+    private void ActivateSqlQuery()
+    {
+        var connection = _databaseContextManager.GetActiveConnection();
+        if (connection == null)
+        {
+            ToastService.ShowWarning("请先选择数据库连接。", 2000);
+            return;
+        }
+
+        SqlQueryViewModel.CurrentConnection = connection;
+        ShowOverviewPage = false;
+        CurrentWorkspaceMode = DetailWorkspaceMode.SqlQuery;
     }
 
     public async Task ActivateTableAsync(TableModel table)
@@ -757,6 +785,27 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         await _exportCoordinator.OpenExportDialogAsync(MainWindow, connection, SelectedDatabaseName, CurrentSchemaName,
+            setLoading: value => IsLoading = value,
+            setLoadingText: value => LoadingText = value);
+    }
+
+    [RelayCommand]
+    private async Task OpenPgDumpDialogAsync()
+    {
+        var connection = SelectedConnection ?? _databaseContextManager.GetActiveConnection();
+        if (connection == null)
+        {
+            ToastService.ShowWarning("请先选择数据库连接。", 2000);
+            return;
+        }
+
+        if (MainWindow == null)
+        {
+            LoggingService.LogWarning("MainWindow is not available.");
+            return;
+        }
+
+        await _pgDumpExportCoordinator.OpenPgDumpDialogAsync(MainWindow, connection, SelectedDatabaseName,
             setLoading: value => IsLoading = value,
             setLoadingText: value => LoadingText = value);
     }

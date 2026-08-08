@@ -25,14 +25,14 @@ public partial class ConnectionDialog : UserControl
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
-        _previousManager = ToastService.SetManager(new WindowToastManager(TopLevel.GetTopLevel(this)!));
+        if (TopLevel.GetTopLevel(this) is TopLevel topLevel)
+        {
+            _previousManager = ToastService.SetManager(new WindowToastManager(topLevel));
+        }
     }
 
     private void OnUnloaded(object? sender, RoutedEventArgs e)
     {
-        Loaded -= OnLoaded;
-        Unloaded -= OnUnloaded;
-
         if (_previousManager != null)
         {
             ToastService.SetManager(_previousManager);
@@ -68,8 +68,19 @@ public partial class ConnectionDialog : UserControl
 
         if (files.Count == 0) return;
 
-        var vm = (ConnectionDialogViewModel)DataContext!;
-        vm.ConnectionConfig.Database = files[0].Path.LocalPath;
+        if (DataContext is not ConnectionDialogViewModel vm)
+        {
+            return;
+        }
+
+        var localPath = files[0].TryGetLocalPath();
+        if (string.IsNullOrWhiteSpace(localPath))
+        {
+            ToastService.ShowWarning("无法获取所选文件的本地路径。", 3000);
+            return;
+        }
+
+        vm.ConnectionConfig.Database = localPath;
         ToastService.ShowInfo("Sqlite database file selected.", 2000);
     }
 }
