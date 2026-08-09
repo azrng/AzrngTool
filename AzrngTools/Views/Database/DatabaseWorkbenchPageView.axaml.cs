@@ -26,6 +26,7 @@ public partial class DatabaseWorkbenchPageView : UserControl
     public DatabaseWorkbenchPageView()
     {
         InitializeComponent();
+        DataContextChanged += OnDataContextChanged;
         AttachedToVisualTree += OnAttachedToVisualTree;
         DetachedFromVisualTree += OnDetachedFromVisualTree;
     }
@@ -35,7 +36,16 @@ public partial class DatabaseWorkbenchPageView : UserControl
         RegisterNodeSelectedHandler();
         RegisterViewportSizingTargets();
         BindHostViewportHeight();
+        AssignOwnerWindow();
+    }
 
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        AssignOwnerWindow();
+    }
+
+    private void AssignOwnerWindow()
+    {
         if (DataContext is MainWindowViewModel viewModel &&
             TopLevel.GetTopLevel(this) is Window owner)
         {
