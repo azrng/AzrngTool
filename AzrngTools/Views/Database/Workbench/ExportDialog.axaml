@@ -32,14 +32,14 @@
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
-            <Setter Property="Padding" Value="16" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.14}" />
         </Style>
 
         <Style Selector="Border.exportWizardHeader">
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.HeroBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
             <Setter Property="BorderThickness" Value="0,0,0,1" />
-            <Setter Property="Padding" Value="{StaticResource Thickness.20}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.16}" />
         </Style>
 
         <Style Selector="Border.exportStepBadge">
@@ -61,14 +61,14 @@
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.LG}" />
-            <Setter Property="Padding" Value="{StaticResource Thickness.14}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
         </Style>
 
         <Style Selector="Border.exportFooter">
             <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="0,1,0,0" />
-            <Setter Property="Padding" Value="{StaticResource Thickness.16}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
         </Style>
 
         <Style Selector="Border.exportTag">
@@ -126,7 +126,7 @@
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
-            <Setter Property="Padding" Value="16" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
         </Style>
 
         <Style Selector="Button.exportDocumentTypeButton">
@@ -192,11 +192,11 @@
     </UserControl.Styles>
 
     <Grid Background="{DynamicResource Brush.App.Background}">
-        <Border Margin="18"
-                Padding="18"
+        <Border Margin="{StaticResource Thickness.16}"
+                Padding="{StaticResource Thickness.16}"
                 Classes="exportDialogSurface">
             <Grid RowDefinitions="Auto,*,Auto"
-                  RowSpacing="18">
+                  RowSpacing="{StaticResource Space.12}">
                 <Border Classes="exportWizardHeader">
                     <Grid ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="{StaticResource Space.12}">
@@ -223,13 +223,13 @@
 
                 <Grid Grid.Row="1"
                       ColumnDefinitions="1.25*,0.95*"
-                      ColumnSpacing="18"
+                      ColumnSpacing="{StaticResource Space.12}"
                       MinHeight="0">
                     <Border Grid.Column="0"
                             Classes="exportSectionCard"
                             MinHeight="0">
                         <Grid RowDefinitions="Auto,Auto,*"
-                              RowSpacing="14"
+                              RowSpacing="{StaticResource Space.10}"
                               MinHeight="0">
                             <Grid ColumnDefinitions="Auto,*,Auto"
                                   ColumnSpacing="{StaticResource Space.10}">
@@ -369,7 +369,7 @@
                             Classes="exportSectionCard"
                             MinHeight="0">
                         <Grid RowDefinitions="Auto,Auto,Auto"
-                              RowSpacing="14">
+                              RowSpacing="{StaticResource Space.10}">
                             <Grid ColumnDefinitions="Auto,*"
                                   ColumnSpacing="{StaticResource Space.10}">
                                 <Border Classes="exportStepBadge">

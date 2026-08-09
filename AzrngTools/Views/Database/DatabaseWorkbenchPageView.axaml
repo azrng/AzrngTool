@@ -30,12 +30,12 @@
                     Grid.Row="0"
                     Classes="toolbarStrip">
                 <Border Classes="toolbarCommandBar">
-                    <Grid ColumnDefinitions="Auto,220,220,Auto,Auto,Auto,*"
-                          ColumnSpacing="{StaticResource Space.12}">
+                    <Grid ColumnDefinitions="Auto,220,220,Auto,Auto,*"
+                          ColumnSpacing="{StaticResource Space.8}">
                         <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
                                     Spacing="{StaticResource Space.12}"
-                                    Margin="{StaticResource Thickness.Right.16}">
+                                    Margin="{StaticResource Thickness.Right.10}">
                             <Border Classes="dbWorkbenchIdentityBadge">
                                 <TextBlock Text="DB"
                                            Classes="dbWorkbenchIdentityText" />
@@ -105,7 +105,7 @@
                             </Button.Flyout>
                         </Button>
 
-                        <Border Grid.Column="6"
+                        <Border Grid.Column="5"
                                 Classes="statusPill"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Right">
@@ -127,8 +127,8 @@
                   Margin="{StaticResource Thickness.20}"
                   ClipToBounds="True">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="320" />
-                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="304" />
+                    <ColumnDefinition Width="12" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -146,7 +146,7 @@
                                     <StackPanel Spacing="{StaticResource Space.2}">
                                         <TextBlock Text="对象浏览器"
                                                    Classes="subheading" />
-                                        <TextBlock Text="搜索并选择要查看的对象"
+                                        <TextBlock Text="选择对象后在右侧查看详情"
                                                    Classes="caption" />
                                     </StackPanel>
                                     <Button Grid.Column="1"
@@ -157,7 +157,7 @@
                                     </Button>
                                 </Grid>
                                 <TextBox Text="{Binding #DatabaseTree.SearchText, Mode=TwoWay}"
-                                         PlaceholderText="搜索表、视图、存储过程..."
+                                         PlaceholderText="搜索对象…"
                                          HorizontalAlignment="Stretch"
                                          Classes="modern" />
                             </StackPanel>
@@ -201,7 +201,7 @@
                                         Classes="workbenchSidebarAction"
                                         Click="OnClearBrowserSearchClick"
                                         HorizontalAlignment="Stretch">
-                                    <TextBlock Text="清空"
+                                    <TextBlock Text="清空搜索"
                                                FontWeight="Medium" />
                                 </Button>
                             </Grid>

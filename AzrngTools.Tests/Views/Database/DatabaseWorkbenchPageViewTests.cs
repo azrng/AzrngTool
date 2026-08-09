@@ -34,6 +34,26 @@ public class DatabaseWorkbenchPageViewTests
     }
 
     [Fact]
+    public async Task Table_detail_view_renders_a_single_full_width_detail_surface_without_the_duplicate_table_list()
+    {
+        await using var session = HeadlessUnitTestSession.StartNew(typeof(WorkbenchTestApplication));
+        await session.Dispatch(() =>
+        {
+            var view = new TableDetailView
+            {
+                DataContext = new TableDetailViewModel(new DatabaseService())
+            };
+            var window = new Window { Content = view };
+            window.Show();
+
+            Assert.Empty(view.GetVisualDescendants().OfType<DataGrid>());
+            Assert.Single(view.GetVisualDescendants().OfType<TableDetailContent>());
+
+            window.Close();
+        }, CancellationToken.None);
+    }
+
+    [Fact]
     public async Task More_actions_export_menu_assigns_the_owner_when_data_context_arrives_after_attachment_and_executes_the_command()
     {
         await using var session = HeadlessUnitTestSession.StartNew(typeof(WorkbenchTestApplication));
