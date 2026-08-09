@@ -39,6 +39,5 @@ public class DatabaseDependencyInjectionTests
         Assert.NotNull(viewModel.TableDetailViewModel);
         Assert.NotNull(viewModel.ViewDetailViewModel);
         Assert.NotNull(viewModel.StoredProcedureDetailViewModel);
-        Assert.NotNull(viewModel.SqlQueryViewModel);
     }
 }

@@ -18,8 +18,7 @@ public enum DetailWorkspaceMode
     Schema,
     Table,
     View,
-    Procedure,
-    SqlQuery
+    Procedure
 }
 
 public partial class MainWindowViewModel : ViewModelBase
@@ -96,9 +95,6 @@ public partial class MainWindowViewModel : ViewModelBase
     private StoredProcedureDetailViewModel _storedProcedureDetailViewModel;
 
     [ObservableProperty]
-    private SqlQueryViewModel _sqlQueryViewModel;
-
-    [ObservableProperty]
     private int _selectedMainTabIndex;
 
     public string? CurrentSchemaName
@@ -111,7 +107,6 @@ public partial class MainWindowViewModel : ViewModelBase
             if (oldValue != value)
             {
                 OnPropertyChanged();
-                SqlQueryViewModel.CurrentSchemaName = value;
             }
             OnPropertyChanged(nameof(CurrentSchema));
         }
@@ -140,8 +135,6 @@ public partial class MainWindowViewModel : ViewModelBase
     public bool ShowViewWorkspace => !ShowOverviewPage && CurrentWorkspaceMode == DetailWorkspaceMode.View;
 
     public bool ShowProcedureWorkspace => !ShowOverviewPage && CurrentWorkspaceMode == DetailWorkspaceMode.Procedure;
-
-    public bool ShowSqlQueryWorkspace => !ShowOverviewPage && CurrentWorkspaceMode == DetailWorkspaceMode.SqlQuery;
 
     public bool HasAvailableDatabases => _databaseContextManager.HasAvailableDatabases;
 
@@ -207,7 +200,6 @@ public partial class MainWindowViewModel : ViewModelBase
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
         StoredProcedureDetailViewModel? storedProcedureDetailViewModel = null,
-        SqlQueryViewModel? sqlQueryViewModel = null,
         IPgDumpExportCoordinator? pgDumpExportCoordinator = null)
     {
         _databaseService = databaseService;
@@ -222,15 +214,11 @@ public partial class MainWindowViewModel : ViewModelBase
         TableDetailViewModel = tableDetailViewModel ?? new TableDetailViewModel(databaseService);
         ViewDetailViewModel = viewDetailViewModel ?? new ViewDetailViewModel(databaseService);
         StoredProcedureDetailViewModel = storedProcedureDetailViewModel ?? new StoredProcedureDetailViewModel(databaseService);
-        SqlQueryViewModel = sqlQueryViewModel ?? new SqlQueryViewModel(databaseService);
-        // 注入危险 SQL 二次确认弹窗，避免 ViewModel 直接依赖 Window
-        SqlQueryViewModel.ConfirmDangerousSqlAsync = ConfirmDangerousSqlExecutionAsync;
         _databaseContextManager = databaseContextManager ?? new DatabaseContextCoordinator(
             _databaseService,
             resolvedConnectionContextService,
             () => SelectedConnection,
-            BrowserViewModel,
-            SqlQueryViewModel);
+            BrowserViewModel);
         _exportCoordinator = exportCoordinator ?? new ExportCoordinator(
             _databaseService,
             documentExportService,
@@ -268,7 +256,6 @@ public partial class MainWindowViewModel : ViewModelBase
             case nameof(IDatabaseContextCoordinator.CurrentSchemaName):
                 OnPropertyChanged(nameof(CurrentSchemaName));
                 OnPropertyChanged(nameof(CurrentSchema));
-                SqlQueryViewModel.CurrentSchemaName = _databaseContextManager.CurrentSchemaName;
                 break;
         }
     }
@@ -468,7 +455,6 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowTableWorkspace));
         OnPropertyChanged(nameof(ShowViewWorkspace));
         OnPropertyChanged(nameof(ShowProcedureWorkspace));
-        OnPropertyChanged(nameof(ShowSqlQueryWorkspace));
     }
 
     partial void OnCurrentWorkspaceModeChanged(DetailWorkspaceMode value)
@@ -477,7 +463,6 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(ShowTableWorkspace));
         OnPropertyChanged(nameof(ShowViewWorkspace));
         OnPropertyChanged(nameof(ShowProcedureWorkspace));
-        OnPropertyChanged(nameof(ShowSqlQueryWorkspace));
     }
 
     [RelayCommand]
@@ -599,21 +584,6 @@ public partial class MainWindowViewModel : ViewModelBase
                 TableDetailViewModel.SelectedTable = null;
                 break;
         }
-    }
-
-    [RelayCommand]
-    private void ActivateSqlQuery()
-    {
-        var connection = _databaseContextManager.GetActiveConnection();
-        if (connection == null)
-        {
-            ToastService.ShowWarning("请先选择数据库连接。", 2000);
-            return;
-        }
-
-        SqlQueryViewModel.CurrentConnection = connection;
-        ShowOverviewPage = false;
-        CurrentWorkspaceMode = DetailWorkspaceMode.SqlQuery;
     }
 
     public async Task ActivateTableAsync(TableModel table)
@@ -931,34 +901,6 @@ public partial class MainWindowViewModel : ViewModelBase
         catch (Exception ex)
         {
             LoggingService.LogError("Failed to show message box.", ex);
-        }
-    }
-
-    /// <summary>
-    /// SQL 工作台执行危险语句（DROP/TRUNCATE/DELETE）前的二次确认。
-    /// 由 <see cref="SqlQueryViewModel.ConfirmDangerousSqlAsync"/> 调用。
-    /// </summary>
-    private async Task<bool> ConfirmDangerousSqlExecutionAsync(string dangerDescription)
-    {
-        if (MainWindow == null)
-        {
-            return false;
-        }
-
-        try
-        {
-            var result = await Ursa.Controls.MessageBox.ShowAsync(
-                MainWindow,
-                $"{dangerDescription}{Environment.NewLine}{Environment.NewLine}此操作无法撤销。",
-                "确认执行危险操作",
-                icon: Ursa.Controls.MessageBoxIcon.Warning,
-                button: Ursa.Controls.MessageBoxButton.YesNo);
-            return result == Ursa.Controls.MessageBoxResult.Yes;
-        }
-        catch (Exception ex)
-        {
-            LoggingService.LogError("Failed to show dangerous SQL confirmation.", ex);
-            return false;
         }
     }
 

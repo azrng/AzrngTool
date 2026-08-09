@@ -44,7 +44,7 @@
                                         Spacing="{StaticResource Space.2}">
                                 <TextBlock Text="数据库工作台"
                                            Classes="subheading" />
-                                <TextBlock Text="浏览 · 查询 · 导出"
+                                <TextBlock Text="浏览 · 导出"
                                            Classes="caption" />
                             </StackPanel>
                         </StackPanel>
@@ -141,20 +141,13 @@
                                 Grid.Row="0"
                                 Classes="browserCompactSection">
                             <StackPanel Spacing="{StaticResource Space.10}">
-                                <Grid ColumnDefinitions="*,Auto"
-                                      ColumnSpacing="{StaticResource Space.10}">
+                                <Grid ColumnDefinitions="*">
                                     <StackPanel Spacing="{StaticResource Space.2}">
                                         <TextBlock Text="对象浏览器"
                                                    Classes="subheading" />
                                         <TextBlock Text="选择对象后在右侧查看详情"
                                                    Classes="caption" />
                                     </StackPanel>
-                                    <Button Grid.Column="1"
-                                            Command="{Binding ActivateSqlQueryCommand}"
-                                            Classes="workbenchAccentAction"
-                                            ToolTip.Tip="打开 SQL 查询窗口">
-                                        <TextBlock Text="新建查询" FontWeight="Medium" />
-                                    </Button>
                                 </Grid>
                                 <TextBox Text="{Binding #DatabaseTree.SearchText, Mode=TwoWay}"
                                          PlaceholderText="搜索对象…"
@@ -224,7 +217,7 @@
                             <TextBlock Text="开始工作"
                                        Classes="title" />
                             <TextBlock Grid.Row="1"
-                                       Text="选择连接和数据库后，从左侧对象树进入详情，或直接创建 SQL 查询。"
+                                       Text="选择连接和数据库后，从左侧对象树进入对象详情。"
                                        Classes="body"
                                        TextWrapping="Wrap" />
                             <Border Grid.Row="2"
@@ -251,10 +244,6 @@
                                     </Grid>
                                     <StackPanel Orientation="Horizontal"
                                                 Spacing="{StaticResource Space.10}">
-                                        <Button Classes="workbenchAccentAction"
-                                                Command="{Binding ActivateSqlQueryCommand}">
-                                            <TextBlock Text="新建查询" />
-                                        </Button>
                                         <Button Classes="workbenchToolbarAction"
                                                 Command="{Binding ShowAddConnectionDialogCommand}">
                                             <TextBlock Text="管理连接" />
@@ -289,13 +278,6 @@
                         <view:StoredProcedureDetailView DataContext="{Binding StoredProcedureDetailViewModel}" />
                     </Border>
 
-                    <Border Classes="workspaceSurface"
-                            MinWidth="0"
-                            MinHeight="0"
-                            ClipToBounds="True"
-                            IsVisible="{Binding ShowSqlQueryWorkspace}">
-                        <view:SqlQueryView DataContext="{Binding SqlQueryViewModel}" />
-                    </Border>
                 </Grid>
             </Grid>
         </Grid>

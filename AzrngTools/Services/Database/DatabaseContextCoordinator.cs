@@ -16,7 +16,6 @@ public partial class DatabaseContextCoordinator : ObservableObject, IDatabaseCon
     private readonly IDatabaseConnectionContextService _databaseConnectionContextService;
     private readonly Func<ConnectionConfig?> _getSelectedConnection;
     private readonly DatabaseBrowserViewModel _browserViewModel;
-    private readonly SqlQueryViewModel _sqlQueryViewModel;
     private bool _suppressDatabaseSelectionChanged;
 
     [ObservableProperty]
@@ -49,14 +48,12 @@ public partial class DatabaseContextCoordinator : ObservableObject, IDatabaseCon
         IDatabaseService databaseService,
         IDatabaseConnectionContextService databaseConnectionContextService,
         Func<ConnectionConfig?> getSelectedConnection,
-        DatabaseBrowserViewModel browserViewModel,
-        SqlQueryViewModel sqlQueryViewModel)
+        DatabaseBrowserViewModel browserViewModel)
     {
         _databaseService = databaseService;
         _databaseConnectionContextService = databaseConnectionContextService;
         _getSelectedConnection = getSelectedConnection;
         _browserViewModel = browserViewModel;
-        _sqlQueryViewModel = sqlQueryViewModel;
 
         AvailableDatabases.CollectionChanged += (_, _) =>
         {
@@ -93,7 +90,6 @@ public partial class DatabaseContextCoordinator : ObservableObject, IDatabaseCon
         DatabaseSearchText = string.Empty;
         _suppressDatabaseSelectionChanged = false;
 
-        _sqlQueryViewModel.CurrentConnection = null;
         _browserViewModel.Reset();
     }
 
@@ -113,7 +109,6 @@ public partial class DatabaseContextCoordinator : ObservableObject, IDatabaseCon
     private async Task LoadConnectionContextAsync(ConnectionConfig connection)
     {
         ActiveConnectionContext = connection;
-        _sqlQueryViewModel.CurrentConnection = connection;
         _browserViewModel.CurrentConnection = connection;
         await LoadSchemasAsync(connection);
         await _browserViewModel.LoadDataAsync();

@@ -17,6 +17,8 @@
 | T124 | Codex 本地代理配置说明 | 记录已验证的 FlClash 代理配置与跨设备复用步骤 | 阶段 3 | Codex | REVIEW | 中 | 2026-08-09 | 已新增独立配置指南，包含端口检查、`.env` 模板和连通性验证命令；待用户确认 |
 | T125 | 数据库工作台信息架构与视觉优化 | 移除重复对象列表面板，优化工作台与导出向导的视觉层级和高密度布局 | 阶段 3 | Codex | REVIEW | 高 | 2026-08-09 | 已移除 pg_dump 外层重复标题，并改用工作台活动连接及其当前数据库；ViewModel 回归 5/5、工作台 Headless 用例 4/4 与 Release 构建通过，待人工确认。 |
 | T126 | 工具页冗余徽章与底部动作概览去重 | 移除与按钮/标签/标题重复的顶部徽章与底部动作概览冗余分区，并修复部分页文案编码乱字 | 阶段 1 | Claude | REVIEW | 中 | 2026-08-09 | 已移除 15 个工具页的重复徽章与底部动作概览卡片，并修复 String/SQL/MIME 文案乱字；Debug 构建 0 错误，待人工视觉确认 |
+| T127 | 数据库工作台切换不回去 | 修复跨分组菜单切换后无法回到原页面的导航问题 | 阶段 1 | Claude | REVIEW | 高 | 2026-08-09 | 根因为各分组 ListBox 独立维护选中状态、互不同步，回访已选中项不触发 SelectionChanged；已在 MainWindow.axaml.cs 切换分组时清空上一组选中；Debug 构建 0 错误，待人工复现验证 |
+| T128 | 数据库工作台移除 SQL 查询功能 | 完整移除数据库工作台的 SQL 查询能力（入口按钮、SqlQueryView/ViewModel、工作区模式、危险确认、相关测试与设计文档） | 阶段 1 | Claude | REVIEW | 中 | 2026-08-09 | 已删除 SqlQueryViewModel/SqlQueryView 及其测试，移除 DetailWorkspaceMode.SqlQuery、ActivateSqlQuery、ShowSqlQueryWorkspace 及 DatabaseContextCoordinator 的依赖；Debug 构建 0 错误，数据库非 Headless 测试通过，设计文档已同步，待人工确认 |
 
 ---
 
