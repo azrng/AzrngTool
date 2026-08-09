@@ -100,12 +100,31 @@ namespace AzrngTools.Views
             }
         }
 
+        private ListBox? _lastNavListBox;
+
         private void OnGroupListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListBox { SelectedItem: MenuBar menu } && DataContext is MainWindowViewModel vm)
+            if (sender is not ListBox listBox || DataContext is not MainWindowViewModel vm)
             {
-                if (!ReferenceEquals(vm.SelectedListItem, menu))
-                    vm.SelectMenuCommand.Execute(menu);
+                return;
+            }
+
+            // 各分组使用独立的 ListBox 维护选中状态；切换到其他分组时需清空上一组的选中，
+            // 否则回到原分组再次点击已选中项时 ListBox 不触发 SelectionChanged，导致页面切不回去。
+            // 清空时 SelectedItem 变为 null，反向触发本方法不会匹配到 MenuBar，因此安全。
+            if (!ReferenceEquals(_lastNavListBox, listBox))
+            {
+                if (_lastNavListBox is { } previous)
+                {
+                    previous.SelectedIndex = -1;
+                }
+
+                _lastNavListBox = listBox;
+            }
+
+            if (listBox.SelectedItem is MenuBar menu && !ReferenceEquals(vm.SelectedListItem, menu))
+            {
+                vm.SelectMenuCommand.Execute(menu);
             }
         }
     }
