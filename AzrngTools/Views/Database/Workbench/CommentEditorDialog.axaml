@@ -7,7 +7,7 @@
         x:Class="AzrngTools.Views.Database.Workbench.CommentEditorDialog"
         x:CompileBindings="False"
         x:DataType="vm:CommentEditorDialogViewModel"
-        Title="{Binding DialogTitle}"
+        Title=""
         Width="640"
         Height="560"
         MinWidth="620"
