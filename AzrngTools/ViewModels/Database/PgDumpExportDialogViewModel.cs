@@ -32,7 +32,9 @@ public partial class PgDumpExportDialogViewModel : ViewModelBase, IDialogContext
 
     public string ConnectionName => _connection.Name;
 
-    public string ConnectionSummary => $"{_connection.Host}:{_connection.Port}";
+    public string ConnectionSummary => !string.IsNullOrWhiteSpace(SelectedDatabase)
+        ? SelectedDatabase
+        : _connection.Name;
 
     /// <summary>
     /// 设计时占位数据库服务，避免设计时真实连库。
@@ -161,6 +163,7 @@ public partial class PgDumpExportDialogViewModel : ViewModelBase, IDialogContext
     partial void OnSelectedDatabaseChanged(string? value)
     {
         ExportCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(ConnectionSummary));
         OnPropertyChanged(nameof(SuggestedOutputFileName));
         // _isInitializing 守卫：InitializeAsync 内会显式 await 加载，避免重复触发；
         // 仅用户手动切库时 fire，并用 CancellationToken 取消上一个请求，防止旧结果覆盖新结果

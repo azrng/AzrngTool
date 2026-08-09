@@ -54,7 +54,7 @@ public class ExportCoordinator : IExportCoordinator
             _lastDocumentExportDirectory,
             _databaseService);
         var exportRequest = await Ursa.Controls.Dialog.ShowCustomAsync<ExportDialog, ExportDialogViewModel, ExportDialogResultDto?>(
-            dialogViewModel, ownerWindow, new Ursa.Controls.DialogOptions { Title = "导出文档", CanResize = false });
+            dialogViewModel, ownerWindow, new Ursa.Controls.DialogOptions { Title = string.Empty, CanResize = false });
         if (exportRequest == null)
         {
             return;

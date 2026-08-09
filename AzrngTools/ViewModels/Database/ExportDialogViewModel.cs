@@ -52,7 +52,7 @@ public partial class ExportDialogViewModel : ViewModelBase, IDialogContext
 
     public string ConnectionSummary => string.IsNullOrWhiteSpace(_databaseName)
         ? _connection.Name
-        : $"{_connection.Name} / {_databaseName}";
+        : _databaseName!;
 
     public IReadOnlyList<TreeNodeItem> ExportRootChildren => ExportRootNode?.Children.ToList() ?? [];
 

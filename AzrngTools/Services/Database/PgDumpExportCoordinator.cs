@@ -44,7 +44,7 @@ public class PgDumpExportCoordinator : IPgDumpExportCoordinator
         var result = await Ursa.Controls.Dialog.ShowCustomAsync
             <PgDumpExportDialog, PgDumpExportDialogViewModel, PgDumpExportResultDto?>(
                 dialogViewModel, ownerWindow,
-                new Ursa.Controls.DialogOptions { Title = "pg_dump 导出", CanResize = false });
+                new Ursa.Controls.DialogOptions { Title = string.Empty, CanResize = false });
 
         if (result == null)
         {

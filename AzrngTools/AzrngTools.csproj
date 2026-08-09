@@ -33,37 +33,37 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.0.2" />
+        <PackageReference Include="Avalonia" Version="12.1.1" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
-        <PackageReference Include="Avalonia.Desktop" Version="12.0.2" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.0.0" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.2">
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.0">
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Azrng.Core" Version="1.18.0" />
+        <PackageReference Include="Azrng.Core" Version="1.20.0" />
         <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta4" />
         <PackageReference Include="Common.Windows.Core" Version="0.0.6" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
-        <PackageReference Include="NJsonSchema" Version="11.5.2" />
-        <PackageReference Include="Semi.Avalonia" Version="12.0.1">
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+        <PackageReference Include="NJsonSchema" Version="11.6.1" />
+        <PackageReference Include="Semi.Avalonia" Version="12.1.0.1">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
-        <PackageReference Include="Irihi.Ursa" Version="2.0.0" />
-        <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="2.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.5" />
+        <PackageReference Include="Irihi.Ursa" Version="2.2.0" />
+        <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
         <PackageReference Include="AzrngCommon.Security" Version="1.2.1" />
         <PackageReference Include="GTranslate" Version="2.3.1" />
-        <PackageReference Include="Markdown.Avalonia" Version="11.0.3-a1" />
+        <PackageReference Include="Markdown.Avalonia" Version="11.0.3" />
         <PackageReference Include="NPOI" Version="2.8.0" />
-        <PackageReference Include="PdfPig" Version="0.1.10" />
-        <PackageReference Include="PdfSharp" Version="6.2.0" />
-        <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
+        <PackageReference Include="PdfPig" Version="0.1.15" />
+        <PackageReference Include="PdfSharp" Version="6.2.4" />
+        <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
     </ItemGroup>
 
     <Target Name="RemoveNativeDebugSymbolsFromPublish"

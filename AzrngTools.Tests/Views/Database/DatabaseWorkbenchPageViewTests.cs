@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Themes.Fluent;
@@ -28,6 +29,54 @@ public class DatabaseWorkbenchPageViewTests
             window.Show();
 
             window.Content = new PgDumpExportDialog();
+
+            window.Close();
+        }, CancellationToken.None);
+    }
+
+    [Fact]
+    public async Task Export_dialog_presents_document_types_as_a_compact_radio_button_group()
+    {
+        await using var session = HeadlessUnitTestSession.StartNew(typeof(WorkbenchTestApplication));
+        await session.Dispatch(() =>
+        {
+            var dialog = new ExportDialog();
+            var window = new Window { Width = 960, Height = 620, Content = dialog };
+            window.Show();
+            dialog.DataContext = new ExportDialogViewModel();
+            window.UpdateLayout();
+
+            var formatLabel = dialog.GetVisualDescendants()
+                .OfType<TextBlock>()
+                .Single(textBlock => textBlock.Text == "文档格式");
+            var formatGroup = formatLabel.GetVisualAncestors()
+                .OfType<Border>()
+                .First(border => border.Classes.Contains("exportFormGroup"));
+            var documentTypeOptions = formatGroup.GetVisualDescendants()
+                .OfType<RadioButton>()
+                .ToArray();
+            Assert.Equal(2, documentTypeOptions.Length);
+            Assert.All(documentTypeOptions, option =>
+            {
+                Assert.Equal("ExportDocumentType", option.GroupName);
+                Assert.True(option.Bounds.Width > 0, "每个格式选项应获得可点击宽度。");
+                Assert.True(option.Bounds.Height > 0, "每个格式选项应完整参与运行时布局。");
+            });
+            Assert.Contains(documentTypeOptions, option => option.Content?.ToString() == "Excel (.xlsx)");
+            Assert.Contains(documentTypeOptions, option => option.Content?.ToString() == "Markdown (.md)");
+            Assert.DoesNotContain(formatGroup.GetVisualDescendants().OfType<Border>(),
+                border => border.Classes.Contains("exportDocumentTypeCard"));
+
+            var footer = dialog.GetVisualDescendants()
+                .OfType<Border>()
+                .Single(border => border.Classes.Contains("exportFooter"));
+            var optionsBottom = documentTypeOptions.Max(option => option.TranslatePoint(
+                new Point(0, option.Bounds.Height),
+                dialog)!.Value.Y);
+            var footerTop = footer.TranslatePoint(new Point(0, 0), dialog)!.Value.Y;
+            Assert.True(
+                optionsBottom <= footerTop,
+                $"文档格式选项不应落入固定页脚。选项底部：{optionsBottom}，页脚顶部：{footerTop}");
 
             window.Close();
         }, CancellationToken.None);

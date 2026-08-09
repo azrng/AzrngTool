@@ -121,73 +121,23 @@
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
-        <Style Selector="Border.exportDocumentTypeCard">
-            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
-            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
-        </Style>
-
-        <Style Selector="Button.exportDocumentTypeButton">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="0" />
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
-        </Style>
-
-        <Style Selector="Button.exportDocumentTypeButton /template/ ContentPresenter">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-        </Style>
-
-        <Style Selector="Border.exportDocumentTypeCard.markdown">
-            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
-        </Style>
-
-        <Style Selector="Border.exportDocumentTypeCard.selected">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Strong}" />
-            <Setter Property="BorderThickness" Value="2" />
-        </Style>
-
-        <Style Selector="Border.exportDocumentTypeBadge">
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="VerticalAlignment" Value="Top" />
-        </Style>
-
-        <Style Selector="Border.exportDocumentTypeBadge.excel">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent.Strong}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
-        </Style>
-
-        <Style Selector="TextBlock.exportDocumentTypeBadgeText">
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Bold}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
-        </Style>
-
-        <Style Selector="TextBlock.exportDocumentTypeBadgeText.excel">
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}" />
-        </Style>
-
-        <Style Selector="TextBlock.exportDocumentTypeTitle">
+        <Style Selector="RadioButton.exportDocumentTypeOption">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
             <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}" />
         </Style>
 
-        <Style Selector="TextBlock.exportDocumentTypeDescription">
+        <Style Selector="Button.exportFooterSecondary">
+            <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
-            <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}" />
+            <Setter Property="Padding" Value="{StaticResource Thickness.14.4}" />
+        </Style>
+
+        <Style Selector="Button.exportFooterSecondary:pointerover">
+            <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
         </Style>
     </UserControl.Styles>
 
@@ -368,8 +318,9 @@
                     <Border Grid.Column="1"
                             Classes="exportSectionCard"
                             MinHeight="0">
-                        <Grid RowDefinitions="Auto,Auto,Auto"
-                              RowSpacing="{StaticResource Space.10}">
+                        <Grid RowDefinitions="Auto,Auto,*"
+                              RowSpacing="{StaticResource Space.10}"
+                              MinHeight="0">
                             <Grid ColumnDefinitions="Auto,*"
                                   ColumnSpacing="{StaticResource Space.10}">
                                 <Border Classes="exportStepBadge">
@@ -415,58 +366,33 @@
                             </Border>
 
                             <Border Grid.Row="2"
-                                    Classes="exportFormGroup">
-                                <StackPanel Spacing="{StaticResource Space.10}">
+                                    Classes="exportFormGroup"
+                                    MinHeight="0">
+                                <Grid RowDefinitions="Auto,Auto,Auto"
+                                      RowSpacing="{StaticResource Space.10}"
+                                      MinHeight="0">
                                     <TextBlock Text="文档格式"
                                                Classes="label" />
-                                    <TextBlock Text="{Binding DocumentTypeHint}"
+                                    <TextBlock Grid.Row="1"
+                                               Text="{Binding DocumentTypeHint}"
                                                Classes="exportSectionHint" />
-                                    <StackPanel Spacing="{StaticResource Space.10}">
-                                    <Button Command="{Binding SelectDocumentTypeCommand}"
-                                            CommandParameter="{x:Static dto:ExportDocumentType.Excel}"
-                                            Classes="exportDocumentTypeButton">
-                                                <Border Classes="exportDocumentTypeCard"
-                                                        Classes.selected="{Binding IsExcelSelected}">
-                                                    <Grid ColumnDefinitions="Auto,*"
-                                                          ColumnSpacing="12">
-                                                <Border Classes="exportDocumentTypeBadge excel">
-                                                    <TextBlock Text="X"
-                                                               Classes="exportDocumentTypeBadgeText excel" />
-                                                </Border>
-                                                <StackPanel Grid.Column="1"
-                                                            Spacing="4">
-                                                    <TextBlock Text="Excel"
-                                                               Classes="exportDocumentTypeTitle" />
-                                                    <TextBlock Text="按勾选对象生成结构化 Excel 文档，适合整理和交付。"
-                                                               Classes="exportDocumentTypeDescription" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </Button>
-
-                                    <Button Command="{Binding SelectDocumentTypeCommand}"
-                                            CommandParameter="{x:Static dto:ExportDocumentType.Markdown}"
-                                            Classes="exportDocumentTypeButton">
-                                        <Border Classes="exportDocumentTypeCard markdown"
-                                                Classes.selected="{Binding IsMarkdownSelected}">
-                                            <Grid ColumnDefinitions="Auto,*"
-                                                  ColumnSpacing="12">
-                                                <Border Classes="exportDocumentTypeBadge">
-                                                    <TextBlock Text="MD"
-                                                               Classes="exportDocumentTypeBadgeText" />
-                                                </Border>
-                                                <StackPanel Grid.Column="1"
-                                                            Spacing="4">
-                                                    <TextBlock Text="Markdown"
-                                                               Classes="exportDocumentTypeTitle" />
-                                                    <TextBlock Text="输出轻量结构文档，便于阅读、提交仓库和二次编辑。"
-                                                               Classes="exportDocumentTypeDescription" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </Button>
-                                </StackPanel>
-                            </StackPanel>
+                                    <StackPanel Grid.Row="2"
+                                                Orientation="Horizontal"
+                                                Spacing="{StaticResource Space.16}">
+                                        <RadioButton Content="Excel (.xlsx)"
+                                                     GroupName="ExportDocumentType"
+                                                     IsChecked="{Binding IsExcelSelected, Mode=OneWay}"
+                                                     Command="{Binding SelectDocumentTypeCommand}"
+                                                     CommandParameter="{x:Static dto:ExportDocumentType.Excel}"
+                                                     Classes="exportDocumentTypeOption" />
+                                        <RadioButton Content="Markdown (.md)"
+                                                     GroupName="ExportDocumentType"
+                                                     IsChecked="{Binding IsMarkdownSelected, Mode=OneWay}"
+                                                     Command="{Binding SelectDocumentTypeCommand}"
+                                                     CommandParameter="{x:Static dto:ExportDocumentType.Markdown}"
+                                                     Classes="exportDocumentTypeOption" />
+                                    </StackPanel>
+                                </Grid>
                             </Border>
                         </Grid>
                     </Border>
@@ -485,7 +411,7 @@
 
                         <Button Grid.Column="1"
                                 Command="{Binding CancelCommand}"
-                                Classes="secondary"
+                                Classes="exportFooterSecondary"
                                 Padding="{StaticResource Thickness.14.4}">
                             <TextBlock Text="取消"
                                        FontWeight="Medium" />
@@ -493,7 +419,7 @@
 
                         <Button Grid.Column="2"
                                 Command="{Binding ExportCommand}"
-                                Classes="modern"
+                                Classes="accent"
                                 Padding="{StaticResource Thickness.14.4}">
                             <TextBlock Text="开始导出"
                                        FontWeight="SemiBold" />

@@ -146,16 +146,16 @@ public partial class MainWindowViewModel : ViewModelBase
     public bool HasAvailableDatabases => _databaseContextManager.HasAvailableDatabases;
 
     public string CurrentConnectionLabel => SelectedConnection == null
-        ? "连接: 未选择连接"
+        ? "未连接"
         : string.IsNullOrWhiteSpace(SelectedDatabaseName)
-            ? $"连接: {SelectedConnection.Name}"
-            : $"连接: {SelectedConnection.Name} / 数据库: {SelectedDatabaseName}";
+            ? SelectedConnection.Name
+            : SelectedDatabaseName;
 
     public string CompactConnectionLabel => SelectedConnection == null
         ? "未连接"
         : string.IsNullOrWhiteSpace(SelectedDatabaseName)
             ? SelectedConnection.Name
-            : $"{SelectedConnection.Name} / {SelectedDatabaseName}";
+            : SelectedDatabaseName;
 
     public string Greeting { get; } = $"AzrngTools Database Workbench v{GetAppVersion()}";
 
@@ -207,7 +207,8 @@ public partial class MainWindowViewModel : ViewModelBase
         TableDetailViewModel? tableDetailViewModel = null,
         ViewDetailViewModel? viewDetailViewModel = null,
         StoredProcedureDetailViewModel? storedProcedureDetailViewModel = null,
-        SqlQueryViewModel? sqlQueryViewModel = null)
+        SqlQueryViewModel? sqlQueryViewModel = null,
+        IPgDumpExportCoordinator? pgDumpExportCoordinator = null)
     {
         _databaseService = databaseService;
         var resolvedConnectionConfigService = connectionConfigurationService ?? new ConnectionConfigurationService();
@@ -237,7 +238,7 @@ public partial class MainWindowViewModel : ViewModelBase
             databaseExportPayloadService,
             codeGenerationPayloadService,
             databaseWorkbenchNamingService);
-        _pgDumpExportCoordinator = new PgDumpExportCoordinator(_databaseService);
+        _pgDumpExportCoordinator = pgDumpExportCoordinator ?? new PgDumpExportCoordinator(_databaseService);
 
         _databaseContextManager.PropertyChanged += OnDatabaseContextManagerPropertyChanged;
     }
@@ -792,7 +793,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenPgDumpDialogAsync()
     {
-        var connection = SelectedConnection ?? _databaseContextManager.GetActiveConnection();
+        var connection = _databaseContextManager.GetActiveConnection();
         if (connection == null)
         {
             ToastService.ShowWarning("请先选择数据库连接。", 2000);
