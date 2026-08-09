@@ -128,60 +128,19 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="底部被改成说明与动作概览后，这页不再需要靠右侧窄栏承接四种转换说明，大屏利用率会更好。" />
-                        </StackPanel>
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="使用建议" />
+                        <TextBlock Classes="section-copy" Text="底部统一为说明区，大屏利用率会更好，方便连续做多步转换。" />
+                    </StackPanel>
 
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 如果你需要先做 Unicode 再做 URL，可先处理一次后复制结果，再继续下一步。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 对于不确定来源的内容，先观察左侧输入形态，再选择对应转换方向会更稳妥。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="动作分层" />
-                            <TextBlock Classes="section-copy" Text="当前页把四个转换动作和复制清空统一前置，保持组合页也具备和单项编码页一致的操作入口位置。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="Unicode 向" />
-                                    <TextBlock Classes="section-copy" Text="中文转 Unicode / Unicode 转中文" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="URL 向" />
-                                    <TextBlock Classes="section-copy" Text="URL 编码 / URL 解码" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Row="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="结果辅助" />
-                                    <TextBlock Classes="section-copy" Text="复制结果" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="输入辅助" />
-                                    <TextBlock Classes="section-copy" Text="清空" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                        <TextBlock Classes="Small" Text="• 如果你需要先做 Unicode 再做 URL，可先处理一次后复制结果，再继续下一步。" TextWrapping="Wrap" />
+                        <TextBlock Classes="Small" Text="• 对于不确定来源的内容，先观察左侧输入形态，再选择对应转换方向会更稳妥。" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

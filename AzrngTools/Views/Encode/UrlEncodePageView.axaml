@@ -118,46 +118,19 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="适合检查整条 URL、路径片段和多参数链接的编码结果。" />
-                        </StackPanel>
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="使用建议" />
+                        <TextBlock Classes="section-copy" Text="适合检查整条 URL、路径片段和多参数链接的编码结果。" />
+                    </StackPanel>
 
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 如果你不确定该用哪种动作，先看输入中是否包含完整协议头、主机名和查询串。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 路径组件编码更适合只处理某一段路径名，而不是整条链接。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作分工" />
-                            <TextBlock Classes="section-copy" Text="提供编码、解码、复制和清空等常用操作，便于连续处理多条链接。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="编码向" />
-                                    <TextBlock Classes="section-copy" Text="URL 编码 / 路径组件编码" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="结果向" />
-                                    <TextBlock Classes="section-copy" Text="URL 解码 / 复制 / 清空" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                        <TextBlock Classes="Small" Text="• 如果你不确定该用哪种动作，先看输入中是否包含完整协议头、主机名和查询串。" TextWrapping="Wrap" />
+                        <TextBlock Classes="Small" Text="• 路径组件编码更适合只处理某一段路径名，而不是整条链接。" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

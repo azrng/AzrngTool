@@ -17,15 +17,6 @@
                         <TextBlock Classes="section-title" Text="JSON Schema 生成工作台" />
                         <TextBlock Classes="section-copy" Text="从示例 JSON 直接推导结构定义，适合快速确认字段层级、类型分布和接口入参格式。" />
                     </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Sample JSON" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Schema 输出" />
-                        </Border>
-                    </WrapPanel>
                 </Grid>
             </Border>
 

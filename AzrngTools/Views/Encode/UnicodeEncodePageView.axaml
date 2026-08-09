@@ -18,15 +18,6 @@
                             <TextBlock Classes="section-title" Text="Unicode 编码解码工作台" />
                             <TextBlock Classes="section-copy" Text="把文本输入、Unicode 转换和结果核对收口到同一页里，适合处理接口返回、脚本片段与转义字符串。" />
                         </StackPanel>
-
-                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="Unicode 编码" />
-                            </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="Unicode 解码" />
-                            </Border>
-                        </WrapPanel>
                     </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">

@@ -18,15 +18,6 @@
                             <TextBlock Classes="section-title" Text="简繁中文转换工作台" />
                             <TextBlock Classes="section-copy" Text="把中文输入、转换结果和常用动作整理到同一页里，适合连续核对简体与繁体内容并快速复制结果。" />
                         </StackPanel>
-
-                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="简体转繁体" />
-                            </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="繁体转简体" />
-                            </Border>
-                        </WrapPanel>
                     </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
@@ -111,46 +102,19 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="适合处理中长段落的繁简互转，并直接在左右两侧对照结果。" />
-                        </StackPanel>
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="使用建议" />
+                        <TextBlock Classes="section-copy" Text="适合处理中长段落的繁简互转，并直接在左右两侧对照结果。" />
+                    </StackPanel>
 
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 如果需要逐句核对，建议一次粘贴一段，转换后立即在右侧对照检查。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 复制结果前不必清空输入，左侧原文会一直保留，方便回看。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="动作组成" />
-                            <TextBlock Classes="section-copy" Text="提供繁简双向转换，并保留复制结果与清空辅助操作。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="转换向" />
-                                    <TextBlock Classes="section-copy" Text="简体转繁体 / 繁体转简体" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="辅助向" />
-                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                        <TextBlock Classes="Small" Text="• 如果需要逐句核对，建议一次粘贴一段，转换后立即在右侧对照检查。" TextWrapping="Wrap" />
+                        <TextBlock Classes="Small" Text="• 复制结果前不必清空输入，左侧原文会一直保留，方便回看。" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

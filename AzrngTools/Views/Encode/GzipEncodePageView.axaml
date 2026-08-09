@@ -18,18 +18,6 @@
                             <TextBlock Classes="section-title" Text="Gzip 编码解码工作台" />
                             <TextBlock Classes="section-copy" Text="把压缩、解压和结果校对收口到同一套工作区中，适合快速验证文本是否能正确压缩或还原。" />
                         </StackPanel>
-
-                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="编码" />
-                            </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="解码" />
-                            </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="复制结果" />
-                            </Border>
-                        </WrapPanel>
                     </Grid>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
@@ -118,46 +106,19 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="底部说明被拆成两个承接区后，这页在宽屏下不会再出现左中右三栏都偏窄的情况，长文本压缩结果更容易核对。" />
-                        </StackPanel>
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="使用建议" />
+                        <TextBlock Classes="section-copy" Text="这页在宽屏下不会再出现左中右三栏都偏窄的情况，长文本压缩结果更容易核对。" />
+                    </StackPanel>
 
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 调试接口压缩字段时，可以先解码确认原文，再按需要重新编码。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 如果只想快速验证是否可解压，直接把目标字符串贴到左侧即可。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="当前动作" />
-                            <TextBlock Classes="section-copy" Text="页面保留编码、解码、复制和清空四个实际动作，保证整批编码页的操作区表现更统一。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="转换向" />
-                                    <TextBlock Classes="section-copy" Text="编码 / 解码" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="辅助向" />
-                                    <TextBlock Classes="section-copy" Text="复制结果 / 清空" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                        <TextBlock Classes="Small" Text="• 调试接口压缩字段时，可以先解码确认原文，再按需要重新编码。" TextWrapping="Wrap" />
+                        <TextBlock Classes="Small" Text="• 如果只想快速验证是否可解压，直接把目标字符串贴到左侧即可。" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

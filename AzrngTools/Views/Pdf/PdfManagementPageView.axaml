@@ -19,12 +19,6 @@
 
                 <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Border Classes="badge-pill">
-                        <TextBlock Classes="badge-text" Text="分割 PDF" />
-                    </Border>
-                    <Border Classes="badge-pill">
-                        <TextBlock Classes="badge-text" Text="导出 Word" />
-                    </Border>
-                    <Border Classes="badge-pill">
                         <TextBlock Classes="badge-text" Text="本地处理" />
                     </Border>
                 </WrapPanel>

@@ -20,18 +20,6 @@
                         <TextBlock Classes="section-title" Text="文本压缩工作台" />
                         <TextBlock Classes="section-copy" Text="用于把文本压缩成紧凑格式，或在压缩、转义、去除转义之间快速切换，结果直接回写到同一个编辑区。" />
                     </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="压缩" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="转义" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="去除转义" />
-                        </Border>
-                    </WrapPanel>
                 </Grid>
             </Border>
 
@@ -40,7 +28,7 @@
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="编辑区" />
-                            <TextBlock Classes="section-copy" Text="在一里直接粘贴原始文本、被转义的文本，或需要压缩清洗的字符串。" />
+                            <TextBlock Classes="section-copy" Text="在这里直接粘贴原始文本、被转义的文本，或需要压缩清洗的字符串。" />
                         </StackPanel>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">
@@ -71,7 +59,7 @@
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="所有按钮都直接作用于当前编辑区内容，适合连续做字符串清洗和转义理理。" />
+                            <TextBlock Classes="section-copy" Text="所有按钮都直接作用于当前编辑区内容，适合连续做字符串清洗和转义处理。" />
                         </StackPanel>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">
@@ -80,14 +68,14 @@
                                 <TextBlock Classes="Small" Text="• 压缩：去掉多余空白，生成更紧凑的文本" TextWrapping="Wrap" />
                                 <TextBlock Classes="Small" Text="• 转义：把双引号等内容转成可嵌入字符串的形式" TextWrapping="Wrap" />
                                 <TextBlock Classes="Small" Text="• 压缩并转义：适合生成一行可嵌入内容" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 去除转义：适合恢复已理理过的字符串" TextWrapping="Wrap" />
+                                <TextBlock Classes="Small" Text="• 去除转义：适合恢复已处理过的字符串" TextWrapping="Wrap" />
                             </StackPanel>
                         </Border>
 
                         <Border Grid.Row="2" Classes="tool-card-soft">
                             <TextBlock
                                 Classes="section-copy"
-                                Text="一一页沿用单编辑区模式，理理后的内容会直接覆盖原文本，方便继续二次理理。"
+                                Text="本页沿用单编辑区模式，处理后的内容会直接覆盖原文本，方便继续二次处理。"
                                 TextWrapping="Wrap" />
                         </Border>
                     </Grid>
@@ -98,7 +86,7 @@
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <StackPanel Spacing="{StaticResource Space.4}">
                         <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="直接针对当前编辑区执行理理，不额外拆分输入和结果，适合连续清洗文本。"/>
+                        <TextBlock Classes="section-copy" Text="直接针对当前编辑区执行处理，不额外拆分输入和结果，适合连续清洗文本。"/>
                     </StackPanel>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">

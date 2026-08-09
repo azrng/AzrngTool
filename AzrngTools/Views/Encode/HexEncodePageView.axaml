@@ -139,60 +139,19 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用建议" />
-                            <TextBlock Classes="section-copy" Text="适合检查十六进制字符串、字节数组和普通文本之间的转换结果。" />
-                        </StackPanel>
+            <Border Grid.Row="2" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <StackPanel Spacing="{StaticResource Space.4}">
+                        <TextBlock Classes="section-title" Text="使用建议" />
+                        <TextBlock Classes="section-copy" Text="适合检查十六进制字符串、字节数组和普通文本之间的转换结果。" />
+                    </StackPanel>
 
-                        <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 如果目标是接口签名串或二进制报文，通常先用“十六进制转字节数组”确认每个字节值。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 输出分隔符只影响十六进制展示形式，不会改变真实字节内容。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="动作分组" />
-                            <TextBlock Classes="section-copy" Text="覆盖文本向与字节向四种转换，并提供复制与清空辅助操作。" />
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="{StaticResource Space.10}" RowSpacing="{StaticResource Space.10}">
-                            <Border Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="文本向" />
-                                    <TextBlock Classes="section-copy" Text="字符串转十六进制 / 十六进制转字符串" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="字节向" />
-                                    <TextBlock Classes="section-copy" Text="字节数组转十六进制 / 十六进制转字节数组" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Row="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="输出辅助" />
-                                    <TextBlock Classes="section-copy" Text="复制结果" />
-                                </StackPanel>
-                            </Border>
-
-                            <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
-                                <StackPanel Spacing="{StaticResource Space.4}">
-                                    <TextBlock Classes="metric-label" Text="输入辅助" />
-                                    <TextBlock Classes="section-copy" Text="清空 / 分隔符切换" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <StackPanel Grid.Row="1" Spacing="{StaticResource Space.8}">
+                        <TextBlock Classes="Small" Text="• 如果目标是接口签名串或二进制报文，通常先用“十六进制转字节数组”确认每个字节值。" TextWrapping="Wrap" />
+                        <TextBlock Classes="Small" Text="• 输出分隔符只影响十六进制展示形式，不会改变真实字节内容。" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

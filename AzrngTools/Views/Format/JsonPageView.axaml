@@ -25,18 +25,6 @@
                     <TextBlock Classes="section-title" Text="JSON 格式化工作台" />
                     <TextBlock Classes="section-copy" Text="把格式化、压缩、转义和去除转义收敛到同一个编辑区，避免在多个输入框之间来回切换。" />
                 </StackPanel>
-
-                <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Border Classes="badge-pill">
-                        <TextBlock Classes="badge-text" Text="格式化" />
-                    </Border>
-                    <Border Classes="badge-pill">
-                        <TextBlock Classes="badge-text" Text="压缩" />
-                    </Border>
-                    <Border Classes="badge-pill">
-                        <TextBlock Classes="badge-text" Text="转义" />
-                    </Border>
-                </WrapPanel>
             </Grid>
         </Border>
 

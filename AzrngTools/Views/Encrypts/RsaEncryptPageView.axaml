@@ -18,15 +18,6 @@
                         <TextBlock Classes="section-title" Text="RSA 工作台" />
                         <TextBlock Classes="section-copy" Text="保留“加解密”和“生成密钥”两个标签页，把每个页签里的输入、参数和结果区域重新整理成统一卡片样式。" />
                     </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="加解密" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="生成密钥" />
-                        </Border>
-                    </WrapPanel>
                 </Grid>
             </Border>
 

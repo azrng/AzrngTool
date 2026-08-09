@@ -18,7 +18,7 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                     <StackPanel Spacing="{StaticResource Space.4}">
                         <TextBlock Classes="section-title" Text="SQL 整理工作台" />
-                        <TextBlock Classes="section-copy" Text="留留单编辑区的原有处理方式，把格式化、压缩和转义相关操作集中整理成统一工作台，便于连续调整同一段 SQL。" />
+                        <TextBlock Classes="section-copy" Text="保留单编辑区的原有处理方式，把格式化、压缩和转义相关操作集中整理成统一工作台，便于连续调整同一段 SQL。" />
                     </StackPanel>
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -71,7 +71,7 @@
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="页页沿用原来的单文本区模式，更适合对同一段 SQL 连续做格式整理、压缩和字符串转义处理。" />
+                            <TextBlock Classes="section-copy" Text="本页沿用原来的单文本区模式，更适合对同一段 SQL 连续做格式整理、压缩和字符串转义处理。" />
                         </StackPanel>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">
@@ -97,7 +97,7 @@
                 <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
                     <StackPanel Spacing="{StaticResource Space.4}">
                         <TextBlock Classes="section-title" Text="快捷操作" />
-                        <TextBlock Classes="section-copy" Text="处理结果会原位回写，不会新增第二份输出内容；下面留留原有四个命令入口。" />
+                        <TextBlock Classes="section-copy" Text="处理结果会原位回写，不会新增第二份输出内容；下面保留原有四个命令入口。" />
                     </StackPanel>
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
