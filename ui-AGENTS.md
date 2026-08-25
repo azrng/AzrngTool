@@ -152,6 +152,10 @@ src/AppName/
 - 仅样式或视觉改动：至少确认受影响界面的关键状态、布局与主要交互未回退
 - 若影响共享组件、布局或状态流转，优先验证影响范围最大的界面，而不是只看局部组件
 
+### Avalonia Headless 测试隔离
+- 使用 `HeadlessUnitTestSession` 或直接实例化 `AvaloniaEdit.TextEditor` 的测试必须在 UI 测试上下文中运行。
+- 依赖 Headless 平台状态的测试应加入 `DisableParallelization = true` 的 xUnit 测试集合，避免多个测试并发操作 Avalonia UI 线程导致非业务性的线程归属错误。
+
 ### 总体要求
 - 影响行为的改动应优先补充或更新测试。
 - 若本次改动未补测试，必须在最终说明中写明原因和风险。

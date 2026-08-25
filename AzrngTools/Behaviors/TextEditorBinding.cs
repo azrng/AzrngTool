@@ -8,6 +8,8 @@ public sealed class TextEditorBinding
     public static readonly AttachedProperty<string?> TextProperty =
         AvaloniaProperty.RegisterAttached<TextEditorBinding, TextEditor, string?>(
             "Text",
+            // 空编辑器初始化时也要触发属性变更，确保后续输入能订阅并回写到 ViewModel。
+            defaultValue: string.Empty,
             defaultBindingMode: Avalonia.Data.BindingMode.TwoWay);
 
     private static readonly AttachedProperty<bool> IsSubscribedProperty =
