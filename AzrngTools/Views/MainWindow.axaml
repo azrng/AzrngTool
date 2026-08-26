@@ -189,20 +189,17 @@
                                     <DataTemplate>
                                         <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                                             <Expander.Header>
-                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
-                                                    <PathIcon
-                                                        Data="{Binding IconPath}"
-                                                        Classes="nav-item-icon"
-                                                        VerticalAlignment="Center" />
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                     <TextBlock
-                                                        Grid.Column="1"
                                                         Classes="nav-group-title"
                                                         IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
-                                                        Text="{Binding Title}" />
+                                                        Text="{Binding Title}"
+                                                        VerticalAlignment="Center" />
                                                     <Border
-                                                        Grid.Column="2"
+                                                        Grid.Column="1"
                                                         Classes="badge-pill compact"
-                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}">
+                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
+                                                        VerticalAlignment="Center">
                                                         <TextBlock Classes="badge-text" Text="{Binding Child.Count}" />
                                                     </Border>
                                                 </Grid>
@@ -213,13 +210,12 @@
                                                 SelectionChanged="OnGroupListBoxSelectionChanged">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.8}">
-                                                            <PathIcon Data="{Binding IconPath}" Classes="nav-item-icon" />
+                                                        <Grid ColumnDefinitions="*">
                                                             <TextBlock
-                                                                Grid.Column="1"
                                                                 Classes="nav-item-text"
                                                                 IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
-                                                                Text="{Binding Title}" />
+                                                                Text="{Binding Title}"
+                                                                VerticalAlignment="Center" />
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
