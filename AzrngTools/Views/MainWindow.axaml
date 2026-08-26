@@ -189,7 +189,7 @@
                                     <DataTemplate>
                                         <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                                             <Expander.Header>
-                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                     <PathIcon
                                                         Data="{Binding IconPath}"
                                                         Classes="nav-item-icon"

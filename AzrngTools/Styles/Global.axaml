@@ -170,6 +170,26 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <!--
+        本项目的工具图标路径包含大量未闭合的线段。PathIcon 默认按填充几何渲染，
+        会把这些线段连接成异常的碎片；统一改为描边后，线稿和闭合图形都能稳定显示。
+    -->
+    <Style Selector="PathIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Viewbox Stretch="Uniform">
+                    <Path
+                        Data="{TemplateBinding Data}"
+                        Fill="Transparent"
+                        Stroke="{TemplateBinding Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.5" />
+                </Viewbox>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
     <Style Selector="TextBlock.section-title">
         <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
         <Setter Property="FontWeight" Value="SemiBold" />
