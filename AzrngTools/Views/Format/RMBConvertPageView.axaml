@@ -49,16 +49,22 @@
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ConvertToUppercaseCommand}"
                                 Content="转换为大写"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding SetExampleCommand}"
                                 Content="示例金额"
+                                Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
                                 Theme="{DynamicResource OutlineButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ClearCommand}"
                                 Content="清空"
+                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>
@@ -73,9 +79,11 @@
                             </StackPanel>
 
                             <Button
+                                Classes="actionIcon"
                                 Grid.Column="1"
                                 Command="{Binding CopyResultCommand}"
                                 Content="复制结果"
+                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                 Theme="{DynamicResource OutlineButton}" />
                         </Grid>
 

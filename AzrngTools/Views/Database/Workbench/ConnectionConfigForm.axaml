@@ -146,12 +146,15 @@
                               Classes="modern"
                               PlaceholderText="请输入或选择数据库"/>
                     <Button Grid.Column="1"
-                            Content="🔄"
                             ToolTip.Tip="刷新数据库列表"
                             Command="{Binding RefreshDatabasesCommand}"
                             Classes="secondary"
                             Margin="8,0,0,0"
-                            IsVisible="{Binding ShowRefreshDatabaseButton}"/>
+                            IsVisible="{Binding ShowRefreshDatabaseButton}">
+                        <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15"
+                                  Height="{StaticResource Layout.Icon.Sm}"
+                                  Width="{StaticResource Layout.Icon.Sm}" />
+                    </Button>
                 </Grid>
                 <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
                         Classes="connectionFormHint"
@@ -181,9 +184,10 @@
                              Height="40"
                              Classes="modern"/>
                     <Button Grid.Column="1"
+                            Classes="secondary actionIcon"
                             Content="浏览..."
+                            Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
                             Click="BrowseSQLiteFile_Click"
-                            Classes="secondary"
                             Margin="8,0,0,0"/>
                 </Grid>
                 <Border Classes="connectionFormHint"

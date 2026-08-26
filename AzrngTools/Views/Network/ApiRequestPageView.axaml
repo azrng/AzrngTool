@@ -51,30 +51,46 @@
                         <Button
                             Grid.Column="2"
                             Command="{Binding SendRequestCommand}"
-                            Content="发送请求"
                             IsVisible="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
-                            Theme="{DynamicResource SolidButton}" />
+                            Theme="{DynamicResource SolidButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M4 12L20 4L14 20L11 13L4 12ZM11 13L20 4" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="发送请求" />
+                            </StackPanel>
+                        </Button>
 
                         <Button
                             Grid.Column="3"
                             Command="{Binding CancelRequestCommand}"
-                            Content="取消请求"
                             IsVisible="{Binding IsRequestInFlight}"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M6 6L18 18M18 6L6 18" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="取消请求" />
+                            </StackPanel>
+                        </Button>
 
                         <Button
                             Grid.Column="4"
                             Command="{Binding ClearCurrentRequestCommand}"
                             IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
-                            Content="清空当前"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="清空当前" />
+                            </StackPanel>
+                        </Button>
 
                         <Button
                             Grid.Column="5"
                             Command="{Binding ToggleHistoryPaneCommand}"
                             IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
-                            Content="{Binding HistoryPaneToggleText}"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M4 5H20V19H4V5ZM8 9H16M8 13H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="{Binding HistoryPaneToggleText}" />
+                            </StackPanel>
+                        </Button>
                     </Grid>
                 </Border>
 
@@ -98,8 +114,10 @@
                                                 <Button
                                                     Grid.Column="1"
                                                     Command="{Binding AddQueryParameterCommand}"
-                                                    Content="添加"
-                                                    Theme="{DynamicResource OutlineButton}" />
+                                                    Theme="{DynamicResource OutlineButton}"
+                                                    ToolTip.Tip="添加查询参数">
+                                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                </Button>
                                             </Grid>
 
                                             <Border Grid.Row="1" Classes="tool-card-subtle">
@@ -119,8 +137,10 @@
                                                                 Grid.Column="2"
                                                                 Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
                                                                 CommandParameter="{Binding}"
-                                                                Content="删除"
-                                                                Theme="{DynamicResource OutlineButton}" />
+                                                                Theme="{DynamicResource OutlineButton}"
+                                                                ToolTip.Tip="删除参数">
+                                                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                            </Button>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -137,8 +157,10 @@
                                         <Button
                                             Grid.Column="1"
                                             Command="{Binding AddHeaderCommand}"
-                                            Content="添加 Header"
-                                            Theme="{DynamicResource OutlineButton}" />
+                                            Theme="{DynamicResource OutlineButton}"
+                                            ToolTip.Tip="添加请求头">
+                                            <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        </Button>
                                     </Grid>
 
                                     <Border Grid.Row="1" Classes="tool-card-subtle">
@@ -158,8 +180,10 @@
                                                         Grid.Column="2"
                                                         Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
                                                         CommandParameter="{Binding}"
-                                                        Content="删除"
-                                                        Theme="{DynamicResource OutlineButton}" />
+                                                        Theme="{DynamicResource OutlineButton}"
+                                                        ToolTip.Tip="删除请求头">
+                                                        <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                    </Button>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -192,11 +216,13 @@
                                         <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                 <TextBlock Classes="section-title" Text="表单字段" />
-                                                <Button
-                                                    Grid.Column="1"
-                                                    Command="{Binding AddFormFieldCommand}"
-                                                    Content="添加字段"
-                                                    Theme="{DynamicResource OutlineButton}" />
+                                            <Button
+                                                Grid.Column="1"
+                                                Command="{Binding AddFormFieldCommand}"
+                                                Theme="{DynamicResource OutlineButton}"
+                                                ToolTip.Tip="添加表单字段">
+                                                <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                            </Button>
                                             </Grid>
 
                                             <Border Grid.Row="1" Classes="tool-card-subtle">
@@ -212,12 +238,14 @@
                                                         <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
                                                             <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
                                                             <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
-                                                            <Button
-                                                                Grid.Column="2"
-                                                                Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
-                                                                CommandParameter="{Binding}"
-                                                                Content="删除"
-                                                                Theme="{DynamicResource OutlineButton}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Theme="{DynamicResource OutlineButton}"
+                                                                    ToolTip.Tip="删除表单字段">
+                                                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                                </Button>
                                                         </Grid>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
@@ -229,7 +257,7 @@
                                         Grid.Row="3"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="280"
+                                        MinHeight="{StaticResource Layout.Editor.Md}"
                                         IsVisible="{Binding HasRawBodyEditor}"
                                         PlaceholderText="{Binding RequestBodyPlaceholder}"
                                         Text="{Binding RequestBody}"
@@ -252,13 +280,21 @@
                                 <Button
                                     Command="{Binding CopyResponseBodyCommand}"
                                     IsEnabled="{Binding HasResponse}"
-                                    Content="复制响应体"
-                                    Theme="{DynamicResource OutlineButton}" />
+                                    Theme="{DynamicResource OutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="复制响应体" />
+                                    </StackPanel>
+                                </Button>
                                 <Button
                                     Command="{Binding CopyResponseHeadersCommand}"
                                     IsEnabled="{Binding HasResponse}"
-                                    Content="复制响应头"
-                                    Theme="{DynamicResource OutlineButton}" />
+                                    Theme="{DynamicResource OutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="复制响应头" />
+                                    </StackPanel>
+                                </Button>
                             </WrapPanel>
                         </Grid>
 
@@ -278,8 +314,12 @@
                                 <Button
                                     Grid.Column="2"
                                     Command="{Binding CancelRequestCommand}"
-                                    Content="取消"
-                                    Theme="{DynamicResource OutlineButton}" />
+                                    Theme="{DynamicResource OutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M6 6L18 18M18 6L6 18" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="取消" />
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                         </Border>
 
@@ -304,7 +344,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    Height="320"
+                                    MinHeight="{StaticResource Layout.Editor.Lg}"
                                     IsReadOnly="True"
                                     PlaceholderText="响应体会显示在这里"
                                     Text="{Binding ResponseBodyText}"
@@ -314,7 +354,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    Height="320"
+                                    MinHeight="{StaticResource Layout.Editor.Lg}"
                                     IsReadOnly="True"
                                     PlaceholderText="完整请求 URL 会显示在这里"
                                     Text="{Binding ResponseRequestUrlText}"
@@ -324,7 +364,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    Height="320"
+                                    MinHeight="{StaticResource Layout.Editor.Lg}"
                                     IsReadOnly="True"
                                     PlaceholderText="响应头会显示在这里"
                                     Text="{Binding ResponseHeadersText}"
@@ -346,8 +386,9 @@
                         <Button
                             Grid.Column="1"
                             Command="{Binding ToggleHistoryPaneCommand}"
-                            Content="关闭"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <PathIcon Data="M6 6L18 18M18 6L6 18" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
                     </Grid>
 
                     <TextBlock Grid.Row="1" Classes="metric-label" Text="{Binding HistorySummaryText}" />
@@ -361,8 +402,10 @@
                         <Button
                             Grid.Column="1"
                             Command="{Binding ClearHistoryCommand}"
-                            Content="清空"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}"
+                            ToolTip.Tip="清空请求历史">
+                            <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
                     </Grid>
 
                     <Border Grid.Row="3" Classes="tool-card-soft" IsVisible="{Binding ShowHistoryEmptyPlaceholder}">
@@ -398,13 +441,17 @@
                                                 <Button
                                                     Command="{ReflectionBinding #RootPage.DataContext.LoadHistoryItemCommand}"
                                                     CommandParameter="{Binding}"
-                                                    Content="切换"
-                                                    Theme="{DynamicResource OutlineButton}" />
+                                                    Theme="{DynamicResource OutlineButton}"
+                                                    ToolTip.Tip="载入请求">
+                                                    <PathIcon Data="M5 12H19M15 8L19 12L15 16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                </Button>
                                                 <Button
                                                     Command="{ReflectionBinding #RootPage.DataContext.DeleteHistoryItemCommand}"
                                                     CommandParameter="{Binding}"
-                                                    Content="删除"
-                                                    Theme="{DynamicResource OutlineButton}" />
+                                                    Theme="{DynamicResource OutlineButton}"
+                                                    ToolTip.Tip="删除请求历史">
+                                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                </Button>
                                             </WrapPanel>
                                         </Grid>
                                     </Border>

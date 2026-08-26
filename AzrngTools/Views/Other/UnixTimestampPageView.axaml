@@ -20,12 +20,16 @@
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding RefreshCurrentTimestampCommand}"
                             Content="刷新时间戳"
+                            Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CopyCurrentTimestampCommand}"
                             Content="复制当前值"
+                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
@@ -68,9 +72,11 @@
                                     Classes="section-copy"
                                     Text="适合日志、接口参数等常见秒级时间值。" />
                                 <Button
+                                    Classes="actionIcon"
                                     Grid.Row="3"
                                     Command="{Binding TimestampToDateTimeSecondsCommand}"
                                     Content="把上面的秒级时间戳转成日期时间"
+                                    Tag="M4 7H17M13 3L17 7L13 11"
                                     HorizontalAlignment="Stretch"
                                     Theme="{DynamicResource SolidButton}" />
                             </Grid>
@@ -89,9 +95,11 @@
                                     Classes="section-copy"
                                     Text="适合前端埋点、排序时间和更高精度的记录。" />
                                 <Button
+                                    Classes="actionIcon"
                                     Grid.Row="3"
                                     Command="{Binding TimestampToDateTimeMillisecondsCommand}"
                                     Content="把上面的毫秒级时间戳转成日期时间"
+                                    Tag="M4 7H17M13 3L17 7L13 11"
                                     HorizontalAlignment="Stretch"
                                     Theme="{DynamicResource SolidButton}" />
                             </Grid>
@@ -152,16 +160,22 @@
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding DateTimeToTimestampCommand}"
                                 Content="根据当前日期时间生成时间戳"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding SetToNowCommand}"
                                 Content="把日期时间设为现在"
+                                Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
                                 Theme="{DynamicResource OutlineButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ClearCommand}"
                                 Content="清空底部结果"
+                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>
@@ -177,9 +191,11 @@
                                 <TextBlock Classes="section-copy" Text="无论你点击上面的哪个转换按钮，结果都会统一出现在这里，包含 UTC、本地时间和星期信息。" />
                             </StackPanel>
                             <Button
+                                Classes="actionIcon"
                                 Grid.Column="1"
                                 Command="{Binding CopyResultCommand}"
                                 Content="复制结果"
+                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                 VerticalAlignment="Top"
                                 Theme="{DynamicResource OutlineButton}" />
                         </Grid>

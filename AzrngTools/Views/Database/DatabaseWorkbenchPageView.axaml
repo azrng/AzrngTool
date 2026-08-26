@@ -82,16 +82,19 @@
                                 Command="{Binding ShowAddConnectionDialogCommand}"
                                 Classes="workbenchToolbarAction"
                                 ToolTip.Tip="管理数据库连接">
-                            <TextBlock Text="管理连接"
-                                       FontWeight="Medium" />
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="管理连接" FontWeight="Medium" />
+                            </StackPanel>
                         </Button>
 
                         <Button Grid.Column="4"
                                 Classes="workbenchToolbarAction"
                                 ToolTip.Tip="导出与代码生成">
-                            <TextBlock Text="更多操作"
-                                       FontWeight="Medium"
-                                       VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M5 12H19M12 5L19 12L12 19" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="更多操作" FontWeight="Medium" VerticalAlignment="Center" />
+                            </StackPanel>
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuItem Header="导出文档"
@@ -186,16 +189,20 @@
                                         Classes="workbenchSidebarAction"
                                         Command="{Binding RefreshBrowserCommand}"
                                         HorizontalAlignment="Stretch">
-                                    <TextBlock Text="刷新"
-                                               FontWeight="Medium" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="刷新" FontWeight="Medium" />
+                                    </StackPanel>
                                 </Button>
 
                                 <Button Grid.Column="1"
                                         Classes="workbenchSidebarAction"
                                         Click="OnClearBrowserSearchClick"
                                         HorizontalAlignment="Stretch">
-                                    <TextBlock Text="清空搜索"
-                                               FontWeight="Medium" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="清空搜索" FontWeight="Medium" />
+                                    </StackPanel>
                                 </Button>
                             </Grid>
                         </Border>
@@ -246,7 +253,10 @@
                                                 Spacing="{StaticResource Space.10}">
                                         <Button Classes="workbenchToolbarAction"
                                                 Command="{Binding ShowAddConnectionDialogCommand}">
-                                            <TextBlock Text="管理连接" />
+                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                <TextBlock Text="管理连接" />
+                                            </StackPanel>
                                         </Button>
                                     </StackPanel>
                                 </StackPanel>

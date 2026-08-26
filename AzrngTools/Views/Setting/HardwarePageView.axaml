@@ -20,8 +20,10 @@
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding RefreshHardwareInfoCommand}"
                             Content="刷新本机信息"
+                            Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>

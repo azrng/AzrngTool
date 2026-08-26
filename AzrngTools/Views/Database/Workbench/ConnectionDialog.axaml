@@ -137,7 +137,6 @@
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="{DynamicResource Radius.2XL}" />
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
         </Style>
 
         <Style Selector="Button.connectionTypeCard /template/ ContentPresenter">
@@ -266,7 +265,6 @@
         </Style>
 
         <Style Selector="Button.connectionAction">
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FontSize" Value="{DynamicResource Font.Size.BodySmall}" />
             <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.Medium}" />
@@ -297,7 +295,6 @@
         </Style>
 
         <Style Selector="ListBox.savedConnections">
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
         </Style>
 
         <Style Selector="ListBox.savedConnections ListBoxItem">
@@ -306,7 +303,6 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="Margin" Value="0" />
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
         </Style>
 
         <Style Selector="ListBox.savedConnections ListBoxItem /template/ ContentPresenter">
@@ -368,11 +364,9 @@
                                     Height="46"
                                     Command="{Binding CreateNewConnectionCommand}"
                                     Classes="connectionAction primary">
-                                <TextBlock Text="+"
-                                           FontSize="24"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                <PathIcon Data="M12 4V20M4 12H20"
+                                          Height="{StaticResource Layout.Icon.Sm}"
+                                          Width="{StaticResource Layout.Icon.Sm}" />
                             </Button>
                         </Grid>
                     </Border>
@@ -451,10 +445,12 @@
                                     Command="{Binding DeleteConnectionCommand}"
                                     Classes="connectionAction secondary"
                                     VerticalAlignment="Center">
-                                <TextBlock Text="删除"
-                                           FontWeight="Medium"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
+                                              Height="{StaticResource Layout.Icon.Sm}"
+                                              Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="删除" FontWeight="Medium" />
+                                </StackPanel>
                             </Button>
                         </Grid>
                     </Border>
@@ -705,11 +701,12 @@
                                                                 IsVisible="{Binding ShowRefreshDatabaseButton}"
                                                                 Classes="connectionAction primary"
                                                                 Height="42">
-                                                            <TextBlock Text="刷新"
-                                                                       FontSize="13"
-                                                                       FontWeight="SemiBold"
-                                                                       HorizontalAlignment="Center"
-                                                                       VerticalAlignment="Center" />
+                                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                                <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15"
+                                                                          Height="{StaticResource Layout.Icon.Sm}"
+                                                                          Width="{StaticResource Layout.Icon.Sm}" />
+                                                                <TextBlock Text="刷新" FontSize="13" FontWeight="SemiBold" />
+                                                            </StackPanel>
                                                         </Button>
                                                     </Grid>
 
@@ -754,8 +751,12 @@
                                                                 Click="OnBrowseSqliteFileClick"
                                                                 Classes="connectionAction secondary"
                                                                 Height="42">
-                                                            <TextBlock Text="浏览..."
-                                                                       FontWeight="Medium" />
+                                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                                <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
+                                                                          Height="{StaticResource Layout.Icon.Sm}"
+                                                                          Width="{StaticResource Layout.Icon.Sm}" />
+                                                                <TextBlock Text="浏览..." FontWeight="Medium" />
+                                                            </StackPanel>
                                                         </Button>
                                                     </Grid>
                                                     <Border Classes="connectionDialogHint"
@@ -801,8 +802,12 @@
                                         IsVisible="{Binding ShowTestButton}"
                                         Classes="connectionAction secondary"
                                         Padding="18,10">
-                                    <TextBlock Text="测试连接"
-                                               FontWeight="Medium" />
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M4 5H20V19H4V5ZM8 9H16M8 13H13"
+                                                  Height="{StaticResource Layout.Icon.Sm}"
+                                                  Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="测试连接" FontWeight="Medium" />
+                                    </StackPanel>
                                 </Button>
 
                                 <StackPanel Grid.Column="2"
@@ -812,29 +817,45 @@
                                             IsVisible="{Binding ShowBackButton}"
                                             Classes="connectionAction secondary"
                                             Padding="18,10">
-                                        <TextBlock Text="上一步"
-                                                   FontWeight="Medium" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M15 5L8 12L15 19"
+                                                      Height="{StaticResource Layout.Icon.Sm}"
+                                                      Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="上一步" FontWeight="Medium" />
+                                        </StackPanel>
                                     </Button>
 
                                     <Button Command="{Binding ConnectCommand}"
                                             Classes="connectionAction primary"
                                             Padding="22,10">
-                                        <TextBlock Text="连接"
-                                                   FontWeight="SemiBold" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M4 7H17M13 3L17 7L13 11"
+                                                      Height="{StaticResource Layout.Icon.Sm}"
+                                                      Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="连接" FontWeight="SemiBold" />
+                                        </StackPanel>
                                     </Button>
 
                                     <Button Command="{Binding SaveCommand}"
                                             Classes="connectionAction secondary"
                                             Padding="22,10">
-                                        <TextBlock Text="保存"
-                                                   FontWeight="Medium" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M5 4H17L19 6V20H5V4ZM8 4V9H16V4M8 14H16"
+                                                      Height="{StaticResource Layout.Icon.Sm}"
+                                                      Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="保存" FontWeight="Medium" />
+                                        </StackPanel>
                                     </Button>
 
                                     <Button Command="{Binding CancelCommand}"
                                             Classes="connectionAction secondary"
                                             Padding="22,10">
-                                        <TextBlock Text="取消"
-                                                   FontWeight="Medium" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M6 6L18 18M18 6L6 18"
+                                                      Height="{StaticResource Layout.Icon.Sm}"
+                                                      Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="取消" FontWeight="Medium" />
+                                        </StackPanel>
                                     </Button>
                                 </StackPanel>
                             </Grid>

@@ -22,20 +22,28 @@
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding UnicodeEncodeCommand}"
                             Content="Unicode 编码"
+                            Tag="M4 7H17M13 3L17 7L13 11"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding UnicodeDecodeCommand}"
                             Content="Unicode 解码"
+                            Tag="M7 13L3 17L7 21M3 17H16"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CopyResultCommand}"
                             Content="复制结果"
+                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding ClearCommand}"
                             Content="清空"
+                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
@@ -53,7 +61,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="360"
+                            MinHeight="{StaticResource Layout.Editor.Lg}"
                             PlaceholderText="请输入要编码或解码的文本"
                             Text="{Binding Original}" />
 
@@ -79,7 +87,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="360"
+                            MinHeight="{StaticResource Layout.Editor.Lg}"
                             IsReadOnly="True"
                             PlaceholderText="处理后的内容会显示在这里"
                             Text="{Binding HandleText}" />
@@ -87,8 +95,10 @@
                         <Border Grid.Row="2" Classes="tool-card-soft">
                             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
                                 <Button
+                                    Classes="actionIcon"
                                     Command="{Binding CopyResultCommand}"
                                     Content="复制结果"
+                                    Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                     Theme="{DynamicResource OutlineButton}" />
                                 <TextBlock
                                     Grid.Column="1"

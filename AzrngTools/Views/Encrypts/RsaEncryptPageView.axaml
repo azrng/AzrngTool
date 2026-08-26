@@ -37,7 +37,7 @@
                                             Grid.Row="1"
                                             AcceptsReturn="True"
                                             Classes="Standard"
-                                            Height="220"
+                                            MinHeight="{StaticResource Layout.Editor.Md}"
                                             Text="{Binding Original}"
                                             PlaceholderText="请输入要加密或解密的内容" />
                                     </Grid>
@@ -68,8 +68,8 @@
                                         </Border>
 
                                         <WrapPanel Grid.Row="2" Classes="tool-actions">
-                                            <Button Command="{Binding EncryptHandlerCommand}" CommandParameter="0" Content="加密" Theme="{DynamicResource SolidButton}" />
-                                            <Button Command="{Binding EncryptHandlerCommand}" CommandParameter="1" Content="解密" Theme="{DynamicResource OutlineButton}" />
+                                            <Button Classes="actionIcon" Command="{Binding EncryptHandlerCommand}" CommandParameter="0" Content="加密" Tag="M4 7H17M13 3L17 7L13 11" Theme="{DynamicResource SolidButton}" />
+                                            <Button Classes="actionIcon" Command="{Binding EncryptHandlerCommand}" CommandParameter="1" Content="解密" Tag="M7 13L3 17L7 21M3 17H16" Theme="{DynamicResource OutlineButton}" />
                                         </WrapPanel>
                                     </Grid>
                                 </Border>
@@ -87,7 +87,7 @@
                                             Grid.Row="1"
                                             AcceptsReturn="True"
                                             Classes="Standard"
-                                            Height="220"
+                                            MinHeight="{StaticResource Layout.Editor.Md}"
                                             Text="{Binding PublicKey}"
                                             PlaceholderText="请输入公钥" />
                                     </Grid>
@@ -104,7 +104,7 @@
                                             Grid.Row="1"
                                             AcceptsReturn="True"
                                             Classes="Standard"
-                                            Height="220"
+                                            MinHeight="{StaticResource Layout.Editor.Md}"
                                             Text="{Binding PrivateKey}"
                                             PlaceholderText="请输入私钥" />
                                     </Grid>
@@ -122,7 +122,7 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="220"
+                                        MinHeight="{StaticResource Layout.Editor.Md}"
                                         IsReadOnly="True"
                                         Text="{Binding Ciphertext}"
                                         PlaceholderText="加密或解密的结果" />
@@ -146,8 +146,10 @@
                                             MinWidth="140"
                                             SelectedIndex="{Binding RsaKeyTypeValue}" />
                                         <Button
+                                            Classes="actionIcon"
                                             Command="{Binding GenerateSecretCommand}"
                                             Content="生成公私钥"
+                                            Tag="M12 4V20M4 12H20"
                                             Theme="{DynamicResource SolidButton}" />
                                     </WrapPanel>
                                 </Grid>
@@ -164,7 +166,7 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="180"
+                                        MinHeight="{StaticResource Layout.Editor.Md}"
                                         Text="{Binding PublicKey}"
                                         PlaceholderText="公钥" />
                                 </Grid>
@@ -181,7 +183,7 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        Height="220"
+                                        MinHeight="{StaticResource Layout.Editor.Md}"
                                         Text="{Binding PrivateKey}"
                                         PlaceholderText="私钥" />
                                 </Grid>

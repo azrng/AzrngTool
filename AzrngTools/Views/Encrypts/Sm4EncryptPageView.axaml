@@ -42,7 +42,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            MinHeight="420"
+                            MinHeight="{StaticResource Layout.Editor.Xl}"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要加密或解密的内容" />
                     </Grid>
@@ -65,7 +65,7 @@
                             Grid.Row="2"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            MinHeight="280"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             IsReadOnly="True"
                             Text="{Binding Ciphertext}"
                             PlaceholderText="处理后的内容将显示在这里" />
@@ -82,14 +82,18 @@
 
                         <WrapPanel Grid.Row="4" Classes="tool-actions" VerticalAlignment="Bottom">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding Sm4HandlerCommand}"
                                 CommandParameter="true"
                                 Content="加密"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding Sm4HandlerCommand}"
                                 CommandParameter="false"
                                 Content="解密"
+                                Tag="M7 13L3 17L7 21M3 17H16"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>

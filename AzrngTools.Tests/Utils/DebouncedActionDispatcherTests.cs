@@ -9,14 +9,21 @@ public class DebouncedActionDispatcherTests
     {
         using var dispatcher = new DebouncedActionDispatcher(TimeSpan.FromMilliseconds(40));
         var executed = new List<string>();
+        var completion = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        dispatcher.Debounce(() => executed.Add("first"));
-        dispatcher.Debounce(() => executed.Add("second"));
-        dispatcher.Debounce(() => executed.Add("third"));
+        void Record(string value)
+        {
+            executed.Add(value);
+            completion.TrySetResult(value);
+        }
 
-        await Task.Delay(120);
+        dispatcher.Debounce(() => Record("first"));
+        dispatcher.Debounce(() => Record("second"));
+        dispatcher.Debounce(() => Record("third"));
 
-        var value = Assert.Single(executed);
+        var value = await completion.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
         Assert.Equal("third", value);
+        Assert.Single(executed);
     }
 }

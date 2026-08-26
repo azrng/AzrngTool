@@ -122,14 +122,18 @@
                                 <Button Grid.Column="1"
                                         Command="{Binding SelectAllSchemasCommand}"
                                         Classes="secondary">
-                                    <TextBlock Text="全选"
-                                               FontWeight="Medium" />
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="全选" FontWeight="Medium" />
+                                    </StackPanel>
                                 </Button>
                                 <Button Grid.Column="2"
                                         Command="{Binding ClearSchemaSelectionCommand}"
                                         Classes="secondary">
-                                    <TextBlock Text="清空"
-                                               FontWeight="Medium" />
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="清空" FontWeight="Medium" />
+                                    </StackPanel>
                                 </Button>
                             </Grid>
 
@@ -155,7 +159,10 @@
                                                     <Button Command="{Binding RetryLoadCommand}"
                                                             Classes="modern"
                                                             HorizontalAlignment="Left">
-                                                        <TextBlock Text="重新加载" />
+                                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                            <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                            <TextBlock Text="重新加载" />
+                                                        </StackPanel>
                                                     </Button>
                                                 </StackPanel>
                                             </Border>
@@ -255,8 +262,10 @@
                                         <Button Grid.Column="1"
                                                 Click="OnBrowsePgDumpExeClick"
                                                 Classes="secondary">
-                                            <TextBlock Text="浏览..."
-                                                       FontWeight="Medium" />
+                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                <TextBlock Text="浏览..." FontWeight="Medium" />
+                                            </StackPanel>
                                         </Button>
                                     </Grid>
                                 </StackPanel>
@@ -274,8 +283,10 @@
                                         <Button Grid.Column="1"
                                                 Click="OnBrowseOutputFileClick"
                                                 Classes="secondary">
-                                            <TextBlock Text="浏览..."
-                                                       FontWeight="Medium" />
+                                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                                <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                <TextBlock Text="浏览..." FontWeight="Medium" />
+                                            </StackPanel>
                                         </Button>
                                     </Grid>
                                 </StackPanel>
@@ -298,16 +309,20 @@
                                 Command="{Binding CancelCommand}"
                                 Classes="secondary"
                                 Padding="20,10">
-                            <TextBlock Text="取消"
-                                       FontWeight="Medium" />
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M6 6L18 18M18 6L6 18" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="取消" FontWeight="Medium" />
+                            </StackPanel>
                         </Button>
 
                         <Button Grid.Column="2"
                                 Command="{Binding ExportCommand}"
                                 Classes="modern"
                                 Padding="24,10">
-                            <TextBlock Text="导出"
-                                       FontWeight="SemiBold" />
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M12 4V16M8 12L12 16L16 12M5 20H19" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="导出" FontWeight="SemiBold" />
+                            </StackPanel>
                         </Button>
                     </Grid>
                 </Border>

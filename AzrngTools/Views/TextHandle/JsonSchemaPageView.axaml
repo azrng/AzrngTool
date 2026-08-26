@@ -32,7 +32,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="320"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             Text="{Binding OriginText}"
                             PlaceholderText="请输入 JSON 内容" />
                     </Grid>
@@ -47,9 +47,11 @@
 
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding SchemaGenHandleCommand}"
                                 CommandParameter="false"
                                 Content="生成 Schema"
+                                Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z"
                                 Theme="{DynamicResource SolidButton}" />
                         </WrapPanel>
 
@@ -76,7 +78,7 @@
                         Grid.Row="1"
                         AcceptsReturn="True"
                         Classes="Standard"
-                        Height="360"
+                        MinHeight="{StaticResource Layout.Editor.Lg}"
                         IsReadOnly="True"
                         Text="{Binding SchemaData}"
                         PlaceholderText="生成的 JSON Schema 将显示在这里" />

@@ -35,7 +35,7 @@
                             <avaloniaEdit:TextEditor
                                 FontFamily="Consolas,monospace"
                                 HorizontalScrollBarVisibility="Auto"
-                                MinHeight="420"
+                                MinHeight="{StaticResource Layout.Editor.Xl}"
                                 Name="JsonText"
                                 Padding="{StaticResource Thickness.8}"
                                 behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
@@ -91,20 +91,28 @@
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CompressJsonCommand}"
                             Content="压缩"
+                            Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding EscapeJsonCommand}"
                             Content="转义"
+                            Tag="M4 7H17M13 3L17 7L13 11"
                             Theme="{DynamicResource SolidButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CompressEscapeJsonCommand}"
                             Content="压缩并转义"
+                            Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding ReplaceEscapeCommand}"
                             Content="去除转义"
+                            Tag="M7 13L3 17L7 21M3 17H16"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>

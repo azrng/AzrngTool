@@ -79,20 +79,28 @@
 
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding FormatJsonCommand}"
                                 Content="格式化 JSON"
+                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                                 Theme="{DynamicResource OutlineButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ConvertToCsharpCommand}"
                                 Content="转换为 C# 实体类"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding CopyResultCommand}"
                                 Content="复制结果"
+                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                 Theme="{DynamicResource OutlineButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ClearCommand}"
                                 Content="清空"
+                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
 
@@ -118,9 +126,11 @@
                             </StackPanel>
 
                             <Button
+                                Classes="actionIcon"
                                 Grid.Column="1"
                                 Command="{Binding FormatJsonCommand}"
                                 Content="格式化 JSON"
+                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                                 Theme="{DynamicResource OutlineButton}"
                                 VerticalAlignment="Top" />
                         </Grid>
@@ -129,7 +139,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="360"
+                            MinHeight="{StaticResource Layout.Editor.Lg}"
                             Text="{Binding JsonInput}"
                             TextWrapping="Wrap"
                             PlaceholderText="请输入 JSON 内容" />
@@ -148,7 +158,7 @@
                             AcceptsReturn="True"
                             Classes="Standard"
                             FontFamily="Consolas,monospace"
-                            Height="360"
+                            MinHeight="{StaticResource Layout.Editor.Lg}"
                             IsReadOnly="True"
                             Text="{Binding CsharpOutput}"
                             TextWrapping="Wrap"
@@ -156,12 +166,16 @@
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ConvertToCsharpCommand}"
                                 Content="开始转换"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding CopyResultCommand}"
                                 Content="复制结果"
+                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>

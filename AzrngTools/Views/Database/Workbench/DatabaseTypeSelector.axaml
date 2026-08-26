@@ -50,7 +50,6 @@
             <Setter Property="Padding" Value="{StaticResource Thickness.20}" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
             <Setter Property="MinHeight" Value="172" />
         </Style>
 

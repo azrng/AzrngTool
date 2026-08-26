@@ -37,18 +37,24 @@
 
                     <WrapPanel Grid.Row="1" Classes="tool-actions">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CopyHeaderCommand}"
                             Content="复制 Header"
+                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                             IsEnabled="{Binding HasHeader}"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CopyPayloadCommand}"
                             Content="复制 Payload"
+                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                             IsEnabled="{Binding HasPayload}"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding ClearCommand}"
                             Content="清空"
+                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
@@ -72,7 +78,7 @@
                             <avaloniaEdit:TextEditor
                                 FontFamily="Consolas,monospace"
                                 HorizontalScrollBarVisibility="Auto"
-                                MinHeight="500"
+                                MinHeight="{StaticResource Layout.Editor.Xl}"
                                 Name="JwtText"
                                 Padding="{StaticResource Thickness.8}"
                                 behaviors:TextEditorBinding.Text="{Binding Original, Mode=TwoWay}"
@@ -122,15 +128,17 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        MinHeight="360"
+                                        MinHeight="{StaticResource Layout.Editor.Lg}"
                                         IsReadOnly="True"
                                         PlaceholderText="Header"
                                         Text="{Binding HeaderText}" />
 
                                     <Button
+                                        Classes="actionIcon"
                                         Grid.Row="2"
                                         Command="{Binding CopyHeaderCommand}"
                                         Content="复制 Header"
+                                        Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                         HorizontalAlignment="Left"
                                         IsEnabled="{Binding HasHeader}"
                                         Theme="{DynamicResource OutlineButton}" />
@@ -150,15 +158,17 @@
                                         Grid.Row="1"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        MinHeight="360"
+                                        MinHeight="{StaticResource Layout.Editor.Lg}"
                                         IsReadOnly="True"
                                         PlaceholderText="Payload"
                                         Text="{Binding PayloadText}" />
 
                                     <Button
+                                        Classes="actionIcon"
                                         Grid.Row="2"
                                         Command="{Binding CopyPayloadCommand}"
                                         Content="复制 Payload"
+                                        Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                                         HorizontalAlignment="Left"
                                         IsEnabled="{Binding HasPayload}"
                                         Theme="{DynamicResource OutlineButton}" />

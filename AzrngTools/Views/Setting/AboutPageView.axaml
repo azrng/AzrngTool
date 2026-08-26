@@ -95,8 +95,10 @@
 
                         <WrapPanel Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding PrimaryUpdateActionCommand}"
                                 Content="{Binding PrimaryUpdateActionText}"
+                                Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z"
                                 IsEnabled="{Binding CanExecutePrimaryUpdateAction}" />
                         </WrapPanel>
                     </StackPanel>

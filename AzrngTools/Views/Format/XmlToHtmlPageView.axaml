@@ -44,7 +44,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="240"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             Text="{Binding XmlContent}"
                             PlaceholderText="请输入 XML 内容" />
                     </Grid>
@@ -61,7 +61,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="240"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             Text="{Binding XsltContent}"
                             PlaceholderText="请输入 XSLT 内容" />
                     </Grid>
@@ -78,8 +78,10 @@
 
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding HandleCommand}"
                                 Content="转换 XML"
+                                Tag="M4 7H17M13 3L17 7L13 11"
                                 Theme="{DynamicResource SolidButton}" />
                         </WrapPanel>
 
@@ -104,7 +106,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="260"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             IsReadOnly="True"
                             Text="{Binding HtmlContent}"
                             PlaceholderText="HTML 内容" />

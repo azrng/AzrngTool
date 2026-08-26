@@ -38,9 +38,11 @@
                         </StackPanel>
 
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
-                            <Button
-                                Command="{Binding GenerateGuidCommand}"
-                                Content="重新生成 GUID"
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding GenerateGuidCommand}"
+                            Content="重新生成 GUID"
+                            Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
                                 Theme="{DynamicResource SolidButton}" />
                         </WrapPanel>
 

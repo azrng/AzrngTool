@@ -58,11 +58,17 @@
                             <Button Click="OnEditTableCommentClick"
                                     Classes="toolbarAction"
                                     IsVisible="{Binding CanEditComments}">
-                                <TextBlock Text="编辑备注" />
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M4 17.25V20H6.75L17.5 9.25L14.75 6.5L4 17.25ZM16.75 5.75L18.25 4.25C18.66 3.84 19.34 3.84 19.75 4.25L20.75 5.25C21.16 5.66 21.16 6.34 20.75 6.75L19.25 8.25L16.75 5.75Z" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="编辑备注" />
+                                </StackPanel>
                             </Button>
                             <Button Command="{Binding RefreshCommand}"
                                     Classes="toolbarAction">
-                                <TextBlock Text="重新加载" />
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="重新加载" />
+                                </StackPanel>
                             </Button>
                         </StackPanel>
                     </Grid>
@@ -238,9 +244,12 @@
                                                                         Tag="{Binding}"
                                                                         Classes="inlineAction"
                                                                         IsVisible="{Binding #RootContent.DataContext.CanEditComments}"
-                                                                        HorizontalAlignment="Center"
+                                                                                HorizontalAlignment="Center"
                                                                         VerticalAlignment="Center">
-                                                                    <TextBlock Text="编辑" />
+                                                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.4}">
+                                                                        <PathIcon Data="M4 17.25V20H6.75L17.5 9.25L14.75 6.5L4 17.25ZM16.75 5.75L18.25 4.25C18.66 3.84 19.34 3.84 19.75 4.25L20.75 5.25C21.16 5.66 21.16 6.34 20.75 6.75L19.25 8.25L16.75 5.75Z" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                                        <TextBlock Text="编辑" />
+                                                                    </StackPanel>
                                                                 </Button>
                                                             </Grid>
                                                         </Border>

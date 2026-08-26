@@ -74,7 +74,6 @@
             <Setter Property="Height" Value="112" />
             <Setter Property="MinHeight" Value="112" />
             <Setter Property="MaxHeight" Value="112" />
-            <Setter Property="FocusAdorner" Value="{x:Null}" />
         </Style>
 
         <Style Selector="TextBox.commentEditorInput:focus">
@@ -223,11 +222,13 @@
                                     Orientation="Horizontal"
                                     Spacing="12">
                             <Button Command="{Binding CancelCommand}"
-                                    Classes="secondary commentFooterButton"
-                                    Content="取消" />
+                                    Classes="secondary commentFooterButton actionIcon"
+                                    Content="取消"
+                                    Tag="M6 6L18 18M18 6L6 18" />
                             <Button Command="{Binding SaveCommand}"
-                                    Classes="modern commentFooterButton"
-                                    Content="保存" />
+                                    Classes="modern commentFooterButton actionIcon"
+                                    Content="保存"
+                                    Tag="M5 4H17L19 6V20H5V4ZM8 4V9H16V4M8 14H16" />
                         </StackPanel>
                     </Grid>
                 </Border>

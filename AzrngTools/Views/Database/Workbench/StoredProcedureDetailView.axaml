@@ -141,8 +141,10 @@
                                             Command="{Binding RefreshCommand}"
                                             Classes="toolbarAction"
                                             VerticalAlignment="Top">
-                                        <TextBlock Text="重新加载"
-                                                   FontWeight="Medium" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="重新加载" FontWeight="Medium" />
+                                        </StackPanel>
                                     </Button>
                                 </Grid>
                             </Border>
@@ -247,8 +249,10 @@
                                         Command="{Binding RefreshCommand}"
                                         Classes="toolbarAction"
                                         VerticalAlignment="Top">
-                                        <TextBlock Text="重新加载"
-                                                   FontWeight="Medium" />
+                                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                            <PathIcon Data="M19 8A7 7 0 1 0 20 12M19 4V8H15" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                            <TextBlock Text="重新加载" FontWeight="Medium" />
+                                        </StackPanel>
                                 </Button>
                             </Grid>
                         </Border>

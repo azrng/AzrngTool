@@ -1,12 +1,9 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Design Tokens - Merged Dictionary -->
+    <!-- Compatibility entry point. The application uses Styles/DesignTokens.axaml as the single source. -->
     <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source="/Assets/Styles/Colors.axaml"/>
-        <ResourceInclude Source="/Assets/Styles/Fonts.axaml"/>
-        <ResourceInclude Source="/Assets/Styles/Spacing.axaml"/>
-        <ResourceInclude Source="/Assets/Styles/Shadows.axaml"/>
+        <ResourceInclude Source="avares://AzrngTools/Styles/DesignTokens.axaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

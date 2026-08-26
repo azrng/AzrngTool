@@ -16,6 +16,7 @@ using AzrngTools.Views.Database.Workbench;
 
 namespace AzrngTools.Tests.Views.Database;
 
+[Collection("AvaloniaHeadlessRegression")]
 public class DatabaseWorkbenchPageViewTests
 {
     [Fact]

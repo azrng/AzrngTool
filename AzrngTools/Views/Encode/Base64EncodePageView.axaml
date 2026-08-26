@@ -40,25 +40,45 @@
                         <Button
                             Command="{Binding Base64HandlerCommand}"
                             CommandParameter="true"
-                            Content="Base64 编码"
-                            Theme="{DynamicResource SolidButton}" />
+                            Theme="{DynamicResource SolidButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M4 7H17M13 3L17 7L13 11" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="Base64 编码" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding Base64HandlerCommand}"
                             CommandParameter="false"
-                            Content="Base64 解码"
-                            Theme="{DynamicResource SolidButton}" />
+                            Theme="{DynamicResource SolidButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M20 17H7M11 13L7 17L11 21" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="Base64 解码" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding PasteFromClipboardCommand}"
-                            Content="从剪贴板导入"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M8 4H16V7H8V4ZM6 7H18V20H6V7Z" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="从剪贴板导入" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding CopyResultCommand}"
-                            Content="复制结果"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="复制结果" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding ClearCommand}"
-                            Content="清空"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="清空" />
+                            </StackPanel>
+                        </Button>
                     </WrapPanel>
                 </Grid>
             </Border>
@@ -128,15 +148,23 @@
                             <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource Space.10}">
                                 <Button
                                     Command="{Binding UseResultAsInputCommand}"
-                                    Content="结果回填到输入区"
                                     IsEnabled="{Binding HasResult}"
-                                    Theme="{DynamicResource OutlineButton}" />
+                                    Theme="{DynamicResource OutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M5 12H19M15 8L19 12L15 16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="结果回填到输入区" />
+                                    </StackPanel>
+                                </Button>
                                 <Button
                                     Grid.Column="1"
                                     Command="{Binding CopyResultCommand}"
-                                    Content="复制结果"
                                     IsEnabled="{Binding HasResult}"
-                                    Theme="{DynamicResource OutlineButton}" />
+                                    Theme="{DynamicResource OutlineButton}">
+                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                        <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                        <TextBlock Text="复制结果" />
+                                    </StackPanel>
+                                </Button>
                                 <TextBlock
                                     Grid.Column="2"
                                     Classes="section-copy"

@@ -37,9 +37,13 @@
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding ChoosePdfFileCommand}"
-                                Content="选择 PDF"
                                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                                Theme="{DynamicResource SolidButton}" />
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择 PDF" />
+                                </StackPanel>
+                            </Button>
                         </Grid>
 
                         <Border Grid.Row="1" Classes="tool-card-soft">
@@ -133,17 +137,25 @@
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding ChooseSplitOutputCommand}"
-                                Content="选择"
                                 IsEnabled="{Binding CanOperate}"
-                                Theme="{DynamicResource OutlineButton}" />
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择" />
+                                </StackPanel>
+                            </Button>
                         </Grid>
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button
                                 Command="{Binding SplitPdfCommand}"
-                                Content="开始分割"
                                 IsEnabled="{Binding CanOperate}"
-                                Theme="{DynamicResource SolidButton}" />
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M7 4V20M17 4V20M4 8H20M4 16H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="开始分割" />
+                                </StackPanel>
+                            </Button>
                         </WrapPanel>
                     </Grid>
                 </Border>
@@ -163,17 +175,25 @@
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding ChooseWordOutputCommand}"
-                                Content="选择"
                                 IsEnabled="{Binding CanOperate}"
-                                Theme="{DynamicResource OutlineButton}" />
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择" />
+                                </StackPanel>
+                            </Button>
                         </Grid>
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button
                                 Command="{Binding ExportWordCommand}"
-                                Content="导出 Word"
                                 IsEnabled="{Binding CanOperate}"
-                                Theme="{DynamicResource SolidButton}" />
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V16M8 12L12 16L16 12M5 20H19" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="导出 Word" />
+                                </StackPanel>
+                            </Button>
                         </WrapPanel>
                     </Grid>
                 </Border>
@@ -188,9 +208,13 @@
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
                             <Button
                                 Command="{Binding ClearCommand}"
-                                Content="清空当前"
                                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                                Theme="{DynamicResource OutlineButton}" />
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="清空当前" />
+                                </StackPanel>
+                            </Button>
                         </WrapPanel>
                     </Grid>
                 </Border>

@@ -42,7 +42,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="260"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             Text="{Binding Original}"
                             PlaceholderText="请输入要进行哈希的内容" />
                     </Grid>
@@ -66,11 +66,11 @@
                         </Border>
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
-                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="0" Content="MD5" Theme="{DynamicResource SolidButton}" />
-                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="1" Content="SHA1" Theme="{DynamicResource OutlineButton}" />
-                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="2" Content="SHA256" Theme="{DynamicResource OutlineButton}" />
-                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="3" Content="SHA512" Theme="{DynamicResource OutlineButton}" />
-                            <Button Command="{Binding OriginalHandlerCommand}" CommandParameter="4" Content="SM3" Theme="{DynamicResource OutlineButton}" />
+                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="0" Content="MD5" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource SolidButton}" />
+                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="1" Content="SHA1" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="2" Content="SHA256" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="3" Content="SHA512" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="4" Content="SM3" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>
                 </Border>
@@ -87,7 +87,7 @@
                         Grid.Row="1"
                         AcceptsReturn="True"
                         Classes="Standard"
-                        Height="220"
+                        MinHeight="{StaticResource Layout.Editor.Md}"
                         IsReadOnly="True"
                         Text="{Binding Ciphertext}"
                         PlaceholderText="哈希后的内容" />

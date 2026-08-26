@@ -42,24 +42,44 @@
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button
                             Command="{Binding FormatJsonCommand}"
-                            Content="格式化"
-                            Theme="{DynamicResource SolidButton}" />
+                            Theme="{DynamicResource SolidButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M4 5H20M4 12H16M4 19H12" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="格式化" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding CompressJsonCommand}"
-                            Content="压缩"
-                            Theme="{DynamicResource SolidButton}" />
+                            Theme="{DynamicResource SolidButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M7 4V20M17 4V20M4 7L7 4L10 7M14 17L17 20L20 17" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="压缩" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding EscapeJsonCommand}"
-                            Content="转义"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M5 5L19 19M19 5L5 19" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="转义" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding CompressEscapeJsonCommand}"
-                            Content="压缩并转义"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M7 4V20M17 4V20M5 5L19 19" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="压缩并转义" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Command="{Binding ReplaceEscapeCommand}"
-                            Content="去除转义"
-                            Theme="{DynamicResource OutlineButton}" />
+                            Theme="{DynamicResource OutlineButton}">
+                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                <PathIcon Data="M5 12H19M15 8L19 12L15 16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="去除转义" />
+                            </StackPanel>
+                        </Button>
                     </WrapPanel>
                 </Grid>
 

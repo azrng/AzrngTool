@@ -39,14 +39,25 @@ public partial class TranslatorPageViewModel : ViewModelBase
     [ObservableProperty]
     private int _translatorTypeIndex;
 
-    [RelayCommand]
+    [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    private string _busyText = string.Empty;
+
+    public bool CanTranslate => !IsBusy && !string.IsNullOrWhiteSpace(OriginText);
+
+    [RelayCommand(CanExecute = nameof(CanExecuteTranslation))]
     private async Task Handler()
     {
-        if (OriginText.IsNullOrWhiteSpace())
+        if (string.IsNullOrWhiteSpace(OriginText))
         {
             _messageService.SendMessage("请输入要转换的内容");
+            return;
         }
 
+        IsBusy = true;
+        BusyText = "正在翻译...";
         try
         {
             switch (TranslatorTypeIndex)
@@ -67,5 +78,27 @@ public partial class TranslatorPageViewModel : ViewModelBase
             LocalLogHelper.LogError($"翻译处理失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{e.Message}");
         }
+        finally
+        {
+            IsBusy = false;
+            BusyText = string.Empty;
+        }
+    }
+
+    private bool CanExecuteTranslation()
+    {
+        return CanTranslate;
+    }
+
+    partial void OnOriginTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(CanTranslate));
+        HandlerCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanTranslate));
+        HandlerCommand.NotifyCanExecuteChanged();
     }
 }

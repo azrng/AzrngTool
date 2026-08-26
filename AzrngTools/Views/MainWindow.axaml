@@ -2,6 +2,8 @@
     ExtendClientAreaToDecorationsHint="True"
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
+    MinHeight="{StaticResource Layout.MainWindow.MinHeight}"
+    MinWidth="{StaticResource Layout.MainWindow.MinWidth}"
     Width="{StaticResource Layout.MainWindow.Width}"
     WindowDecorations="None"
     WindowStartupLocation="CenterScreen"
@@ -67,33 +69,67 @@
                         </ToggleSwitch>
 
                         <Button
-                            Classes="Tertiary"
+                            Classes="windowControl"
                             Click="BtnMin_OnClick"
-                            Content="−"
                             Theme="{DynamicResource BorderlessButton}"
-                            x:Name="btnMin" />
+                            ToolTip.Tip="最小化"
+                            x:Name="btnMin">
+                            <PathIcon
+                                Data="M5 12H19"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
                         <Button
-                            Classes="Danger"
-                            Click="BtnClose_OnClick"
-                            Content="✕"
+                            Classes="windowControl"
+                            Click="BtnMax_OnClick"
                             Theme="{DynamicResource BorderlessButton}"
-                            x:Name="btnClose" />
+                            ToolTip.Tip="最大化 / 还原"
+                            x:Name="btnMax">
+                            <PathIcon
+                                Data="M5 5H19V19H5V5ZM8 8H16V16H8V8Z"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
+                        <Button
+                            Classes="windowControl close"
+                            Click="BtnClose_OnClick"
+                            Theme="{DynamicResource BorderlessButton}"
+                            ToolTip.Tip="关闭"
+                            x:Name="btnClose">
+                            <PathIcon
+                                Data="M5 5L19 19M19 5L5 19"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
             <Grid Grid.Row="1" ColumnSpacing="{StaticResource Space.12}">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{StaticResource Layout.Shell.SidebarWidth}" />
+                    <ColumnDefinition Width="{Binding SidebarWidth}" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <Border Classes="shell-sidebar">
                     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
-                        <TextBox
-                            Grid.Row="0"
-                            Text="{Binding SearchKeyword}"
-                            PlaceholderText="搜索工具 / 分组..." />
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                            <TextBox
+                                Text="{Binding SearchKeyword}"
+                                IsVisible="{Binding !IsSidebarCollapsed}"
+                                PlaceholderText="搜索工具 / 分组..." />
+                            <Button
+                                Grid.Column="1"
+                                Classes="iconButton sidebarToggleButton"
+                                Command="{Binding ToggleSidebarCommand}"
+                                HorizontalAlignment="Right"
+                                ToolTip.Tip="{Binding IsSidebarCollapsed, StringFormat='切换侧栏'}">
+                                <PathIcon
+                                    Data="{Binding SidebarToggleIconPath}"
+                                    Height="{StaticResource Layout.Icon.Sm}"
+                                    Width="{StaticResource Layout.Icon.Sm}" />
+                            </Button>
+                        </Grid>
 
                         <Border
                             Grid.Row="1"
@@ -112,11 +148,11 @@
                                         Height="{StaticResource Layout.Icon.Sm}"
                                         Width="{StaticResource Layout.Icon.Sm}" />
                                 </Button>
-                                <StackPanel Grid.Column="1" Spacing="{StaticResource Space.2}">
+                                <StackPanel Grid.Column="1" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
                                     <TextBlock Classes="metric-label" Text="总工具" />
                                     <TextBlock Classes="metric-value compact" Text="{Binding TotalToolCount}" />
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" Spacing="{StaticResource Space.2}">
+                                <StackPanel Grid.Column="2" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
                                     <TextBlock Classes="metric-label" Text="分类" />
                                     <TextBlock Classes="metric-value compact" Text="{Binding CategoryCount}" />
                                 </StackPanel>
@@ -154,8 +190,19 @@
                                         <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                                             <Expander.Header>
                                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
-                                                    <TextBlock Classes="nav-group-title" Text="{Binding Title}" />
-                                                    <Border Grid.Column="1" Classes="badge-pill compact">
+                                                    <PathIcon
+                                                        Data="{Binding IconPath}"
+                                                        Classes="nav-item-icon"
+                                                        VerticalAlignment="Center" />
+                                                    <TextBlock
+                                                        Grid.Column="1"
+                                                        Classes="nav-group-title"
+                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
+                                                        Text="{Binding Title}" />
+                                                    <Border
+                                                        Grid.Column="2"
+                                                        Classes="badge-pill compact"
+                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}">
                                                         <TextBlock Classes="badge-text" Text="{Binding Child.Count}" />
                                                     </Border>
                                                 </Grid>
@@ -166,7 +213,14 @@
                                                 SelectionChanged="OnGroupListBoxSelectionChanged">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Classes="nav-item-text" Text="{Binding Title}" />
+                                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.8}">
+                                                            <PathIcon Data="{Binding IconPath}" Classes="nav-item-icon" />
+                                                            <TextBlock
+                                                                Grid.Column="1"
+                                                                Classes="nav-item-text"
+                                                                IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
+                                                                Text="{Binding Title}" />
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
@@ -180,7 +234,7 @@
 
                 <Grid Grid.Column="1">
                     <Border Classes="shell-panel">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <Grid HorizontalAlignment="Stretch"
                                   MinWidth="0">
                                 <!-- 使用 ContentControl 而非 TransitioningContentControl：

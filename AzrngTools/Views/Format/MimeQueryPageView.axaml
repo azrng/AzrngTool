@@ -20,12 +20,16 @@
 
                     <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding CopyResultCommand}"
                             Content="复制结果"
+                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
+                            Classes="actionIcon"
                             Command="{Binding ClearCommand}"
                             Content="清空"
+                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
@@ -47,16 +51,22 @@
 
                         <WrapPanel Grid.Row="2" Classes="tool-actions">
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding QueryByExtensionCommand}"
                                 Content="按扩展名查询"
+                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding QueryByMimeTypeCommand}"
                                 Content="按MIME类型查询"
+                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
                                 Theme="{DynamicResource SolidButton}" />
                             <Button
+                                Classes="actionIcon"
                                 Command="{Binding ShowAllMimeTypesCommand}"
                                 Content="显示所有类型"
+                                Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
                                 Theme="{DynamicResource OutlineButton}" />
                         </WrapPanel>
                     </Grid>

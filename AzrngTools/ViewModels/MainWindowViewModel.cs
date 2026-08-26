@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Styling;
 using AzrngTools.Services;
 using AzrngTools.ViewModels.Encode;
@@ -117,6 +118,15 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isDarkThemeEnabled;
+
+    [ObservableProperty]
+    private bool _isSidebarCollapsed;
+
+    public GridLength SidebarWidth => IsSidebarCollapsed ? new GridLength(72) : new GridLength(248);
+
+    public string SidebarToggleIconPath => IsSidebarCollapsed
+        ? "M9 5L16 12L9 19"
+        : "M15 5L8 12L15 19";
 
     private void CreateMenuBars()
     {
@@ -238,6 +248,18 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnSearchKeywordChanged(string value)
     {
         ApplyMenuFilter();
+    }
+
+    partial void OnIsSidebarCollapsedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(SidebarWidth));
+        OnPropertyChanged(nameof(SidebarToggleIconPath));
+    }
+
+    [RelayCommand]
+    private void ToggleSidebar()
+    {
+        IsSidebarCollapsed = !IsSidebarCollapsed;
     }
 
     [RelayCommand]

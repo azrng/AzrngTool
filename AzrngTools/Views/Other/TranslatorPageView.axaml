@@ -41,7 +41,7 @@
                             Grid.Row="1"
                             AcceptsReturn="True"
                             Classes="Standard"
-                            Height="320"
+                            MinHeight="{StaticResource Layout.Editor.Md}"
                             Text="{Binding OriginText}"
                             PlaceholderText="请输入要转换的内容" />
                     </Grid>
@@ -69,12 +69,27 @@
                             </Grid>
                         </Border>
 
-                        <WrapPanel Grid.Row="2" Classes="tool-actions">
+                        <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
                             <Button
                                 Command="{Binding HandlerCommand}"
-                                Content="翻译"
-                                Theme="{DynamicResource SolidButton}" />
-                        </WrapPanel>
+                                IsEnabled="{Binding CanTranslate}"
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon
+                                        Data="M4 5H20M4 12H20M4 19H20M8 2L5 5L8 8M16 9L19 12L16 15M8 16L5 19L8 22"
+                                        Foreground="{DynamicResource Brush.Text.OnAccent}"
+                                        Height="{StaticResource Layout.Icon.Sm}"
+                                        Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="翻译" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                            <Border Grid.Column="1" Classes="tool-card-soft" IsVisible="{Binding IsBusy}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.8}">
+                                    <ProgressBar Width="110" IsIndeterminate="True" />
+                                    <TextBlock Classes="section-copy" Text="{Binding BusyText}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </Border>
             </Grid>
@@ -90,7 +105,7 @@
                         Grid.Row="1"
                         AcceptsReturn="True"
                         Classes="Standard"
-                        Height="260"
+                        MinHeight="{StaticResource Layout.Editor.Md}"
                         IsReadOnly="True"
                         Text="{Binding ResultText}"
                         PlaceholderText="输出的结果" />
