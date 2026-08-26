@@ -128,6 +128,15 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private string _responseStatusText = string.Empty;
 
     [ObservableProperty]
+    private bool _isResponseSuccess;
+
+    [ObservableProperty]
+    private bool _isResponseWarning;
+
+    [ObservableProperty]
+    private bool _isResponseError;
+
+    [ObservableProperty]
     private string _responseDurationText = string.Empty;
 
     [ObservableProperty]
@@ -484,6 +493,9 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         HasResponse = true;
         ShowResponsePlaceholder = false;
         ResponseRequestUrlText = response.FinalUrl;
+        IsResponseSuccess = success && response.StatusCode is >= 200 and < 300;
+        IsResponseWarning = success && response.StatusCode is >= 300 and < 400;
+        IsResponseError = !IsResponseSuccess && !IsResponseWarning;
         ResponseStatusText = success && response.StatusCode is { } code
             ? $"HTTP {code}"
             : "请求失败";
@@ -501,6 +513,9 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         ShowResponsePlaceholder = true;
         ResponseRequestUrlText = string.Empty;
         ResponseStatusText = string.Empty;
+        IsResponseSuccess = false;
+        IsResponseWarning = false;
+        IsResponseError = false;
         ResponseDurationText = string.Empty;
         ResponseSizeText = string.Empty;
         ResponseBodyText = string.Empty;
