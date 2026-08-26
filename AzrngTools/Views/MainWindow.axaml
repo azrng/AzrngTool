@@ -38,15 +38,9 @@
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                     <StackPanel Spacing="{StaticResource Space.4}" VerticalAlignment="Center">
                         <TextBlock Classes="app-title" Text="{Binding AppTitle}" />
-                        <TextBlock Classes="app-subtitle" Text="{Binding AppSubtitle}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource Space.8}" VerticalAlignment="Center">
-                        <TextBlock
-                            Classes="titlebar-motto"
-                            Text="放下个人素质，享受缺德人生"
-                            VerticalAlignment="Center" />
-
                         <ToggleSwitch
                             Command="{Binding ToggleCheckedChangedCommand}"
                             IsChecked="{Binding IsDarkThemeEnabled, Mode=TwoWay}"

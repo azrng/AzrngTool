@@ -11,17 +11,12 @@
     xmlns:vm="using:AzrngTools.ViewModels.Network"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <UserControl.Styles>
-        <Style Selector="Border.api-request-status">
-            <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}" />
-            <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
-        </Style>
-
-        <Style Selector="TextBlock.api-request-status-text">
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
+        <Style Selector="TextBlock.api-request-status-inline">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <Style Selector="Border.api-request-empty">
@@ -80,25 +75,8 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-        <Border Grid.Row="0" Classes="page-header">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                <StackPanel Spacing="{StaticResource Space.4}">
-                    <TextBlock Classes="hero-eyebrow" Text="NETWORK / HTTP CLIENT" />
-                    <TextBlock Classes="section-title" Text="接口调试工作台" />
-                    <TextBlock Classes="section-copy" Text="组织请求、查看响应，快速回放历史记录。" />
-                </StackPanel>
-
-                <Border Grid.Column="1" Classes="api-request-status" VerticalAlignment="Center" Width="220">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="metric-label" Text="工作台状态" />
-                        <TextBlock Classes="api-request-status-text" Text="{Binding StatusMessage}" />
-                    </StackPanel>
-                </Border>
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto" RowSpacing="{StaticResource Space.12}">
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
             <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
                 <Border Grid.Row="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
@@ -138,9 +116,16 @@
                             </Button>
                         </Grid>
 
-                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
-                            <TextBlock Classes="metric-label" Text="可按需配置查询参数、请求头与请求体" VerticalAlignment="Center" />
-                            <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right">
+                        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <TextBlock Classes="section-title" Text="接口调试工作台" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="metric-label" Text="可按需配置查询参数、请求头与请求体" VerticalAlignment="Center" />
+                            <TextBlock
+                                Grid.Column="2"
+                                Classes="api-request-status-inline"
+                                MaxWidth="220"
+                                Text="{Binding StatusMessage}"
+                                ToolTip.Tip="{Binding StatusMessage}" />
+                            <WrapPanel Grid.Column="3" Classes="tool-actions" HorizontalAlignment="Right">
                                 <Button
                                     Command="{Binding ClearCurrentRequestCommand}"
                                     IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
@@ -210,7 +195,7 @@
                                                 ItemsSource="{Binding QueryParameters}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
                                                             <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
                                                             <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
                                                             <Button
@@ -262,7 +247,7 @@
                                         ItemsSource="{Binding Headers}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
                                                     <TextBox Grid.Column="0" PlaceholderText="Authorization" Text="{Binding Name}" />
                                                     <TextBox Grid.Column="1" PlaceholderText="Bearer token" Text="{Binding Value}" />
                                                     <Button
@@ -333,7 +318,7 @@
                                                 ItemsSource="{Binding FormFields}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.0.8}">
+                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
                                                             <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
                                                             <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
                                                             <Button
