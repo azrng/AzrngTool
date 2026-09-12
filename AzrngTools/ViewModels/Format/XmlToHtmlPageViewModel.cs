@@ -2,6 +2,7 @@
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using System.Xml.Xsl;
@@ -55,6 +56,13 @@ namespace AzrngTools.ViewModels.Format
                 if (XsltContent.IsNullOrWhiteSpace())
                 {
                     _messageService.SendMessage("请输入的XSlT");
+                    return;
+                }
+
+                // XslCompiledTransform 依赖运行时生成 IL，Native AOT 版本无法支持，提前给出明确提示
+                if (!RuntimeFeature.IsDynamicCodeSupported)
+                {
+                    _messageService.SendMessage("XSLT 转换依赖运行时代码生成，AOT 发布版本暂不支持该功能。");
                     return;
                 }
 

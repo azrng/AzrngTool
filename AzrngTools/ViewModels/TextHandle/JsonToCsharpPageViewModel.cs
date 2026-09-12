@@ -148,11 +148,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
             }
 
             using var jsonDoc = JsonDocument.Parse(JsonInput);
-            JsonInput = JsonSerializer.Serialize(jsonDoc.RootElement, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
+            JsonInput = JsonHelper.FormatJsonDocument(jsonDoc);
         }
         catch (JsonException ex)
         {

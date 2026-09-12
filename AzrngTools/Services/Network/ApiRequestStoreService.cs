@@ -1,15 +1,11 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzrngTools.Models.Network;
 
 namespace AzrngTools.Services.Network;
 
-public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingletonDependency
+public sealed partial class ApiRequestStoreService : IApiRequestStoreService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true
-    };
-
     private const int MaxHistoryCount = 50;
     private readonly SemaphoreSlim _mutex = new(1, 1);
     private readonly string _filePath;
@@ -112,7 +108,7 @@ public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingleton
             }
 
             var json = await File.ReadAllTextAsync(_filePath, cancellationToken);
-            return JsonSerializer.Deserialize<ApiRequestToolStore>(json, JsonOptions) ?? new ApiRequestToolStore();
+            return JsonSerializer.Deserialize(json, ApiRequestJsonContext.Default.ApiRequestToolStore) ?? new ApiRequestToolStore();
         }
         catch (Exception ex)
         {
@@ -130,7 +126,7 @@ public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingleton
         }
 
         Directory.CreateDirectory(directory);
-        var json = JsonSerializer.Serialize(store, JsonOptions);
+        var json = JsonSerializer.Serialize(store, ApiRequestJsonContext.Default.ApiRequestToolStore);
         var tempFilePath = _filePath + ".tmp";
         await File.WriteAllTextAsync(tempFilePath, json, cancellationToken);
         File.Move(tempFilePath, _filePath, true);
@@ -142,5 +138,12 @@ public sealed class ApiRequestStoreService : IApiRequestStoreService, ISingleton
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AzrngTools");
         return Path.Combine(userDataDirectory, "api-request-tool.json");
+    }
+
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ApiRequestToolStore))]
+    private sealed partial class ApiRequestJsonContext : JsonSerializerContext
+    {
     }
 }

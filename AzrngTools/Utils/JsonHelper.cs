@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -114,6 +115,24 @@ namespace AzrngTools.Utils
             }
 
             return System.Text.Json.JsonSerializer.Deserialize<T>(json, DeserializeOptions);
+        }
+
+        /// <summary>
+        /// 基于 System.Text.Json 的 JSON 缩进格式化，不经过反射序列化，AOT 发布下可用
+        /// </summary>
+        public static string FormatJsonDocument(JsonDocument document)
+        {
+            using var stream = new MemoryStream();
+            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions
+                   {
+                       Indented = true,
+                       Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                   }))
+            {
+                document.WriteTo(writer);
+            }
+
+            return Encoding.UTF8.GetString(stream.ToArray());
         }
 
         private static bool TryParseJsonToken(string text, out JToken? token)

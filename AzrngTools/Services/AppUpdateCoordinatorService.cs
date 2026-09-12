@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzrngTools.Models;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.Messaging;
@@ -6,13 +7,8 @@ using Microsoft.Extensions.Logging;
 
 namespace AzrngTools.Services;
 
-public sealed class AppUpdateCoordinatorService : IAppUpdateCoordinatorService, ISingletonDependency
+public sealed partial class AppUpdateCoordinatorService : IAppUpdateCoordinatorService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions CacheJsonOptions = new()
-    {
-        WriteIndented = true
-    };
-
     private readonly SemaphoreSlim _operationLock = new(1, 1);
     private readonly IAppUpdateService _appUpdateService;
     private readonly IMessageService _messageService;
@@ -315,7 +311,7 @@ public sealed class AppUpdateCoordinatorService : IAppUpdateCoordinatorService, 
             }
 
             var json = File.ReadAllText(_cacheFilePath);
-            var package = JsonSerializer.Deserialize<AppUpdatePreparedPackage>(json, CacheJsonOptions);
+            var package = JsonSerializer.Deserialize(json, AppUpdateCacheJsonContext.Default.AppUpdatePreparedPackage);
             if (IsPreparedPackageUsable(package))
             {
                 return package;
@@ -341,7 +337,7 @@ public sealed class AppUpdateCoordinatorService : IAppUpdateCoordinatorService, 
             }
 
             Directory.CreateDirectory(directory);
-            var json = JsonSerializer.Serialize(package, CacheJsonOptions);
+            var json = JsonSerializer.Serialize(package, AppUpdateCacheJsonContext.Default.AppUpdatePreparedPackage);
             var tempFilePath = _cacheFilePath + ".tmp";
             File.WriteAllText(tempFilePath, json);
             File.Move(tempFilePath, _cacheFilePath, true);
@@ -423,5 +419,12 @@ public sealed class AppUpdateCoordinatorService : IAppUpdateCoordinatorService, 
         Download,
         RetryDownload,
         Apply
+    }
+
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(AppUpdatePreparedPackage))]
+    private sealed partial class AppUpdateCacheJsonContext : JsonSerializerContext
+    {
     }
 }

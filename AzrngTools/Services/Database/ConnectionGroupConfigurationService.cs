@@ -1,15 +1,17 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzrngTools.Models.Database;
 
 namespace AzrngTools.Services.Database;
 
-public class ConnectionGroupConfigurationService : IConnectionGroupConfigurationService, ISingletonDependency
+public partial class ConnectionGroupConfigurationService : IConnectionGroupConfigurationService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions GroupJsonOptions = new()
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化；读侧保持大小写不敏感以兼容历史文件
+    [JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(List<ConnectionGroup>))]
+    private sealed partial class ConnectionGroupJsonContext : JsonSerializerContext
     {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true
-    };
+    }
 
     public IReadOnlyList<ConnectionGroup> LoadGroups(string filePath)
     {
@@ -18,13 +20,13 @@ public class ConnectionGroupConfigurationService : IConnectionGroupConfiguration
             return [];
         }
 
-        return JsonSerializer.Deserialize<List<ConnectionGroup>>(File.ReadAllText(filePath), GroupJsonOptions)
+        return JsonSerializer.Deserialize(File.ReadAllText(filePath), ConnectionGroupJsonContext.Default.ListConnectionGroup)
             ?? [];
     }
 
     public void SaveGroups(string filePath, IEnumerable<ConnectionGroup> groups)
     {
-        var json = JsonSerializer.Serialize(groups.ToList(), GroupJsonOptions);
+        var json = JsonSerializer.Serialize(groups.ToList(), ConnectionGroupJsonContext.Default.ListConnectionGroup);
         File.WriteAllText(filePath, json);
     }
 

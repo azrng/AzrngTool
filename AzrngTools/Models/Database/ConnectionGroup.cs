@@ -11,29 +11,29 @@ public partial class ConnectionGroup : ObservableObject
     /// 分组 ID
     /// </summary>
     [ObservableProperty]
-    private string _id = Guid.NewGuid().ToString("N")[..8];
+    public partial string Id { get; set; } = Guid.NewGuid().ToString("N")[..8];
 
     /// <summary>
     /// 分组名称
     /// </summary>
     [ObservableProperty]
-    private string _name = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 分组描述
     /// </summary>
     [ObservableProperty]
-    private string _description = string.Empty;
+    public partial string Description { get; set; } = string.Empty;
 
     /// <summary>
     /// 分组颜色（用于 UI 标记）
     /// </summary>
     [ObservableProperty]
-    private string _color = "#E3EFE8";
+    public partial string Color { get; set; } = "#E3EFE8";
 
     /// <summary>
     /// 是否为默认分组
     /// </summary>
     [ObservableProperty]
-    private bool _isDefault;
+    public partial bool IsDefault { get; set; }
 }

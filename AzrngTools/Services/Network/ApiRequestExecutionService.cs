@@ -1,19 +1,14 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using AzrngTools.Models.Network;
+using AzrngTools.Utils;
 
 namespace AzrngTools.Services.Network;
 
 public sealed class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
 {
-    private static readonly JsonSerializerOptions IndentedOptions = new()
-    {
-        WriteIndented = true,
-        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-    };
     private readonly IHttpClientFactory _httpClientFactory;
 
     public ApiRequestExecutionService(IHttpClientFactory httpClientFactory)
@@ -216,7 +211,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         try
         {
             using var document = JsonDocument.Parse(content);
-            return JsonSerializer.Serialize(document.RootElement, IndentedOptions);
+            return JsonHelper.FormatJsonDocument(document);
         }
         catch (Exception ex)
         {

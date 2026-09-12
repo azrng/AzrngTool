@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Timer = System.Timers.Timer;
 
 namespace AzrngTools.Services;
@@ -11,13 +12,8 @@ namespace AzrngTools.Services;
 /// 3. 最近使用分使用 e^(-days / 7) 衰减，兼顾近期活跃度。
 /// 4. 最终分数 = 频率分 * 0.75 + 最近分 * 0.25。
 /// </summary>
-public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDependency
+public sealed partial class ToolUsageStatsService : IToolUsageStatsService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true
-    };
-
     private const int DebounceIntervalMs = 2000;
 
     private readonly object _syncRoot = new();
@@ -125,7 +121,7 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
             }
 
             var json = File.ReadAllText(_filePath);
-            return JsonSerializer.Deserialize<ToolUsageStore>(json, JsonOptions) ?? new ToolUsageStore();
+            return JsonSerializer.Deserialize(json, ToolUsageStatsJsonContext.Default.ToolUsageStore) ?? new ToolUsageStore();
         }
         catch (Exception ex)
         {
@@ -143,7 +139,7 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
         }
 
         Directory.CreateDirectory(directory);
-        var json = JsonSerializer.Serialize(store, JsonOptions);
+        var json = JsonSerializer.Serialize(store, ToolUsageStatsJsonContext.Default.ToolUsageStore);
         var tempFilePath = _filePath + ".tmp";
         File.WriteAllText(tempFilePath, json);
         File.Move(tempFilePath, _filePath, true);
@@ -155,5 +151,12 @@ public sealed class ToolUsageStatsService : IToolUsageStatsService, ISingletonDe
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AzrngTools");
         return Path.Combine(userDataDirectory, "tool-usage-stats.json");
+    }
+
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ToolUsageStore))]
+    private sealed partial class ToolUsageStatsJsonContext : JsonSerializerContext
+    {
     }
 }

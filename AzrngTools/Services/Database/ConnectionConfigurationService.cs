@@ -1,15 +1,17 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzrngTools.Models.Database;
 
 namespace AzrngTools.Services.Database;
 
-public class ConnectionConfigurationService : IConnectionConfigurationService, ISingletonDependency
+public partial class ConnectionConfigurationService : IConnectionConfigurationService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions ConnectionJsonOptions = new()
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化；读侧保持大小写不敏感以兼容历史文件
+    [JsonSourceGenerationOptions(WriteIndented = true, PropertyNameCaseInsensitive = true)]
+    [JsonSerializable(typeof(List<ConnectionConfig>))]
+    private sealed partial class ConnectionJsonContext : JsonSerializerContext
     {
-        PropertyNameCaseInsensitive = true,
-        WriteIndented = true
-    };
+    }
 
     public IReadOnlyList<ConnectionConfig> LoadConnections(string filePath)
     {
@@ -30,7 +32,7 @@ public class ConnectionConfigurationService : IConnectionConfigurationService, I
 
     public IReadOnlyList<ConnectionConfig> DeserializeConnections(string json)
     {
-        var connections = JsonSerializer.Deserialize<List<ConnectionConfig>>(json, ConnectionJsonOptions)
+        var connections = JsonSerializer.Deserialize(json, ConnectionJsonContext.Default.ListConnectionConfig)
             ?? [];
 
         foreach (var connection in connections)
@@ -43,7 +45,7 @@ public class ConnectionConfigurationService : IConnectionConfigurationService, I
 
     public string SerializeConnections(IEnumerable<ConnectionConfig> connections)
     {
-        return JsonSerializer.Serialize(CreateEncryptedConnectionCopies(connections), ConnectionJsonOptions);
+        return JsonSerializer.Serialize(CreateEncryptedConnectionCopies(connections), ConnectionJsonContext.Default.ListConnectionConfig);
     }
 
     public List<ConnectionConfig> CreateEncryptedConnectionCopies(IEnumerable<ConnectionConfig> connections)

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using AzrngTools.Models;
 using Common.Windows.Core;
 
@@ -7,13 +8,8 @@ namespace AzrngTools.Services;
 /// <summary>
 /// 硬件信息本地缓存服务，避免每次打开页面都重复采集系统信息。
 /// </summary>
-public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingletonDependency
+public sealed partial class HardwareInfoCacheService : IHardwareInfoCacheService, ISingletonDependency
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        WriteIndented = true
-    };
-
     private readonly object _syncRoot = new();
     private readonly string _filePath;
     private HardwareInfoSnapshot? _cachedSnapshot;
@@ -61,7 +57,7 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
             }
 
             var json = File.ReadAllText(_filePath);
-            var snapshot = JsonSerializer.Deserialize<HardwareInfoSnapshot>(json, JsonOptions);
+            var snapshot = JsonSerializer.Deserialize(json, HardwareInfoJsonContext.Default.HardwareInfoSnapshot);
             return IsUsable(snapshot) ? snapshot : null;
         }
         catch (Exception ex)
@@ -82,7 +78,7 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
             }
 
             Directory.CreateDirectory(directory);
-            var json = JsonSerializer.Serialize(snapshot, JsonOptions);
+            var json = JsonSerializer.Serialize(snapshot, HardwareInfoJsonContext.Default.HardwareInfoSnapshot);
             var tempFilePath = _filePath + ".tmp";
             File.WriteAllText(tempFilePath, json);
             File.Move(tempFilePath, _filePath, true);
@@ -131,5 +127,12 @@ public sealed class HardwareInfoCacheService : IHardwareInfoCacheService, ISingl
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AzrngTools");
         return Path.Combine(userDataDirectory, "hardware-info-cache.json");
+    }
+
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(HardwareInfoSnapshot))]
+    private sealed partial class HardwareInfoJsonContext : JsonSerializerContext
+    {
     }
 }

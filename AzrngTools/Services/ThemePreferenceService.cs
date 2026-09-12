@@ -1,11 +1,12 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Avalonia.Styling;
 
 namespace AzrngTools.Services;
 
-public sealed class ThemePreferenceService : IThemePreferenceService
+public sealed partial class ThemePreferenceService : IThemePreferenceService
 {
     private const string ThemeSettingsFileName = "theme-settings.json";
     private readonly string _settingsFilePath;
@@ -35,7 +36,7 @@ public sealed class ThemePreferenceService : IThemePreferenceService
                 return ThemeVariant.Default;
             }
 
-            var settings = JsonSerializer.Deserialize<ThemePreferenceSettings>(raw);
+            var settings = JsonSerializer.Deserialize(raw, AppThemeJsonContext.Default.ThemePreferenceSettings);
             return settings?.RequestedThemeVariant?.Trim().ToLowerInvariant() switch
             {
                 "light" => ThemeVariant.Light,
@@ -63,10 +64,7 @@ public sealed class ThemePreferenceService : IThemePreferenceService
             RequestedThemeVariant = value
         };
 
-        var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        var json = JsonSerializer.Serialize(settings, AppThemeJsonContext.Default.ThemePreferenceSettings);
 
         File.WriteAllText(_settingsFilePath, json);
     }
@@ -74,5 +72,12 @@ public sealed class ThemePreferenceService : IThemePreferenceService
     private sealed class ThemePreferenceSettings
     {
         public string RequestedThemeVariant { get; set; } = "Default";
+    }
+
+    // 源生成 JSON 上下文：AOT 发布下不能用反射序列化
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ThemePreferenceSettings))]
+    private sealed partial class AppThemeJsonContext : JsonSerializerContext
+    {
     }
 }

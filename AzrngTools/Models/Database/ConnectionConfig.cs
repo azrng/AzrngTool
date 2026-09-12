@@ -13,79 +13,79 @@ public partial class ConnectionConfig : ObservableObject
     /// 连接名称
     /// </summary>
     [ObservableProperty]
-    private string _name = string.Empty;
+    public partial string Name { get; set; } = string.Empty;
 
     /// <summary>
     /// 数据库类型
     /// </summary>
     [ObservableProperty]
-    private DatabaseType _databaseType;
+    public partial DatabaseType DatabaseType { get; set; }
 
     /// <summary>
     /// 主机地址
     /// </summary>
     [ObservableProperty]
-    private string _host = string.Empty;
+    public partial string Host { get; set; } = string.Empty;
 
     /// <summary>
     /// 端口
     /// </summary>
     [ObservableProperty]
-    private int _port;
+    public partial int Port { get; set; }
 
     /// <summary>
     /// 用户名
     /// </summary>
     [ObservableProperty]
-    private string _username = string.Empty;
+    public partial string Username { get; set; } = string.Empty;
 
     /// <summary>
     /// 密码
     /// </summary>
     [ObservableProperty]
-    private string _password = string.Empty;
+    public partial string Password { get; set; } = string.Empty;
 
     /// <summary>
     /// 数据库名称
     /// </summary>
     [ObservableProperty]
-    private string _database = string.Empty;
+    public partial string Database { get; set; } = string.Empty;
 
     /// <summary>
     /// 是否使用 Windows 身份验证（仅 SQL Server）
     /// </summary>
     [ObservableProperty]
-    private bool _useWindowsAuthentication;
+    public partial bool UseWindowsAuthentication { get; set; }
 
     /// <summary>
     /// 最后使用时间
     /// </summary>
     [ObservableProperty]
-    private DateTime? _lastUsedTime;
+    public partial DateTime? LastUsedTime { get; set; }
 
     /// <summary>
     /// 使用次数
     /// </summary>
     [ObservableProperty]
-    private int _useCount;
+    public partial int UseCount { get; set; }
 
     /// <summary>
     /// 分组 ID
     /// </summary>
     [ObservableProperty]
-    private string? _groupId;
+    public partial string? GroupId { get; set; }
 
     /// <summary>
     /// 分组名称（显示用）
     /// </summary>
     [ObservableProperty]
-    private string? _groupName;
+    public partial string? GroupName { get; set; }
 
     /// <summary>
     /// 颜色标记（用于区分环境）
     /// </summary>
     [ObservableProperty]
-    private string? _color;
+    public partial string? Color { get; set; }
 
     public string DisplayName => string.IsNullOrWhiteSpace(Name)
         ? DatabaseType.ToString()
