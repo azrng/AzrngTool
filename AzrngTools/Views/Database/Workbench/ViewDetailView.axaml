@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:AzrngTools.ViewModels.Database"
+             xmlns:u="using:Ursa.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
@@ -19,9 +20,9 @@
                 IsVisible="{Binding IsLoading}">
             <StackPanel Orientation="Horizontal"
                         Spacing="{StaticResource Space.10}">
-                <ProgressBar Width="24"
-                             Height="18"
-                             IsIndeterminate="True" />
+                <u:LoadingIcon Width="18"
+                               Height="18"
+                               VerticalAlignment="Center" />
                 <TextBlock Text="{Binding LoadingText}"
                            VerticalAlignment="Center" />
             </StackPanel>

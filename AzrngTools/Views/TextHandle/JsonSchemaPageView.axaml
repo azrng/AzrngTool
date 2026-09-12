@@ -9,81 +9,73 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:textHandle="clr-namespace:AzrngTools.ViewModels.TextHandle"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="JSON Schema 生成工作台" />
-                        <TextBlock Classes="section-copy" Text="从示例 JSON 直接推导结构定义，适合快速确认字段层级、类型分布和接口入参格式。" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="JSON 输入" />
-                            <TextBlock Classes="section-copy" Text="粘贴一段具有代表性的 JSON 示例，生成器会按当前结构推导对应的 Schema。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            Text="{Binding OriginText}"
-                            PlaceholderText="请输入 JSON 内容" />
+    <!-- 工具页统一布局：输入 / 输出双编辑器左右两列撑满视口，编辑器内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+            <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                        <TextBlock
+                            Classes="section-copy"
+                            Text="JSON 输入"
+                            VerticalAlignment="Center" />
+                        <!-- 原「使用说明」教学卡压缩为一句提示，挂在说明图标上 -->
+                        <Button
+                            Grid.Column="1"
+                            Classes="iconButton"
+                            ToolTip.Tip="建议提供完整的 JSON 示例，字段层级更准确；数组会取首个有效元素推导集合项结构。">
+                            <PathIcon
+                                Data="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM12 16V12M12 8H12.01"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
+                        </Button>
                     </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="生成操作" />
-                            <TextBlock Classes="section-copy" Text="当前页面只保留一个核心动作，输入 JSON 后即可直接生成标准化 Schema 结果。" />
-                        </StackPanel>
-
-                        <WrapPanel Grid.Row="1" Classes="tool-actions">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding SchemaGenHandleCommand}"
-                                CommandParameter="false"
-                                Content="生成 Schema"
-                                Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z"
-                                Theme="{DynamicResource SolidButton}" />
-                        </WrapPanel>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="使用说明" />
-                                <TextBlock Classes="Small" Text="建议提供完整示例，以便生成更准确的字段层级。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="数组中的首个有效元素会影响集合项结构推导。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="生成结果会自动格式化，便于继续审阅和复制。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Schema 输出" />
-                        <TextBlock Classes="section-copy" Text="生成后的 JSON Schema 会完整展示在这里，保持只读查看和选择复制的使用方式。" />
-                    </StackPanel>
 
                     <TextBox
                         Grid.Row="1"
                         AcceptsReturn="True"
                         Classes="Standard"
-                        MinHeight="{StaticResource Layout.Editor.Lg}"
+                        MinHeight="0"
+                        Text="{Binding OriginText}"
+                        PlaceholderText="请输入 JSON 内容" />
+
+                    <WrapPanel Grid.Row="2" Classes="tool-actions">
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding SchemaGenHandleCommand}"
+                            CommandParameter="false"
+                            Content="生成 Schema"
+                            Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z"
+                            Theme="{DynamicResource SolidButton}" />
+                    </WrapPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                        <TextBlock
+                            Classes="section-copy"
+                            Text="Schema 输出"
+                            VerticalAlignment="Center" />
+                        <Border
+                            Grid.Column="1"
+                            Classes="badge-pill"
+                            VerticalAlignment="Center">
+                            <TextBlock Classes="badge-text" Text="只读" />
+                        </Border>
+                    </Grid>
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
                         IsReadOnly="True"
                         Text="{Binding SchemaData}"
                         PlaceholderText="生成的 JSON Schema 将显示在这里" />
                 </Grid>
             </Border>
         </Grid>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

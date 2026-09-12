@@ -9,223 +9,186 @@
     xmlns:other="clr-namespace:AzrngTools.ViewModels.Other"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Unix 时间戳" />
-                        <TextBlock Classes="section-copy" Text="把秒级、毫秒级和日期时间转换收敛到一页里，按钮只跟随各自输入区，减少误点和视觉混乱。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：顶部当前时间戳细条(Auto) + 中部转换工作区(*)撑满视口 + 贴底结果区(Auto) -->
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.12}">
+        <!-- 顶部：当前秒级 / 毫秒级时间戳与刷新、复制操作 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.12}">
+            <Border Grid.Column="0" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                    <TextBlock Classes="metric-label" Text="当前秒级时间戳" />
+                    <TextBlock Grid.Row="1" Classes="metric-value" Text="{Binding CurrentTimestampSeconds}" />
+                </Grid>
+            </Border>
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Border Grid.Column="1" Classes="tool-card-soft">
+                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                    <TextBlock Classes="metric-label" Text="当前毫秒级时间戳" />
+                    <TextBlock Grid.Row="1" Classes="metric-value" Text="{Binding CurrentTimestampMilliseconds}" />
+                </Grid>
+            </Border>
+
+            <WrapPanel Grid.Column="2" Classes="tool-actions" VerticalAlignment="Center">
+                <Button
+                    Classes="actionIcon"
+                    Command="{Binding RefreshCurrentTimestampCommand}"
+                    Content="刷新时间戳"
+                    Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
+                    Theme="{DynamicResource OutlineButton}" />
+                <Button
+                    Classes="actionIcon"
+                    Command="{Binding CopyCurrentTimestampCommand}"
+                    Content="复制当前值"
+                    Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
+                    Theme="{DynamicResource OutlineButton}" />
+            </WrapPanel>
+        </Grid>
+
+        <!-- 中部：左右两个转换工作区，撑满剩余视口 -->
+        <Grid Grid.Row="1" MinHeight="0" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+            <!-- 左列：时间戳转日期时间 -->
+            <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="时间戳转日期时间"
+                        VerticalAlignment="Center" />
+
+                    <!-- 秒级输入组：按钮只处理本组输入框的值 -->
+                    <Border Grid.Row="1" Classes="tool-card-soft">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                            <TextBlock Classes="metric-label" Text="秒级时间戳输入" />
+                            <TextBox
+                                Grid.Row="1"
+                                Classes="Standard"
+                                Text="{Binding TimestampSeconds}"
+                                PlaceholderText="请输入秒级时间戳" />
+                            <Button
+                                Classes="actionIcon"
+                                Grid.Row="2"
+                                Command="{Binding TimestampToDateTimeSecondsCommand}"
+                                Content="把上面的秒级时间戳转成日期时间"
+                                Tag="M4 7H17M13 3L17 7L13 11"
+                                HorizontalAlignment="Stretch"
+                                Theme="{DynamicResource SolidButton}" />
+                        </Grid>
+                    </Border>
+
+                    <!-- 毫秒级输入组：按钮只处理本组输入框的值 -->
+                    <Border Grid.Row="2" Classes="tool-card-soft">
+                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                            <TextBlock Classes="metric-label" Text="毫秒级时间戳输入" />
+                            <TextBox
+                                Grid.Row="1"
+                                Classes="Standard"
+                                Text="{Binding TimestampMilliseconds}"
+                                PlaceholderText="请输入毫秒级时间戳" />
+                            <Button
+                                Classes="actionIcon"
+                                Grid.Row="2"
+                                Command="{Binding TimestampToDateTimeMillisecondsCommand}"
+                                Content="把上面的毫秒级时间戳转成日期时间"
+                                Tag="M4 7H17M13 3L17 7L13 11"
+                                HorizontalAlignment="Stretch"
+                                Theme="{DynamicResource SolidButton}" />
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- 右列：日期时间转时间戳 -->
+            <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="日期时间转时间戳"
+                        VerticalAlignment="Center" />
+
+                    <Grid Grid.Row="1" MinHeight="0" ColumnDefinitions="1*,1*" ColumnSpacing="{StaticResource Space.10}">
+                        <Border Grid.Column="0" Classes="tool-card-soft">
+                            <StackPanel Spacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="选择日期" />
+                                <CalendarDatePicker
+                                    HorizontalAlignment="Stretch"
+                                    IsTodayHighlighted="True"
+                                    SelectedDate="{Binding TargetDateSelection}" />
+                                <TextBlock Classes="metric-label" Text="选择时间" />
+                                <TimePicker
+                                    HorizontalAlignment="Stretch"
+                                    MinWidth="0"
+                                    SelectedTime="{Binding TargetTimeSelection}" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- 回填区只负责展示生成的时间戳 -->
+                        <Border Grid.Column="1" Classes="tool-card-soft">
+                            <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                <TextBlock Classes="metric-label" Text="自动回填的时间戳" />
+                                <TextBlock Grid.Row="1" Classes="Small" Text="秒级" />
+                                <TextBox
+                                    Grid.Row="2"
+                                    Classes="Standard"
+                                    IsReadOnly="True"
+                                    Text="{Binding TargetTimestampSeconds}" />
+                                <TextBlock Grid.Row="3" Classes="Small" Text="毫秒级" />
+                                <TextBox
+                                    Grid.Row="4"
+                                    Classes="Standard"
+                                    IsReadOnly="True"
+                                    Text="{Binding TargetTimestampMilliseconds}" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+
+                    <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
                         <Button
                             Classes="actionIcon"
-                            Command="{Binding RefreshCurrentTimestampCommand}"
-                            Content="刷新时间戳"
+                            Command="{Binding DateTimeToTimestampCommand}"
+                            Content="根据当前日期时间生成时间戳"
+                            Tag="M4 7H17M13 3L17 7L13 11"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding SetToNowCommand}"
+                            Content="把日期时间设为现在"
                             Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
                             Theme="{DynamicResource OutlineButton}" />
                         <Button
                             Classes="actionIcon"
-                            Command="{Binding CopyCurrentTimestampCommand}"
-                            Content="复制当前值"
-                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
+                            Command="{Binding ClearCommand}"
+                            Content="清空底部结果"
+                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
                             Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
                 </Grid>
             </Border>
-
-            <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
-                        <TextBlock Classes="metric-label" Text="当前秒级时间戳" />
-                        <TextBlock Grid.Row="1" Classes="metric-value" Text="{Binding CurrentTimestampSeconds}" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-soft">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
-                        <TextBlock Classes="metric-label" Text="当前毫秒级时间戳" />
-                        <TextBlock Grid.Row="1" Classes="metric-value" Text="{Binding CurrentTimestampMilliseconds}" />
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                        <StackPanel Grid.Row="0" Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="1. 时间戳转日期时间" />
-                            <TextBlock Classes="section-copy" Text="左侧两个按钮分别只处理各自输入框中的值，转换后的完整结果会显示在底部结果区。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="秒级时间戳输入" />
-                                <TextBox
-                                    Grid.Row="1"
-                                    Classes="Standard"
-                                    Text="{Binding TimestampSeconds}"
-                                    PlaceholderText="请输入秒级时间戳" />
-                                <TextBlock
-                                    Grid.Row="2"
-                                    Classes="section-copy"
-                                    Text="适合日志、接口参数等常见秒级时间值。" />
-                                <Button
-                                    Classes="actionIcon"
-                                    Grid.Row="3"
-                                    Command="{Binding TimestampToDateTimeSecondsCommand}"
-                                    Content="把上面的秒级时间戳转成日期时间"
-                                    Tag="M4 7H17M13 3L17 7L13 11"
-                                    HorizontalAlignment="Stretch"
-                                    Theme="{DynamicResource SolidButton}" />
-                            </Grid>
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="毫秒级时间戳输入" />
-                                <TextBox
-                                    Grid.Row="1"
-                                    Classes="Standard"
-                                    Text="{Binding TimestampMilliseconds}"
-                                    PlaceholderText="请输入毫秒级时间戳" />
-                                <TextBlock
-                                    Grid.Row="2"
-                                    Classes="section-copy"
-                                    Text="适合前端埋点、排序时间和更高精度的记录。" />
-                                <Button
-                                    Classes="actionIcon"
-                                    Grid.Row="3"
-                                    Command="{Binding TimestampToDateTimeMillisecondsCommand}"
-                                    Content="把上面的毫秒级时间戳转成日期时间"
-                                    Tag="M4 7H17M13 3L17 7L13 11"
-                                    HorizontalAlignment="Stretch"
-                                    Theme="{DynamicResource SolidButton}" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                        <StackPanel Grid.Row="0" Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="2. 日期时间转时间戳" />
-                            <TextBlock Classes="section-copy" Text="先选择日期和时间，再用右下角操作按钮生成时间戳；右侧回填区只负责显示结果，不承担输入。"/>
-                        </StackPanel>
-
-                        <Grid Grid.Row="1" ColumnDefinitions="1.0*,1.0*" ColumnSpacing="{StaticResource Space.12}">
-                            <Border Grid.Column="0" Classes="tool-card-soft">
-                                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                                    <TextBlock Classes="metric-label" Text="选择日期" />
-                                    <CalendarDatePicker
-                                        Grid.Row="1"
-                                        HorizontalAlignment="Stretch"
-                                        IsTodayHighlighted="True"
-                                        SelectedDate="{Binding TargetDateSelection}" />
-
-                                    <TextBlock Grid.Row="2" Classes="metric-label" Text="选择时间" />
-                                    <TimePicker
-                                        Grid.Row="3"
-                                        HorizontalAlignment="Stretch"
-                                        MinWidth="0"
-                                        SelectedTime="{Binding TargetTimeSelection}" />
-
-                                    <TextBlock
-                                        Grid.Row="4"
-                                        Classes="section-copy"
-                                        Text="这里控制“日期时间转时间戳”，不会影响左侧两个时间戳输入框。" />
-                                </Grid>
-                            </Border>
-
-                            <Border Grid.Column="1" Classes="tool-card-soft">
-                                <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
-                                    <TextBlock Classes="metric-label" Text="自动回填的时间戳" />
-                                    <TextBlock Grid.Row="1" Classes="Small" Text="秒级" />
-                                    <TextBox
-                                        Grid.Row="2"
-                                        Classes="Standard"
-                                        IsReadOnly="True"
-                                        Text="{Binding TargetTimestampSeconds}" />
-                                    <StackPanel Grid.Row="3" Spacing="{StaticResource Space.4}">
-                                        <TextBlock Classes="Small" Text="毫秒级" />
-                                        <TextBox
-                                            Classes="Standard"
-                                            IsReadOnly="True"
-                                            Text="{Binding TargetTimestampMilliseconds}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </Grid>
-
-                        <WrapPanel Grid.Row="2" Classes="tool-actions" HorizontalAlignment="Right">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding DateTimeToTimestampCommand}"
-                                Content="根据当前日期时间生成时间戳"
-                                Tag="M4 7H17M13 3L17 7L13 11"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding SetToNowCommand}"
-                                Content="把日期时间设为现在"
-                                Tag="M19 8A7 7 0 1 0 20 12M19 4V8H15"
-                                Theme="{DynamicResource OutlineButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ClearCommand}"
-                                Content="清空底部结果"
-                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Row="3" ColumnDefinitions="1.35*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="3. 转换结果" />
-                                <TextBlock Classes="section-copy" Text="无论你点击上面的哪个转换按钮，结果都会统一出现在这里，包含 UTC、本地时间和星期信息。" />
-                            </StackPanel>
-                            <Button
-                                Classes="actionIcon"
-                                Grid.Column="1"
-                                Command="{Binding CopyResultCommand}"
-                                Content="复制结果"
-                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
-                                VerticalAlignment="Top"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </Grid>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <TextBlock
-                                Classes="code-output"
-                                MinHeight="96"
-                                Text="{Binding ConversionResult, FallbackValue=尚未生成转换结果}" />
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="使用说明" />
-                            <TextBlock Classes="section-copy" Text="结果区只负责展示最终结果，说明区只负责告诉你每组按钮到底影响哪块内容。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 左侧两个蓝色按钮只处理各自输入框中的秒级或毫秒级值" />
-                                <TextBlock Classes="Small" Text="• 右侧三个按钮只处理“日期时间转时间戳”这块内容" />
-                                <TextBlock Classes="Small" Text="• 底部结果区是全页面唯一结果出口，避免在多处重复显示结果" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
         </Grid>
-    </ScrollViewer>
+
+        <!-- 底部：全页唯一转换结果出口，贴工作区底部 -->
+        <Border Grid.Row="2" Classes="tool-card-roomy">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="转换结果"
+                        VerticalAlignment="Center" />
+                    <Button
+                        Classes="actionIcon"
+                        Grid.Column="1"
+                        Command="{Binding CopyResultCommand}"
+                        Content="复制结果"
+                        Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
+                        Theme="{DynamicResource OutlineButton}" />
+                </Grid>
+
+                <Border Grid.Row="1" Classes="tool-card-soft">
+                    <TextBlock
+                        Classes="code-output"
+                        MinHeight="96"
+                        Text="{Binding ConversionResult, FallbackValue=尚未生成转换结果}" />
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

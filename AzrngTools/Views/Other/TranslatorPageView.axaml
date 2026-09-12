@@ -9,108 +9,94 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:AzrngTools.ViewModels.Other"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="文本翻译工作台" />
-                        <TextBlock Classes="section-copy" Text="保留当前翻译服务和方向切换能力，把输入、设置和结果拆成清晰区域，方便在中英之间快速往返。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：左列原文编辑器+翻译操作，右列只读结果，双列撑满视口；
+         编辑器随窗口拉伸并在内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+        <!-- 左列：原文与翻译操作 -->
+        <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="原文"
+                        VerticalAlignment="Center" />
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Yandex" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="中英互译" />
-                        </Border>
-                    </WrapPanel>
+                    <!-- 翻译服务与方向保持原有绑定 -->
+                    <ComboBox
+                        Grid.Column="2"
+                        MinWidth="130"
+                        VerticalAlignment="Center"
+                        SelectedIndex="0">
+                        <ComboBoxItem Content="Yandex 翻译" />
+                    </ComboBox>
+                    <ComboBox
+                        Grid.Column="3"
+                        MinWidth="110"
+                        VerticalAlignment="Center"
+                        SelectedIndex="{Binding TranslatorTypeIndex}">
+                        <ComboBoxItem>中译英</ComboBoxItem>
+                        <ComboBoxItem>英译中</ComboBoxItem>
+                    </ComboBox>
                 </Grid>
-            </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,0.95*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="在这里输入待翻译文本，点击翻译后结果会显示到右侧结果区。" />
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    PlaceholderText="请输入要转换的内容"
+                    Text="{Binding OriginText}" />
+
+                <!-- 翻译按钮与忙碌状态 -->
+                <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                    <Button
+                        Command="{Binding HandlerCommand}"
+                        IsEnabled="{Binding CanTranslate}"
+                        Theme="{DynamicResource SolidButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                            <PathIcon
+                                Data="M4 5H20M4 12H20M4 19H20M8 2L5 5L8 8M16 9L19 12L16 15M8 16L5 19L8 22"
+                                Foreground="{DynamicResource Brush.Text.OnAccent}"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
+                            <TextBlock Text="翻译" VerticalAlignment="Center" />
                         </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            Text="{Binding OriginText}"
-                            PlaceholderText="请输入要转换的内容" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="翻译设置" />
-                            <TextBlock Classes="section-copy" Text="服务来源和翻译方向继续沿用现有绑定，不新增新的服务切换逻辑。" />
+                    </Button>
+                    <Border Grid.Column="1" Classes="tool-card-soft" IsVisible="{Binding IsBusy}">
+                        <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.8}">
+                            <ProgressBar Width="110" IsIndeterminate="True" />
+                            <TextBlock Classes="section-copy" Text="{Binding BusyText}" VerticalAlignment="Center" />
                         </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                                <TextBlock Classes="metric-label" Text="翻译服务" VerticalAlignment="Center" />
-                                <ComboBox Grid.Column="1" SelectedIndex="0">
-                                    <ComboBoxItem Content="Yandex 翻译" />
-                                </ComboBox>
-
-                                <TextBlock Grid.Row="1" Classes="metric-label" Text="翻译方向" VerticalAlignment="Center" />
-                                <ComboBox Grid.Row="1" Grid.Column="1" SelectedIndex="{Binding TranslatorTypeIndex}">
-                                    <ComboBoxItem>中译英</ComboBoxItem>
-                                    <ComboBoxItem>英译中</ComboBoxItem>
-                                </ComboBox>
-                            </Grid>
-                        </Border>
-
-                        <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                            <Button
-                                Command="{Binding HandlerCommand}"
-                                IsEnabled="{Binding CanTranslate}"
-                                Theme="{DynamicResource SolidButton}">
-                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                    <PathIcon
-                                        Data="M4 5H20M4 12H20M4 19H20M8 2L5 5L8 8M16 9L19 12L16 15M8 16L5 19L8 22"
-                                        Foreground="{DynamicResource Brush.Text.OnAccent}"
-                                        Height="{StaticResource Layout.Icon.Sm}"
-                                        Width="{StaticResource Layout.Icon.Sm}" />
-                                    <TextBlock Text="翻译" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </Button>
-                            <Border Grid.Column="1" Classes="tool-card-soft" IsVisible="{Binding IsBusy}">
-                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.8}">
-                                    <ProgressBar Width="110" IsIndeterminate="True" />
-                                    <TextBlock Classes="section-copy" Text="{Binding BusyText}" VerticalAlignment="Center" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-                    </Grid>
-                </Border>
+                    </Border>
+                </Grid>
             </Grid>
+        </Border>
 
-            <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="翻译结果" />
-                        <TextBlock Classes="section-copy" Text="结果区保持只读展示，方便继续复制使用；错误反馈仍由现有消息提示处理。" />
-                    </StackPanel>
-
-                    <TextBox
-                        Grid.Row="1"
-                        AcceptsReturn="True"
-                        Classes="Standard"
-                        MinHeight="{StaticResource Layout.Editor.Md}"
-                        IsReadOnly="True"
-                        Text="{Binding ResultText}"
-                        PlaceholderText="输出的结果" />
+        <!-- 右列：只读翻译结果 -->
+        <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="翻译结果"
+                        VerticalAlignment="Center" />
+                    <Border
+                        Grid.Column="2"
+                        Classes="badge-pill"
+                        VerticalAlignment="Center">
+                        <TextBlock Classes="badge-text" Text="只读" />
+                    </Border>
                 </Grid>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    IsReadOnly="True"
+                    PlaceholderText="输出的结果"
+                    Text="{Binding ResultText}" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

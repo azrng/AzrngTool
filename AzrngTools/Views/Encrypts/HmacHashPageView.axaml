@@ -10,96 +10,76 @@
     xmlns:utils="clr-namespace:AzrngTools.Utils"
     xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="HMAC Hash 工作台" />
-                        <TextBlock Classes="section-copy" Text="支持多种 HMAC 算法，方便结合密钥快速计算摘要结果。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：左列原文编辑器+算法按钮，右列密钥与只读结果，双列撑满视口；
+         编辑器随窗口拉伸并在内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+        <!-- 左列：原文与算法按钮 -->
+        <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                <TextBlock
+                    Grid.Row="0"
+                    Classes="section-copy"
+                    Text="原文"
+                    VerticalAlignment="Center" />
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="HMAC MD5" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="HMAC SHA" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    PlaceholderText="请输入要进行哈希的内容"
+                    Text="{Binding Original}" />
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,1.0*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="原始内容" />
-                            <TextBlock Classes="section-copy" Text="输入待进行 HMAC 计算的文本内容，不同算法按钮都会基于这里的内容执行。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Xl}"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要进行哈希的内容" />
-                    </Grid>
-                </Border>
-
-                <Grid Grid.Column="1" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <Border Grid.Row="0" Classes="tool-card-roomy">
-                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="密钥与结果" />
-                                <TextBlock Classes="section-copy" Text="密钥输入和结果展示拆开排列，便于调整密钥后反复校验不同算法输出。" />
-                            </StackPanel>
-
-                            <TextBox
-                                Grid.Row="1"
-                                Classes="Standard"
-                                Text="{Binding Secret}"
-                                PlaceholderText="请输入密钥" />
-
-                            <TextBox
-                                Grid.Row="2"
-                                AcceptsReturn="True"
-                                Classes="Standard"
-                                MinHeight="{StaticResource Layout.Editor.Md}"
-                                IsReadOnly="True"
-                                Text="{Binding Ciphertext}"
-                                PlaceholderText="哈希后的内容" />
-                        </Grid>
-                    </Border>
-
-                    <Border Grid.Row="1" Classes="tool-card-roomy">
-                        <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="算法与格式" />
-                                <TextBlock Classes="section-copy" Text="支持切换输出格式和多种 HMAC 算法，便于快速校验摘要结果。" />
-                            </StackPanel>
-
-                            <Border Grid.Row="1" Classes="tool-card-soft">
-                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                    <TextBlock Classes="metric-label" Text="输出类型" VerticalAlignment="Center" />
-                                    <ComboBox
-                                        Grid.Column="1"
-                                        ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
-                                        SelectedIndex="{Binding OutTypeValue}" />
-                                </Grid>
-                            </Border>
-
-                            <WrapPanel Grid.Row="2" Classes="tool-actions">
-                                <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="0" Content="HMAC MD5" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource SolidButton}" />
-                                <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="1" Content="HMAC SHA1" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                                <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="2" Content="HMAC SHA256" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                                <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="3" Content="HMAC SHA512" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                            </WrapPanel>
-                        </Grid>
-                    </Border>
-                </Grid>
+                <WrapPanel Grid.Row="2" Classes="tool-actions">
+                    <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="0" Content="HMAC MD5" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource SolidButton}" />
+                    <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="1" Content="HMAC SHA1" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                    <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="2" Content="HMAC SHA256" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                    <Button Classes="actionIcon" Command="{Binding HandlerCommand}" CommandParameter="3" Content="HMAC SHA512" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                </WrapPanel>
             </Grid>
-        </Grid>
-    </ScrollViewer>
+        </Border>
+
+        <!-- 右列：密钥输入与只读结果 -->
+        <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+            <!-- 行定义 Auto,Auto,Auto,*：结果编辑器吃掉剩余高度，避免贴底留白 -->
+            <Grid MinHeight="0" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="密钥与结果"
+                        VerticalAlignment="Center" />
+
+                    <ComboBox
+                        Grid.Column="2"
+                        MinWidth="140"
+                        VerticalAlignment="Center"
+                        ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                        SelectedIndex="{Binding OutTypeValue}" />
+                </Grid>
+
+                <Grid Grid.Row="1" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                    <TextBlock Classes="metric-label" Text="密钥" />
+                    <TextBox
+                        Grid.Row="1"
+                        Classes="Standard"
+                        PlaceholderText="请输入密钥"
+                        Text="{Binding Secret}" />
+                </Grid>
+
+                <TextBlock
+                    Grid.Row="2"
+                    Classes="metric-label"
+                    Text="哈希结果" />
+
+                <TextBox
+                    Grid.Row="3"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    IsReadOnly="True"
+                    PlaceholderText="哈希后的内容"
+                    Text="{Binding Ciphertext}" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

@@ -75,9 +75,10 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto" RowSpacing="{StaticResource Space.12}">
+    <!-- 工具页统一布局：工作区行(*)撑满视口，响应结果区随窗口拉伸并在编辑器内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="*" RowSpacing="{StaticResource Space.12}">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
                 <Border Grid.Row="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="{StaticResource Space.10}">
@@ -352,7 +353,7 @@
                 </Border>
 
                 <Border Grid.Row="2" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <StackPanel Spacing="{StaticResource Space.4}">
                                 <TextBlock Classes="section-title" Text="响应结果" />
@@ -424,7 +425,7 @@
                             </Border>
                         </WrapPanel>
 
-                        <Border Grid.Row="3" Classes="api-request-empty" IsVisible="{Binding ShowResponsePlaceholderCard}">
+                        <Border Grid.Row="3" Classes="api-request-empty" IsVisible="{Binding ShowResponsePlaceholderCard}" VerticalAlignment="Top">
                             <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
                                 <TextBlock Classes="metric-label" Text="等待响应" />
                                 <TextBlock Grid.Row="1" Classes="section-copy" Text="发送一个请求后，响应体、请求 URL 和响应头会出现在这里。" />
@@ -446,7 +447,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    MinHeight="{StaticResource Layout.Editor.Lg}"
+                                    MinHeight="0"
                                     IsReadOnly="True"
                                     PlaceholderText="响应体会显示在这里"
                                     Text="{Binding ResponseBodyText}"
@@ -456,7 +457,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    MinHeight="{StaticResource Layout.Editor.Lg}"
+                                    MinHeight="0"
                                     IsReadOnly="True"
                                     PlaceholderText="完整请求 URL 会显示在这里"
                                     Text="{Binding ResponseRequestUrlText}"
@@ -466,7 +467,7 @@
                                 <TextBox
                                     AcceptsReturn="True"
                                     Classes="Standard"
-                                    MinHeight="{StaticResource Layout.Editor.Lg}"
+                                    MinHeight="0"
                                     IsReadOnly="True"
                                     PlaceholderText="响应头会显示在这里"
                                     Text="{Binding ResponseHeadersText}"

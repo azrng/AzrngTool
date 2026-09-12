@@ -9,172 +9,157 @@
     xmlns:encode="clr-namespace:AzrngTools.ViewModels.Encode"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 工具页统一布局：无滚动撑满结构；HeaderCard / RootGrid / WorkspaceGrid 被 code-behind 引用，不可改名删除 -->
     <Grid
         Margin="{StaticResource Thickness.15}"
         MinHeight="0"
         RowDefinitions="Auto,*"
         RowSpacing="{StaticResource Space.12}"
         x:Name="RootGrid">
-            <Border Grid.Row="0" Classes="tool-card-roomy" x:Name="HeaderCard">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="Base64 文本工作台" />
-                            <TextBlock Classes="section-copy" Text="把输入、结果和状态信息收口到同一块工作区里，适合连续做 Base64 编码、解码、复制和结果回填。" />
-                        </StackPanel>
+        <!-- 顶部动作条：按统一规则移除页面标题、说明与装饰徽标，仅保留操作按钮 -->
+        <Border Grid.Row="0" Classes="tool-card-roomy" x:Name="HeaderCard">
+            <WrapPanel Classes="tool-actions">
+                <Button
+                    Command="{Binding Base64HandlerCommand}"
+                    CommandParameter="true"
+                    Theme="{DynamicResource SolidButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                        <PathIcon Data="M4 7H17M13 3L17 7L13 11" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        <TextBlock Text="Base64 编码" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Command="{Binding Base64HandlerCommand}"
+                    CommandParameter="false"
+                    Theme="{DynamicResource SolidButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                        <PathIcon Data="M20 17H7M11 13L7 17L11 21" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        <TextBlock Text="Base64 解码" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Command="{Binding PasteFromClipboardCommand}"
+                    Theme="{DynamicResource OutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                        <PathIcon Data="M8 4H16V7H8V4ZM6 7H18V20H6V7Z" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        <TextBlock Text="从剪贴板导入" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Command="{Binding CopyResultCommand}"
+                    Theme="{DynamicResource OutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                        <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        <TextBlock Text="复制结果" />
+                    </StackPanel>
+                </Button>
+                <Button
+                    Command="{Binding ClearCommand}"
+                    Theme="{DynamicResource OutlineButton}">
+                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                        <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                        <TextBlock Text="清空" />
+                    </StackPanel>
+                </Button>
+            </WrapPanel>
+        </Border>
 
-                        <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="编码" />
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="1*,1*"
+            ColumnSpacing="{StaticResource Space.12}"
+            MinHeight="0"
+            x:Name="WorkspaceGrid">
+            <!-- 左列：输入卡，编辑器撑满 -->
+            <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                        <TextBlock
+                            Classes="section-copy"
+                            Text="输入内容"
+                            VerticalAlignment="Center" />
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding OriginalCharacterCount, StringFormat='字符 {0}'}" />
                             </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="解码" />
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding OriginalByteCount, StringFormat='字节 {0}'}" />
                             </Border>
-                            <Border Classes="badge-pill">
-                                <TextBlock Classes="badge-text" Text="回填" />
-                            </Border>
-                        </WrapPanel>
+                        </StackPanel>
                     </Grid>
 
-                    <WrapPanel Grid.Row="1" Classes="tool-actions">
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        Text="{Binding Original}"
+                        PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
+                </Grid>
+            </Border>
+
+            <!-- 右列：结果卡，编辑器撑满 -->
+            <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="{StaticResource Space.8}">
+                        <TextBlock
+                            Classes="section-copy"
+                            Text="处理结果"
+                            VerticalAlignment="Center" />
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding ResultCharacterCount, StringFormat='字符 {0}'}" />
+                            </Border>
+                            <Border Classes="badge-pill compact">
+                                <TextBlock Classes="badge-text" Text="{Binding ResultByteCount, StringFormat='字节 {0}'}" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- 失败行为提示压缩为工具提示，替代原底部说明文本 -->
                         <Button
-                            Command="{Binding Base64HandlerCommand}"
-                            CommandParameter="true"
-                            Theme="{DynamicResource SolidButton}">
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                <PathIcon Data="M4 7H17M13 3L17 7L13 11" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                <TextBlock Text="Base64 编码" />
-                            </StackPanel>
+                            Grid.Column="2"
+                            Classes="iconButton"
+                            ToolTip.Tip="如果输入不是合法 Base64，页面会保留当前结果，并通过通知提示转换失败。">
+                            <PathIcon
+                                Data="M12 16V12M12 8H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+                                Height="{StaticResource Layout.Icon.Sm}"
+                                Width="{StaticResource Layout.Icon.Sm}" />
                         </Button>
+                    </Grid>
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        IsReadOnly="True"
+                        MinHeight="0"
+                        Text="{Binding HandleText}"
+                        PlaceholderText="处理后的内容会显示在这里" />
+
+                    <WrapPanel Grid.Row="2" Classes="tool-actions">
                         <Button
-                            Command="{Binding Base64HandlerCommand}"
-                            CommandParameter="false"
-                            Theme="{DynamicResource SolidButton}">
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                <PathIcon Data="M20 17H7M11 13L7 17L11 21" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                <TextBlock Text="Base64 解码" />
-                            </StackPanel>
-                        </Button>
-                        <Button
-                            Command="{Binding PasteFromClipboardCommand}"
+                            Command="{Binding UseResultAsInputCommand}"
+                            IsEnabled="{Binding HasResult}"
                             Theme="{DynamicResource OutlineButton}">
                             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                <PathIcon Data="M8 4H16V7H8V4ZM6 7H18V20H6V7Z" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                <TextBlock Text="从剪贴板导入" />
+                                <PathIcon Data="M5 12H19M15 8L19 12L15 16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                <TextBlock Text="结果回填到输入区" />
                             </StackPanel>
                         </Button>
                         <Button
                             Command="{Binding CopyResultCommand}"
+                            IsEnabled="{Binding HasResult}"
                             Theme="{DynamicResource OutlineButton}">
                             <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                 <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
                                 <TextBlock Text="复制结果" />
                             </StackPanel>
                         </Button>
-                        <Button
-                            Command="{Binding ClearCommand}"
-                            Theme="{DynamicResource OutlineButton}">
-                            <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                <TextBlock Text="清空" />
-                            </StackPanel>
-                        </Button>
                     </WrapPanel>
                 </Grid>
             </Border>
-
-            <Grid
-                Grid.Row="1"
-                ColumnDefinitions="1*,1*"
-                ColumnSpacing="{StaticResource Space.12}"
-                MinHeight="0"
-                x:Name="WorkspaceGrid">
-                <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
-                    <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="输入内容" />
-                                <TextBlock Classes="section-copy" Text="可直接粘贴普通文本，也可粘贴已有的 Base64 字符串；这里始终作为当前工作输入源。" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
-                                <Border Classes="badge-pill compact">
-                                    <TextBlock Classes="badge-text" Text="{Binding OriginalCharacterCount, StringFormat='字符 {0}'}" />
-                                </Border>
-                                <Border Classes="badge-pill compact">
-                                    <TextBlock Classes="badge-text" Text="{Binding OriginalByteCount, StringFormat='字节 {0}'}" />
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="0"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要编码或解码的文本 / Base64 内容" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
-                    <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="处理结果" />
-                                <TextBlock Classes="section-copy" Text="编码或解码后的内容统一输出在这里，便于立即复制、校验，或直接回填到输入区继续处理。" />
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="1" HorizontalAlignment="Right" Spacing="{StaticResource Space.6}">
-                                <Border Classes="badge-pill compact">
-                                    <TextBlock Classes="badge-text" Text="{Binding ResultCharacterCount, StringFormat='字符 {0}'}" />
-                                </Border>
-                                <Border Classes="badge-pill compact">
-                                    <TextBlock Classes="badge-text" Text="{Binding ResultByteCount, StringFormat='字节 {0}'}" />
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            IsReadOnly="True"
-                            MinHeight="0"
-                            Text="{Binding HandleText}"
-                            PlaceholderText="处理后的内容会显示在这里" />
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <Grid ColumnDefinitions="Auto,Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                <Button
-                                    Command="{Binding UseResultAsInputCommand}"
-                                    IsEnabled="{Binding HasResult}"
-                                    Theme="{DynamicResource OutlineButton}">
-                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                        <PathIcon Data="M5 12H19M15 8L19 12L15 16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                        <TextBlock Text="结果回填到输入区" />
-                                    </StackPanel>
-                                </Button>
-                                <Button
-                                    Grid.Column="1"
-                                    Command="{Binding CopyResultCommand}"
-                                    IsEnabled="{Binding HasResult}"
-                                    Theme="{DynamicResource OutlineButton}">
-                                    <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
-                                        <PathIcon Data="M8 8H19V19H8V8ZM5 16H4V5H15V6" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                        <TextBlock Text="复制结果" />
-                                    </StackPanel>
-                                </Button>
-                                <TextBlock
-                                    Grid.Column="2"
-                                    Classes="section-copy"
-                                    Text="如果输入不是合法 Base64，页面会保留当前结果，并通过通知提示转换失败。"
-                                    TextWrapping="Wrap"
-                                    VerticalAlignment="Center" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
         </Grid>
+    </Grid>
 </UserControl>

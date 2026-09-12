@@ -10,89 +10,69 @@
     xmlns:utils="clr-namespace:AzrngTools.Utils"
     xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Hash 工作台" />
-                        <TextBlock Classes="section-copy" Text="把常用散列算法集中到同一页，方便按不同算法快速计算和对比结果。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：左列原文编辑器+算法按钮，右列只读散列结果，双列撑满视口；
+         编辑器随窗口拉伸并在内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+        <!-- 左列：原文与算法按钮 -->
+        <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
+                <TextBlock
+                    Grid.Row="0"
+                    Classes="section-copy"
+                    Text="原文"
+                    VerticalAlignment="Center" />
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="MD5" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="SHA / SM3" />
-                        </Border>
-                    </WrapPanel>
-                </Grid>
-            </Border>
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    PlaceholderText="请输入要进行哈希的内容"
+                    Text="{Binding Original}" />
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="在这里输入待散列的原始文本，右侧选择输出格式和算法后即可得到结果。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要进行哈希的内容" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="算法与输出格式" />
-                            <TextBlock Classes="section-copy" Text="可按同一输入快速切换不同散列算法，并选择输出格式查看结果。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
-                                <TextBlock Classes="metric-label" Text="输出类型" VerticalAlignment="Center" />
-                                <ComboBox
-                                    Grid.Column="1"
-                                    ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
-                                    SelectedIndex="{Binding OutTypeValue}" />
-                            </Grid>
-                        </Border>
-
-                        <WrapPanel Grid.Row="2" Classes="tool-actions">
-                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="0" Content="MD5" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource SolidButton}" />
-                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="1" Content="SHA1" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="2" Content="SHA256" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="3" Content="SHA512" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                            <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="4" Content="SM3" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-                </Border>
+                <WrapPanel Grid.Row="2" Classes="tool-actions">
+                    <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="0" Content="MD5" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource SolidButton}" />
+                    <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="1" Content="SHA1" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                    <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="2" Content="SHA256" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                    <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="3" Content="SHA512" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                    <Button Classes="actionIcon" Command="{Binding OriginalHandlerCommand}" CommandParameter="4" Content="SM3" Tag="M12 3L14.2 8.1L19.8 8.7L15.6 12.4L16.8 18L12 15L7.2 18L8.4 12.4L4.2 8.7L9.8 8.1L12 3Z" Theme="{DynamicResource OutlineButton}" />
+                </WrapPanel>
             </Grid>
+        </Border>
 
-            <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="散列结果" />
-                        <TextBlock Classes="section-copy" Text="结果区保留只读展示，适合直接复制当前算法输出。" />
-                    </StackPanel>
+        <!-- 右列：只读散列结果与输出格式 -->
+        <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="散列结果"
+                        VerticalAlignment="Center" />
 
-                    <TextBox
-                        Grid.Row="1"
-                        AcceptsReturn="True"
-                        Classes="Standard"
-                        MinHeight="{StaticResource Layout.Editor.Md}"
-                        IsReadOnly="True"
-                        Text="{Binding Ciphertext}"
-                        PlaceholderText="哈希后的内容" />
+                    <ComboBox
+                        Grid.Column="2"
+                        MinWidth="140"
+                        VerticalAlignment="Center"
+                        ItemsSource="{Binding Source={x:Static utils:EnumValuesHelper.OutTypeValues}}"
+                        SelectedIndex="{Binding OutTypeValue}" />
+
+                    <Border
+                        Grid.Column="3"
+                        Classes="badge-pill"
+                        VerticalAlignment="Center">
+                        <TextBlock Classes="badge-text" Text="只读" />
+                    </Border>
                 </Grid>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    IsReadOnly="True"
+                    PlaceholderText="哈希后的内容"
+                    Text="{Binding Ciphertext}" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

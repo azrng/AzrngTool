@@ -9,208 +9,215 @@
     xmlns:format="clr-namespace:AzrngTools.ViewModels.Format"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="正则分析工作台" />
-                        <TextBlock Classes="section-copy" Text="把模式设置、测试文本、替换文本和结果面板按流程拆开，方便在同一页里连续做匹配验证、替换预演和分组检查。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：模式卡固定高度，测试/替换与四个结果区按 * 行撑满视口，文本框内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*,*" RowSpacing="{StaticResource Space.12}">
+        <Border Grid.Row="0" Classes="tool-card-roomy">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="{StaticResource Space.8}">
+                    <TextBox
+                        Classes="Standard"
+                        Text="{Binding RegexPattern}"
+                        PlaceholderText="请输入正则表达式" />
+                    <!-- 原「使用提示」卡压缩为一句提示，挂在说明图标上 -->
+                    <Button
+                        Grid.Column="1"
+                        Classes="iconButton"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="匹配结果会用【】标出命中片段；替换结果单独展示，不会覆盖测试文本。">
+                        <PathIcon
+                            Data="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM12 16V12M12 8H12.01"
+                            Height="{StaticResource Layout.Icon.Sm}"
+                            Width="{StaticResource Layout.Icon.Sm}" />
+                    </Button>
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="匹配" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="替换" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="分组" />
-                        </Border>
+                    <WrapPanel
+                        Grid.Column="2"
+                        Classes="tool-actions"
+                        VerticalAlignment="Center">
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding TestRegexCommand}"
+                            Content="开始匹配"
+                            Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding ReplaceTextCommand}"
+                            Content="执行替换"
+                            Tag="M4 7H17M13 3L17 7L13 11"
+                            Theme="{DynamicResource SolidButton}" />
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding LoadExampleCommand}"
+                            Content="加载示例"
+                            Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
+                            Theme="{DynamicResource OutlineButton}" />
+                        <Button
+                            Classes="actionIcon"
+                            Command="{Binding ClearCommand}"
+                            Content="清空"
+                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
+                            Theme="{DynamicResource OutlineButton}" />
                     </WrapPanel>
+                </Grid>
+
+                <Border Grid.Row="1" Classes="tool-card-soft">
+                    <Grid ColumnDefinitions="Auto,Auto,Auto" ColumnSpacing="{StaticResource Space.12}">
+                        <CheckBox Content="忽略大小写" IsChecked="{Binding IgnoreCase}" />
+                        <CheckBox
+                            Grid.Column="1"
+                            Content="多行模式"
+                            IsChecked="{Binding Multiline}" />
+                        <CheckBox
+                            Grid.Column="2"
+                            Content="单行模式"
+                            IsChecked="{Binding Singleline}" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="{StaticResource Space.12}">
+            <Border
+                Grid.Column="0"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="测试文本"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        Text="{Binding TestText}"
+                        PlaceholderText="请输入测试文本" />
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="模式与选项" />
-                            <TextBlock Classes="section-copy" Text="先输入正则表达式，再按需要启用常用选项；这些设置会同时作用于匹配和替换两个动作。" />
-                        </StackPanel>
+            <Border
+                Grid.Column="1"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="替换文本"
+                        VerticalAlignment="Center" />
 
-                        <TextBox
-                            Grid.Row="1"
-                            Classes="Standard"
-                            Text="{Binding RegexPattern}"
-                            PlaceholderText="请输入正则表达式" />
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="{StaticResource Space.12}">
-                                <CheckBox Content="忽略大小写" IsChecked="{Binding IgnoreCase}" />
-                                <CheckBox Grid.Column="1" Content="多行模式" IsChecked="{Binding Multiline}" />
-                                <CheckBox Grid.Column="2" Content="单行模式" IsChecked="{Binding Singleline}" />
-                            </Grid>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="快捷操作" />
-                            <TextBlock Classes="section-copy" Text="可先加载示例验证表达式，再对当前文本执行匹配或替换。" />
-                        </StackPanel>
-
-                        <WrapPanel Grid.Row="1" Classes="tool-actions">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding TestRegexCommand}"
-                                Content="开始匹配"
-                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ReplaceTextCommand}"
-                                Content="执行替换"
-                                Tag="M4 7H17M13 3L17 7L13 11"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding LoadExampleCommand}"
-                                Content="加载示例"
-                                Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
-                                Theme="{DynamicResource OutlineButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ClearCommand}"
-                                Content="清空"
-                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="使用提示" />
-                                <TextBlock Classes="Small" Text="• 匹配结果会在高亮面板中用【】标出命中片段。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 替换结果单独显示，便于和原始测试文本并排对照。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 分组信息会按匹配项展开，适合检查捕获组是否符合预期。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="测试文本" />
-                            <TextBlock Classes="section-copy" Text="输入待匹配的原始文本，匹配和替换命令都会基于这里的内容执行。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            Text="{Binding TestText}"
-                            PlaceholderText="请输入测试文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="替换文本" />
-                            <TextBlock Classes="section-copy" Text="需要执行替换时在这里填写目标内容；只做匹配分析时可以留空。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            Text="{Binding ReplacementText}"
-                            PlaceholderText="请输入替换内容" />
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Grid Grid.Row="3" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                <Border Grid.Row="0" Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="高亮结果" />
-                            <TextBlock Classes="section-copy" Text="展示命中的片段位置，适合快速判断模式是否覆盖到预期文本。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            IsReadOnly="True"
-                            Text="{Binding HighlightedText}"
-                            PlaceholderText="匹配结果会用【】标出" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Row="0" Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="替换结果" />
-                            <TextBlock Classes="section-copy" Text="单独保留替换输出，避免覆盖原始文本，便于反复比较与调整。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            IsReadOnly="True"
-                            Text="{Binding ReplacedText}"
-                            PlaceholderText="替换后的内容会显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Row="1" Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="匹配位置" />
-                            <TextBlock Classes="section-copy" Text="汇总每一项匹配的起始位置和长度，便于验证边界与数量。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            IsReadOnly="True"
-                            Text="{Binding MatchSummary}"
-                            PlaceholderText="匹配位置和长度会显示在这里" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Row="1" Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="分组信息" />
-                            <TextBlock Classes="section-copy" Text="用于检查捕获组和值的层次，尤其适合调试较复杂的命名组或嵌套组表达式。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            IsReadOnly="True"
-                            Text="{Binding GroupDetails}"
-                            PlaceholderText="分组信息会显示在这里" />
-                    </Grid>
-                </Border>
-            </Grid>
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        Text="{Binding ReplacementText}"
+                        PlaceholderText="请输入替换内容" />
+                </Grid>
+            </Border>
         </Grid>
-    </ScrollViewer>
+
+        <Grid
+            Grid.Row="2"
+            ColumnDefinitions="*,*,*,*"
+            ColumnSpacing="{StaticResource Space.12}">
+            <Border
+                Grid.Column="0"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="高亮结果"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        IsReadOnly="True"
+                        Text="{Binding HighlightedText}"
+                        PlaceholderText="匹配结果会用【】标出" />
+                </Grid>
+            </Border>
+
+            <Border
+                Grid.Column="1"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="替换结果"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        IsReadOnly="True"
+                        Text="{Binding ReplacedText}"
+                        PlaceholderText="替换后的内容会显示在这里" />
+                </Grid>
+            </Border>
+
+            <Border
+                Grid.Column="2"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="匹配位置"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        IsReadOnly="True"
+                        Text="{Binding MatchSummary}"
+                        PlaceholderText="匹配位置和长度会显示在这里" />
+                </Grid>
+            </Border>
+
+            <Border
+                Grid.Column="3"
+                Classes="tool-card-roomy"
+                MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="分组信息"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        IsReadOnly="True"
+                        Text="{Binding GroupDetails}"
+                        PlaceholderText="分组信息会显示在这里" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </UserControl>

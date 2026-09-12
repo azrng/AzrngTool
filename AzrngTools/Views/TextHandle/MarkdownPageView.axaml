@@ -10,57 +10,40 @@
     xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
     xmlns:textHandle="clr-namespace:AzrngTools.ViewModels.TextHandle"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="Markdown 预览工作台" />
-                        <TextBlock Classes="section-copy" Text="保持左侧编辑、右侧预览的即时联动模式，适合边写边查看渲染结果。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：输入 / 预览左右两列撑满视口，编辑与预览各自内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+            <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="Markdown 输入"
+                        VerticalAlignment="Center" />
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="Markdown" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="预览" />
-                        </Border>
-                    </WrapPanel>
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        MinHeight="0"
+                        Text="{Binding MdText}"
+                        PlaceholderText="请输入 Markdown 内容" />
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="0.95*,1.05*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="Markdown 输入" />
-                            <TextBlock Classes="section-copy" Text="在这里直接编写或粘贴 Markdown 内容，右侧预览区域会继续跟随当前文本实时刷新。" />
-                        </StackPanel>
+            <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="实时预览"
+                        VerticalAlignment="Center" />
 
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Xl}"
-                            Text="{Binding MdText}"
-                            PlaceholderText="请输入 Markdown 内容" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="实时预览" />
-                            <TextBlock Classes="section-copy" Text="输入 Markdown 后可在右侧实时查看排版效果，便于边写边校对。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="{StaticResource Layout.Editor.Xl}">
-                            <md:MarkdownScrollViewer Markdown="{Binding MdText}" />
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
+                    <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="0">
+                        <md:MarkdownScrollViewer Markdown="{Binding MdText}" />
+                    </Border>
+                </Grid>
+            </Border>
         </Grid>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

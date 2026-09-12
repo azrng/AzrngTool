@@ -9,85 +9,79 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:AzrngTools.ViewModels.Encrypts"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="DES 加解密工作台" />
-                        <TextBlock Classes="section-copy" Text="用于快速验证 DES 加密与解密结果，适合同一段文本反复调整密钥并比对输出。" />
-                    </StackPanel>
+    <!-- 工具页统一布局：左列原文编辑器+密钥+操作，右列只读结果，双列撑满视口；
+         编辑器随窗口拉伸并在内部滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" ColumnDefinitions="*,*" ColumnSpacing="{StaticResource Space.12}">
+        <!-- 左列：原文与操作 -->
+        <Border Grid.Column="0" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                <TextBlock
+                    Grid.Row="0"
+                    Classes="section-copy"
+                    Text="原文"
+                    VerticalAlignment="Center" />
 
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="DES" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="加密 / 解密" />
-                        </Border>
-                    </WrapPanel>
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    PlaceholderText="请输入要处理的文本"
+                    Text="{Binding Original}" />
+
+                <Grid Grid.Row="2" RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.6}">
+                    <TextBlock Classes="metric-label" Text="密钥" />
+                    <TextBox
+                        Grid.Row="1"
+                        Classes="Standard"
+                        PlaceholderText="请输入密钥"
+                        Text="{Binding Secret}" />
                 </Grid>
-            </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.05*,1.0*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入内容" />
-                            <TextBlock Classes="section-copy" Text="输入待加密或待解密的文本，处理动作会直接基于这里的内容执行。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Xl}"
-                            Text="{Binding Original}"
-                            PlaceholderText="请输入要处理的文本" />
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="密钥、结果与操作" />
-                            <TextBlock Classes="section-copy" Text="把密钥、结果和常用操作收进同一块工作区里，修改后可以直接在当前视线范围内完成验证。" />
-                        </StackPanel>
-
-                        <TextBox
-                            Grid.Row="1"
-                            Classes="Standard"
-                            Text="{Binding Secret}"
-                            PlaceholderText="请输入密钥" />
-
-                        <TextBox
-                            Grid.Row="2"
-                            AcceptsReturn="True"
-                            Classes="Standard"
-                            MinHeight="{StaticResource Layout.Editor.Md}"
-                            IsReadOnly="True"
-                            Text="{Binding Ciphertext}"
-                            PlaceholderText="处理后的内容将显示在这里" />
-
-                        <WrapPanel Grid.Row="3" Classes="tool-actions" VerticalAlignment="Bottom">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding HandlerCommand}"
-                                CommandParameter="true"
-                                Content="DES 加密"
-                                Tag="M4 7H17M13 3L17 7L13 11"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding HandlerCommand}"
-                                CommandParameter="false"
-                                Content="DES 解密"
-                                Tag="M7 13L3 17L7 21M3 17H16"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-                </Border>
+                <WrapPanel Grid.Row="3" Classes="tool-actions">
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding HandlerCommand}"
+                        CommandParameter="true"
+                        Content="DES 加密"
+                        Tag="M4 7H17M13 3L17 7L13 11"
+                        Theme="{DynamicResource SolidButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding HandlerCommand}"
+                        CommandParameter="false"
+                        Content="DES 解密"
+                        Tag="M7 13L3 17L7 21M3 17H16"
+                        Theme="{DynamicResource OutlineButton}" />
+                </WrapPanel>
             </Grid>
-        </Grid>
-    </ScrollViewer>
+        </Border>
+
+        <!-- 右列：只读处理结果 -->
+        <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="处理结果"
+                        VerticalAlignment="Center" />
+                    <Border
+                        Grid.Column="2"
+                        Classes="badge-pill"
+                        VerticalAlignment="Center">
+                        <TextBlock Classes="badge-text" Text="只读" />
+                    </Border>
+                </Grid>
+
+                <TextBox
+                    Grid.Row="1"
+                    AcceptsReturn="True"
+                    Classes="Standard"
+                    MinHeight="0"
+                    IsReadOnly="True"
+                    PlaceholderText="处理后的内容将显示在这里"
+                    Text="{Binding Ciphertext}" />
+            </Grid>
+        </Border>
+    </Grid>
 </UserControl>

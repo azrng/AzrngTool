@@ -12,27 +12,16 @@
     xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="using:AzrngTools.ViewModels.Format"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 工具页统一布局样板：无页面标题卡，编辑区单卡撑满视口，编辑器内部滚动 -->
     <Grid Margin="{StaticResource Thickness.15}"
           MinHeight="0"
-          RowDefinitions="Auto,*"
-          RowSpacing="{StaticResource Space.12}"
+          RowDefinitions="*"
           x:Name="RootGrid">
-        <Border Grid.Row="0"
-                Classes="tool-card-roomy"
-                x:Name="JsonHeaderCard">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                <StackPanel Spacing="{StaticResource Space.4}">
-                    <TextBlock Classes="section-title" Text="JSON 格式化工作台" />
-                    <TextBlock Classes="section-copy" Text="把格式化、压缩、转义和去除转义收敛到同一个编辑区，避免在多个输入框之间来回切换。" />
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <Border Grid.Row="1"
-                Classes="tool-card-roomy"
-                MinHeight="0"
-                VerticalAlignment="Top"
-                x:Name="JsonWorkspaceCard">
+        <Border
+            Grid.Row="0"
+            Classes="tool-card-roomy"
+            MinHeight="0"
+            x:Name="JsonWorkspaceCard">
             <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
                     <TextBlock Classes="section-title"

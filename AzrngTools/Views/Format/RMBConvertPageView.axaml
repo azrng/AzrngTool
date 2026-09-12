@@ -9,121 +9,101 @@
     xmlns:format="clr-namespace:AzrngTools.ViewModels.Format"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="人民币大写转换工作台" />
-                        <TextBlock Classes="section-copy" Text="沿用现有金额转人民币大写逻辑，把输入、结果和规则说明重新整理成更清晰的两栏布局，便于录入、核对和复制。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="金额录入" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="大写结果" />
-                        </Border>
-                        <Border Classes="badge-pill">
-                            <TextBlock Classes="badge-text" Text="复制" />
-                        </Border>
-                    </WrapPanel>
+    <!-- 工具页统一布局：左侧金额录入卡与右侧大写结果卡各自撑满视口 -->
+    <Grid
+        Margin="{StaticResource Thickness.15}"
+        ColumnDefinitions="0.9*,1.1*"
+        ColumnSpacing="{StaticResource Space.12}">
+        <Border
+            Grid.Column="0"
+            Classes="tool-card-roomy"
+            MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="输入金额"
+                        VerticalAlignment="Center" />
+                    <!-- 原「使用规则」卡压缩为一句提示，挂在说明图标上 -->
+                    <Button
+                        Grid.Column="1"
+                        Classes="iconButton"
+                        ToolTip.Tip="支持两位小数与负数金额，最大 9999999999999.99 元；结果为空表示尚未转换或输入未通过校验。">
+                        <PathIcon
+                            Data="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM12 16V12M12 8H12.01"
+                            Height="{StaticResource Layout.Icon.Sm}"
+                            Width="{StaticResource Layout.Icon.Sm}" />
+                    </Button>
                 </Grid>
-            </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="0.9*,1.1*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="输入金额" />
-                            <TextBlock Classes="section-copy" Text="输入十进制金额后直接执行转换，示例金额和清空操作继续保留在同一区域，便于快速校验不同数值。" />
-                        </StackPanel>
+                <TextBox
+                    Grid.Row="1"
+                    Classes="Standard"
+                    Height="52"
+                    Text="{Binding Amount}"
+                    PlaceholderText="请输入金额（例如：123456.78）" />
 
-                        <TextBox
-                            Grid.Row="1"
-                            Classes="Standard"
-                            Height="52"
-                            Text="{Binding Amount}"
-                            PlaceholderText="请输入金额（例如：123456.78）" />
+                <WrapPanel Grid.Row="2" Classes="tool-actions">
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding ConvertToUppercaseCommand}"
+                        Content="转换为大写"
+                        Tag="M4 7H17M13 3L17 7L13 11"
+                        Theme="{DynamicResource SolidButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding SetExampleCommand}"
+                        Content="示例金额"
+                        Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
+                        Theme="{DynamicResource OutlineButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding ClearCommand}"
+                        Content="清空"
+                        Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
+                        Theme="{DynamicResource OutlineButton}" />
+                </WrapPanel>
+            </Grid>
+        </Border>
 
-                        <WrapPanel Grid.Row="2" Classes="tool-actions">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ConvertToUppercaseCommand}"
-                                Content="转换为大写"
-                                Tag="M4 7H17M13 3L17 7L13 11"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding SetExampleCommand}"
-                                Content="示例金额"
-                                Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
-                                Theme="{DynamicResource OutlineButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ClearCommand}"
-                                Content="清空"
-                                Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-                </Border>
+        <Border
+            Grid.Column="1"
+            Classes="tool-card-roomy"
+            MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="{StaticResource Space.8}">
+                    <TextBlock
+                        Classes="section-copy"
+                        Text="大写金额"
+                        VerticalAlignment="Center" />
 
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
-                            <StackPanel Spacing="{StaticResource Space.4}">
-                                <TextBlock Classes="section-title" Text="大写金额" />
-                                <TextBlock Classes="section-copy" Text="结果区只负责展示转换后的人民币大写金额，便于直接核对后复制使用。" />
-                            </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        Classes="actionIcon"
+                        Command="{Binding CopyResultCommand}"
+                        Content="复制结果"
+                        Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
+                        Theme="{DynamicResource OutlineButton}" />
+                </Grid>
 
-                            <Button
-                                Classes="actionIcon"
-                                Grid.Column="1"
-                                Command="{Binding CopyResultCommand}"
-                                Content="复制结果"
-                                Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </Grid>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <TextBlock
-                                FontFamily="Microsoft YaHei UI, SimSun, serif"
-                                FontWeight="Bold"
-                                Text="{Binding UppercaseAmount}"
-                                TextWrapping="Wrap"
-                                VerticalAlignment="Center" />
-                        </Border>
-
-                        <Border Grid.Row="2" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="metric-label" Text="结果说明" />
-                                <TextBlock Classes="Small" Text="• 结果为空时表示尚未执行转换，或当前输入未通过校验。" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 复制按钮继续复用原有逻辑，不改动提示方式和校验路径。" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
+                <Border
+                    Grid.Row="1"
+                    Classes="tool-card-soft"
+                    MinHeight="0">
+                    <TextBlock
+                        FontFamily="Microsoft YaHei UI, SimSun, serif"
+                        FontWeight="Bold"
+                        Text="{Binding UppercaseAmount}"
+                        TextWrapping="Wrap"
+                        VerticalAlignment="Center" />
                 </Border>
             </Grid>
-
-            <Border Grid.Row="2" Classes="tool-card-roomy">
-                <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="使用规则" />
-                        <TextBlock Classes="section-copy" Text="适合校验金额输入、查看人民币大写结果，并快速确认字符统计信息。" />
-                    </StackPanel>
-
-                    <Border Grid.Row="1" Classes="tool-card-soft">
-                        <StackPanel Spacing="{StaticResource Space.8}">
-                            <TextBlock Classes="Small" Text="• 支持小数点后两位的金额转换。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 自动转换为人民币大写格式（壹贰叁肆伍陆柒捌玖拾元角分）。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 支持负数金额转换，最大支持到 9999999999999.99 元。" TextWrapping="Wrap" />
-                            <TextBlock Classes="Small" Text="• 底层仍使用 Azrng.Core.Helpers.RmbHelper 进行转换。" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
-                </Grid>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>

@@ -9,116 +9,90 @@
     xmlns:format="clr-namespace:AzrngTools.ViewModels.Format"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
-            <Border Grid.Row="0" Classes="tool-card-roomy">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}">
-                        <TextBlock Classes="section-title" Text="MIME 类型查询工作台" />
-                        <TextBlock Classes="section-copy" Text="支持按扩展名、按 MIME 类型和查看全部类型三种模式，结果统一落到下方结果区。" />
-                    </StackPanel>
-
-                    <WrapPanel Grid.Column="1" Classes="tool-actions" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button
-                            Classes="actionIcon"
-                            Command="{Binding CopyResultCommand}"
-                            Content="复制结果"
-                            Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
-                            Theme="{DynamicResource OutlineButton}" />
-                        <Button
-                            Classes="actionIcon"
-                            Command="{Binding ClearCommand}"
-                            Content="清空"
-                            Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
-                            Theme="{DynamicResource OutlineButton}" />
-                    </WrapPanel>
+    <!-- 工具页统一布局：查询输入行固定高度，查询结果卡撑满剩余视口并在卡内滚动 -->
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
+        <Border Grid.Row="0" Classes="tool-card-roomy">
+            <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                <Grid
+                    Grid.Row="0"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="{StaticResource Space.8}">
+                    <TextBox
+                        Classes="Standard"
+                        Text="{Binding SearchText}"
+                        PlaceholderText="请输入文件扩展名或 MIME 类型" />
+                    <!-- 原「操作说明」卡压缩为一句提示，挂在说明图标上 -->
+                    <Button
+                        Grid.Column="1"
+                        Classes="iconButton"
+                        VerticalAlignment="Center"
+                        ToolTip.Tip="按扩展名查询：输入 .jpg、png 等；按 MIME 类型查询：输入 image/、application/json 等片段模糊匹配。">
+                        <PathIcon
+                            Data="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22ZM12 16V12M12 8H12.01"
+                            Height="{StaticResource Layout.Icon.Sm}"
+                            Width="{StaticResource Layout.Icon.Sm}" />
+                    </Button>
                 </Grid>
-            </Border>
 
-            <Grid Grid.Row="1" ColumnDefinitions="1.1*,0.9*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="查询输入" />
-                            <TextBlock Classes="section-copy" Text="可以输入文件扩展名，如 `.jpg`，也可以输入 MIME 片段，如 `image/` 进行模糊搜索。" />
-                        </StackPanel>
+                <WrapPanel Grid.Row="1" Classes="tool-actions">
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding QueryByExtensionCommand}"
+                        Content="按扩展名查询"
+                        Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
+                        Theme="{DynamicResource SolidButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding QueryByMimeTypeCommand}"
+                        Content="按MIME类型查询"
+                        Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
+                        Theme="{DynamicResource SolidButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding ShowAllMimeTypesCommand}"
+                        Content="显示所有类型"
+                        Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
+                        Theme="{DynamicResource OutlineButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding CopyResultCommand}"
+                        Content="复制结果"
+                        Tag="M8 8H19V19H8V8ZM5 16H4V4H16V5"
+                        Theme="{DynamicResource OutlineButton}" />
+                    <Button
+                        Classes="actionIcon"
+                        Command="{Binding ClearCommand}"
+                        Content="清空"
+                        Tag="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7"
+                        Theme="{DynamicResource OutlineButton}" />
+                </WrapPanel>
+            </Grid>
+        </Border>
 
-                        <TextBox
-                            Grid.Row="1"
-                            Classes="Standard"
-                            Text="{Binding SearchText}"
-                            PlaceholderText="请输入文件扩展名或 MIME 类型" />
+        <Border
+            Grid.Row="1"
+            Classes="tool-card-roomy"
+            MinHeight="0">
+            <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                <TextBlock
+                    Grid.Row="0"
+                    Classes="section-copy"
+                    Text="查询结果"
+                    VerticalAlignment="Center" />
 
-                        <WrapPanel Grid.Row="2" Classes="tool-actions">
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding QueryByExtensionCommand}"
-                                Content="按扩展名查询"
-                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding QueryByMimeTypeCommand}"
-                                Content="按MIME类型查询"
-                                Tag="M4 5H20V19H4V5ZM8 9H16M8 13H13"
-                                Theme="{DynamicResource SolidButton}" />
-                            <Button
-                                Classes="actionIcon"
-                                Command="{Binding ShowAllMimeTypesCommand}"
-                                Content="显示所有类型"
-                                Tag="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13"
-                                Theme="{DynamicResource OutlineButton}" />
-                        </WrapPanel>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <StackPanel Spacing="{StaticResource Space.4}">
-                            <TextBlock Classes="section-title" Text="操作说明" />
-                            <TextBlock Classes="section-copy" Text="既能查扩展名和类型之间的映射关系，也能快速浏览内置的常见 MIME 数据。" />
-                        </StackPanel>
-
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 按扩展名：输入 `.jpg`、`png` 等查询 MIME" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 按MIME类型：输入 `image/`、`application/json` 等查询扩展名" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 显示所有类型：列出内置数据库中的全部记录" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
+                <Border
+                    Grid.Row="1"
+                    Classes="tool-card-soft"
+                    MinHeight="0">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <TextBlock
+                            Classes="code-output"
+                            FontFamily="Consolas,monospace"
+                            Text="{Binding QueryResult}"
+                            TextWrapping="Wrap" />
+                    </ScrollViewer>
                 </Border>
             </Grid>
-
-            <Grid Grid.Row="2" ColumnDefinitions="1.2*,0.8*" ColumnSpacing="{StaticResource Space.12}">
-                <Border Grid.Column="0" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <TextBlock Classes="section-title" Text="查询结果" />
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <ScrollViewer MaxHeight="420">
-                                <TextBlock
-                                    Classes="code-output"
-                                    FontFamily="Consolas,monospace"
-                                    Text="{Binding QueryResult}"
-                                    TextWrapping="Wrap" />
-                            </ScrollViewer>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Column="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
-                        <TextBlock Classes="section-title" Text="结果说明" />
-                        <Border Grid.Row="1" Classes="tool-card-soft">
-                            <StackPanel Spacing="{StaticResource Space.8}">
-                                <TextBlock Classes="Small" Text="• 查询结果会保留多行格式，便于直接复制" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 按 MIME 类型查询支持部分匹配" TextWrapping="Wrap" />
-                                <TextBlock Classes="Small" Text="• 数据库内置了文本、图片、音频、视频和文档等常见类型" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Grid>
-    </ScrollViewer>
+        </Border>
+    </Grid>
 </UserControl>

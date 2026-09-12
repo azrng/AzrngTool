@@ -42,6 +42,17 @@ MainWindow（主窗口）
 - 首页 `OverviewPageView` 展示工具总数、功能分组与亮暗主题等概览信息。
 - Markdown 预览页已实现但菜单未注册：`Markdown.Avalonia` 尚未完成 Avalonia 12 兼容验证，入口临时隐藏（见 README 兼容说明）。
 
+### 工具页统一布局规范
+
+内容宿主不提供页面级滚动（`MainWindow` 中 `ContentControl` 直接承载页面），页面获得确定视口高度。所有工具页遵循以下约定，样板见 `Views/Format/JsonYamlXmlPageView.axaml`：
+
+- 无页面标题卡：页面标题、说明文案、装饰性徽标一律不渲染；当前工具由侧栏选中态表达。
+- 教学类说明区（操作说明 / 常用流程 / 使用提示）不占布局：确有操作价值的压缩为一句话挂卡片头部说明图标的 `ToolTip.Tip`，纯背景介绍直接删除。
+- 根布局：编辑器型页面 `工作区(*) + 状态细条(Auto)`；表单型页面在卡片内部保留 `ScrollViewer` 填满剩余空间。禁止内容顶对齐 + 底部留白。
+- 编辑器 `MinHeight="0"` 随窗口拉伸，长内容在编辑器内部滚动；`Layout.Editor.*` 高度 token 仅用于滚动容器内 Auto 行的输入框最小高度。
+- 结果/状态提示使用 `Border.status-strip` + `TextBlock.status-strip-text`（成功/错误两态），空闲时隐藏。
+- 例外：阅读型页面（Overview、About、Hardware）保留页面级 `ScrollViewer`。
+
 ## 模块与代码目录映射
 
 | 业务模块 | Views | ViewModels | Services | 文档 |
