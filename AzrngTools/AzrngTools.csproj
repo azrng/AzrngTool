@@ -26,10 +26,21 @@
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
         <PublishTrimmed>false</PublishTrimmed>
         <PublishAot>false</PublishAot>
+        <!-- Native AOT 强制启用裁剪，不允许显式关闭；非 AOT 发布维持上面的关闭状态 -->
+        <PublishTrimmed Condition="'$(PublishAot)' == 'true'">true</PublishTrimmed>
+        <!-- ReadyToRun 仅对 JIT 发布有意义，AOT 下关闭避免无效预编译 -->
+        <PublishReadyToRun Condition="'$(PublishAot)' == 'true'">false</PublishReadyToRun>
+        <!-- AOT 发布剥离本机调试符号，避免 exe 内嵌数百 MB 调试信息 -->
+        <StripSymbols Condition="'$(PublishAot)' == 'true'">true</StripSymbols>
     </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- AOT/裁剪发布时保留本程序集全部元数据：标记接口扫描注册依赖运行期反射 -->
+        <TrimmerRootDescriptor Include="Roots.xml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -59,7 +70,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
         <PackageReference Include="AzrngCommon.Security" Version="1.2.1" />
         <PackageReference Include="GTranslate" Version="2.3.1" />
-        <PackageReference Include="Markdown.Avalonia" Version="11.0.3" />
+        <PackageReference Include="Markdown.Avalonia" Version="12.0.0-a3" />
+        <PackageReference Include="YamlDotNet" Version="18.1.0" />
         <PackageReference Include="NPOI" Version="2.8.0" />
         <PackageReference Include="PdfPig" Version="0.1.15" />
         <PackageReference Include="PdfSharp" Version="6.2.4" />

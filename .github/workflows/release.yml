@@ -1,5 +1,9 @@
 name: release-win-x64
 
+# 对齐 SmartVault：推送到 main 或手动触发时自动生成严格递增的版本号，
+# 以 Native AOT 方式发布单文件 exe 并打包上传 GitHub Release，
+# 供客户端启动时的自动更新检查（GitHub Releases API）使用。
+
 on:
   push:
     branches:
@@ -16,7 +20,7 @@ concurrency:
 env:
   VERSION_FILE: VERSION
   PROJECT_PATH: AzrngTools/AzrngTools.csproj
-  PUBLISH_DIR: publish/win-x64
+  PUBLISH_DIR: dist
   PACKAGE_NAME: AzrngTools-win-x64-portable.zip
 
 jobs:
@@ -39,21 +43,25 @@ jobs:
         shell: pwsh
         run: |
           $versionFilePath = Join-Path "${{ github.workspace }}" "${{ env.VERSION_FILE }}"
-          $legacyVersion = ""
+          $base = ""
           if (Test-Path -LiteralPath $versionFilePath) {
-            $legacyVersion = (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8).Trim()
+            $raw = (Get-Content -LiteralPath $versionFilePath -Raw -Encoding UTF8).Trim()
+            # VERSION 提供主版本.次版本基准；auto/为空/不存在时回退为 UTC 日期
+            if ($raw -match '^(\d+)\.(\d+)') {
+              $base = "$($Matches[1]).$($Matches[2])"
+            }
           }
 
-          if ($legacyVersion -match '^\d+\.\d+\.\d+(?:\.\d+)?$') {
-            $version = $legacyVersion
+          if ([string]::IsNullOrEmpty($base)) {
+            $base = (Get-Date).ToUniversalTime().ToString("yyyy.M.d")
           }
-          else {
-            $version = (Get-Date).ToUniversalTime().ToString("yyyy.M.d.HH")
-          }
+
+          # 每次 CI 用 run_number 作为末段，保证版本号随推送严格递增（对齐 SmartVault）
+          $version = "$base.${{ github.run_number }}"
 
           $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
           $shortSha = "${{ github.sha }}".Substring(0, 7)
-          $tag = "v$version-build-$timestamp-$shortSha"
+          $tag = "v$version"
           $releaseName = "AzrngTools $version ($timestamp)"
           $packagePath = Join-Path "${{ github.workspace }}" "${{ env.PACKAGE_NAME }}"
 
@@ -62,15 +70,17 @@ jobs:
           "release_name=$releaseName" >> $env:GITHUB_OUTPUT
           "package_path=$packagePath" >> $env:GITHUB_OUTPUT
 
+          Write-Host "Release version: $version / tag: $tag"
+
       - name: Restore
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
-      - name: Publish win-x64 package
+      - name: Publish AOT exe
         shell: pwsh
         run: |
           $version = "${{ steps.release_meta.outputs.version }}"
           $informationalVersion = $version
-          
+
           if (Test-Path "${{ env.PUBLISH_DIR }}") {
             Remove-Item "${{ env.PUBLISH_DIR }}" -Recurse -Force
           }
@@ -80,11 +90,7 @@ jobs:
             -r win-x64 `
             --self-contained true `
             -o "${{ env.PUBLISH_DIR }}" `
-            -p:AzrngToolsVersionDate=$version `
-            -p:PublishAot=false `
-            -p:PublishTrimmed=false `
-            -p:DebugType=None `
-            -p:DebugSymbols=false `
+            -p:PublishAot=true `
             -p:InformationalVersion=$informationalVersion `
             -p:Version=$version
 

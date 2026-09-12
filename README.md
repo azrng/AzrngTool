@@ -55,43 +55,41 @@ dotnet run --project AzrngTools\AzrngTools.csproj
 - 未放置有效授权文件时，PDF 分割和 Word 导出会以 Aspose 评估模式运行，可能出现评估水印或页数限制
 
 ### 本地发布
+- 双击根目录 `Publish.bat`，以 Native AOT 方式发布单文件 `AzrngTools.exe` 到 `dist` 目录
+- 等价命令：
 ```bash
-dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contained true -p:PublishAot=false -p:PublishTrimmed=false
+dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 -o dist -p:PublishAot=true
 ```
-
-- 正式发布默认采用：`SelfContained + PublishSingleFile + PublishReadyToRun`
-- 当前默认发布策略不启用 `AOT` 和 `Trim`，优先保证桌面运行稳定性
-- 单文件内压缩（`EnableCompressionInSingleFile`）已关闭：压缩会导致每次启动全量解压，实测启动约慢 4 倍、运行内存接近翻倍；关闭后本地 exe 体积变大，但发布 zip 经外层压缩后下载体积基本不变
-- Release 发布启用 `IncludeNativeLibrariesForSelfExtract=true`，Skia / HarfBuzz / ANGLE 等原生库会随单文件一起打包，并在运行时自解压加载
-- 当前测试产物目录可以收敛为单个 `AzrngTools.exe`，但原生库仍会在运行时落到临时目录，不属于纯内存加载
+- 传 `-p:PublishAot=true` 时 csproj 会联动启用 `PublishTrimmed` 并关闭 `PublishReadyToRun`；本地 Debug / 常规 Release 构建不受影响（仍为 JIT）
+- AOT 产物是单个原生 exe，无需运行时自解压；JSON 持久化统一走源生成序列化上下文，XSLT 转换工具在 AOT 版本中不可用（依赖运行时代码生成，页面会给出提示）
+- 手动 zip 分发时可参考 CI 命名：`AzrngTools-win-x64-portable.zip`（自动更新按该名称查找更新包）
 
 ### GitHub Actions 自动发布
 1. 将准备好的代码合并到 `main`
 2. 根目录 `VERSION` 默认保持 `auto`，无需手动指定版本号
 3. 推送 `main`，或在 Actions 中手动运行 `release-win-x64`
-4. 工作流会优先读取 `VERSION`：
-   - 当内容是显式版本号时，使用该版本号发布
-   - 当内容是 `auto`、为空或不存在时，自动使用 UTC 年月日小时版本 `YYYY.M.D.HH`
+4. 工作流按“基准版本 + 运行序号”生成版本号（对齐 SmartVault，保证随推送严格递增）：
+   - 基准取 `VERSION` 的主版本.次版本（如 `1.2`）；内容为 `auto`、为空或不存在时，基准回退为 UTC 日期 `YYYY.M.D`
+   - 末段 patch 固定使用 workflow 运行序号 `github.run_number`
 5. 工作流会自动：
-   - 执行 `dotnet publish`
+   - 以 Native AOT 方式执行 `dotnet publish`
    - 生成 `AzrngTools-win-x64-portable.zip`
    - 上传 Actions artifact
-   - 创建带构建时间与短 SHA 的 GitHub Release tag
+   - 创建 GitHub Release，tag 为 `v<版本号>`
 
 ## 版本号规则
-- 默认采用四段纯数字 UTC 时间版本：`YYYY.M.D.HH`
-- `YYYY` 为 UTC 年份，`M` 为 UTC 月份，`D` 为 UTC 日期，`HH` 为 UTC 小时
-- 根目录 `VERSION` 默认建议填写 `auto`
-- 若需要兼容旧流程或临时固定版本，`VERSION` 仍可填写显式版本号
-- GitHub Actions 正式发布时会基于版本号生成带构建信息的 tag，例如：`v2026.4.9-build-20260408-123000-abcd123`
+- 正式发布版本 = `基准.运行序号`，随每次推送严格递增，可直接被客户端更新比较使用
+- `VERSION` 默认填写 `auto`：基准回退为 UTC 日期，版本形如 `YYYY.M.D.<run_number>`
+- 若需自定义大版本，`VERSION` 填写主版本.次版本（如 `1.2`），发布版本形如 `1.2.<run_number>`
+- 本地开发构建未指定版本时，仍按 `Directory.Build.props` 的 UTC 时间版本 `YYYY.M.D.HH` 生成，仅作标识用途
+- GitHub Actions 正式发布的 tag 为 `v<版本号>`，例如：`v2026.9.12.1`
 - 客户端显示版本与更新比较统一使用可比较的数字版本号
-- 为兼容历史安装包，更新检测仍支持识别旧三段版本：`YYYY.M.D`
+- 为兼容历史安装包，更新检测仍支持识别旧三段 / 四段时间版本：`YYYY.M.D`、`YYYY.M.D.HH`
 - 示例：
   - `VERSION`：`auto`
-  - 自动生成版本：`2026.4.28.06`
-  - 显式指定版本：`2026.4.9`
-  - 自动生成 tag：`v2026.4.28.06-build-20260428-123000-abcd123`
-  - 历史兼容版本：`2026.4.24`
+  - 首次推送生成版本：`2026.9.12.1`，tag：`v2026.9.12.1`
+  - 再次推送：`2026.9.12.2`（运行序号递增）
+  - `VERSION`：`1.2` 时发布版本：`1.2.<run_number>`，tag：`v1.2.<run_number>`
 
 ## 自动更新
 - 关于页提供“检查更新”和“立即更新”入口
