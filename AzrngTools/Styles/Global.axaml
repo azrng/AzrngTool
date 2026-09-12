@@ -60,6 +60,31 @@
         <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
     </Style>
 
+    <!-- 状态细条：工具页贴底的持久结果提示，空闲时由页面隐藏，不占布局空间 -->
+    <Style Selector="Border.status-strip">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Sm}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.8}" />
+    </Style>
+
+    <Style Selector="Border.status-strip.success">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Success.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Success.Border}" />
+    </Style>
+
+    <Style Selector="Border.status-strip.error">
+        <Setter Property="Background" Value="{DynamicResource Brush.Status.Error.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Status.Error.Border}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-strip-text.success">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success.Text}" />
+    </Style>
+
+    <Style Selector="TextBlock.status-strip-text.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Error.Text}" />
+    </Style>
+
     <Style Selector="Border.shell-panel">
         <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />

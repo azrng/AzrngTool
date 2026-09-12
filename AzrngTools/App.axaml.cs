@@ -70,6 +70,7 @@ public partial class App : Application
         ViewLocator.Register<JsonPageViewModel, JsonPageView>();
         ViewLocator.Register<SqlFormatPageViewModel, SqlFormatPageView>();
         ViewLocator.Register<XmlToHtmlPageViewModel, XmlToHtmlPageView>();
+        ViewLocator.Register<JsonYamlXmlPageViewModel, JsonYamlXmlPageView>();
         ViewLocator.Register<JwtEncodePageViewModel, JwtEncodePageView>();
         ViewLocator.Register<RegexAnalysisViewModel, RegexAnalysisView>();
         ViewLocator.Register<WordCountPageViewModel, WordCountPageView>();
@@ -171,6 +172,7 @@ public partial class App : Application
         services.AddTransient<JsonPageViewModel>();
         services.AddTransient<SqlFormatPageViewModel>();
         services.AddTransient<XmlToHtmlPageViewModel>();
+        services.AddTransient<JsonYamlXmlPageViewModel>();
         services.AddTransient<JwtEncodePageViewModel>();
         services.AddTransient<RegexAnalysisViewModel>();
         services.AddTransient<WordCountPageViewModel>();

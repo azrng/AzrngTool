@@ -199,6 +199,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     new MenuBar("JSON格式化", typeof(JsonPageViewModel)),
                     new MenuBar("SQL操作", typeof(SqlFormatPageViewModel)),
                     new MenuBar("XML转HTML", typeof(XmlToHtmlPageViewModel)),
+                    new MenuBar("JSON/YAML/XML互转", typeof(JsonYamlXmlPageViewModel)),
                     new MenuBar("正则表达式测试", typeof(RegexAnalysisViewModel)),
                     new MenuBar("字数统计", typeof(WordCountPageViewModel)),
                     new MenuBar("人民币大写转换", typeof(RMBConvertPageViewModel)),

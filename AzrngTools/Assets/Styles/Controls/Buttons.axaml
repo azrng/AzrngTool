@@ -71,6 +71,9 @@
     </Style>
 
     <Style Selector="Button.actionIcon">
+        <!-- Semi 按钮模板透传内容对齐属性，默认 Left 会导致图标加文字整组贴左，显式双向居中 -->
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="ContentTemplate">
             <DataTemplate>
                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
