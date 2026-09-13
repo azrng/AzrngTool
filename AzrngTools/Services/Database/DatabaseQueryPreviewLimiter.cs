@@ -11,6 +11,10 @@ public static class DatabaseQueryPreviewLimiter
         @"^\s*select\s+(distinct\s+)?",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
+    private static readonly Regex ExistingLimitTokenRegex = new(
+        @"\b(limit|top|fetch|rownum)\b",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
     public static DatabaseQueryPreviewResult BuildPreviewQuery(DatabaseType databaseType, string sql, int maxRows)
     {
         if (maxRows <= 0 || string.IsNullOrWhiteSpace(sql))
@@ -58,15 +62,7 @@ public static class DatabaseQueryPreviewLimiter
 
     private static bool HasExistingLimit(string sql)
     {
-        return ContainsToken(sql, "limit") ||
-               ContainsToken(sql, "top") ||
-               ContainsToken(sql, "fetch") ||
-               ContainsToken(sql, "rownum");
-    }
-
-    private static bool ContainsToken(string sql, string token)
-    {
-        return Regex.IsMatch(sql, $@"\b{Regex.Escape(token)}\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        return ExistingLimitTokenRegex.IsMatch(sql);
     }
 }
 

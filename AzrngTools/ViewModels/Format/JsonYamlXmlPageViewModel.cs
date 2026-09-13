@@ -48,7 +48,7 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
     public bool HasStatusMessage => !string.IsNullOrWhiteSpace(ValidationMessage);
 
     [RelayCommand]
-    private void Convert()
+    private async Task ConvertAsync()
     {
         if (SourceText.IsNullOrWhiteSpace())
         {
@@ -64,7 +64,11 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
 
         try
         {
-            TargetText = _conversionService.Convert(SourceText, SourceFormat, TargetFormat);
+            // 大文本解析+序列化可能耗时明显，移出 UI 线程避免界面冻结
+            var source = SourceText;
+            var sourceFormat = SourceFormat;
+            var targetFormat = TargetFormat;
+            TargetText = await Task.Run(() => _conversionService.Convert(source, sourceFormat, targetFormat));
             SetResult(true, $"转换成功：{SourceFormat} → {TargetFormat}。");
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException)
@@ -75,7 +79,7 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void FormatSource()
+    private async Task FormatSourceAsync()
     {
         if (SourceText.IsNullOrWhiteSpace())
         {
@@ -85,7 +89,9 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
 
         try
         {
-            SourceText = _conversionService.Format(SourceText, SourceFormat);
+            var source = SourceText;
+            var sourceFormat = SourceFormat;
+            SourceText = await Task.Run(() => _conversionService.Format(source, sourceFormat));
             SetResult(true, $"{SourceFormat} 格式化完成，结果已回填到输入区。");
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException)
@@ -96,7 +102,7 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Validate()
+    private async Task ValidateAsync()
     {
         if (SourceText.IsNullOrWhiteSpace())
         {
@@ -104,7 +110,9 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
             return;
         }
 
-        var result = _conversionService.Validate(SourceText, SourceFormat);
+        var source = SourceText;
+        var sourceFormat = SourceFormat;
+        var result = await Task.Run(() => _conversionService.Validate(source, sourceFormat));
         SetResult(result.IsSuccess, result.Message);
     }
 

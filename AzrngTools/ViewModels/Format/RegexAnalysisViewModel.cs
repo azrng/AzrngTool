@@ -12,6 +12,9 @@ namespace AzrngTools.ViewModels.Format;
 /// </summary>
 public partial class RegexAnalysisViewModel : ViewModelBase
 {
+    // 用户输入的正则可能触发灾难性回溯，必须限时执行，避免无限占用线程
+    private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(2);
+
     private readonly IMessageService _messageService;
 
     public RegexAnalysisViewModel(IMessageService messageService)
@@ -53,7 +56,7 @@ public partial class RegexAnalysisViewModel : ViewModelBase
     private string _replacedText = string.Empty;
 
     [RelayCommand]
-    private void TestRegex()
+    private async Task TestRegexAsync()
     {
         try
         {
@@ -69,14 +72,26 @@ public partial class RegexAnalysisViewModel : ViewModelBase
                 return;
             }
 
+            var text = TestText;
             var regex = BuildRegex();
-            var matches = regex.Matches(TestText);
 
-            HighlightedText = BuildHighlightedText(TestText, matches);
-            MatchSummary = BuildMatchSummary(matches);
-            GroupDetails = BuildGroupDetails(matches);
+            // 匹配与高亮构建可能耗时较长，移出 UI 线程执行，卡住时仅本次命令等待
+            var (highlightedText, matchSummary, groupDetails, matchCount) = await Task.Run(() =>
+            {
+                var matches = regex.Matches(text);
+                return (BuildHighlightedText(text, matches), BuildMatchSummary(matches),
+                        BuildGroupDetails(matches), matches.Count);
+            });
 
-            _messageService.SendMessage($"匹配完成，共 {matches.Count} 项");
+            HighlightedText = highlightedText;
+            MatchSummary = matchSummary;
+            GroupDetails = groupDetails;
+
+            _messageService.SendMessage($"匹配完成，共 {matchCount} 项");
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            _messageService.SendMessage("正则执行超过 2 秒已中止，请检查模式是否存在灾难性回溯。");
         }
         catch (ArgumentException ex)
         {
@@ -91,7 +106,7 @@ public partial class RegexAnalysisViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void ReplaceText()
+    private async Task ReplaceTextAsync()
     {
         try
         {
@@ -107,9 +122,16 @@ public partial class RegexAnalysisViewModel : ViewModelBase
                 return;
             }
 
+            var text = TestText;
+            var replacement = ReplacementText;
             var regex = BuildRegex();
-            ReplacedText = regex.Replace(TestText, ReplacementText);
+
+            ReplacedText = await Task.Run(() => regex.Replace(text, replacement));
             _messageService.SendMessage("替换完成");
+        }
+        catch (RegexMatchTimeoutException)
+        {
+            _messageService.SendMessage("正则替换超过 2 秒已中止，请检查模式是否存在灾难性回溯。");
         }
         catch (ArgumentException ex)
         {
@@ -165,7 +187,7 @@ public partial class RegexAnalysisViewModel : ViewModelBase
             options |= RegexOptions.Singleline;
         }
 
-        return new Regex(RegexPattern, options);
+        return new Regex(RegexPattern, options, RegexTimeout);
     }
 
     private static string BuildHighlightedText(string text, MatchCollection matches)

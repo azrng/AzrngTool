@@ -10,6 +10,11 @@ namespace AzrngTools.Converters.Database;
 /// </summary>
 public class BoolToColorConverter : IValueConverter
 {
+    // 列表模板中逐项调用，画刷必须复用同一实例避免每次转换都分配新对象
+    private static readonly SolidColorBrush TrueBrush = new(Colors.Green);
+    private static readonly SolidColorBrush FalseBrush = new(Colors.Red);
+    private static readonly SolidColorBrush DefaultBrush = new(Colors.Black);
+
     /// <summary>
     /// 转换值
     /// </summary>
@@ -17,9 +22,9 @@ public class BoolToColorConverter : IValueConverter
     {
         if (value is bool boolValue)
         {
-            return boolValue ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+            return boolValue ? TrueBrush : FalseBrush;
         }
-        return new SolidColorBrush(Colors.Black);
+        return DefaultBrush;
     }
 
     /// <summary>

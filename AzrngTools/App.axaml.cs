@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Notifications;
 using Avalonia.Markup.Xaml;
 using AzrngTools.Services;
+using AzrngTools.Services.Network;
 using AzrngTools.ViewModels;
 using AzrngTools.ViewModels.Encode;
 using AzrngTools.ViewModels.Encrypts;
@@ -128,6 +129,12 @@ public partial class App : Application
         services.AddSingleton<IThemePreferenceService, ThemePreferenceService>();
         services.AddSingleton<ITranslator, YandexTranslator>();
         services.AddHttpClient();
+        // 接口调试勾选“忽略 SSL 错误”时使用的命名客户端
+        services.AddHttpClient(ApiRequestExecutionService.IgnoreSslClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+                });
         services.AddHttpClient(nameof(AppUpdateService), client =>
         {
             client.Timeout = TimeSpan.FromSeconds(100);

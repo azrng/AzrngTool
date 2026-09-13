@@ -19,7 +19,7 @@ namespace AzrngTools.ViewModels.Setting
         {
             _hardwareInfoCacheService = hardwareInfoCacheService;
             _messageService = messageService;
-            Generate();
+            _ = InitializeAsync();
         }
 
         /// <summary>
@@ -52,11 +52,15 @@ namespace AzrngTools.ViewModels.Setting
         [ObservableProperty]
         private string _macAddress;
 
-        private void Generate()
+        /// <summary>
+        /// 异步加载硬件信息。WMI 采集可能阻塞秒级，移到后台线程执行避免冻结首次导航。
+        /// </summary>
+        private async Task InitializeAsync()
         {
             try
             {
-                ApplySnapshot(_hardwareInfoCacheService.GetHardwareInfo());
+                var snapshot = await Task.Run(_hardwareInfoCacheService.GetHardwareInfo);
+                ApplySnapshot(snapshot);
             }
             catch (Exception ex)
             {
@@ -75,11 +79,12 @@ namespace AzrngTools.ViewModels.Setting
         }
 
         [RelayCommand]
-        private void RefreshHardwareInfo()
+        private async Task RefreshHardwareInfoAsync()
         {
             try
             {
-                ApplySnapshot(_hardwareInfoCacheService.RefreshHardwareInfo());
+                var snapshot = await Task.Run(_hardwareInfoCacheService.RefreshHardwareInfo);
+                ApplySnapshot(snapshot);
                 _messageService.SendMessage("已刷新本机硬件信息缓存。");
             }
             catch (Exception ex)

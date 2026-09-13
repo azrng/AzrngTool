@@ -32,7 +32,7 @@ public partial class JsonPageViewModel : ViewModelBase
     /// 格式化json
     /// </summary>
     [RelayCommand]
-    private void FormatJson()
+    private async Task FormatJsonAsync()
     {
         try
         {
@@ -42,7 +42,9 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = JsonHelper.JsonFormatter(Original);
+            // 大文本解析可能耗时明显，移出 UI 线程避免界面冻结
+            var source = Original;
+            Original = await Task.Run(() => JsonHelper.JsonFormatter(source));
         }
         catch (Exception e)
         {
@@ -55,7 +57,7 @@ public partial class JsonPageViewModel : ViewModelBase
     /// 压缩Json
     /// </summary>
     [RelayCommand]
-    private void CompressJson()
+    private async Task CompressJsonAsync()
     {
         try
         {
@@ -65,7 +67,8 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = JsonHelper.JsonCompress(Original);
+            var source = Original;
+            Original = await Task.Run(() => JsonHelper.JsonCompress(source));
         }
         catch (Exception e)
         {
@@ -101,7 +104,7 @@ public partial class JsonPageViewModel : ViewModelBase
     /// 压缩并转义Json
     /// </summary>
     [RelayCommand]
-    private void CompressEscapeJson()
+    private async Task CompressEscapeJsonAsync()
     {
         try
         {
@@ -111,8 +114,8 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            var compressed = JsonHelper.JsonCompress(Original);
-            Original = JsonHelper.EscapeJsonText(compressed);
+            var source = Original;
+            Original = await Task.Run(() => JsonHelper.EscapeJsonText(JsonHelper.JsonCompress(source)));
         }
         catch (Exception e)
         {
@@ -131,7 +134,7 @@ public partial class JsonPageViewModel : ViewModelBase
     /// Json文本去除转义
     /// </summary>
     [RelayCommand]
-    private void ReplaceEscape()
+    private async Task ReplaceEscapeAsync()
     {
         try
         {
@@ -141,8 +144,8 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            var result = JsonHelper.UnescapeJsonText(Original);
-            Original = result;
+            var source = Original;
+            Original = await Task.Run(() => JsonHelper.UnescapeJsonText(source));
         }
         catch (Exception ex)
         {

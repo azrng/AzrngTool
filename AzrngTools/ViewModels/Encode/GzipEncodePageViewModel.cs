@@ -33,7 +33,7 @@ public partial class GzipEncodePageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Handler(string isEncoding)
+    private async Task HandlerAsync(string isEncoding)
     {
         try
         {
@@ -43,9 +43,11 @@ public partial class GzipEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            ResultText = isEncoding.Equals("true", StringComparison.CurrentCultureIgnoreCase)
-                ? CompressHelper.Compress(OriginalText)
-                : CompressHelper.Decompress(OriginalText);
+            // 压缩/解压是 CPU 密集操作，大文本下移出 UI 线程避免界面冻结
+            var source = OriginalText;
+            ResultText = await Task.Run(() => isEncoding.Equals("true", StringComparison.CurrentCultureIgnoreCase)
+                ? CompressHelper.Compress(source)
+                : CompressHelper.Decompress(source));
         }
         catch (Exception ex)
         {

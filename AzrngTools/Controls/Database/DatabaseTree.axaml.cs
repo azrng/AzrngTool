@@ -13,6 +13,8 @@ namespace AzrngTools.Controls.Database;
 
 public partial class DatabaseTree : UserControl
 {
+    // 该控件所属页面被 ViewLocator 缓存，Detach 后仍会重新挂载；
+    // 不能在 OnDetachedFromVisualTree 中 Dispose 防抖器，否则切走再切回后树搜索将永久失效
     private readonly DebouncedActionDispatcher _searchDebouncer = new(TimeSpan.FromMilliseconds(250));
 
     public TreeNodeItem? RootNode
@@ -229,12 +231,6 @@ public partial class DatabaseTree : UserControl
             _searchDebouncer.Debounce(() =>
                 Dispatcher.UIThread.Post(() => FilterNodes(searchText)));
         }
-    }
-
-    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-    {
-        _searchDebouncer.Dispose();
-        base.OnDetachedFromVisualTree(e);
     }
 
     private void OnRootNodeChanged()

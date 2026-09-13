@@ -6,7 +6,7 @@ namespace AzrngTools.Tests.ViewModels.Format;
 public class JsonPageViewModelTests
 {
     [Fact]
-    public void ReplaceEscapeCommand_ShouldFormatEscapedJson()
+    public async Task ReplaceEscapeCommand_ShouldFormatEscapedJson()
     {
         var messageService = new TestMessageService();
         var viewModel = new JsonPageViewModel(messageService)
@@ -14,14 +14,14 @@ public class JsonPageViewModelTests
             Original = """{\"name\":\"Azrng\",\"enabled\":true}"""
         };
 
-        viewModel.ReplaceEscapeCommand.Execute(null);
+        await viewModel.ReplaceEscapeCommand.ExecuteAsync(null);
 
         Assert.Contains(Environment.NewLine + "  \"name\": \"Azrng\",", viewModel.Original);
         Assert.Empty(messageService.Messages);
     }
 
     [Fact]
-    public void ReplaceEscapeCommand_ShouldKeepOriginalTextWhenProcessingFails()
+    public async Task ReplaceEscapeCommand_ShouldKeepOriginalTextWhenProcessingFails()
     {
         var messageService = new TestMessageService();
         const string original = "{\\\"name\\\":\\q}";
@@ -30,7 +30,7 @@ public class JsonPageViewModelTests
             Original = original
         };
 
-        viewModel.ReplaceEscapeCommand.Execute(null);
+        await viewModel.ReplaceEscapeCommand.ExecuteAsync(null);
 
         Assert.Equal(original, viewModel.Original);
         Assert.Single(messageService.Messages);
@@ -53,7 +53,7 @@ public class JsonPageViewModelTests
     }
 
     [Fact]
-    public void CompressEscapeJsonCommand_ShouldNotifyWhenInputIsAlreadyEscapedJson()
+    public async Task CompressEscapeJsonCommand_ShouldNotifyWhenInputIsAlreadyEscapedJson()
     {
         var messageService = new TestMessageService();
         const string original = """{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\"}""";
@@ -62,7 +62,7 @@ public class JsonPageViewModelTests
             Original = original
         };
 
-        viewModel.CompressEscapeJsonCommand.Execute(null);
+        await viewModel.CompressEscapeJsonCommand.ExecuteAsync(null);
 
         Assert.Equal(original, viewModel.Original);
         Assert.Single(messageService.Messages);

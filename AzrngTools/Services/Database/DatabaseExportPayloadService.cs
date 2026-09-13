@@ -91,20 +91,15 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
             .OrderBy(table => table.Name)
             .ToList();
 
-        var columnTasks = matchingTables.Select(table =>
-            _databaseService.GetColumnsAsync(connection, table.Schema, table.Name));
-        var indexTasks = matchingTables.Select(table =>
-            _databaseService.GetIndexesAsync(connection, table.Schema, table.Name));
-
-        var columnResults = await Task.WhenAll(columnTasks);
-        var indexResults = await Task.WhenAll(indexTasks);
-
+        // 每张表的列与索引并行加载，但逐表推进：一次性发起 2N 个并发查询会打满共享连接
         for (var i = 0; i < matchingTables.Count; i++)
         {
             var table = matchingTables[i];
             result.Tables.Add(table);
 
-            var columnResult = columnResults[i];
+            var columnResult = await _databaseService.GetColumnsAsync(connection, table.Schema, table.Name);
+            var indexResult = await _databaseService.GetIndexesAsync(connection, table.Schema, table.Name);
+
             if (!columnResult.IsSuccess)
             {
                 LoggingService.LogWarning($"Column export fallback for {table.Schema}.{table.Name}: {columnResult.Message}");
@@ -115,7 +110,6 @@ public class DatabaseExportPayloadService : IDatabaseExportPayloadService, ISing
                 result.TableColumnsMap[BuildTableExportKey(table)] = columnResult.DataOrEmpty().OrderBy(column => column.OrdinalPosition).ToList();
             }
 
-            var indexResult = indexResults[i];
             if (!indexResult.IsSuccess)
             {
                 LoggingService.LogWarning($"Index export fallback for {table.Schema}.{table.Name}: {indexResult.Message}");

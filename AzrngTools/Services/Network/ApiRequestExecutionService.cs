@@ -9,6 +9,9 @@ namespace AzrngTools.Services.Network;
 
 public sealed class ApiRequestExecutionService : IApiRequestExecutionService, ITransientDependency
 {
+    // 忽略 SSL 校验的命名客户端，Handler 配置在应用启动时统一注册
+    public const string IgnoreSslClientName = "IgnoreSsl";
+
     private readonly IHttpClientFactory _httpClientFactory;
 
     public ApiRequestExecutionService(IHttpClientFactory httpClientFactory)
@@ -83,16 +86,8 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
 
     private HttpClient CreateHttpClient(bool ignoreSslErrors)
     {
-        if (!ignoreSslErrors)
-        {
-            return _httpClientFactory.CreateClient();
-        }
-
-        var handler = new HttpClientHandler
-        {
-            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
-        };
-        return new HttpClient(handler, disposeHandler: true);
+        // 忽略 SSL 校验同样走 IHttpClientFactory 命名客户端，避免每次请求重建 Handler 与连接池
+        return _httpClientFactory.CreateClient(ignoreSslErrors ? IgnoreSslClientName : string.Empty);
     }
 
     private static void ApplyHeaders(HttpRequestMessage message, IEnumerable<ApiRequestKeyValueItem> headers)

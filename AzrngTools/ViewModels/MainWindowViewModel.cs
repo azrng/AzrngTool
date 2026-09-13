@@ -4,7 +4,9 @@ using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using AzrngTools.Services;
+using AzrngTools.Utils;
 using AzrngTools.ViewModels.Encode;
 using AzrngTools.ViewModels.Encrypts;
 using AzrngTools.ViewModels.Format;
@@ -39,6 +41,8 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IToolUsageStatsService _toolUsageStatsService;
     private readonly Dictionary<string, MenuBar> _toolMenuLookup = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _groupExpansionStates = new(StringComparer.Ordinal);
+    // 搜索防抖：避免每个按键都全量克隆重建菜单集合
+    private readonly DebouncedActionDispatcher _searchDebouncer = new(TimeSpan.FromMilliseconds(250));
 
     /// <summary>
     /// 页面 ViewModel 缓存：同一工具页复用同一实例，避免每次切换重建整个页面对象图导致卡顿。
@@ -248,7 +252,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnSearchKeywordChanged(string value)
     {
-        ApplyMenuFilter();
+        // 全量重建集合只在输入停顿后执行一次；集合变更必须在 UI 线程完成
+        _searchDebouncer.Debounce(() => Dispatcher.UIThread.Post(ApplyMenuFilter));
     }
 
     partial void OnIsSidebarCollapsedChanged(bool value)

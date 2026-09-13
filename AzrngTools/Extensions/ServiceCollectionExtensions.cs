@@ -18,50 +18,49 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterBusinessServices(this IServiceCollection services,
                                                               params Assembly[] assemblies)
     {
-        services.RegisterUniteServices(assemblies, typeof(ITransientDependency), ServiceLifetime.Transient);
-        services.RegisterUniteServices(assemblies, typeof(IScopedDependency), ServiceLifetime.Scoped);
-        services.RegisterUniteServices(assemblies, typeof(ISingletonDependency), ServiceLifetime.Singleton);
+        // 一次程序集扫描完成三种生命周期注册，避免 GetTypes() 全量反射在启动时重复执行三次
+        var lifetimeMarkers = new (Type MarkerType, ServiceLifetime Lifetime)[]
+        {
+            (typeof(ITransientDependency), ServiceLifetime.Transient),
+            (typeof(IScopedDependency), ServiceLifetime.Scoped),
+            (typeof(ISingletonDependency), ServiceLifetime.Singleton),
+        };
 
-        return services;
-    }
-
-    /// <summary>
-    ///统一注册服务，注册不同生命周期类型
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="assemblies"></param>
-    /// <param name="lifeType"></param>
-    /// <param name="lifetime"></param>
-    /// <returns></returns>
-    private static IServiceCollection RegisterUniteServices(this IServiceCollection services,
-                                                            IEnumerable<Assembly> assemblies, Type lifeType,
-                                                            ServiceLifetime lifetime)
-    {
         //不自动注册该命名空间下的接口
         var ignoreNameSpaces = new[]
-                               {
-                                   "Microsoft.",
-                                   "System."
-                               };
-        var dependencyTypes = assemblies
-                              .SelectMany(a => a.GetTypes().Where(t => t.IsClass && t.GetInterfaces().Contains(lifeType)))
-                              .ToList();
+        {
+            "Microsoft.",
+            "System."
+        };
 
-        dependencyTypes.ForEach(implementType =>
+        var implementationTypes = assemblies
+                                  .SelectMany(a => a.GetTypes())
+                                  .Where(t => t.IsClass);
+
+        foreach (var implementType in implementationTypes)
         {
             var interfaces = implementType.GetInterfaces().ToList();
             interfaces.RemoveAll(x =>
                 ignoreNameSpaces.Any(p => x.FullName is not null && x.FullName.IndexOf(p, StringComparison.Ordinal) == 0));
-            if (interfaces.Count > 0)
+            if (interfaces.Count == 0)
             {
-                interfaces.ForEach(serviceType =>
-                    services.Add(new ServiceDescriptor(serviceType, implementType, lifetime)));
+                continue;
             }
-            else
+
+            foreach (var (markerType, lifetime) in lifetimeMarkers)
             {
-                services.Add(new ServiceDescriptor(implementType, implementType, lifetime));
+                if (!interfaces.Contains(markerType))
+                {
+                    continue;
+                }
+
+                foreach (var serviceType in interfaces)
+                {
+                    services.Add(new ServiceDescriptor(serviceType, implementType, lifetime));
+                }
             }
-        });
+        }
+
         return services;
     }
 
