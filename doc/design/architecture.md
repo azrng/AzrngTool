@@ -22,8 +22,8 @@ related:
 ## 技术栈与运行形态
 
 - 技术栈：.NET 10、Avalonia UI 12、Semi.Avalonia、CommunityToolkit.Mvvm、Microsoft.Extensions.DependencyInjection、Azrng.Core。
-- 运行形态：Windows 桌面单机应用；发布采用 Native AOT 单文件 `AzrngTools.exe`。
-- AOT 约束：JSON 持久化统一走源生成序列化上下文，不使用反射序列化；依赖运行时代码生成的能力（如 XSLT 转换）在 AOT 版本不可用，由页面明确提示。
+- 运行形态：Windows 桌面单机应用；发布采用 .NET JIT 自包含单文件（Self-contained + PublishSingleFile），运行时与原生库嵌入 exe、启动时自解压。
+- AOT 状态（2026-09-15）：Native AOT 暂缓，恢复步骤见 [publish-aot](publish-aot.md)。恢复 AOT 时 JSON 持久化须统一走源生成序列化上下文，不使用反射序列化；依赖运行时代码生成的能力（如 XSLT 转换）在 AOT 版本不可用，由页面明确提示。
 
 ## 应用壳与导航
 
@@ -120,8 +120,9 @@ ApplicationRuntimeService：退出进程 → 覆盖安装目录 → 重启
 
 ## 发布链路
 
-- 本地：`Publish.bat` 以 Native AOT 发布单文件到 `dist/`。
+- 本地：`Publish.bat` 以自包含单文件发布到 `dist/`（csproj Release 配置已内置 SelfContained + PublishSingleFile）。
 - CI：GitHub Actions `release-win-x64` 工作流，推送 `main` 触发；`VERSION` 为 `auto` 时版本号 = 基准（主版本.次版本或 UTC 日期）+ `github.run_number`，严格递增；产物 `AzrngTools-win-x64-portable.zip` 并创建 GitHub Release。
+- Native AOT 已暂缓，恢复步骤与验证清单见 [publish-aot](publish-aot.md)。
 - 版本与发布细节以 README 为准，本文不重复维护。
 
 ## 公共限制与兼容项
@@ -129,5 +130,5 @@ ApplicationRuntimeService：退出进程 → 覆盖安装目录 → 重启
 | 限制 | 影响 | 处理 |
 | --- | --- | --- |
 | Markdown.Avalonia 未完成 Avalonia 12 兼容验证 | Markdown 预览入口临时隐藏 | 菜单未注册，代码保留 |
-| XSLT 依赖运行时代码生成 | AOT 版本 XML 转 HTML 不可用 | 页面明确提示 |
+| XSLT 依赖运行时代码生成 | 恢复 AOT 后 XML 转 HTML 不可用 | 页面明确提示 |
 | Aspose.Pdf 为本地 DLL 引用 | 升级需手动替换 DLL 并回归 | 授权文件 `Aspose.Pdf.lic` 放应用目录 |

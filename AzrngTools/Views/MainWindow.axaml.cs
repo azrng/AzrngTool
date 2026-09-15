@@ -28,7 +28,14 @@ namespace AzrngTools.Views
 
         private void OnWindowOpened(object? sender, System.EventArgs e)
         {
-            var manager = new WindowToastManager(this);
+            // UrsaWindow 为无边框窗口，客户区从窗口物理顶端开始；Semi 主题把 Toast 定位在
+            // 客户区顶部居中且 Margin=0，直接弹出会被窗口顶边和圆角裁掉，整体下移到标题栏
+            // （默认高 32）以下显示
+            var manager = new WindowToastManager(this)
+            {
+                MaxItems = 3,
+                Margin = new Avalonia.Thickness(0, 40, 0, 8),
+            };
             ToastService.SetManager(manager);
         }
 

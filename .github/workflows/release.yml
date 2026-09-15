@@ -1,8 +1,9 @@
 name: release-win-x64
 
 # 对齐 SmartVault：推送到 main 或手动触发时自动生成严格递增的版本号，
-# 以 Native AOT 方式发布单文件 exe 并打包上传 GitHub Release，
+# 以自包含单文件方式发布 exe 并打包上传 GitHub Release，
 # 供客户端启动时的自动更新检查（GitHub Releases API）使用。
+# Native AOT 已暂缓，恢复步骤见 doc/design/publish-aot.md
 
 on:
   push:
@@ -75,7 +76,7 @@ jobs:
       - name: Restore
         run: dotnet restore ${{ env.PROJECT_PATH }}
 
-      - name: Publish AOT exe
+      - name: Publish self-contained exe
         shell: pwsh
         run: |
           $version = "${{ steps.release_meta.outputs.version }}"
@@ -90,7 +91,6 @@ jobs:
             -r win-x64 `
             --self-contained true `
             -o "${{ env.PUBLISH_DIR }}" `
-            -p:PublishAot=true `
             -p:InformationalVersion=$informationalVersion `
             -p:Version=$version
 

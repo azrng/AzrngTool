@@ -1,3 +1,5 @@
+<!-- UrsaWindow 的标题栏是悬浮层不占布局，内容需通过 Padding 自行避让，
+     顶部 32 为 UrsaWindow 默认标题栏高度 -->
 <u:UrsaWindow
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
@@ -20,6 +22,27 @@
     xmlns:vm="using:AzrngTools.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- 标题栏配色：Semi 默认标题栏为透明且其资源无法从应用侧覆盖，故用独立键名自绘
+         标题底条与分隔线（第 0/1 行），拖拽与窗口按钮仍由 Ursa 悬浮标题栏负责，随明暗主题切换 -->
+    <u:UrsaWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#1C1C1F</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#333338</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </u:UrsaWindow.Resources>
+
     <!-- 标题栏由 UrsaWindow 托管装饰提供：拖动、双击最大化、最小化/最大化/关闭按钮均由库渲染；
          IsFullScreenButtonVisible 固定关闭以保持原有 三键 布局 -->
     <u:UrsaWindow.TitleBarContent>
@@ -39,8 +62,17 @@
             IsThreeState="False" />
     </u:UrsaWindow.RightContent>
 
-    <Grid Margin="{StaticResource Thickness.12}">
-        <Grid ColumnSpacing="{StaticResource Space.12}">
+    <!-- 标题底条(32px，与 Ursa 默认标题栏同高) + 分隔线 + 内容区；
+         Ursa 标题栏文字与窗口按钮悬浮其上，拖拽热区不受影响 -->
+    <Grid RowDefinitions="32,1,*">
+        <Border
+            Grid.Row="0"
+            Background="{DynamicResource TitleBar.Strip}" />
+        <Border
+            Grid.Row="1"
+            Background="{DynamicResource TitleBar.Separator}" />
+        <Grid Grid.Row="2" Margin="{StaticResource Thickness.12}">
+            <Grid ColumnSpacing="{StaticResource Space.12}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{Binding SidebarWidth}" />
                 <ColumnDefinition Width="*" />
@@ -179,6 +211,7 @@
                                     VerticalAlignment="Stretch" />
                 </Border>
             </Grid>
+        </Grid>
         </Grid>
     </Grid>
 </u:UrsaWindow>

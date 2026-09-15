@@ -55,13 +55,16 @@ dotnet run --project AzrngTools\AzrngTools.csproj
 - 未放置有效授权文件时，PDF 分割和 Word 导出会以 Aspose 评估模式运行，可能出现评估水印或页数限制
 
 ### 本地发布
-- 双击根目录 `Publish.bat`，以 Native AOT 方式发布单文件 `AzrngTools.exe` 到 `dist` 目录
+- 双击根目录 `Publish.bat`：自包含单文件发布到 `dist` 目录（运行时与原生库全部嵌入 exe，目标机器无需安装 .NET）
+- 双击根目录 `Publish-FrameworkDependent.bat`：依赖框架单文件发布到 `dist-fdd` 目录（体积更小，但目标机器必须安装 .NET 10 桌面运行时）
+- 两个脚本均输出单文件 `AzrngTools.exe`；自包含产物约 348MB，依赖框架产物约 182MB（开启 ReadyToRun 且未压缩的实测值）
 - 等价命令：
 ```bash
-dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 -o dist -p:PublishAot=true
+dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 -o dist
+dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o dist-fdd
 ```
-- 传 `-p:PublishAot=true` 时 csproj 会联动启用 `PublishTrimmed` 并关闭 `PublishReadyToRun`；本地 Debug / 常规 Release 构建不受影响（仍为 JIT）
-- AOT 产物是单个原生 exe，无需运行时自解压；JSON 持久化统一走源生成序列化上下文，XSLT 转换工具在 AOT 版本中不可用（依赖运行时代码生成，页面会给出提示）
+- 注意：根目录的 `.bat` 脚本内容必须保持纯 ASCII——cmd 按 ANSI 代码页解析批处理，UTF-8 中文注释会被拆断成错误命令
+- Native AOT 已暂缓（2026-09-15）：AOT 产物无法直接做到单 exe（Avalonia/Skia 原生库必须留在 exe 旁，除非静态链接），且反射类依赖的裁剪兼容维护成本高；恢复步骤见 `doc/design/publish-aot.md`
 - 手动 zip 分发时可参考 CI 命名：`AzrngTools-win-x64-portable.zip`（自动更新按该名称查找更新包）
 
 ### GitHub Actions 自动发布
@@ -72,7 +75,7 @@ dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 -o dist -p:Pub
    - 基准取 `VERSION` 的主版本.次版本（如 `1.2`）；内容为 `auto`、为空或不存在时，基准回退为 UTC 日期 `YYYY.M.D`
    - 末段 patch 固定使用 workflow 运行序号 `github.run_number`
 5. 工作流会自动：
-   - 以 Native AOT 方式执行 `dotnet publish`
+   - 以自包含单文件方式执行 `dotnet publish`
    - 生成 `AzrngTools-win-x64-portable.zip`
    - 上传 Actions artifact
    - 创建 GitHub Release，tag 为 `v<版本号>`

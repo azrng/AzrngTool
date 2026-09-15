@@ -24,6 +24,9 @@
         <!-- 关闭单文件内压缩：压缩会导致每次启动全量解压（实测启动 4.8s→1.2s、内存 380MB→200MB），
              发布 zip 经外层压缩后下载体积基本不变，仅本地 exe 体积变大 -->
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+        <!-- 发布产物不携带 pdb：单文件交付只保留 exe，调试符号仅在 Debug 构建生成 -->
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
         <PublishTrimmed>false</PublishTrimmed>
         <PublishAot>false</PublishAot>
         <!-- Native AOT 强制启用裁剪，不允许显式关闭；非 AOT 发布维持上面的关闭状态 -->

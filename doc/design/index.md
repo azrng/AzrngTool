@@ -5,6 +5,7 @@
 | 模块 | 功能 | 设计文档 | 状态 | 关联需求 |
 | --- | --- | --- | --- | --- |
 | app | 跨模块架构（应用壳、导航、持久化、更新与发布链路） | [architecture.md](architecture.md) | in-review | — |
+| app | 发布链路 AOT 暂缓与恢复指南 | [publish-aot.md](publish-aot.md) | in-review | — |
 | database | 数据库工作台界面重设计 | [database/workbench.md](database/workbench.md) | in-review | `REQ-DATABASE-001` |
 | network | 接口调试 | [network/api-debug.md](network/api-debug.md) | in-review | `REQ-NETWORK-001` |
 | pdf | PDF 管理 | [pdf/management.md](pdf/management.md) | in-review | `REQ-PDF-001` |
