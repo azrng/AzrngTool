@@ -75,10 +75,10 @@
         </Style>
     </UserControl.Styles>
 
-    <!-- 工具页统一布局：工作区行(*)撑满视口，响应结果区随窗口拉伸并在编辑器内部滚动 -->
+    <!-- 工具页统一布局：请求配置与响应结果按星号分栏共享视口，各自在内部滚动，避免矮窗口下响应区被挤没 -->
     <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="*" RowSpacing="{StaticResource Space.12}">
         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
+            <Grid Grid.Column="0" RowDefinitions="Auto,*,*" RowSpacing="{StaticResource Space.12}">
                 <Border Grid.Row="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="{StaticResource Space.10}">
@@ -152,7 +152,7 @@
                 </Border>
 
                 <Border Grid.Row="1" Classes="tool-card-roomy">
-                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                    <Grid RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="请求配置" />
                             <TextBlock Classes="section-copy" Text="参数、Header 和 Body 分区拆开，便于逐块核对输入并快速回放历史请求。" />
@@ -163,9 +163,9 @@
                             IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                             SelectedIndex="{Binding SelectedConfigTabIndex}">
                             <TabItem Header="Params">
-                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto" RowSpacing="{StaticResource Space.12}">
+                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="*" RowSpacing="{StaticResource Space.12}">
                                     <Border Classes="tool-card-soft">
-                                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                        <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.8}">
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                 <TextBlock Classes="section-title" Text="Query 参数" />
                                                 <Button
@@ -190,34 +190,38 @@
                                                 IsVisible="{Binding QueryParameters.Count, Converter={StaticResource EqualToZeroConverter}}"
                                                 Text="暂无查询参数，点击右上角加号添加一行。" />
 
-                                            <ItemsControl
+                                            <ScrollViewer
                                                 Grid.Row="3"
-                                                IsVisible="{Binding QueryParameters.Count, Converter={StaticResource GreaterThanZeroConverter}}"
-                                                ItemsSource="{Binding QueryParameters}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
-                                                            <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
-                                                            <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
-                                                            <Button
-                                                                Grid.Column="2"
-                                                                Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
-                                                                CommandParameter="{Binding}"
-                                                                Theme="{DynamicResource OutlineButton}"
-                                                                ToolTip.Tip="删除参数">
-                                                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                                            </Button>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                                HorizontalScrollBarVisibility="Disabled"
+                                                VerticalScrollBarVisibility="Auto">
+                                                <ItemsControl
+                                                    IsVisible="{Binding QueryParameters.Count, Converter={StaticResource GreaterThanZeroConverter}}"
+                                                    ItemsSource="{Binding QueryParameters}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
+                                                                <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
+                                                                <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Theme="{DynamicResource OutlineButton}"
+                                                                    ToolTip.Tip="删除参数">
+                                                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
                                         </Grid>
                                     </Border>
                                 </Grid>
                             </TabItem>
 
                             <TabItem Header="Headers">
-                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.8}">
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                         <TextBlock Classes="section-title" Text="请求头" />
                                         <Button
@@ -242,32 +246,36 @@
                                         IsVisible="{Binding Headers.Count, Converter={StaticResource EqualToZeroConverter}}"
                                         Text="暂无请求头，点击右上角加号添加一行。" />
 
-                                    <ItemsControl
+                                    <ScrollViewer
                                         Grid.Row="3"
-                                        IsVisible="{Binding Headers.Count, Converter={StaticResource GreaterThanZeroConverter}}"
-                                        ItemsSource="{Binding Headers}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
-                                                    <TextBox Grid.Column="0" PlaceholderText="Authorization" Text="{Binding Name}" />
-                                                    <TextBox Grid.Column="1" PlaceholderText="Bearer token" Text="{Binding Value}" />
-                                                    <Button
-                                                        Grid.Column="2"
-                                                        Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
-                                                        CommandParameter="{Binding}"
-                                                        Theme="{DynamicResource OutlineButton}"
-                                                        ToolTip.Tip="删除请求头">
-                                                        <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                                    </Button>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                        HorizontalScrollBarVisibility="Disabled"
+                                        VerticalScrollBarVisibility="Auto">
+                                        <ItemsControl
+                                            IsVisible="{Binding Headers.Count, Converter={StaticResource GreaterThanZeroConverter}}"
+                                            ItemsSource="{Binding Headers}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                    <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
+                                                        <TextBox Grid.Column="0" PlaceholderText="Authorization" Text="{Binding Name}" />
+                                                        <TextBox Grid.Column="1" PlaceholderText="Bearer token" Text="{Binding Value}" />
+                                                        <Button
+                                                            Grid.Column="2"
+                                                            Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                            CommandParameter="{Binding}"
+                                                            Theme="{DynamicResource OutlineButton}"
+                                                            ToolTip.Tip="删除请求头">
+                                                            <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                        </Button>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
                                 </Grid>
                             </TabItem>
 
                             <TabItem Header="Body">
-                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                                <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.10}">
                                     <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
                                         <TextBlock Classes="metric-label" Text="Body 模式" VerticalAlignment="Center" />
                                         <ComboBox
@@ -288,7 +296,7 @@
                                         IsChecked="{Binding IgnoreSslErrors}" />
 
                                     <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding IsFormBodyMode}">
-                                        <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                        <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.8}">
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
                                                 <TextBlock Classes="section-title" Text="表单字段" />
                                                 <Button
@@ -313,35 +321,39 @@
                                                 IsVisible="{Binding FormFields.Count, Converter={StaticResource EqualToZeroConverter}}"
                                                 Text="暂无表单字段，点击右上角加号添加一行。" />
 
-                                            <ItemsControl
+                                            <ScrollViewer
                                                 Grid.Row="3"
-                                                IsVisible="{Binding FormFields.Count, Converter={StaticResource GreaterThanZeroConverter}}"
-                                                ItemsSource="{Binding FormFields}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
-                                                        <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
-                                                            <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
-                                                            <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
-                                                            <Button
-                                                                Grid.Column="2"
-                                                                Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
-                                                                CommandParameter="{Binding}"
-                                                                Theme="{DynamicResource OutlineButton}"
-                                                                ToolTip.Tip="删除表单字段">
-                                                                <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
-                                                            </Button>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
+                                                HorizontalScrollBarVisibility="Disabled"
+                                                VerticalScrollBarVisibility="Auto">
+                                                <ItemsControl
+                                                    IsVisible="{Binding FormFields.Count, Converter={StaticResource GreaterThanZeroConverter}}"
+                                                    ItemsSource="{Binding FormFields}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate x:DataType="vm:ApiRequestParameterItemViewModel">
+                                                            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="{StaticResource Space.8}" Margin="{StaticResource Thickness.Top.2}">
+                                                                <TextBox Grid.Column="0" PlaceholderText="name" Text="{Binding Name}" />
+                                                                <TextBox Grid.Column="1" PlaceholderText="value" Text="{Binding Value}" />
+                                                                <Button
+                                                                    Grid.Column="2"
+                                                                    Command="{ReflectionBinding #RootPage.DataContext.RemoveParameterCommand}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Theme="{DynamicResource OutlineButton}"
+                                                                    ToolTip.Tip="删除表单字段">
+                                                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
                                         </Grid>
                                     </Border>
 
                                     <TextBox
-                                        Grid.Row="3"
+                                        Grid.Row="2"
                                         AcceptsReturn="True"
                                         Classes="Standard"
-                                        MinHeight="{StaticResource Layout.Editor.Md}"
+                                        MinHeight="0"
                                         IsVisible="{Binding HasRawBodyEditor}"
                                         PlaceholderText="{Binding RequestBodyPlaceholder}"
                                         Text="{Binding RequestBody}"
