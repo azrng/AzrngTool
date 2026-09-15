@@ -49,15 +49,12 @@ dotnet run --project AzrngTools\AzrngTools.csproj
 ```
 
 ### PDF 管理依赖
-- PDF 管理功能使用项目内本地 DLL 引用：`AzrngTools/Libs/Aspose/Aspose.Pdf.dll`
-- 不通过 NuGet 引用 `Aspose.PDF`，更新 Aspose 版本时需替换该 DLL 并完成构建与发布验证
-- Aspose 授权文件默认放在应用程序目录，文件名为 `Aspose.Pdf.lic`
-- 未放置有效授权文件时，PDF 分割和 Word 导出会以 Aspose 评估模式运行，可能出现评估水印或页数限制
+- PDF 管理功能使用 NuGet 包 `PdfPig`（UglyToad.PdfPig）解析 PDF，无本地 DLL 依赖，也无需授权文件
 
 ### 本地发布
 - 双击根目录 `Publish.bat`：自包含单文件发布到 `dist` 目录（运行时与原生库全部嵌入 exe，目标机器无需安装 .NET）
 - 双击根目录 `Publish-FrameworkDependent.bat`：依赖框架单文件发布到 `dist-fdd` 目录（体积更小，但目标机器必须安装 .NET 10 桌面运行时）
-- 两个脚本均输出单文件 `AzrngTools.exe`；自包含产物约 348MB，依赖框架产物约 182MB（开启 ReadyToRun 且未压缩的实测值）
+- 两个脚本均输出单文件 `AzrngTools.exe`；自包含产物约 161MB，依赖框架产物约 74MB（2026-09-15 实测：关闭 ReadyToRun、未压缩，并剔除 WinForms/Oracle/DiaSymReader 冗余；开启 ReadyToRun 会膨胀约 160MB 换取约 1.2s 快启动）
 - 等价命令：
 ```bash
 dotnet publish AzrngTools\AzrngTools.csproj -c Release -r win-x64 -o dist

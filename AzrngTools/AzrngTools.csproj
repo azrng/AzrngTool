@@ -20,8 +20,10 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <!-- 关闭单文件内压缩：压缩会导致每次启动全量解压（实测启动 4.8s→1.2s、内存 380MB→200MB），
+        <!-- 关闭 ReadyToRun：R2R 预编译会把原生码内联进每个托管 DLL，产物从约 165MB 膨胀到约 330MB；
+             代价是启动改为 JIT 编译。恢复快启动改回 true 即可 -->
+        <PublishReadyToRun>false</PublishReadyToRun>
+        <!-- 关闭单文件内压缩：压缩会导致每次启动全量解压（R2R 构建下实测启动 4.8s→1.2s、内存 380MB→200MB），
              发布 zip 经外层压缩后下载体积基本不变，仅本地 exe 体积变大 -->
         <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
         <!-- 发布产物不携带 pdb：单文件交付只保留 exe，调试符号仅在 Debug 构建生成 -->
@@ -61,7 +63,9 @@
         </PackageReference>
         <PackageReference Include="Azrng.Core" Version="1.20.0" />
         <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta4" />
-        <PackageReference Include="Common.Windows.Core" Version="0.0.6" />
+        <!-- 硬件指纹采集（硬件信息页）专用依赖，体积优化暂时移除；恢复时取消注释，
+              并还原 HardwareInfoCacheService.CollectSnapshot 中的采集调用 -->
+        <!-- <PackageReference Include="Common.Windows.Core" Version="0.0.6" /> -->
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
         <PackageReference Include="NJsonSchema" Version="11.6.1" />
@@ -76,9 +80,12 @@
         <PackageReference Include="Markdown.Avalonia" Version="12.0.0-a3" />
         <PackageReference Include="YamlDotNet" Version="18.1.0" />
         <PackageReference Include="NPOI" Version="2.8.0" />
+        <!-- DocumentFormat.OpenXml 已移除（约 8MB）：PDF 管理页 Word 导出改用 NPOI 自带的
+             XWPF（NPOI.OOXML 程序集，数据库导出已在用 NPOI）；恢复时还原包引用并回退
+             AsposePdfProcessingService.ExportPdfToWord -->
+        <!-- <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" /> -->
         <PackageReference Include="PdfPig" Version="0.1.15" />
         <PackageReference Include="PdfSharp" Version="6.2.4" />
-        <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" />
     </ItemGroup>
 
     <Target Name="RemoveNativeDebugSymbolsFromPublish"
@@ -89,6 +96,49 @@
                                    Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'libHarfBuzzSharp.pdb'" />
             <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
                                    Condition="'%(ResolvedFileToPublish.Filename)%(ResolvedFileToPublish.Extension)' == 'libSkiaSharp.pdb'" />
+        </ItemGroup>
+    </Target>
+
+    <!-- 单文件发布剔除确认无用的运行时文件，减小产物体积：
+         1) MSAL（AD 认证库）声明了 WinForms 框架引用把整套 WinForms 运行时拖进产物，应用未使用其内嵌浏览器认证；
+         2) Oracle 驱动：UI 未开放新建 Oracle 连接，仅历史遗留配置可能触达，触达时会报缺失错误；
+         3) DiaSymReader：仅运行期写调试符号用，发布已 DebugType=None。
+         注意：必须用 ExcludeFromSingleFile 元数据（Update 语法）且挂在 _ComputeFilesToBundle 之前，
+         直接 Remove ResolvedFileToPublish 对单文件打包器无效 -->
+    <Target Name="ExcludeUnusedFilesFromSingleFile"
+            BeforeTargets="_ComputeFilesToBundle"
+            Condition="'$(Configuration)' == 'Release' and '$(PublishSingleFile)' == 'true'">
+        <ItemGroup>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Design'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Design.Editors'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Primitives'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing.Common'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing.Design'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'Oracle.ManagedDataAccess'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'Microsoft.DiaSymReader.Native.amd64'">
+                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+            </ResolvedFileToPublish>
+            <!-- 元数据标记后整项移出发布清单，避免被排除的文件散落在 exe 旁 -->
+            <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                                   Condition="'%(ResolvedFileToPublish.ExcludeFromSingleFile)' == 'true'" />
         </ItemGroup>
     </Target>
 

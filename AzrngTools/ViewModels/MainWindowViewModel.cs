@@ -226,7 +226,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 Title = "系统设置",
                 Child =
                 [
-                    new MenuBar("硬件信息", typeof(HardwarePageViewModel)),
+                    // 硬件指纹采集已随 Common.Windows.Core 包移除而停用（体积优化），页面暂时隐藏；
+                    // 恢复时还原 csproj 包引用与 HardwareInfoCacheService 采集逻辑后取消注释
+                    // new MenuBar("硬件信息", typeof(HardwarePageViewModel)),
                     new MenuBar("关于", typeof(AboutPageViewModel))
                 ]
             }

@@ -1,9 +1,7 @@
 using Azrng.Core.Helpers;
 using Azrng.Core.Results;
 using AzrngTools.Models.Pdf;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
+using NPOI.XWPF.UserModel;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 
@@ -11,7 +9,7 @@ namespace AzrngTools.Services.Pdf;
 
 public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransientDependency
 {
-    public string LicenseStatusText => "使用开源组件（PdfPig + PDFsharp + OpenXML），无需授权";
+    public string LicenseStatusText => "使用开源组件（PdfPig + PDFsharp + NPOI），无需授权";
 
     public bool IsEvaluationMode => false;
 
@@ -133,10 +131,7 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
 
     private static void ExportPdfToWord(string pdfPath, string outputPath, CancellationToken cancellationToken)
     {
-        using var doc = WordprocessingDocument.Create(outputPath, WordprocessingDocumentType.Document);
-        var mainPart = doc.AddMainDocumentPart();
-        mainPart.Document = new Document();
-        var body = mainPart.Document.Body = new Body();
+        using var doc = new XWPFDocument();
 
         using (var pdf = UglyToad.PdfPig.PdfDocument.Open(pdfPath))
         {
@@ -155,7 +150,8 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
 
                 if (pageNum > 1)
                 {
-                    body.Append(new Paragraph(new Run(new Break { Type = BreakValues.Page })));
+                    var breakRun = doc.CreateParagraph().CreateRun();
+                    breakRun.AddBreak(BreakType.PAGE);
                 }
 
                 foreach (var line in lines)
@@ -164,7 +160,9 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                     if (string.IsNullOrWhiteSpace(lineText))
                         continue;
 
-                    var run = new Run(new Text(lineText) { Space = SpaceProcessingModeValues.Preserve });
+                    var paragraph = doc.CreateParagraph();
+                    var run = paragraph.CreateRun();
+                    run.SetText(lineText);
 
                     if (line.Count > 0)
                     {
@@ -174,16 +172,17 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                             var fontSize = letters[0].FontSize;
                             if (fontSize > 0)
                             {
-                                run.RunProperties = new RunProperties(
-                                    new FontSize { Val = ((int)(fontSize * 2)).ToString() });
+                                // NPOI FontSize 单位为磅（内部换算半磅写入 XML），PdfPig 字号也是磅
+                                run.FontSize = (int)fontSize;
                             }
                         }
                     }
-
-                    body.Append(new Paragraph(run));
                 }
             }
         }
+
+        using var output = File.Create(outputPath);
+        doc.Write(output);
     }
 
     private static string SanitizeXmlText(string text)

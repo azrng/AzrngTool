@@ -8,7 +8,7 @@ setlocal
 cd /d "%~dp0"
 
 set "PROJECT=AzrngTools\AzrngTools.csproj"
-set "DIST_DIR=%~dp0dist"
+set "DIST_DIR=%~dp0dist-fdd"
 
 echo ==============================================
 echo   AzrngTools framework-dependent publish

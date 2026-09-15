@@ -1,12 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AzrngTools.Models;
-using Common.Windows.Core;
 
 namespace AzrngTools.Services;
 
 /// <summary>
 /// 硬件信息本地缓存服务，避免每次打开页面都重复采集系统信息。
+/// 体积优化（2026-09-15）：WMI 采集依赖 Common.Windows.Core 包已从 csproj 注释移除，
+/// 采集逻辑改为返回空快照，页面显示空值；恢复时取消下方注释并还原 csproj 中的包引用。
 /// </summary>
 public sealed partial class HardwareInfoCacheService : IHardwareInfoCacheService, ISingletonDependency
 {
@@ -91,18 +92,22 @@ public sealed partial class HardwareInfoCacheService : IHardwareInfoCacheService
 
     private static HardwareInfoSnapshot CollectSnapshot()
     {
-        var cpuId = HardwareInfo.GetCpuId() ?? string.Empty;
-        var hardDiskId = HardwareInfo.GetMainDiskId() ?? string.Empty;
-        var biosSerial = HardwareInfo.GetBiosSerial() ?? string.Empty;
-        var macAddress = HardwareInfo.GetMacAddress() ?? string.Empty;
-
+        // 机器标识采集已随 Common.Windows.Core 包移除而停用（体积优化），恢复示例：
+        // var cpuId = HardwareInfo.GetCpuId() ?? string.Empty;
+        // var hardDiskId = HardwareInfo.GetMainDiskId() ?? string.Empty;
+        // var biosSerial = HardwareInfo.GetBiosSerial() ?? string.Empty;
+        // var macAddress = HardwareInfo.GetMacAddress() ?? string.Empty;
+        // return new HardwareInfoSnapshot
+        // {
+        //     CpuId = cpuId,
+        //     HardDiskId = hardDiskId,
+        //     BiosSerial = biosSerial,
+        //     MacAddress = macAddress,
+        //     Fingerprint = HardwareInfo.GenerateFingerprint(cpuId, hardDiskId, biosSerial, macAddress) ?? string.Empty,
+        //     CachedAtUtc = DateTime.UtcNow
+        // };
         return new HardwareInfoSnapshot
         {
-            CpuId = cpuId,
-            HardDiskId = hardDiskId,
-            BiosSerial = biosSerial,
-            MacAddress = macAddress,
-            Fingerprint = HardwareInfo.GenerateFingerprint(cpuId, hardDiskId, biosSerial, macAddress) ?? string.Empty,
             CachedAtUtc = DateTime.UtcNow
         };
     }
