@@ -243,10 +243,7 @@ public class DatabaseWorkbenchPageViewTests
             {
                 Source = new Uri("avares://AzrngTools/Styles/DesignTokens.axaml")
             });
-            Resources["NullToBoolConverter"] = new NullToBoolConverter();
-            Resources["AllTrueConverter"] = new AllTrueConverter();
             Resources["EqualToZeroConverter"] = new EqualToZeroConverter();
-            Resources["InvertedBoolConverter"] = new InvertedBoolConverter();
             Styles.Add(new FluentTheme());
         }
     }

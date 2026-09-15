@@ -22,12 +22,9 @@
             <FontWeight x:Key="TabItemSelectedFontWeight">500</FontWeight>
             <FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
             <FontWeight x:Key="ToggleButtonDefaultFontWeight">500</FontWeight>
-            <dbconv:NullToBoolConverter x:Key="NullToBoolConverter" />
             <dbconv:BoolToColorConverter x:Key="BoolToColorConverter" />
             <dbconv:BoolToStringConverter x:Key="BoolToStringConverter" />
-            <dbconv:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <dbconv:EnumToIndexConverter x:Key="EnumToIndexConverter" />
-            <dbconv:AllTrueConverter x:Key="AllTrueConverter" />
             <dbconv:EqualToZeroConverter x:Key="EqualToZeroConverter" />
             <dbconv:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
             <dbconv:DatabaseTypeIconConverter x:Key="DatabaseTypeIconConverter" />

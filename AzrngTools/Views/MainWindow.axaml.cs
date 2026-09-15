@@ -1,7 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using AzrngTools.Models;
 using AzrngTools.Services.Database;
 using AzrngTools.Utils.Events;
@@ -12,7 +10,7 @@ using Ursa.Controls;
 
 namespace AzrngTools.Views
 {
-    public partial class MainWindow : Window, IScopedDependency
+    public partial class MainWindow : UrsaWindow, IScopedDependency
     {
         public MainWindow()
         {
@@ -39,56 +37,6 @@ namespace AzrngTools.Views
             Opened -= OnWindowOpened;
             Closed -= OnWindowClosed;
             ToastService.ClearManager();
-        }
-
-        /// <summary>
-        /// 实现拖动效果
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HeaderBorder_OnPointerPressed(object sender, PointerPressedEventArgs e)
-        {
-            if (e.Pointer.Type == PointerType.Mouse) this.BeginMoveDrag(e);
-        }
-
-        /// <summary>
-        /// 最小化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnMin_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = WindowState.Minimized;
-        }
-
-        /// <summary>
-        /// 最大化
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnMax_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.WindowState = this.WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
-        }
-
-        /// <summary>
-        /// 退出
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnClose_OnClick(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        /// <summary>
-        /// 窗口双击放大缩小事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void HeaderBorder_OnDoubleTapped(object sender, TappedEventArgs e)
-        {
-            this.WindowState = this.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
         }
 
         private void OnCommonListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)

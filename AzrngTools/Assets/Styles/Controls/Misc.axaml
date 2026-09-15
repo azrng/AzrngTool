@@ -135,32 +135,6 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}"/>
     </Style>
 
-    <!-- Window Control Border Group -->
-    <Style Selector="Border.windowControlGroup">
-        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="14"/>
-        <Setter Property="Padding" Value="4"/>
-    </Style>
-
-    <!-- Window Control Glyph -->
-    <Style Selector="TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="FontWeight" Value="{DynamicResource Font.Weight.SemiBold}"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="TextAlignment" Value="Center"/>
-    </Style>
-
-    <Style Selector="Button.windowControl.close TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-    </Style>
-
-    <Style Selector="Button.windowControl.close:pointerover TextBlock.windowControlGlyph">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
-    </Style>
-
     <!-- Excel Icon Badge -->
     <Style Selector="Border.excelIconBadge">
         <Setter Property="Width" Value="22"/>

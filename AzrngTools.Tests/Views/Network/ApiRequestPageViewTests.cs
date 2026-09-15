@@ -55,7 +55,6 @@ public class ApiRequestPageViewTests
             {
                 Source = new Uri("avares://AzrngTools/Styles/DesignTokens.axaml")
             });
-            Resources["InvertedBoolConverter"] = new InvertedBoolConverter();
             Resources["EqualToZeroConverter"] = new EqualToZeroConverter();
             Resources["GreaterThanZeroConverter"] = new GreaterThanZeroConverter();
             Styles.Add(new FluentTheme());

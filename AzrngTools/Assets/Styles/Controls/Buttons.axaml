@@ -104,37 +104,6 @@
         <Setter Property="Opacity" Value="0.92"/>
     </Style>
 
-    <Style Selector="Button.windowControl">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Width" Value="42"/>
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="CornerRadius" Value="{DynamicResource Radius.XL}"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Padding" Value="0"/>
-    </Style>
-
-    <Style Selector="Button.windowControl:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Nav.HoverBackground}"/>
-    </Style>
-
-    <Style Selector="Button.windowControl:pressed">
-        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}"/>
-        <Setter Property="Opacity" Value="0.92"/>
-    </Style>
-
-    <Style Selector="Button.windowControl.close:pointerover">
-        <Setter Property="Background" Value="{DynamicResource Brush.Border.Danger}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
-    </Style>
-
-    <Style Selector="Button.windowControl.close:pressed">
-        <Setter Property="Background" Value="{DynamicResource Brush.Border.Danger}"/>
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.OnAccent}"/>
-        <Setter Property="Opacity" Value="0.84"/>
-    </Style>
-
     <Style Selector="Button.excelExportButton">
         <Setter Property="Background" Value="{DynamicResource Brush.Status.Success.Background}"/>
         <Setter Property="Foreground" Value="{DynamicResource Brush.Status.Success.Text}"/>

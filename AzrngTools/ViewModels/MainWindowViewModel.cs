@@ -73,8 +73,13 @@ public partial class MainWindowViewModel : ViewModelBase
         AppSubtitle = "开发工具集 · 数据库 / 接口 / 编解码 / 加解密";
         TotalToolCount = _allGroupMenus.Sum(group => group.Child?.Count ?? 0);
         CategoryCount = _allGroupMenus.Count;
-        IsDarkThemeEnabled = Application.Current?.RequestedThemeVariant == ThemeVariant.Dark
-            || Application.Current?.ActualThemeVariant == ThemeVariant.Dark;
+
+        // 主题切换由 Ursa ThemeToggleButton 直接驱动应用主题变体，
+        // 这里监听实际变体变化把用户选择持久化，替代原先由开关命令承担的职责
+        if (Application.Current is { } currentApp)
+        {
+            currentApp.ActualThemeVariantChanged += OnActualThemeVariantChanged;
+        }
 
         SelectedListItem = _homeMenu is null
             ? RootMenuItems.FirstOrDefault()
@@ -119,9 +124,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _searchSummary = string.Empty;
-
-    [ObservableProperty]
-    private bool _isDarkThemeEnabled;
 
     [ObservableProperty]
     private bool _isSidebarCollapsed;
@@ -661,8 +663,7 @@ public partial class MainWindowViewModel : ViewModelBase
                ?? GroupMenuItems.SelectMany(group => group.Child ?? []).FirstOrDefault(menu => IsSameMenu(menu, target));
     }
 
-    [RelayCommand]
-    private void ToggleCheckedChanged()
+    private void OnActualThemeVariantChanged(object? sender, EventArgs e)
     {
         var app = Application.Current;
         if (app is null)
@@ -670,12 +671,9 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var requestedThemeVariant = app.ActualThemeVariant == ThemeVariant.Dark
-            ? ThemeVariant.Light
-            : ThemeVariant.Dark;
-
-        app.RequestedThemeVariant = requestedThemeVariant;
-        IsDarkThemeEnabled = requestedThemeVariant == ThemeVariant.Dark;
-        _themePreferenceService.SaveRequestedThemeVariant(requestedThemeVariant);
+        if (app.RequestedThemeVariant is { } requestedVariant)
+        {
+            _themePreferenceService.SaveRequestedThemeVariant(requestedVariant);
+        }
     }
 }

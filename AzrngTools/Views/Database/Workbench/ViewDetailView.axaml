@@ -103,7 +103,7 @@
             <Border Grid.Column="2"
                     Classes="workspaceSurface">
                 <Grid>
-                    <Grid IsVisible="{Binding HasSelectedView, Converter={StaticResource InvertedBoolConverter}}">
+                    <Grid IsVisible="{Binding HasSelectedView, Converter={x:Static BoolConverters.Not}}">
                         <StackPanel HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     MaxWidth="460"
@@ -185,7 +185,7 @@
                 Classes="workspaceSurface"
                 IsVisible="{Binding ShowDetailOnly}">
             <Grid>
-                <Grid IsVisible="{Binding HasSelectedView, Converter={StaticResource InvertedBoolConverter}}">
+                <Grid IsVisible="{Binding HasSelectedView, Converter={x:Static BoolConverters.Not}}">
                     <StackPanel HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 MaxWidth="460"

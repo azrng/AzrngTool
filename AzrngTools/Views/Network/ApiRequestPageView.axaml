@@ -84,20 +84,20 @@
                         <Grid ColumnDefinitions="130,*,Auto" ColumnSpacing="{StaticResource Space.10}">
                             <ComboBox
                                 Grid.Column="0"
-                                IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                                IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                                 ItemsSource="{Binding HttpMethods}"
                                 SelectedItem="{Binding SelectedMethod}" />
 
                             <TextBox
                                 Grid.Column="1"
-                                IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                                IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                                 PlaceholderText="输入请求地址，例如 https://api.example.com/users?id=1"
                                 Text="{Binding RequestUrl}" />
 
                             <Button
                                 Grid.Column="2"
                                 Command="{Binding SendRequestCommand}"
-                                IsVisible="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                                IsVisible="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                                 Theme="{DynamicResource SolidButton}">
                                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                     <PathIcon Data="M4 12L20 4L14 20L11 13L4 12ZM11 13L20 4" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
@@ -129,7 +129,7 @@
                             <WrapPanel Grid.Column="3" Classes="tool-actions" HorizontalAlignment="Right">
                                 <Button
                                     Command="{Binding ClearCurrentRequestCommand}"
-                                    IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                                    IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                                     Theme="{DynamicResource OutlineButton}">
                                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                         <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
@@ -139,7 +139,7 @@
 
                                 <Button
                                     Command="{Binding ToggleHistoryPaneCommand}"
-                                    IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                                    IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                                     Theme="{DynamicResource OutlineButton}">
                                     <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                         <PathIcon Data="M4 5H20V19H4V5ZM8 9H16M8 13H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
@@ -160,7 +160,7 @@
 
                         <TabControl
                             Grid.Row="1"
-                            IsEnabled="{Binding IsRequestInFlight, Converter={StaticResource InvertedBoolConverter}}"
+                            IsEnabled="{Binding IsRequestInFlight, Converter={x:Static BoolConverters.Not}}"
                             SelectedIndex="{Binding SelectedConfigTabIndex}">
                             <TabItem Header="Params">
                                 <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto" RowSpacing="{StaticResource Space.12}">

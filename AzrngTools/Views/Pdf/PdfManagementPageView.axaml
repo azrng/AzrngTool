@@ -23,7 +23,7 @@
                             <Button
                                 Grid.Column="1"
                                 Command="{Binding ChoosePdfFileCommand}"
-                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                IsEnabled="{Binding IsBusy, Converter={x:Static BoolConverters.Not}}"
                                 Theme="{DynamicResource SolidButton}">
                                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                     <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
@@ -194,7 +194,7 @@
                         <WrapPanel Grid.Row="1" Classes="tool-actions">
                             <Button
                                 Command="{Binding ClearCommand}"
-                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                IsEnabled="{Binding IsBusy, Converter={x:Static BoolConverters.Not}}"
                                 Theme="{DynamicResource OutlineButton}">
                                 <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
                                     <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />

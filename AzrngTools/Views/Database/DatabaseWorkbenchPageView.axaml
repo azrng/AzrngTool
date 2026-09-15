@@ -73,7 +73,7 @@
                                   PlaceholderText="选择数据库"
                                   IsEditable="True"
                                   IsTextSearchEnabled="False"
-                                  IsEnabled="{Binding SelectedConnection, Converter={StaticResource NullToBoolConverter}}"
+                                  IsEnabled="{Binding SelectedConnection, Converter={x:Static ObjectConverters.IsNotNull}}"
                                   Classes="modern"
                                   MinHeight="36"
                                   MaxDropDownHeight="260" />
@@ -155,7 +155,7 @@
                                 <TextBox Text="{Binding #DatabaseTree.SearchText, Mode=TwoWay}"
                                          PlaceholderText="搜索对象…"
                                          HorizontalAlignment="Stretch"
-                                         Classes="modern" />
+                                         Classes="modern clearButton" />
                             </StackPanel>
                         </Border>
 

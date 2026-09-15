@@ -109,7 +109,7 @@
                                           SelectedItem="{Binding SelectedDatabase, Mode=TwoWay}"
                                           PlaceholderText="选择数据库"
                                           Classes="modern"
-                                          IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}" />
+                                          IsEnabled="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}" />
                             </StackPanel>
 
                             <Grid Grid.Row="2"
@@ -146,7 +146,7 @@
                                                   VerticalScrollBarVisibility="Auto"
                                                   HorizontalScrollBarVisibility="Disabled"
                                                   IsScrollChainingEnabled="False"
-                                                  IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                                                  IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}">
                                         <StackPanel Margin="6"
                                                     Spacing="10">
                                             <Border Classes="exportSectionCard"

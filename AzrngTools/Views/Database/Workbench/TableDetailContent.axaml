@@ -15,7 +15,7 @@
     </Design.DataContext>
 
     <Grid>
-        <Grid IsVisible="{Binding HasSelectedTable, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid IsVisible="{Binding HasSelectedTable, Converter={x:Static BoolConverters.Not}}">
             <StackPanel HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         MaxWidth="460"
@@ -201,7 +201,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsPrimaryKey, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsPrimaryKey, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>
@@ -214,7 +214,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsIdentity, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsIdentity, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>
@@ -227,7 +227,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsNullable, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsNullable, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>
@@ -337,7 +337,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsUnique, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsUnique, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>
@@ -350,7 +350,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsPrimaryKey, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsPrimaryKey, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>
@@ -363,7 +363,7 @@
                                                                                    Classes="booleanBadgeText positive" />
                                                                     </Border>
                                                                     <Border Classes="booleanBadge negative"
-                                                                            IsVisible="{Binding IsAscending, Converter={StaticResource InvertedBoolConverter}}">
+                                                                            IsVisible="{Binding IsAscending, Converter={x:Static BoolConverters.Not}}">
                                                                         <TextBlock Text="否"
                                                                                    Classes="booleanBadgeText negative" />
                                                                     </Border>

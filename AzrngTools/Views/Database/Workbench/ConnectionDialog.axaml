@@ -405,7 +405,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
 
-                        <Border IsVisible="{Binding HasFilteredConnections, Converter={StaticResource InvertedBoolConverter}}"
+                        <Border IsVisible="{Binding HasFilteredConnections, Converter={x:Static BoolConverters.Not}}"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Padding="24">
@@ -710,7 +710,7 @@
                                                         </Button>
                                                     </Grid>
 
-                                                    <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
+                                                    <Border IsVisible="{Binding HasAvailableDatabases, Converter={x:Static BoolConverters.Not}}"
                                                             Classes="connectionDialogHint"
                                                             Padding="12,10">
                                                         <TextBlock Text="{Binding DatabaseSelectionHint}"

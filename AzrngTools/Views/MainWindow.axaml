@@ -1,13 +1,12 @@
-<Window
-    ExtendClientAreaToDecorationsHint="True"
+<u:UrsaWindow
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
     MinHeight="{StaticResource Layout.MainWindow.MinHeight}"
     MinWidth="{StaticResource Layout.MainWindow.MinWidth}"
     Width="{StaticResource Layout.MainWindow.Width}"
-    WindowDecorations="None"
     WindowStartupLocation="CenterScreen"
     Title="AzrngTools"
+    IsFullScreenButtonVisible="False"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
@@ -17,226 +16,169 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
     xmlns:vm="using:AzrngTools.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceInclude Source="../Themes/TabMenu.axaml" />
-                <ResourceInclude Source="../Themes/ToggleButton.axaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
 
-    <Grid Margin="{StaticResource Thickness.12}" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.12}">
-            <Border
-                Grid.Row="0"
-                Classes="shell-panel"
-                DoubleTapped="HeaderBorder_OnDoubleTapped"
-                Name="HeaderBorder"
-                PointerPressed="HeaderBorder_OnPointerPressed">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.12}">
-                    <StackPanel Spacing="{StaticResource Space.4}" VerticalAlignment="Center">
-                        <TextBlock Classes="app-title" Text="{Binding AppTitle}" />
-                    </StackPanel>
+    <!-- 标题栏由 UrsaWindow 托管装饰提供：拖动、双击最大化、最小化/最大化/关闭按钮均由库渲染；
+         IsFullScreenButtonVisible 固定关闭以保持原有 三键 布局 -->
+    <u:UrsaWindow.TitleBarContent>
+        <TextBlock
+            Classes="app-title"
+            Margin="12,0,0,0"
+            VerticalAlignment="Center"
+            IsHitTestVisible="False"
+            Text="{Binding AppTitle}" />
+    </u:UrsaWindow.TitleBarContent>
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="{StaticResource Space.8}" VerticalAlignment="Center">
-                        <ToggleSwitch
-                            Command="{Binding ToggleCheckedChangedCommand}"
-                            IsChecked="{Binding IsDarkThemeEnabled, Mode=TwoWay}"
-                            Padding="{StaticResource Thickness.4}"
-                            Theme="{DynamicResource ButtonToggleSwitch}">
-                            <ToggleSwitch.OnContent>
-                                <PathIcon
-                                    Data="M12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23ZM17 15C17.476 15 17.9408 14.9525 18.3901 14.862C17.296 17.3011 14.8464 19 12 19C8.13401 19 5 15.866 5 12C5 8.60996 7.40983 5.78277 10.6099 5.13803C10.218 6.01173 10 6.98041 10 8C10 11.866 13.134 15 17 15Z"
-                                    Foreground="{DynamicResource ButtonDefaultTertiaryForeground}"
-                                    Height="{StaticResource Layout.Icon.Sm}"
-                                    Width="{StaticResource Layout.Icon.Sm}" />
-                            </ToggleSwitch.OnContent>
-                            <ToggleSwitch.OffContent>
-                                <PathIcon
-                                    Data="M3.55 19.09L4.96 20.5L6.76 18.71L5.34 17.29M12 6C8.69 6 6 8.69 6 12S8.69 18 12 18 18 15.31 18 12C18 8.68 15.31 6 12 6M20 13H23V11H20M17.24 18.71L19.04 20.5L20.45 19.09L18.66 17.29M20.45 5L19.04 3.6L17.24 5.39L18.66 6.81M13 1H11V4H13M6.76 5.39L4.96 3.6L3.55 5L5.34 6.81L6.76 5.39M1 13H4V11H1M13 20H11V23H13"
-                                    Foreground="{DynamicResource ButtonDefaultTertiaryForeground}"
-                                    Height="{StaticResource Layout.Icon.Sm}"
-                                    Width="{StaticResource Layout.Icon.Sm}" />
-                            </ToggleSwitch.OffContent>
-                        </ToggleSwitch>
+    <!-- Mode=Indicator 从实际主题变体同步（实际变体永不为 Default），
+         避免初始请求变体为 Default 时非三态按钮首次点击抛出异常 -->
+    <u:UrsaWindow.RightContent>
+        <u:ThemeToggleButton
+            Mode="Indicator"
+            IsThreeState="False" />
+    </u:UrsaWindow.RightContent>
 
+    <Grid Margin="{StaticResource Thickness.12}">
+        <Grid ColumnSpacing="{StaticResource Space.12}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding SidebarWidth}" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Classes="shell-sidebar">
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                        <TextBox
+                            Classes="clearButton"
+                            Text="{Binding SearchKeyword}"
+                            IsVisible="{Binding !IsSidebarCollapsed}"
+                            PlaceholderText="搜索工具 / 分组..." />
                         <Button
-                            Classes="windowControl"
-                            Click="BtnMin_OnClick"
-                            Theme="{DynamicResource BorderlessButton}"
-                            ToolTip.Tip="最小化"
-                            x:Name="btnMin">
+                            Grid.Column="1"
+                            Classes="iconButton sidebarToggleButton"
+                            Command="{Binding ToggleSidebarCommand}"
+                            HorizontalAlignment="Right"
+                            ToolTip.Tip="切换侧栏">
                             <PathIcon
-                                Data="M5 12H19"
+                                Data="{Binding SidebarToggleIconPath}"
                                 Height="{StaticResource Layout.Icon.Sm}"
                                 Width="{StaticResource Layout.Icon.Sm}" />
                         </Button>
-                        <Button
-                            Classes="windowControl"
-                            Click="BtnMax_OnClick"
-                            Theme="{DynamicResource BorderlessButton}"
-                            ToolTip.Tip="最大化 / 还原"
-                            x:Name="btnMax">
-                            <PathIcon
-                                Data="M5 5H19V19H5V5ZM8 8H16V16H8V8Z"
-                                Height="{StaticResource Layout.Icon.Sm}"
-                                Width="{StaticResource Layout.Icon.Sm}" />
-                        </Button>
-                        <Button
-                            Classes="windowControl close"
-                            Click="BtnClose_OnClick"
-                            Theme="{DynamicResource BorderlessButton}"
-                            ToolTip.Tip="关闭"
-                            x:Name="btnClose">
-                            <PathIcon
-                                Data="M5 5L19 19M19 5L5 19"
-                                Height="{StaticResource Layout.Icon.Sm}"
-                                Width="{StaticResource Layout.Icon.Sm}" />
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </Border>
+                    </Grid>
 
-            <Grid Grid.Row="1" ColumnSpacing="{StaticResource Space.12}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="{Binding SidebarWidth}" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Border Classes="shell-sidebar">
-                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
-                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
-                            <TextBox
-                                Text="{Binding SearchKeyword}"
-                                IsVisible="{Binding !IsSidebarCollapsed}"
-                                PlaceholderText="搜索工具 / 分组..." />
+                    <!-- 侧栏收起时隐藏统计与分组导航，只保留切换按钮与首页，避免出现孤箭头和竖排文字 -->
+                    <Border
+                        Grid.Row="1"
+                        Classes="tool-card-soft sidebar-stats"
+                        IsVisible="{Binding !IsSidebarCollapsed}">
+                        <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="{StaticResource Space.10}">
                             <Button
-                                Grid.Column="1"
-                                Classes="iconButton sidebarToggleButton"
-                                Command="{Binding ToggleSidebarCommand}"
-                                HorizontalAlignment="Right"
-                                ToolTip.Tip="切换侧栏">
+                                Grid.Column="0"
+                                Classes="Tertiary"
+                                Command="{Binding GoHomeCommand}"
+                                Padding="{StaticResource Thickness.12}"
+                                Theme="{DynamicResource BorderlessButton}"
+                                ToolTip.Tip="首页">
                                 <PathIcon
-                                    Data="{Binding SidebarToggleIconPath}"
+                                    Data="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z"
+                                    Foreground="{DynamicResource Brush.Accent.Strong}"
                                     Height="{StaticResource Layout.Icon.Sm}"
                                     Width="{StaticResource Layout.Icon.Sm}" />
                             </Button>
+                            <StackPanel Grid.Column="1" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
+                                <TextBlock Classes="metric-label" Text="总工具" />
+                                <TextBlock Classes="metric-value compact" Text="{Binding TotalToolCount}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
+                                <TextBlock Classes="metric-label" Text="分类" />
+                                <TextBlock Classes="metric-value compact" Text="{Binding CategoryCount}" />
+                            </StackPanel>
                         </Grid>
-
-                        <!-- 侧栏收起时隐藏统计与分组导航，只保留切换按钮与首页，避免出现孤箭头和竖排文字 -->
-                        <Border
-                            Grid.Row="1"
-                            Classes="tool-card-soft sidebar-stats"
-                            IsVisible="{Binding !IsSidebarCollapsed}">
-                            <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="{StaticResource Space.10}">
-                                <Button
-                                    Grid.Column="0"
-                                    Classes="Tertiary"
-                                    Command="{Binding GoHomeCommand}"
-                                    Padding="{StaticResource Thickness.12}"
-                                    Theme="{DynamicResource BorderlessButton}"
-                                    ToolTip.Tip="首页">
-                                    <PathIcon
-                                        Data="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z"
-                                        Foreground="{DynamicResource Brush.Accent.Strong}"
-                                        Height="{StaticResource Layout.Icon.Sm}"
-                                        Width="{StaticResource Layout.Icon.Sm}" />
-                                </Button>
-                                <StackPanel Grid.Column="1" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
-                                    <TextBlock Classes="metric-label" Text="总工具" />
-                                    <TextBlock Classes="metric-value compact" Text="{Binding TotalToolCount}" />
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" IsVisible="{Binding !IsSidebarCollapsed}" Spacing="{StaticResource Space.2}">
-                                    <TextBlock Classes="metric-label" Text="分类" />
-                                    <TextBlock Classes="metric-value compact" Text="{Binding CategoryCount}" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <!-- 常用入口功能暂未启用 -->
-                        <!-- <TextBlock
-                            Grid.Row="2"
-                            Classes="sidebar-section-caption"
-                            Text="常用入口" />
-
-                        <ListBox
-                            Grid.Row="3"
-                            Classes="shell-nav"
-                            ItemsSource="{Binding RootMenuItems}"
-                            SelectedItem="{Binding SelectedListItem, Mode=OneWay}"
-                            SelectionChanged="OnCommonListBoxSelectionChanged">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Classes="nav-item-text" Text="{Binding Title}" />
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox> -->
-
-                        <TextBlock
-                            Grid.Row="4"
-                            Classes="sidebar-section-caption"
-                            IsVisible="{Binding !IsSidebarCollapsed}"
-                            Text="{Binding SearchSummary}" />
-
-                        <ScrollViewer Grid.Row="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding !IsSidebarCollapsed}">
-                            <ItemsControl ItemsSource="{Binding GroupMenuItems}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
-                                            <Expander.Header>
-                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
-                                                    <TextBlock
-                                                        Classes="nav-group-title"
-                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
-                                                        Text="{Binding Title}"
-                                                        VerticalAlignment="Center" />
-                                                    <Border
-                                                        Grid.Column="1"
-                                                        Classes="badge-pill compact"
-                                                        IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
-                                                        VerticalAlignment="Center">
-                                                        <TextBlock Classes="badge-text" Text="{Binding Child.Count}" />
-                                                    </Border>
-                                                </Grid>
-                                            </Expander.Header>
-                                            <ListBox
-                                                Classes="shell-nav"
-                                                ItemsSource="{Binding Child}"
-                                                SelectionChanged="OnGroupListBoxSelectionChanged">
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid ColumnDefinitions="*">
-                                                            <TextBlock
-                                                                Classes="nav-item-text"
-                                                                IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={StaticResource InvertedBoolConverter}}"
-                                                                Text="{Binding Title}"
-                                                                VerticalAlignment="Center" />
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
-                                        </Expander>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
-                    </Grid>
-                </Border>
-
-                <Grid Grid.Column="1">
-                    <Border Classes="shell-panel">
-                        <!-- 内容宿主不再包 ScrollViewer：页面自管滚动，根级 * 行才能拿到确定高度撑满视口；
-                             长内容页面一律在自身卡片/编辑器内部滚动 -->
-                        <!-- 使用 ContentControl 而非 TransitioningContentControl：
-                             页面 View 已按实例缓存复用，过渡动画会在新旧页面交叠期间双份渲染并与复用的
-                             View 产生父子冲突，同时也是切换卡顿来源之一 -->
-                        <ContentControl Content="{Binding CurrentPage}"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Stretch" />
                     </Border>
+
+                    <!-- 常用入口功能暂未启用 -->
+                    <!-- <TextBlock
+                        Grid.Row="2"
+                        Classes="sidebar-section-caption"
+                        Text="常用入口" />
+
+                    <ListBox
+                        Grid.Row="3"
+                        Classes="shell-nav"
+                        ItemsSource="{Binding RootMenuItems}"
+                        SelectedItem="{Binding SelectedListItem, Mode=OneWay}"
+                        SelectionChanged="OnCommonListBoxSelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Classes="nav-item-text" Text="{Binding Title}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox> -->
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Classes="sidebar-section-caption"
+                        IsVisible="{Binding !IsSidebarCollapsed}"
+                        Text="{Binding SearchSummary}" />
+
+                    <ScrollViewer Grid.Row="5" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding !IsSidebarCollapsed}">
+                        <ItemsControl ItemsSource="{Binding GroupMenuItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                                        <Expander.Header>
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                <TextBlock
+                                                    Classes="nav-group-title"
+                                                    IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={x:Static BoolConverters.Not}}"
+                                                    Text="{Binding Title}"
+                                                    VerticalAlignment="Center" />
+                                                <Border
+                                                    Grid.Column="1"
+                                                    Classes="badge-pill compact"
+                                                    IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={x:Static BoolConverters.Not}}"
+                                                    VerticalAlignment="Center">
+                                                    <TextBlock Classes="badge-text" Text="{Binding Child.Count}" />
+                                                </Border>
+                                            </Grid>
+                                        </Expander.Header>
+                                        <ListBox
+                                            Classes="shell-nav"
+                                            ItemsSource="{Binding Child}"
+                                            SelectionChanged="OnGroupListBoxSelectionChanged">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid ColumnDefinitions="*">
+                                                        <TextBlock
+                                                            Classes="nav-item-text"
+                                                            IsVisible="{Binding #RootWindow.DataContext.IsSidebarCollapsed, Converter={x:Static BoolConverters.Not}}"
+                                                            Text="{Binding Title}"
+                                                            VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </Expander>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
                 </Grid>
+            </Border>
+
+            <Grid Grid.Column="1">
+                <Border Classes="shell-panel">
+                    <!-- 内容宿主不再包 ScrollViewer：页面自管滚动，根级 * 行才能拿到确定高度撑满视口；
+                         长内容页面一律在自身卡片/编辑器内部滚动 -->
+                    <!-- 使用 ContentControl 而非 TransitioningContentControl：
+                         页面 View 已按实例缓存复用，过渡动画会在新旧页面交叠期间双份渲染并与复用的
+                         View 产生父子冲突，同时也是切换卡顿来源之一 -->
+                    <ContentControl Content="{Binding CurrentPage}"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" />
+                </Border>
             </Grid>
         </Grid>
-</Window>
+    </Grid>
+</u:UrsaWindow>

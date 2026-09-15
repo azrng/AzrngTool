@@ -247,7 +247,7 @@
                                                   VerticalScrollBarVisibility="Auto"
                                                   HorizontalScrollBarVisibility="Disabled"
                                                   IsScrollChainingEnabled="False"
-                                                  IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                                                  IsVisible="{Binding IsLoading, Converter={x:Static BoolConverters.Not}}">
                                         <StackPanel Margin="6"
                                                     Spacing="10">
                                             <Border Classes="exportSectionCard"
@@ -269,7 +269,7 @@
                                             </Border>
 
                                             <Border Classes="exportSectionCard"
-                                                    IsVisible="{Binding HasObjects, Converter={StaticResource InvertedBoolConverter}}">
+                                                    IsVisible="{Binding HasObjects, Converter={x:Static BoolConverters.Not}}">
                                                 <StackPanel Spacing="8">
                                                     <TextBlock Text="暂无可导出的对象"
                                                                Classes="exportSectionTitle" />

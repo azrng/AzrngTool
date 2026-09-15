@@ -156,7 +156,7 @@
                                   Width="{StaticResource Layout.Icon.Sm}" />
                     </Button>
                 </Grid>
-                <Border IsVisible="{Binding HasAvailableDatabases, Converter={StaticResource InvertedBoolConverter}}"
+                <Border IsVisible="{Binding HasAvailableDatabases, Converter={x:Static BoolConverters.Not}}"
                         Classes="connectionFormHint"
                         Padding="12,10"
                         >

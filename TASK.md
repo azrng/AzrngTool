@@ -15,11 +15,10 @@
 
 | 任务 ID | 任务名称 | 任务状态 | 最近更新时间 |
 | ------- | -------- | -------- | ------------ |
+| T023 | 自定义组件替换为 UI 库组件：MainWindow 换 UrsaWindow 托管标题栏与窗口按钮、ThemeToggleButton 替代弃用主题开关（偏好持久化改由变体事件驱动）、3 个转换器换内置 BoolConverters/ObjectConverters、DatabaseTree 加载遮罩换 LoadingContainer、DatabaseTypeSelector 去除 code-behind 事件转发并修副标题文案、两处搜索框补 clearButton、删除死主题文件与 windowControl 样式 | DONE | 2026-09-13 |
 | T022 | 性能问题修复第一轮（正则超时与后台化、通知管理器泄漏、JWT 解析防抖、硬件采集异步化、搜索防抖、大文本后台化、导出限流、DI 扫描合并等） | DONE | 2026-09-13 |
 | T021 | 工具页统一布局 P1：全量迁移 31 页并实机回归 | DONE | 2026-09-12 |
 | T020 | 工具页统一布局 P0（外壳去滚动 + 互转页样板） | DONE | 2026-09-12 |
 | T019 | 依据当前实现重整 doc 需求与设计文档 | DONE | 2026-09-12 |
-| T018 | JSON/YAML/XML 互转工具与组件包优先落地 | DONE | 2026-09-12 |
-| T017 | 发布链路收敛为 AOT 并对齐 SmartVault 自动版本 | DONE | 2026-09-12 |
 
 ---

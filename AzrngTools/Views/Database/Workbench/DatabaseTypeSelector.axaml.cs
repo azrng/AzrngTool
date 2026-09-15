@@ -1,36 +1,13 @@
 using Avalonia.Controls;
-using Azrng.Core.Model;
-using AzrngTools.ViewModels.Database;
 
 namespace AzrngTools.Views.Database.Workbench;
 
+// 类型卡片点击直接通过 XAML 的 SelectDatabaseTypeCommand 绑定转发，
+// 不再需要 code-behind 的事件注册
 public partial class DatabaseTypeSelector : UserControl
 {
     public DatabaseTypeSelector()
     {
         InitializeComponent();
-        SetupCardClickHandlers();
-    }
-
-    private void SetupCardClickHandlers()
-    {
-        RegisterCardTap("MySqlCard", DatabaseType.MySql);
-        RegisterCardTap("PostgreCard", DatabaseType.PostgresSql);
-    }
-
-    private void RegisterCardTap(string controlName, DatabaseType dbType)
-    {
-        if (this.FindControl<Control>(controlName) is { } card)
-        {
-            card.Tapped += (_, _) => OnCardClicked(dbType);
-        }
-    }
-
-    private void OnCardClicked(DatabaseType dbType)
-    {
-        if (DataContext is ConnectionDialogViewModel viewModel)
-        {
-            viewModel.SelectDatabaseTypeCommand?.Execute(dbType);
-        }
     }
 }
