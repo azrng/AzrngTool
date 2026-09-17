@@ -43,7 +43,7 @@ namespace AzrngTools.ViewModels.Format
         /// 转化
         /// </summary>
         [RelayCommand]
-        private void Handle()
+        private async Task HandleAsync()
         {
             try
             {
@@ -66,37 +66,48 @@ namespace AzrngTools.ViewModels.Format
                     return;
                 }
 
-                var transform = new XslCompiledTransform();
-
-                using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(XsltContent)))
-                {
-                    using (var readerXsl = XmlReader.Create(memoryStream))
-                    {
-                        transform.Load(readerXsl);
-                    }
-                }
-
-                var stringBuilder = new StringBuilder();
-
-                using (var writer = XmlWriter.Create(stringBuilder,
-                           new XmlWriterSettings { Indent = true, ConformanceLevel = ConformanceLevel.Auto }))
-                {
-                    using (var memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(XmlContent)))
-                    {
-                        using (var readerXml = XmlReader.Create(memoryStream2))
-                        {
-                            transform.Transform(readerXml, writer);
-                        }
-                    }
-                }
-
-                HtmlContent = stringBuilder.ToString();
+                var xml = XmlContent;
+                var xslt = XsltContent;
+                // 样式表编译加转换对大 XML 是重活，移出 UI 线程避免点击后界面冻结
+                HtmlContent = await Task.Run(() => TransformToHtml(xml, xslt));
             }
             catch (Exception ex)
             {
                 LocalLogHelper.LogError($"XML转HTML失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 _messageService.SendMessage($"处理失败：{ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 编译 XSLT 样式表并执行转换
+        /// </summary>
+        private static string TransformToHtml(string xmlContent, string xsltContent)
+        {
+            var transform = new XslCompiledTransform();
+
+            using (var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(xsltContent)))
+            {
+                using (var readerXsl = XmlReader.Create(memoryStream))
+                {
+                    transform.Load(readerXsl);
+                }
+            }
+
+            var stringBuilder = new StringBuilder();
+
+            using (var writer = XmlWriter.Create(stringBuilder,
+                       new XmlWriterSettings { Indent = true, ConformanceLevel = ConformanceLevel.Auto }))
+            {
+                using (var memoryStream2 = new MemoryStream(Encoding.UTF8.GetBytes(xmlContent)))
+                {
+                    using (var readerXml = XmlReader.Create(memoryStream2))
+                    {
+                        transform.Transform(readerXml, writer);
+                    }
+                }
+            }
+
+            return stringBuilder.ToString();
         }
     }
 }

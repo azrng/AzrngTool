@@ -2,7 +2,7 @@ using System;
 using Avalonia.Controls.Notifications;
 using Ursa.Controls;
 
-namespace AzrngTools.Services.Database;
+namespace AzrngTools.Services;
 
 public static class ToastService
 {

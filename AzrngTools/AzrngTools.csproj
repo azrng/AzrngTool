@@ -51,7 +51,6 @@
     <ItemGroup>
         <PackageReference Include="Avalonia" Version="12.1.1" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
-        <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
         <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
         <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1">
@@ -62,7 +61,6 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="Azrng.Core" Version="1.20.0" />
-        <PackageReference Include="Azrng.DataAccess" Version="1.0.0-beta4" />
         <!-- 硬件指纹采集（硬件信息页）专用依赖，体积优化暂时移除；恢复时取消注释，
               并还原 HardwareInfoCacheService.CollectSnapshot 中的采集调用 -->
         <!-- <PackageReference Include="Common.Windows.Core" Version="0.0.6" /> -->
@@ -99,48 +97,9 @@
         </ItemGroup>
     </Target>
 
-    <!-- 单文件发布剔除确认无用的运行时文件，减小产物体积：
-         1) MSAL（AD 认证库）声明了 WinForms 框架引用把整套 WinForms 运行时拖进产物，应用未使用其内嵌浏览器认证；
-         2) Oracle 驱动：UI 未开放新建 Oracle 连接，仅历史遗留配置可能触达，触达时会报缺失错误；
-         3) DiaSymReader：仅运行期写调试符号用，发布已 DebugType=None。
-         注意：必须用 ExcludeFromSingleFile 元数据（Update 语法）且挂在 _ComputeFilesToBundle 之前，
-         直接 Remove ResolvedFileToPublish 对单文件打包器无效 -->
-    <Target Name="ExcludeUnusedFilesFromSingleFile"
-            BeforeTargets="_ComputeFilesToBundle"
-            Condition="'$(Configuration)' == 'Release' and '$(PublishSingleFile)' == 'true'">
-        <ItemGroup>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Design'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Design.Editors'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Windows.Forms.Primitives'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing.Common'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing.Design'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'System.Drawing'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'Oracle.ManagedDataAccess'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Filename)' == 'Microsoft.DiaSymReader.Native.amd64'">
-                <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            </ResolvedFileToPublish>
-            <!-- 元数据标记后整项移出发布清单，避免被排除的文件散落在 exe 旁 -->
-            <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
-                                   Condition="'%(ResolvedFileToPublish.ExcludeFromSingleFile)' == 'true'" />
-        </ItemGroup>
-    </Target>
+    <!-- 数据库工作台已迁移至独立应用 DbTools（D:\Work\github\DbTools），
+         Azrng.DataAccess 及其拖入的 SqlClient/Oracle/Azure 认证链、WinForms 引用、
+         DataGrid 包随迁走，发布产物预计减重约 16.7MB -->
 
 </Project>
 

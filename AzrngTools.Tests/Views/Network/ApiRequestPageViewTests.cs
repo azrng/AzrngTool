@@ -4,7 +4,7 @@ using Avalonia.Headless;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Themes.Fluent;
 using Avalonia.VisualTree;
-using AzrngTools.Converters.Database;
+using AzrngTools.Converters;
 using AzrngTools.Views.Network;
 
 namespace AzrngTools.Tests.Views.Network;

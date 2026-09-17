@@ -15,7 +15,6 @@ using AzrngTools.ViewModels.Pdf;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
 using AzrngTools.Views;
-using AzrngTools.Views.Database;
 using AzrngTools.Views.Encode;
 using AzrngTools.Views.Encrypts;
 using AzrngTools.Views.Format;
@@ -27,7 +26,6 @@ using AzrngTools.Views.TextHandle;
 using GTranslate.Translators;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using DbWorkbenchViewModel = AzrngTools.ViewModels.Database.MainWindowViewModel;
 
 namespace AzrngTools;
 
@@ -45,7 +43,6 @@ public partial class App : Application
 
         ViewLocator.Register<MainWindowViewModel, MainWindow>();
         ViewLocator.Register<OverviewPageViewModel, OverviewPageView>();
-        ViewLocator.Register<DbWorkbenchViewModel, DatabaseWorkbenchPageView>();
         ViewLocator.Register<ApiRequestPageViewModel, ApiRequestPageView>();
         ViewLocator.Register<PdfManagementPageViewModel, PdfManagementPageView>();
 
@@ -151,7 +148,6 @@ public partial class App : Application
         // 注入ViewModels
         services.AddTransient<MainWindowViewModel>();
         services.AddTransient<OverviewPageViewModel>();
-        services.AddTransient<DbWorkbenchViewModel>();
         services.AddTransient<ApiRequestPageViewModel>();
         services.AddTransient<PdfManagementPageViewModel>();
 

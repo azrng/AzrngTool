@@ -2,23 +2,27 @@
 using System;
 using System.Globalization;
 
-namespace AzrngTools.Converters.Database;
+namespace AzrngTools.Converters;
 
 /// <summary>
-/// 将 bool 值转换为字符串：true -> "升序", false -> "降序"
+/// 当值等于 0 时返回 true，否则返回 false
 /// </summary>
-public class BoolToStringConverter : IValueConverter
+public class EqualToZeroConverter : IValueConverter
 {
     /// <summary>
     /// 转换值
     /// </summary>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is bool boolValue)
+        if (value is int intVal)
         {
-            return boolValue ? "升序" : "降序";
+            return intVal == 0;
         }
-        return value;
+        if (value is long longVal)
+        {
+            return longVal == 0;
+        }
+        return false;
     }
 
     /// <summary>

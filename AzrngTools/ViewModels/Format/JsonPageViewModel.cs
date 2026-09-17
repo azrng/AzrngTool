@@ -81,7 +81,7 @@ public partial class JsonPageViewModel : ViewModelBase
     /// 转义Json
     /// </summary>
     [RelayCommand]
-    private void EscapeJson()
+    private async Task EscapeJsonAsync()
     {
         try
         {
@@ -91,12 +91,13 @@ public partial class JsonPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = JsonHelper.EscapeJsonText(Original);
+            var source = Original;
+            Original = await Task.Run(() => JsonHelper.EscapeJsonText(source));
         }
         catch (Exception e)
         {
             LocalLogHelper.LogError($"Json转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
-            _messageService.SendMessage($"Json解析失败，请检查 ：{e.Message}");
+            _messageService.SendMessage($"Json转义失败，请检查 ：{e.Message}");
         }
     }
 

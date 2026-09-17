@@ -36,23 +36,28 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
             using var response = await client.SendAsync(message, cancellationToken);
             stopwatch.Stop();
 
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var responseSnapshot = new ApiResponseSnapshot
+            var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+            // 响应体读取与 JSON 美化对大响应是秒级重活，移到线程池执行，避免回 UI 线程造成窗口冻结
+            var responseSnapshot = await Task.Run(async () =>
             {
-                StatusCode = (int)response.StatusCode,
-                DurationMs = stopwatch.ElapsedMilliseconds,
-                SizeBytes = Encoding.UTF8.GetByteCount(content),
-                Content = TryFormatJson(content),
-                FinalUrl = finalUrl,
-                RequestSummary = $"{request.Method.ToUpperInvariant()} {finalUrl}",
-                Headers = response.Headers.Concat(response.Content.Headers)
-                    .SelectMany(header => header.Value.Select(value => new ApiResponseHeader
-                    {
-                        Name = header.Key,
-                        Value = value
-                    }))
-                    .ToList()
-            };
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                return new ApiResponseSnapshot
+                {
+                    StatusCode = (int)response.StatusCode,
+                    DurationMs = elapsedMilliseconds,
+                    SizeBytes = response.Content.Headers.ContentLength ?? Encoding.UTF8.GetByteCount(content),
+                    Content = TryFormatJson(content),
+                    FinalUrl = finalUrl,
+                    RequestSummary = $"{request.Method.ToUpperInvariant()} {finalUrl}",
+                    Headers = response.Headers.Concat(response.Content.Headers)
+                        .SelectMany(header => header.Value.Select(value => new ApiResponseHeader
+                        {
+                            Name = header.Key,
+                            Value = value
+                        }))
+                        .ToList()
+                };
+            }, cancellationToken);
 
             return ApiRequestExecutionResult.Success(responseSnapshot);
         }
@@ -196,11 +201,19 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         return result;
     }
 
+    // 响应体超过 1MB 时跳过自动 JSON 美化：全量解析加重排的 CPU 与内存代价过高，直接展示原文
+    private const int AutoFormatJsonMaxLength = 1024 * 1024;
+
     private static string TryFormatJson(string content)
     {
         if (string.IsNullOrWhiteSpace(content))
         {
             return string.Empty;
+        }
+
+        if (content.Length > AutoFormatJsonMaxLength)
+        {
+            return content;
         }
 
         try

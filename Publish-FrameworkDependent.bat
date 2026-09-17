@@ -1,5 +1,5 @@
 @echo off
-rem Double-click to publish AzrngTools as a framework-dependent single-file exe into dist-fdd.
+rem Double-click to publish AzrngTools as a framework-dependent single-file exe into dist.
 rem The output is small but the target machine MUST have the .NET 10 desktop runtime installed.
 rem Keep this file ASCII-only: cmd.exe parses batch files in the ANSI code page,
 rem UTF-8 Chinese comments/echo lines get corrupted and break the script.
@@ -8,7 +8,7 @@ setlocal
 cd /d "%~dp0"
 
 set "PROJECT=AzrngTools\AzrngTools.csproj"
-set "DIST_DIR=%~dp0dist-fdd"
+set "DIST_DIR=%~dp0dist"
 
 echo ==============================================
 echo   AzrngTools framework-dependent publish

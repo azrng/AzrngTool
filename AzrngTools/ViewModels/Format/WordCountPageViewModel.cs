@@ -99,7 +99,7 @@ public partial class WordCountPageViewModel : ViewModelBase
     /// 统计字数
     /// </summary>
     [RelayCommand]
-    private void CountWords()
+    private async Task CountWordsAsync()
     {
         try
         {
@@ -111,33 +111,18 @@ public partial class WordCountPageViewModel : ViewModelBase
             }
 
             var text = InputText;
+            // 大文本多趟扫描有可感耗时，移出 UI 线程执行
+            var counts = await Task.Run(() => CountStatistics(text));
 
-            // 总字符数
-            TotalCharacters = text.Length;
-
-            // 中文字符数
-            ChineseCharacters = text.Count(IsChineseCharacter);
-
-            // 英文字符数
-            EnglishCharacters = text.Count(c => char.IsLetter(c) && !IsChineseCharacter(c));
-
-            // 数字数量
-            Numbers = text.Count(char.IsDigit);
-
-            // 标点符号数量（中文和英文标点）
-            Punctuation = text.Count(c => char.IsPunctuation(c));
-
-            // 空格数量
-            Spaces = text.Count(char.IsWhiteSpace);
-
-            // 行数
-            Lines = text.Split('\n').Length;
-
-            // 词数（英文单词）
-            Words = CountEnglishWords(text);
-
-            // 段落数
-            Paragraphs = CountParagraphs(text);
+            TotalCharacters = counts.TotalCharacters;
+            ChineseCharacters = counts.ChineseCharacters;
+            EnglishCharacters = counts.EnglishCharacters;
+            Numbers = counts.Numbers;
+            Punctuation = counts.Punctuation;
+            Spaces = counts.Spaces;
+            Lines = counts.Lines;
+            Words = counts.Words;
+            Paragraphs = counts.Paragraphs;
 
             _messageService.SendMessage("统计完成");
         }
@@ -146,6 +131,58 @@ public partial class WordCountPageViewModel : ViewModelBase
             LocalLogHelper.LogError($"字数统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"统计失败：{ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// 单趟扫描统计字符指标，行/词/段落沿用原分割口径
+    /// </summary>
+    private static WordCounts CountStatistics(string text)
+    {
+        var counts = new WordCounts { TotalCharacters = text.Length };
+        foreach (var c in text)
+        {
+            if (IsChineseCharacter(c))
+            {
+                counts.ChineseCharacters++;
+            }
+            else if (char.IsLetter(c))
+            {
+                counts.EnglishCharacters++;
+            }
+
+            if (char.IsDigit(c))
+            {
+                counts.Numbers++;
+            }
+
+            if (char.IsPunctuation(c))
+            {
+                counts.Punctuation++;
+            }
+
+            if (char.IsWhiteSpace(c))
+            {
+                counts.Spaces++;
+            }
+        }
+
+        counts.Lines = text.Split('\n').Length;
+        counts.Words = CountEnglishWords(text);
+        counts.Paragraphs = CountParagraphs(text);
+        return counts;
+    }
+
+    private sealed class WordCounts
+    {
+        public int TotalCharacters { get; set; }
+        public int ChineseCharacters { get; set; }
+        public int EnglishCharacters { get; set; }
+        public int Numbers { get; set; }
+        public int Punctuation { get; set; }
+        public int Spaces { get; set; }
+        public int Lines { get; set; }
+        public int Words { get; set; }
+        public int Paragraphs { get; set; }
     }
 
     /// <summary>
@@ -161,7 +198,7 @@ public partial class WordCountPageViewModel : ViewModelBase
     /// <summary>
     /// 统计英文单词数
     /// </summary>
-    private int CountEnglishWords(string text)
+    private static int CountEnglishWords(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return 0;
@@ -174,7 +211,7 @@ public partial class WordCountPageViewModel : ViewModelBase
     /// <summary>
     /// 统计段落数
     /// </summary>
-    private int CountParagraphs(string text)
+    private static int CountParagraphs(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
             return 0;

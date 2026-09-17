@@ -18,7 +18,6 @@ using AzrngTools.ViewModels.TextHandle;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
-using DbWorkbenchViewModel = AzrngTools.ViewModels.Database.MainWindowViewModel;
 
 namespace AzrngTools.ViewModels;
 
@@ -70,7 +69,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ApplyMenuFilter();
 
         AppTitle = "AzrngTools";
-        AppSubtitle = "开发工具集 · 数据库 / 接口 / 编解码 / 加解密";
+        AppSubtitle = "开发工具集 · 接口 / 编解码 / 加解密";
         TotalToolCount = _allGroupMenus.Sum(group => group.Child?.Count ?? 0);
         CategoryCount = _allGroupMenus.Count;
 
@@ -139,14 +138,6 @@ public partial class MainWindowViewModel : ViewModelBase
         var menus = new List<MenuBar>
         {
             new("首页", typeof(OverviewPageViewModel)),
-            new MenuBar
-            {
-                Title = "数据库工具",
-                Child =
-                [
-                    new MenuBar("数据库工作台", typeof(DbWorkbenchViewModel))
-                ]
-            },
             new MenuBar
             {
                 Title = "网络与接口",
@@ -509,7 +500,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (menu.Title == "首页")
         {
-            CurrentPageSubtitle = "开发工具总览，覆盖数据库、接口、编码、加密、格式化与系统辅助能力。";
+            CurrentPageSubtitle = "开发工具总览，覆盖接口、编码、加密、格式化与系统辅助能力。";
             return;
         }
 

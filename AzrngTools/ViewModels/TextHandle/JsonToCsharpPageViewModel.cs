@@ -47,7 +47,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
     private bool _generateProperties;
 
     [RelayCommand]
-    private void ConvertToCsharp()
+    private async Task ConvertToCsharpAsync()
     {
         try
         {
@@ -57,39 +57,27 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
                 return;
             }
 
-            using var jsonDoc = JsonDocument.Parse(JsonInput);
-            if (jsonDoc.RootElement.ValueKind != JsonValueKind.Object)
+            var source = JsonInput;
+            // 大 JSON 的解析与类生成可能耗时明显，移出 UI 线程避免点击后界面冻结
+            var result = await Task.Run(() => BuildCsharpCode(
+                source,
+                new GenerationOptions
+                {
+                    UseNullableTypes = UseNullableTypes,
+                    UsePascalCase = UsePascalCase,
+                    GenerateProperties = GenerateProperties,
+                    NameSpace = NameSpace
+                },
+                NormalizeClassName(RootClassName, "RootObject", UsePascalCase)));
+
+            if (!result.RootIsObject)
             {
                 _messageService.SendMessage("JSON 根节点必须是对象");
                 return;
             }
 
-            var generatedClasses = new HashSet<string>(StringComparer.Ordinal);
-            var classDefinitions = new List<string>();
-            var rootName = NormalizeClassName(RootClassName, "RootObject");
-
-            GenerateClass(jsonDoc.RootElement, rootName, classDefinitions, generatedClasses);
-
-            var builder = new StringBuilder();
-            builder.AppendLine("using System;");
-            builder.AppendLine("using System.Collections.Generic;");
-            builder.AppendLine();
-            builder.AppendLine($"namespace {NameSpace}");
-            builder.AppendLine("{");
-
-            for (var i = 0; i < classDefinitions.Count; i++)
-            {
-                builder.Append(classDefinitions[i]);
-                if (i < classDefinitions.Count - 1)
-                {
-                    builder.AppendLine();
-                }
-            }
-
-            builder.AppendLine("}");
-            CsharpOutput = builder.ToString();
-
-            _messageService.SendMessage($"转换成功，生成了 {generatedClasses.Count} 个类");
+            CsharpOutput = result.Code;
+            _messageService.SendMessage($"转换成功，生成了 {result.ClassCount} 个类");
         }
         catch (JsonException ex)
         {
@@ -137,7 +125,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void FormatJson()
+    private async Task FormatJsonAsync()
     {
         try
         {
@@ -147,8 +135,12 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
                 return;
             }
 
-            using var jsonDoc = JsonDocument.Parse(JsonInput);
-            JsonInput = JsonHelper.FormatJsonDocument(jsonDoc);
+            var source = JsonInput;
+            JsonInput = await Task.Run(() =>
+            {
+                using var jsonDoc = JsonDocument.Parse(source);
+                return JsonHelper.FormatJsonDocument(jsonDoc);
+            });
         }
         catch (JsonException ex)
         {
@@ -162,7 +154,52 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
     }
 
-    private void GenerateClass(JsonElement element, string className, List<string> classDefinitions, HashSet<string> generatedClasses)
+    /// <summary>
+    /// 生成选项快照：转换在后台线程执行，选项在点击时刻定格
+    /// </summary>
+    private sealed class GenerationOptions
+    {
+        public bool UseNullableTypes { get; init; }
+        public bool UsePascalCase { get; init; }
+        public bool GenerateProperties { get; init; }
+        public string NameSpace { get; init; } = string.Empty;
+    }
+
+    private sealed record GenerationResult(string? Code, int ClassCount, bool RootIsObject);
+
+    private static GenerationResult BuildCsharpCode(string jsonInput, GenerationOptions options, string rootClassName)
+    {
+        using var jsonDoc = JsonDocument.Parse(jsonInput);
+        if (jsonDoc.RootElement.ValueKind != JsonValueKind.Object)
+        {
+            return new GenerationResult(null, 0, false);
+        }
+
+        var generatedClasses = new HashSet<string>(StringComparer.Ordinal);
+        var classDefinitions = new List<string>();
+        GenerateClass(jsonDoc.RootElement, rootClassName, options, classDefinitions, generatedClasses);
+
+        var builder = new StringBuilder();
+        builder.AppendLine("using System;");
+        builder.AppendLine("using System.Collections.Generic;");
+        builder.AppendLine();
+        builder.AppendLine($"namespace {options.NameSpace}");
+        builder.AppendLine("{");
+
+        for (var i = 0; i < classDefinitions.Count; i++)
+        {
+            builder.Append(classDefinitions[i]);
+            if (i < classDefinitions.Count - 1)
+            {
+                builder.AppendLine();
+            }
+        }
+
+        builder.AppendLine("}");
+        return new GenerationResult(builder.ToString(), generatedClasses.Count, true);
+    }
+
+    private static void GenerateClass(JsonElement element, string className, GenerationOptions options, List<string> classDefinitions, HashSet<string> generatedClasses)
     {
         if (!generatedClasses.Add(className))
         {
@@ -178,11 +215,11 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
 
         foreach (var property in element.EnumerateObject())
         {
-            var memberName = NormalizeMemberName(property.Name);
-            var suggestedClassName = NormalizeClassName(memberName, "AnonymousObject");
-            var propertyType = ResolveType(property.Value, suggestedClassName, classDefinitions, generatedClasses);
+            var memberName = NormalizeMemberName(property.Name, options.UsePascalCase);
+            var suggestedClassName = NormalizeClassName(memberName, "AnonymousObject", options.UsePascalCase);
+            var propertyType = ResolveType(property.Value, suggestedClassName, options, classDefinitions, generatedClasses);
 
-            if (GenerateProperties)
+            if (options.GenerateProperties)
             {
                 builder.AppendLine($"{propertyIndent}public {propertyType} {memberName} {{ get; set; }}");
             }
@@ -196,28 +233,28 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         classDefinitions.Add(builder.ToString());
     }
 
-    private string ResolveType(JsonElement element, string suggestedClassName, List<string> classDefinitions, HashSet<string> generatedClasses)
+    private static string ResolveType(JsonElement element, string suggestedClassName, GenerationOptions options, List<string> classDefinitions, HashSet<string> generatedClasses)
     {
         return element.ValueKind switch
         {
             JsonValueKind.String => "string",
-            JsonValueKind.Number => ResolveNumberType(element),
-            JsonValueKind.True => ResolveNullableValueType("bool"),
-            JsonValueKind.False => ResolveNullableValueType("bool"),
+            JsonValueKind.Number => ResolveNumberType(element, options),
+            JsonValueKind.True => ResolveNullableValueType("bool", options),
+            JsonValueKind.False => ResolveNullableValueType("bool", options),
             JsonValueKind.Null => "object",
-            JsonValueKind.Object => ResolveObjectType(element, suggestedClassName, classDefinitions, generatedClasses),
-            JsonValueKind.Array => ResolveArrayType(element, suggestedClassName, classDefinitions, generatedClasses),
+            JsonValueKind.Object => ResolveObjectType(element, suggestedClassName, options, classDefinitions, generatedClasses),
+            JsonValueKind.Array => ResolveArrayType(element, suggestedClassName, options, classDefinitions, generatedClasses),
             _ => "object"
         };
     }
 
-    private string ResolveObjectType(JsonElement element, string suggestedClassName, List<string> classDefinitions, HashSet<string> generatedClasses)
+    private static string ResolveObjectType(JsonElement element, string suggestedClassName, GenerationOptions options, List<string> classDefinitions, HashSet<string> generatedClasses)
     {
-        GenerateClass(element, suggestedClassName, classDefinitions, generatedClasses);
+        GenerateClass(element, suggestedClassName, options, classDefinitions, generatedClasses);
         return suggestedClassName;
     }
 
-    private string ResolveArrayType(JsonElement element, string suggestedClassName, List<string> classDefinitions, HashSet<string> generatedClasses)
+    private static string ResolveArrayType(JsonElement element, string suggestedClassName, GenerationOptions options, List<string> classDefinitions, HashSet<string> generatedClasses)
     {
         foreach (var item in element.EnumerateArray())
         {
@@ -227,8 +264,8 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
             }
 
             var itemType = item.ValueKind == JsonValueKind.Object
-                ? ResolveObjectType(item, $"{suggestedClassName}Item", classDefinitions, generatedClasses)
-                : ResolveType(item, $"{suggestedClassName}Item", classDefinitions, generatedClasses);
+                ? ResolveObjectType(item, $"{suggestedClassName}Item", options, classDefinitions, generatedClasses)
+                : ResolveType(item, $"{suggestedClassName}Item", options, classDefinitions, generatedClasses);
 
             return $"List<{itemType}>";
         }
@@ -236,34 +273,34 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         return "List<object>";
     }
 
-    private string ResolveNumberType(JsonElement element)
+    private static string ResolveNumberType(JsonElement element, GenerationOptions options)
     {
         if (element.TryGetInt32(out _))
         {
-            return ResolveNullableValueType("int");
+            return ResolveNullableValueType("int", options);
         }
 
         if (element.TryGetInt64(out _))
         {
-            return ResolveNullableValueType("long");
+            return ResolveNullableValueType("long", options);
         }
 
         if (element.TryGetDecimal(out _))
         {
-            return ResolveNullableValueType("decimal");
+            return ResolveNullableValueType("decimal", options);
         }
 
-        return ResolveNullableValueType("double");
+        return ResolveNullableValueType("double", options);
     }
 
-    private string ResolveNullableValueType(string typeName)
+    private static string ResolveNullableValueType(string typeName, GenerationOptions options)
     {
-        return UseNullableTypes ? $"{typeName}?" : typeName;
+        return options.UseNullableTypes ? $"{typeName}?" : typeName;
     }
 
-    private string NormalizeMemberName(string text)
+    private static string NormalizeMemberName(string text, bool usePascalCase)
     {
-        var normalized = UsePascalCase ? ToPascalCase(text) : SanitizeIdentifier(text);
+        var normalized = usePascalCase ? ToPascalCase(text) : SanitizeIdentifier(text);
         if (string.IsNullOrWhiteSpace(normalized))
         {
             return "Property";
@@ -277,13 +314,13 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         return normalized;
     }
 
-    private string NormalizeClassName(string text, string fallback)
+    private static string NormalizeClassName(string text, string fallback, bool usePascalCase)
     {
-        var normalized = NormalizeMemberName(text);
+        var normalized = NormalizeMemberName(text, usePascalCase);
         return string.IsNullOrWhiteSpace(normalized) ? fallback : normalized;
     }
 
-    private string ToPascalCase(string text)
+    private static string ToPascalCase(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
@@ -310,7 +347,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         return builder.ToString();
     }
 
-    private string SanitizeIdentifier(string text)
+    private static string SanitizeIdentifier(string text)
     {
         if (string.IsNullOrWhiteSpace(text))
         {

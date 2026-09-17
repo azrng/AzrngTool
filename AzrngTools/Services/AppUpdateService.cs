@@ -102,10 +102,14 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 },
                 cancellationToken);
 
-            ZipFile.ExtractToDirectory(archivePath, extractDirectory);
-            TryDeleteDirectory(preparedRoot);
-            Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
-            Directory.Move(stagingRoot, preparedRoot);
+            // 更新包含整个应用（数百 MB、上千文件），解压/删除/移动是长耗时同步 IO，必须移出 UI 线程避免下载完成后窗口冻结
+            await Task.Run(() =>
+            {
+                ZipFile.ExtractToDirectory(archivePath, extractDirectory);
+                TryDeleteDirectory(preparedRoot);
+                Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
+                Directory.Move(stagingRoot, preparedRoot);
+            });
 
             var finalExtractDirectory = Path.Combine(preparedRoot, "payload");
             return new AppUpdatePreparedPackage

@@ -1,7 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Notifications;
 using AzrngTools.Models;
-using AzrngTools.Services.Database;
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using AzrngTools.ViewModels;
 using CommunityToolkit.Mvvm.Messaging;

@@ -40,7 +40,7 @@
                         VerticalAlignment="Center" />
 
                     <Border Grid.Row="1" Classes="tool-card-soft" MinHeight="0">
-                        <md:MarkdownScrollViewer Markdown="{Binding MdText}" />
+                        <md:MarkdownScrollViewer Markdown="{Binding PreviewText}" />
                     </Border>
                 </Grid>
             </Border>

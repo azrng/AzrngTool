@@ -66,7 +66,7 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
     #endregion
 
     [RelayCommand]
-    private void EncryptHandler(string isEncrypt)
+    private async Task EncryptHandlerAsync(string isEncrypt)
     {
         try
         {
@@ -76,6 +76,7 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
                 return;
             }
 
+            // RSA 分块加解密大文本可达秒级，移出 UI 线程避免点击后界面冻结
             if (isEncrypt == "0")
             {
                 if (PublicKey.IsNullOrWhiteSpace())
@@ -84,7 +85,11 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
                     return;
                 }
 
-                Ciphertext = RsaHelper.Encrypt(Original, PublicKey, (RSAKeyType)RsaKeyTypeValue, (OutType)OutTypeValue);
+                var source = Original;
+                var publicKey = PublicKey;
+                var keyType = (RSAKeyType)RsaKeyTypeValue;
+                var outType = (OutType)OutTypeValue;
+                Ciphertext = await Task.Run(() => RsaHelper.Encrypt(source, publicKey, keyType, outType));
             }
             else
             {
@@ -94,8 +99,11 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
                     return;
                 }
 
-                Ciphertext = RsaHelper.Decrypt(Original, PrivateKey, (RSAKeyType)RsaKeyTypeValue, RsaKeyFormat.PKCS1,
-                    (OutType)OutTypeValue);
+                var source = Original;
+                var privateKey = PrivateKey;
+                var keyType = (RSAKeyType)RsaKeyTypeValue;
+                var outType = (OutType)OutTypeValue;
+                Ciphertext = await Task.Run(() => RsaHelper.Decrypt(source, privateKey, keyType, RsaKeyFormat.PKCS1, outType));
             }
         }
         catch (Exception ex)
@@ -109,13 +117,15 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
     /// 生成密钥
     /// </summary>
     [RelayCommand]
-    private void GenerateSecret()
+    private async Task GenerateSecretAsync()
     {
         try
         {
-            var (publicKey, privateKey) = RsaKeyTypeValue == (int)RSAKeyType.Xml
+            // RSA 密钥对生成典型耗时 100-500ms，移出 UI 线程
+            var keyTypeValue = RsaKeyTypeValue;
+            var (publicKey, privateKey) = await Task.Run(() => keyTypeValue == (int)RSAKeyType.Xml
                 ? RsaHelper.ExportXmlRsaKey()
-                : RsaHelper.ExportPemRsaKey(RsaKeyFormat.PKCS1);
+                : RsaHelper.ExportPemRsaKey(RsaKeyFormat.PKCS1));
 
             PublicKey = publicKey;
             PrivateKey = privateKey;

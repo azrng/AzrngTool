@@ -18,6 +18,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
     private readonly IApiRequestStoreService _storeService;
     private readonly IMessageService _messageService;
     private readonly object _requestLock = new();
+    private readonly DebouncedActionDispatcher _historySearchDebouncer = new(TimeSpan.FromMilliseconds(200));
     private CancellationTokenSource? _requestCancellationTokenSource;
     private List<ApiRequestHistoryItemViewModel> _allHistoryItems = [];
 
@@ -211,7 +212,8 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
     partial void OnHistorySearchTextChanged(string value)
     {
-        ApplyHistoryFilter();
+        // 历史卡片视觉节点多，逐键全量重建可感卡顿，加 200ms 防抖
+        _historySearchDebouncer.Debounce(ApplyHistoryFilter);
     }
 
     partial void OnIsHistoryPaneOpenChanged(bool value)
@@ -269,8 +271,10 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
             if (!result.IsCanceled)
             {
-                await _storeService.AddHistoryAsync(snapshot, result.Response, CancellationToken.None);
-                await RefreshHistoryAsync();
+                // AddHistoryAsync 返回裁剪后的最新列表，直接增量刷新，避免再全量回读历史文件
+                var history = await _storeService.AddHistoryAsync(snapshot, result.Response, CancellationToken.None);
+                _allHistoryItems = history.Select(ToHistoryItemViewModel).ToList();
+                ApplyHistoryFilter();
             }
 
             if (!result.IsSuccess && !result.IsCanceled)
@@ -501,7 +505,7 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             : "请求失败";
         ResponseDurationText = response.DurationMs > 0 ? $"{response.DurationMs} ms" : "未返回耗时";
         ResponseSizeText = response.SizeBytes > 0 ? FormatBytes(response.SizeBytes) : "0 B";
-        ResponseBodyText = response.Content;
+        ResponseBodyText = BuildResponseBodyDisplayText(response.Content);
         ResponseHeadersText = response.Headers.Count > 0
             ? string.Join(Environment.NewLine, response.Headers.Select(item => $"{item.Name}: {item.Value}"))
             : "未返回响应头。";
@@ -612,6 +616,21 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         return string.Join("&", fields
             .Where(item => !string.IsNullOrWhiteSpace(item.Name))
             .Select(item => $"{Uri.EscapeDataString(item.Name)}={Uri.EscapeDataString(item.Value)}"));
+    }
+
+    // 响应体展示上限：超大文本在 Wrap 模式 TextBox 里构建文本布局会冻结 UI，超出部分截断展示
+    private const int MaxResponseBodyDisplayLength = 1024 * 1024;
+
+    private static string BuildResponseBodyDisplayText(string content)
+    {
+        if (content.Length <= MaxResponseBodyDisplayLength)
+        {
+            return content;
+        }
+
+        return string.Concat(
+            content.AsSpan(0, MaxResponseBodyDisplayLength),
+            $"\n\n--- 响应体过大（原始 {content.Length} 字符），已截断展示 ---");
     }
 
     private static string FormatBytes(long sizeBytes)

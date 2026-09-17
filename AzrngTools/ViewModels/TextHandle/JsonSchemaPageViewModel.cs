@@ -35,7 +35,7 @@ public partial class JsonSchemaPageViewModel : ViewModelBase
     /// schema 生成
     /// </summary>
     [RelayCommand]
-    private void SchemaGenHandle()
+    private async Task SchemaGenHandleAsync()
     {
         if (OriginText.IsNullOrWhiteSpace())
         {
@@ -45,10 +45,9 @@ public partial class JsonSchemaPageViewModel : ViewModelBase
 
         try
         {
-            var schema = JsonSchema.FromSampleJson(OriginText);
-
-            // 输出schema
-            var schemaStr = schema.ToJson();
+            var source = OriginText;
+            // NJsonSchema 基于反射、大样本明显耗时，移出 UI 线程避免点击后界面冻结
+            var schemaStr = await Task.Run(() => JsonSchema.FromSampleJson(source).ToJson());
             SchemaData = JsonHelper.JsonFormatter(schemaStr);
         }
         catch (Exception ex)

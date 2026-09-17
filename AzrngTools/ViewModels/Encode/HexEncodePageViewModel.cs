@@ -71,7 +71,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
     /// 字符串转十六进制
     /// </summary>
     [RelayCommand]
-    private void StringToHex()
+    private async Task StringToHexAsync()
     {
         try
         {
@@ -81,8 +81,10 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(Original);
-            HandleText = BytesToHex(bytes, Separator);
+            var source = Original;
+            var separator = Separator;
+            // 大文本的编码转换移出 UI 线程，避免点击后界面冻结
+            HandleText = await Task.Run(() => BytesToHex(Encoding.UTF8.GetBytes(source), separator));
         }
         catch (Exception ex)
         {
@@ -95,7 +97,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
     /// 十六进制转字符串
     /// </summary>
     [RelayCommand]
-    private void HexToString()
+    private async Task HexToStringAsync()
     {
         try
         {
@@ -105,23 +107,14 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            // 移除所有空格和分隔符
-            var hex = Original.Replace(" ", "").Replace("-", "").Replace("0x", "").Replace("0X", "").Replace("\r", "").Replace("\n", "");
-
+            var hex = NormalizeHexInput(Original);
             if (hex.Length % 2 != 0)
             {
                 _messageService.SendMessage("十六进制字符串长度必须为偶数");
                 return;
             }
 
-            var bytes = new byte[hex.Length / 2];
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                var byteValue = hex.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(byteValue, 16);
-            }
-
-            HandleText = Encoding.UTF8.GetString(bytes);
+            HandleText = await Task.Run(() => Encoding.UTF8.GetString(Convert.FromHexString(hex)));
         }
         catch (Exception ex)
         {
@@ -134,7 +127,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
     /// 字节数组转十六进制
     /// </summary>
     [RelayCommand]
-    private void BytesToHex()
+    private async Task BytesToHexAsync()
     {
         try
         {
@@ -144,8 +137,9 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            var bytes = Encoding.UTF8.GetBytes(Original);
-            HandleText = BytesToHex(bytes, Separator);
+            var source = Original;
+            var separator = Separator;
+            HandleText = await Task.Run(() => BytesToHex(Encoding.UTF8.GetBytes(source), separator));
         }
         catch (Exception ex)
         {
@@ -158,7 +152,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
     /// 十六进制转字节数组
     /// </summary>
     [RelayCommand]
-    private void HexToBytes()
+    private async Task HexToBytesAsync()
     {
         try
         {
@@ -168,30 +162,25 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            // 移除所有空格和分隔符
-            var hex = Original.Replace(" ", "").Replace("-", "").Replace("0x", "").Replace("0X", "").Replace("\r", "").Replace("\n", "");
-
+            var hex = NormalizeHexInput(Original);
             if (hex.Length % 2 != 0)
             {
                 _messageService.SendMessage("十六进制字符串长度必须为偶数");
                 return;
             }
 
-            var bytes = new byte[hex.Length / 2];
-            for (var i = 0; i < bytes.Length; i++)
+            // 大十六进制串会生成超大逐字节文本，整体移到后台构建
+            HandleText = await Task.Run(() =>
             {
-                var byteValue = hex.Substring(i * 2, 2);
-                bytes[i] = Convert.ToByte(byteValue, 16);
-            }
+                var bytes = Convert.FromHexString(hex);
+                var sb = new StringBuilder($"字节数组长度：{bytes.Length}\r\n字节数组内容：\r\n", bytes.Length * 24 + 64);
+                for (var i = 0; i < bytes.Length; i++)
+                {
+                    sb.AppendLine($"bytes[{i}] = 0x{bytes[i]:X2} ({bytes[i]})");
+                }
 
-            HandleText = $"字节数组长度：{bytes.Length}\r\n字节数组内容：\r\n";
-            var sb = new StringBuilder(HandleText);
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                sb.AppendLine($"bytes[{i}] = 0x{bytes[i]:X2} ({bytes[i]})");
-            }
-
-            HandleText = sb.ToString();
+                return sb.ToString();
+            });
         }
         catch (Exception ex)
         {
@@ -266,5 +255,13 @@ public partial class HexEncodePageViewModel : ViewModelBase
             }
         }
         return hex.ToString();
+    }
+
+    /// <summary>
+    /// 移除十六进制输入中的空格、连字符、0x 前缀与换行
+    /// </summary>
+    private static string NormalizeHexInput(string input)
+    {
+        return input.Replace(" ", "").Replace("-", "").Replace("0x", "").Replace("0X", "").Replace("\r", "").Replace("\n", "");
     }
 }

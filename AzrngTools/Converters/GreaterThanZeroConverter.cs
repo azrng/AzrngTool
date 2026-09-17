@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace AzrngTools.Converters.Database;
+namespace AzrngTools.Converters;
 
 /// <summary>
 /// 当值大于 0 时返回 true，否则返回 false
