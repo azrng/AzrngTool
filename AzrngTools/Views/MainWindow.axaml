@@ -1,5 +1,5 @@
-<!-- UrsaWindow 的标题栏是悬浮层不占布局，内容需通过 Padding 自行避让，
-     顶部 32 为 UrsaWindow 默认标题栏高度 -->
+<!-- UrsaWindow 的标题栏是悬浮层不占布局，内容需通过 Padding 自行避让；
+     顶部 52 为标题栏高度，定义在 Styles/WindowDecorations.axaml 的 DefaultTitleBarHeight -->
 <u:UrsaWindow
     Icon="/Assets/logo.ico"
     Height="{StaticResource Layout.MainWindow.Height}"
@@ -44,27 +44,37 @@
     </u:UrsaWindow.Resources>
 
     <!-- 标题栏由 UrsaWindow 托管装饰提供：拖动、双击最大化、最小化/最大化/关闭按钮均由库渲染；
-         IsFullScreenButtonVisible 固定关闭以保持原有 三键 布局 -->
+         IsFullScreenButtonVisible 固定关闭以保持原有 三键 布局。
+         标题区恢复旧版两行结构：标题 + 副标题 -->
     <u:UrsaWindow.TitleBarContent>
-        <TextBlock
-            Classes="app-title"
+        <StackPanel
             Margin="12,0,0,0"
             VerticalAlignment="Center"
-            IsHitTestVisible="False"
-            Text="{Binding AppTitle}" />
+            Spacing="{StaticResource Space.2}"
+            IsHitTestVisible="False">
+            <TextBlock Classes="app-title" Text="{Binding AppTitle}" />
+            <TextBlock Classes="app-subtitle" Text="{Binding AppSubtitle}" />
+        </StackPanel>
     </u:UrsaWindow.TitleBarContent>
 
     <!-- Mode=Indicator 从实际主题变体同步（实际变体永不为 Default），
          避免初始请求变体为 Default 时非三态按钮首次点击抛出异常 -->
     <u:UrsaWindow.RightContent>
-        <u:ThemeToggleButton
-            Mode="Indicator"
-            IsThreeState="False" />
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="{StaticResource Space.12}">
+            <TextBlock
+                Classes="titlebar-motto"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                Text="放下个人素质，享受缺德人生" />
+            <u:ThemeToggleButton
+                Mode="Indicator"
+                IsThreeState="False" />
+        </StackPanel>
     </u:UrsaWindow.RightContent>
 
-    <!-- 标题底条(32px，与 Ursa 默认标题栏同高) + 分隔线 + 内容区；
+    <!-- 标题底条(52px，与上方 DefaultTitleBarHeight 一致) + 分隔线 + 内容区；
          Ursa 标题栏文字与窗口按钮悬浮其上，拖拽热区不受影响 -->
-    <Grid RowDefinitions="32,1,*">
+    <Grid RowDefinitions="52,1,*">
         <Border
             Grid.Row="0"
             Background="{DynamicResource TitleBar.Strip}" />

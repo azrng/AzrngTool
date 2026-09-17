@@ -69,7 +69,7 @@ public partial class MainWindowViewModel : ViewModelBase
         ApplyMenuFilter();
 
         AppTitle = "AzrngTools";
-        AppSubtitle = "开发工具集 · 接口 / 编解码 / 加解密";
+        AppSubtitle = "开发工具集 · 支持分组浏览与搜索";
         TotalToolCount = _allGroupMenus.Sum(group => group.Child?.Count ?? 0);
         CategoryCount = _allGroupMenus.Count;
 

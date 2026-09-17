@@ -142,8 +142,11 @@ public partial class App : Application
             AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli
         });
 
-        var assembly = AssemblyHelper.GetEntryAssembly() ?? typeof(App).Assembly;
-        services.RegisterBusinessServices(assembly);
+        // 扫描入口程序集与应用程序集（生产两者相同只扫一份；Headless 测试进程入口是
+        // testhost，补扫应用自身程序集才能注册全部业务服务）
+        var entry = AssemblyHelper.GetEntryAssembly();
+        var appAssembly = typeof(App).Assembly;
+        services.RegisterBusinessServices(entry is null || entry == appAssembly ? appAssembly : entry, appAssembly);
 
         // 注入ViewModels
         services.AddTransient<MainWindowViewModel>();
