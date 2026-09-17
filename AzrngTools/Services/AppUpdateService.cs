@@ -79,11 +79,14 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         }
 
         var preparedRoot = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates", "prepared", updateInfo.LatestVersion);
-        var stagingRoot = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates", "staging",
-            $"{updateInfo.LatestVersion}-{Guid.NewGuid():N}");
+        var stagingParent = Path.Combine(Path.GetTempPath(), "AzrngTools", "updates", "staging");
+        var stagingRoot = Path.Combine(stagingParent, $"{updateInfo.LatestVersion}-{Guid.NewGuid():N}");
         var archivePath = Path.Combine(stagingRoot, updateInfo.AssetName);
         var extractDirectory = Path.Combine(stagingRoot, "payload");
 
+        // 下载被应用中途退出打断时会残留 staging 目录（失败清理只覆盖异常路径），下载前整体清掉；
+        // coordinator 的操作锁保证同一时刻只有一个下载在跑，可以安全清除
+        TryDeleteDirectory(stagingParent);
         Directory.CreateDirectory(stagingRoot);
         Directory.CreateDirectory(extractDirectory);
 
@@ -129,6 +132,7 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
     }
 
     public async Task<AppUpdateApplyResult> ApplyPreparedUpdateAsync(AppUpdatePreparedPackage preparedPackage,
+                                                                     bool restartAfterUpdate = true,
                                                                      CancellationToken cancellationToken = default)
     {
         if (preparedPackage is null)
@@ -146,7 +150,10 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         }
 
         var updaterScriptPath = Path.Combine(preparedPackage.PackageRoot, "apply-update.ps1");
-        await File.WriteAllTextAsync(updaterScriptPath, BuildUpdateScript(preparedPackage.PayloadDirectory), Encoding.UTF8,
+        await File.WriteAllTextAsync(updaterScriptPath,
+            BuildUpdateScript(preparedPackage.PayloadDirectory, _appInfoService.ExecutablePath,
+                _appInfoService.BaseDirectory, Environment.ProcessId, restartAfterUpdate),
+            Encoding.UTF8,
             cancellationToken);
 
         var startInfo = new ProcessStartInfo
@@ -164,7 +171,9 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         return new AppUpdateApplyResult
         {
             IsSuccess = true,
-            Message = "更新包已准备完成，应用关闭后会自动替换并重新启动。"
+            Message = restartAfterUpdate
+                ? "更新包已准备完成，应用关闭后会自动替换并重新启动。"
+                : "更新包已准备完成，应用关闭后会自动替换，下次启动即为新版本。"
         };
     }
 
@@ -271,19 +280,26 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                || exception is not null && exception.Message.Contains("SSL", StringComparison.OrdinalIgnoreCase);
     }
 
-    private string BuildUpdateScript(string sourceDirectory)
+    /// <summary>
+    /// 生成退出后执行的替换脚本；参数全部显式传入以保持纯函数，便于单测校验脚本文案与模式差异。
+    /// </summary>
+    internal static string BuildUpdateScript(string sourceDirectory,
+                                             string executablePath,
+                                             string targetDirectory,
+                                             int processId,
+                                             bool restartAfterUpdate)
     {
-        var processId = Environment.ProcessId;
-        var executablePath = EscapePowerShellString(_appInfoService.ExecutablePath);
-        var targetDirectory = EscapePowerShellString(_appInfoService.BaseDirectory);
-        var source = EscapePowerShellString(sourceDirectory);
+        var escapedSource = EscapePowerShellString(sourceDirectory);
+        var escapedExecutablePath = EscapePowerShellString(executablePath);
+        var escapedTargetDirectory = EscapePowerShellString(targetDirectory);
 
         return $$"""
 $ErrorActionPreference = 'Stop'
 $processId = {{processId}}
-$sourceDirectory = '{{source}}'
-$targetDirectory = '{{targetDirectory}}'
-$executablePath = '{{executablePath}}'
+$sourceDirectory = '{{escapedSource}}'
+$targetDirectory = '{{escapedTargetDirectory}}'
+$executablePath = '{{escapedExecutablePath}}'
+$restartAfterUpdate = {{(restartAfterUpdate ? "$true" : "$false")}}
 
 for ($attempt = 0; $attempt -lt 120; $attempt++) {
     $runningProcess = Get-Process -Id $processId -ErrorAction SilentlyContinue
@@ -292,6 +308,15 @@ for ($attempt = 0; $attempt -lt 120; $attempt++) {
     }
 
     Start-Sleep -Milliseconds 500
+}
+
+if (-not $restartAfterUpdate) {
+    # 退出时静默应用：若用户已重新拉起应用（同名进程且不是原进程），说明复制会撞上正在运行的旧程序，中止本次替换
+    $appProcessName = [System.IO.Path]::GetFileNameWithoutExtension($executablePath)
+    $relaunched = @(Get-Process -Name $appProcessName -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $processId })
+    if ($relaunched.Count -gt 0) {
+        exit 0
+    }
 }
 
 $copied = $false
@@ -308,6 +333,10 @@ for ($attempt = 0; $attempt -lt 20; $attempt++) {
 
 if (-not $copied) {
     throw '更新文件复制失败，请确认当前安装目录具备写入权限。'
+}
+
+if (-not $restartAfterUpdate) {
+    exit 0
 }
 
 Start-Sleep -Milliseconds 500

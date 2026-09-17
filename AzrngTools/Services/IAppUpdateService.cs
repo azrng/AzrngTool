@@ -9,5 +9,6 @@ public interface IAppUpdateService
     Task<AppUpdatePreparedPackage> DownloadUpdatePackageAsync(AppUpdateInfo updateInfo, CancellationToken cancellationToken = default);
 
     Task<AppUpdateApplyResult> ApplyPreparedUpdateAsync(AppUpdatePreparedPackage preparedPackage,
+                                                        bool restartAfterUpdate = true,
                                                         CancellationToken cancellationToken = default);
 }
