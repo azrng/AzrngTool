@@ -1,7 +1,7 @@
 ---
 rule_id: infrastructure-agents
-version: 1.65.0
-last_updated: 2026-09-13
+version: 2.1.0
+last_updated: 2026-10-17
 dependencies: [agents-root]
 ---
 
@@ -28,7 +28,7 @@ dependencies: [agents-root]
 - 数据库：SQLite（本地默认）/ PostgreSQL（按项目需要扩展）
 - 依赖注入：`Microsoft.Extensions.DependencyInjection`
 
-### 发布
+### 发布方式
 - 桌面应用打包：单文件发布
 - 版本、发布目录和运行命令必须可追踪
 
@@ -37,11 +37,13 @@ dependencies: [agents-root]
   - `ITransientDependency`：临时注入
   - `IScopedDependency`：作用域注入
   - `ISingletonDependency`：单例注入
-- 服务默认显式注册：在 `Program.cs` 中按标记接口对应生命周期调用 `AddTransient` / `AddScoped` / `AddSingleton`，注册方式与标记声明必须一致
+- 服务默认显式注册：在应用入口按标记接口对应生命周期调用 `AddTransient` / `AddScoped` / `AddSingleton`，注册方式与标记声明必须一致
 - 批量扫描注册 `services.RegisterBusinessServices(...)` 由 `Azrng.AspNetCore.Core` 提供，属 Web 项目装配；桌面项目默认仅引用 `Azrng.Core`，不存在该扩展方法，禁止照抄
+- 应用入口为 `Program.cs`
 
 ### 技术选择原则
-如果仓库已经有真实实现，以现有代码为准，不要强行重构或替换技术栈。
+- 如果仓库已经有真实实现，以现有代码为准，不要强行重构或替换技术栈；但「以现有实现为准」只适用于对该实现所属项目自身做增量改动——新建解决方案或全新子项目时，按已加载技能与本项目规则族声明的标准结构建项，同仓库其他项目的简化结构不构成豁免。
+技术选型（含版本）默认对齐工作区已加载技能（skills）声明的栈与仓库既有项目栈；与两者冲突时，显式列出冲突项与各自依据交用户裁决，禁止静默给出技能栈之外的版本或组件。
 技术债务与重构判断遵循 `collaboration-AGENTS.md` 的「纠错、回退与重构」。
 
 ---
@@ -83,10 +85,10 @@ src/AppName/
 
 ### 数据访问规则
 - 使用 Dapper 进行数据访问。
-- SQL 查询必须使用参数化查询，禁止字符串拼接构造可注入 SQL。
-- 数据库连接字符串从配置文件读取，禁止硬编码。
-- 数据库连接必须正确管理生命周期。
-- 数据库存储字段建议使用 `snake_case`，映射通过 `Column` 特性或显式映射处理。
+- SQL 查询必须使用参数化查询，禁止字符串拼接构造可注入 SQL
+- 数据库连接字符串从配置文件读取，禁止硬编码
+- 数据库连接必须正确管理生命周期，及时释放资源
+- 数据库存储字段建议使用 `snake_case`，映射通过 `Column` 特性或显式映射处理
 
 ### 数据库迁移规则
 - 涉及数据库结构变更时，必须同步补齐迁移脚本或等价初始化逻辑
