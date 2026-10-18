@@ -28,14 +28,26 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
+                    <LinearGradientBrush x:Key="TitleBar.StripGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#DCEBFF" Offset="0" />
+                        <GradientStop Color="#F7F8FA" Offset="1" />
+                    </LinearGradientBrush>
                     <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
                     <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Dark">
+                    <LinearGradientBrush x:Key="TitleBar.StripGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#1F2B45" Offset="0" />
+                        <GradientStop Color="#1C1C1F" Offset="1" />
+                    </LinearGradientBrush>
                     <SolidColorBrush x:Key="TitleBar.Strip">#1C1C1F</SolidColorBrush>
                     <SolidColorBrush x:Key="TitleBar.Separator">#333338</SolidColorBrush>
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Default">
+                    <LinearGradientBrush x:Key="TitleBar.StripGradient" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Color="#DCEBFF" Offset="0" />
+                        <GradientStop Color="#F7F8FA" Offset="1" />
+                    </LinearGradientBrush>
                     <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
                     <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
                 </ResourceDictionary>
@@ -47,8 +59,7 @@
          IsFullScreenButtonVisible 固定关闭以保持原有 三键 布局。
          标题区恢复旧版两行结构：标题 + 副标题 -->
     <u:UrsaWindow.TitleBarContent>
-        <StackPanel
-            Margin="12,0,0,0"
+        <StackPanel Margin="56,6,0,0"
             VerticalAlignment="Center"
             Spacing="{StaticResource Space.2}"
             IsHitTestVisible="False">
@@ -61,28 +72,40 @@
          避免初始请求变体为 Default 时非三态按钮首次点击抛出异常 -->
     <u:UrsaWindow.RightContent>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="{StaticResource Space.12}">
-            <TextBlock
-                Classes="titlebar-motto"
+            <!-- 标语胶囊：淡蓝底 + 品牌描边，弱化成装饰徽章 -->
+            <Border
+                Classes="motto-pill"
                 VerticalAlignment="Center"
-                IsHitTestVisible="False"
-                Text="放下个人素质，享受缺德人生" />
+                IsHitTestVisible="False">
+                <TextBlock
+                    Classes="titlebar-motto"
+                    Text="放下个人素质，享受缺德人生" />
+            </Border>
             <u:ThemeToggleButton
                 Mode="Indicator"
                 IsThreeState="False" />
         </StackPanel>
     </u:UrsaWindow.RightContent>
 
-    <!-- 标题底条(52px，与上方 DefaultTitleBarHeight 一致) + 分隔线 + 内容区；
-         Ursa 标题栏文字与窗口按钮悬浮其上，拖拽热区不受影响 -->
+    <!-- 标题底条(52px，淡蓝→白渐变) + 分隔线 + 内容区；
+         Ursa 标题栏文字与窗口按钮悬浮其上，拖拽热区不受影响。
+         左侧品牌竖条锚定标题视觉起点（视觉规范见 design-system.yaml layout.shell.title_bar） -->
     <Grid RowDefinitions="52,1,*">
+        <Border Background="{DynamicResource TitleBar.StripGradient}" />
+        <!-- 品牌竖条：宽 3、高 36，垂直居中于标题栏 -->
         <Border
             Grid.Row="0"
-            Background="{DynamicResource TitleBar.Strip}" />
+            Width="3"
+            Height="36"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            CornerRadius="2"
+            Background="{DynamicResource Brush.Accent.Strong}" />
         <Border
             Grid.Row="1"
             Background="{DynamicResource TitleBar.Separator}" />
-        <Grid Grid.Row="2" Margin="{StaticResource Thickness.12}">
-            <Grid ColumnSpacing="{StaticResource Space.12}">
+        <Grid Grid.Row="2" Margin="{StaticResource Thickness.12}" ColumnSpacing="{StaticResource Space.12}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="{Binding SidebarWidth}" />
                 <ColumnDefinition Width="*" />
@@ -223,5 +246,4 @@
             </Grid>
         </Grid>
         </Grid>
-    </Grid>
 </u:UrsaWindow>

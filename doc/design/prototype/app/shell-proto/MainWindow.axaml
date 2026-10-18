@@ -1,0 +1,204 @@
+<!-- 原型主窗口：还原主工程 MainWindow.axaml 的应用壳结构（UrsaWindow 装饰 + 两行标题 +
+     标题底条 52px + 侧边导航 + 内容区占位），交互仅侧栏收展与主题切换，均为模拟 -->
+<u:UrsaWindow
+    Height="{StaticResource Layout.MainWindow.Height}"
+    MinHeight="{StaticResource Layout.MainWindow.MinHeight}"
+    MinWidth="{StaticResource Layout.MainWindow.MinWidth}"
+    Width="{StaticResource Layout.MainWindow.Width}"
+    WindowStartupLocation="CenterScreen"
+    Title="AzrngTools · Shell Prototype"
+    IsFullScreenButtonVisible="False"
+    mc:Ignorable="d"
+    x:Class="ShellProto.MainWindow"
+    x:DataType="vm:MainWindowViewModel"
+    x:Name="RootWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:u="https://irihi.tech/ursa"
+    xmlns:vm="using:ShellProto"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <u:UrsaWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#1C1C1F</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#333338</SolidColorBrush>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="TitleBar.Strip">#F7F8FA</SolidColorBrush>
+                    <SolidColorBrush x:Key="TitleBar.Separator">#E5E7EB</SolidColorBrush>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </u:UrsaWindow.Resources>
+
+    <u:UrsaWindow.TitleBarContent>
+        <StackPanel
+            Margin="56,6,0,0"
+            VerticalAlignment="Center"
+            Spacing="{StaticResource Space.2}"
+            IsHitTestVisible="False">
+            <TextBlock Classes="app-title" Text="{Binding AppTitle}" />
+            <TextBlock Classes="app-subtitle" Text="{Binding AppSubtitle}" />
+        </StackPanel>
+    </u:UrsaWindow.TitleBarContent>
+
+    <u:UrsaWindow.RightContent>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="{StaticResource Space.12}">
+            <!-- 标语胶囊：淡蓝底 + 品牌描边，弱化成装饰徽章 -->
+            <Border
+                Classes="motto-pill"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False">
+                <TextBlock
+                    Classes="titlebar-motto"
+                    Text="放下个人素质，享受缺德人生" />
+            </Border>
+            <u:ThemeToggleButton
+                Mode="Indicator"
+                IsThreeState="False" />
+        </StackPanel>
+    </u:UrsaWindow.RightContent>
+
+    <!-- 标题底条(52px，淡蓝→白渐变呼应首页 Hero) + 分隔线 + 内容区；
+         左侧品牌竖条锚定标题视觉起点，与 TitleBarContent 的 12px 左边距对齐 -->
+    <Grid RowDefinitions="52,1,*">
+        <Border Grid.Row="0" Background="{DynamicResource TitleBar.StripGradient}" />
+        <!-- 品牌竖条：宽 3、高 36，垂直居中于标题栏 -->
+        <Border
+            Grid.Row="0"
+            Width="3"
+            Height="36"
+            Margin="12,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            CornerRadius="2"
+            Background="{DynamicResource Brush.Accent.Strong}" />
+        <Border
+            Grid.Row="1"
+            Background="{DynamicResource TitleBar.Separator}" />
+        <Grid Grid.Row="2" Margin="{StaticResource Thickness.12}">
+            <Grid ColumnSpacing="{StaticResource Space.12}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="{Binding SidebarWidth}" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Classes="shell-sidebar">
+                    <Grid RowDefinitions="Auto,Auto,Auto,*" RowSpacing="{StaticResource Space.12}">
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                            <TextBox
+                                Classes="clearButton"
+                                Text="{Binding SearchKeyword}"
+                                IsVisible="{Binding !IsSidebarCollapsed}"
+                                PlaceholderText="搜索工具 / 分组..." />
+                            <Button
+                                Grid.Column="1"
+                                Classes="iconButton sidebarToggleButton"
+                                Command="{Binding ToggleSidebarCommand}"
+                                HorizontalAlignment="Right"
+                                ToolTip.Tip="切换侧栏">
+                                <PathIcon
+                                    Data="{Binding SidebarToggleIconPath}"
+                                    Height="{StaticResource Layout.Icon.Sm}"
+                                    Width="{StaticResource Layout.Icon.Sm}" />
+                            </Button>
+                        </Grid>
+
+                        <Border
+                            Grid.Row="1"
+                            Classes="tool-card-soft sidebar-stats"
+                            IsVisible="{Binding !IsSidebarCollapsed}">
+                            <Grid ColumnDefinitions="Auto,*,*" ColumnSpacing="{StaticResource Space.10}">
+                                <Button
+                                    Grid.Column="0"
+                                    Classes="Tertiary"
+                                    Padding="{StaticResource Thickness.12}"
+                                    Theme="{DynamicResource BorderlessButton}"
+                                    ToolTip.Tip="首页">
+                                    <PathIcon
+                                        Data="M10 20V14H14V20H19V12H22L12 3L2 12H5V20H10Z"
+                                        Foreground="{DynamicResource Brush.Accent.Strong}"
+                                        Height="{StaticResource Layout.Icon.Sm}"
+                                        Width="{StaticResource Layout.Icon.Sm}" />
+                                </Button>
+                                <StackPanel Grid.Column="1" Spacing="{StaticResource Space.2}">
+                                    <TextBlock Classes="metric-label" Text="总工具" />
+                                    <TextBlock Classes="metric-value compact" Text="{Binding TotalToolCount}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2" Spacing="{StaticResource Space.2}">
+                                    <TextBlock Classes="metric-label" Text="分类" />
+                                    <TextBlock Classes="metric-value compact" Text="{Binding CategoryCount}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <TextBlock
+                            Grid.Row="2"
+                            Classes="sidebar-section-caption"
+                            IsVisible="{Binding !IsSidebarCollapsed}"
+                            Text="{Binding SearchSummary}" />
+
+                        <ScrollViewer Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" IsVisible="{Binding !IsSidebarCollapsed}">
+                            <ItemsControl ItemsSource="{Binding GroupMenuItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Expander IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                                            <Expander.Header>
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.8}">
+                                                    <TextBlock
+                                                        Classes="nav-group-title"
+                                                        Text="{Binding Title}"
+                                                        VerticalAlignment="Center" />
+                                                    <Border
+                                                        Grid.Column="1"
+                                                        Classes="badge-pill compact"
+                                                        VerticalAlignment="Center">
+                                                        <TextBlock Classes="badge-text" Text="{Binding Child.Count}" />
+                                                    </Border>
+                                                </Grid>
+                                            </Expander.Header>
+                                            <ListBox Classes="shell-nav" ItemsSource="{Binding Child}">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock
+                                                            Classes="nav-item-text"
+                                                            Text="{Binding Title}"
+                                                            VerticalAlignment="Center" />
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </Expander>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
+
+                <Grid Grid.Column="1">
+                    <Border Classes="shell-panel">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="{StaticResource Space.8}">
+                            <TextBlock
+                                Classes="proto-page-title"
+                                HorizontalAlignment="Center"
+                                Text="{Binding CurrentPageTitle}" />
+                            <TextBlock
+                                Classes="proto-page-subtitle"
+                                HorizontalAlignment="Center"
+                                MaxWidth="480"
+                                TextAlignment="Center"
+                                Text="{Binding CurrentPageSubtitle}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</u:UrsaWindow>

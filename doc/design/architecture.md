@@ -42,6 +42,8 @@ MainWindow（主窗口）
 - 首页 `OverviewPageView` 展示工具总数、功能分组与亮暗主题等概览信息。
 - Markdown 预览页已实现但菜单未注册：`Markdown.Avalonia` 尚未完成 Avalonia 12 兼容验证，入口临时隐藏（见 README 兼容说明）。
 
+- 应用壳交互原型：[prototype/app/shell-proto](prototype/app/shell-proto/)（Avalonia 最小可运行原型，还原主窗口两行标题、侧栏分组导航与收展交互，仅模拟数据；构建运行见其 README）。
+
 ### 工具页统一布局规范
 
 内容宿主不提供页面级滚动（`MainWindow` 中 `ContentControl` 直接承载页面），页面获得确定视口高度。所有工具页遵循以下约定，样板见 `Views/Format/JsonYamlXmlPageView.axaml`：

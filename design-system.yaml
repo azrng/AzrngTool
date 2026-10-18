@@ -226,10 +226,16 @@ layout:
   shell:
     app_min_width: 1280
     app_min_height: 800
-    top_bar_height: 56
+    top_bar_height: 52
     side_nav_width_expanded: 248
     side_nav_width_collapsed: 72
     content_padding: 24
+    title_bar:
+      status: "已定制（2026-10-18 原型确认，原型见 doc/design/prototype/app/shell-proto/）"
+      strip_gradient: "纵向渐变：明 #DCEBFF → #F7F8FA；暗 #1F2B45 → #1C1C1F（键 TitleBar.StripGradient，ThemeDictionaries 分主题定义）"
+      accent_bar: "3×36 圆角 2，Brush.Accent.Strong，垂直居中，左边距 12"
+      title_inset: "标题文字左距 56（竖条 12 + 间距）"
+      motto_pill: "标语胶囊：底 Brush.Accent.Soft、描边 Brush.Accent.Border、圆角 999、Padding 12,3；文字 12px SemiBold Brush.Accent.Strong"
   page:
     section_gap: 24
     card_gap: 16

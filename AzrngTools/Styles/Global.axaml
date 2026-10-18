@@ -157,10 +157,18 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
     </Style>
 
+    <Style Selector="Border.motto-pill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="12,3" />
+    </Style>
+
     <Style Selector="TextBlock.titlebar-motto">
-        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
     </Style>
 
     <Style Selector="TextBlock.page-title">

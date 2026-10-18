@@ -1,0 +1,134 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 原型全局样式：从主工程 Styles/Global.axaml 摘取应用壳相关样式 -->
+
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource Brush.App.Background}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamily.App}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Primary}" />
+    </Style>
+
+    <Style Selector="Border.shell-panel">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.Background}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.shell-sidebar">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Panel.Stroke}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Xl}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.tool-card-soft">
+        <Setter Property="Background" Value="{DynamicResource Brush.Panel.SubtleBackground}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Md}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.12}" />
+    </Style>
+
+    <Style Selector="Border.badge-pill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.10.4}" />
+    </Style>
+
+    <Style Selector="Border.badge-pill.compact">
+        <Setter Property="Padding" Value="{StaticResource Thickness.12.4}" />
+    </Style>
+
+    <Style Selector="TextBlock.app-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Md}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.app-subtitle">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.titlebar-motto">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="Border.motto-pill">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent.Soft}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="12,3" />
+    </Style>
+
+    <Style Selector="TextBlock.sidebar-section-caption">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Tertiary}" />
+    </Style>
+
+    <Style Selector="TextBlock.nav-group-title">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.nav-item-text">
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-value">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Sm}" />
+        <Setter Property="FontFamily" Value="Consolas,monospace" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.metric-value.compact">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Md}" />
+    </Style>
+
+    <Style Selector="TextBlock.badge-text">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent.Strong}" />
+    </Style>
+
+    <Style Selector="TextBlock.proto-page-title">
+        <Setter Property="FontSize" Value="{StaticResource FontSize.Title.Lg}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="TextBlock.proto-page-subtitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Text.Secondary}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="PathIcon">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Viewbox Stretch="Uniform">
+                    <Path
+                        Data="{TemplateBinding Data}"
+                        Fill="Transparent"
+                        Stroke="{TemplateBinding Foreground}"
+                        StrokeJoin="Round"
+                        StrokeLineCap="Round"
+                        StrokeThickness="1.5" />
+                </Viewbox>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

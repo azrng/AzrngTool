@@ -1,0 +1,26 @@
+<Application
+    RequestedThemeVariant="Default"
+    x:Class="ShellProto.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:local="using:ShellProto"
+    xmlns:semi="https://irihi.tech/semi"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ShellProto/Styles/DesignTokens.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontWeight x:Key="ExpanderHeaderFontWeight">500</FontWeight>
+            <FontWeight x:Key="TextBlockTitleFontWeight">500</FontWeight>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <semi:SemiTheme />
+        <semi:UrsaSemiTheme />
+        <StyleInclude Source="avares://ShellProto/Styles/Global.axaml" />
+    </Application.Styles>
+</Application>
