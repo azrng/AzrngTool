@@ -39,12 +39,10 @@ public class MainWindowHeaderRestoreTests
             window.Show();
 
             // 1) Ursa 窗口装饰标题栏高度已被样式覆盖为 52（模板加载晚于挂载时可能尚未创建，允许缺省）
+            // WindowDrawnDecorations 继承 StyledElement，只出现在逻辑树，视觉树中不存在该类型
             var decorations = window.GetLogicalDescendants()
                 .OfType<Avalonia.Controls.Chrome.WindowDrawnDecorations>()
-                .FirstOrDefault()
-                ?? window.GetVisualDescendants()
-                    .OfType<Avalonia.Controls.Chrome.WindowDrawnDecorations>()
-                    .FirstOrDefault();
+                .FirstOrDefault();
             if (decorations is not null)
             {
                 Assert.Equal(52, decorations.TitleBarHeight);

@@ -105,10 +105,11 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 },
                 cancellationToken);
 
-            // 更新包含整个应用（数百 MB、上千文件），解压/删除/移动是长耗时同步 IO，必须移出 UI 线程避免下载完成后窗口冻结
+            // 更新包含整个应用（数百 MB、上千文件），解压/删除/移动是长耗时同步 IO，必须移出 UI 线程避免下载完成后窗口冻结；
+            // 逐条目解压以在条目间隙响应取消，取消后由外层 catch 清理半成品 staging 目录
             await Task.Run(() =>
             {
-                ZipFile.ExtractToDirectory(archivePath, extractDirectory);
+                ExtractArchiveWithCancellation(archivePath, extractDirectory, cancellationToken);
                 TryDeleteDirectory(preparedRoot);
                 Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
                 Directory.Move(stagingRoot, preparedRoot);
@@ -128,6 +129,38 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         {
             TryDeleteDirectory(stagingRoot);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// 逐条目解压 zip 并在条目间隙检查取消令牌，替代整体执行且不可取消的 ZipFile.ExtractToDirectory。
+    /// </summary>
+    internal static void ExtractArchiveWithCancellation(string archivePath, string destinationDirectory,
+                                                        CancellationToken cancellationToken)
+    {
+        using var archive = ZipFile.OpenRead(archivePath);
+        // 目标目录补上分隔符做前缀比较，避免 "C:\dest" 误匹配 "C:\dest-evil" 这类兄弟目录
+        var destinationRoot = Path.GetFullPath(destinationDirectory) + Path.DirectorySeparatorChar;
+
+        foreach (var entry in archive.Entries)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // 防解压路径穿越（zip slip）：与 ExtractToDirectory 的内置保护对齐
+            var destinationPath = Path.GetFullPath(Path.Combine(destinationDirectory, entry.FullName));
+            if (!destinationPath.StartsWith(destinationRoot, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new IOException($"更新包内包含越界路径条目：{entry.FullName}");
+            }
+
+            if (entry.FullName.EndsWith('/'))
+            {
+                Directory.CreateDirectory(destinationPath);
+                continue;
+            }
+
+            Directory.CreateDirectory(Path.GetDirectoryName(destinationPath)!);
+            entry.ExtractToFile(destinationPath, overwrite: true);
         }
     }
 
@@ -406,9 +439,10 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
                 Directory.Delete(directoryPath, true);
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignore cleanup failures for temporary files.
+            // 尽力而为的清理：目录可能被占用或只读，失败留痕即可，不中断更新流程
+            LocalLogHelper.WriteMyLogs("更新目录清理失败", $"{directoryPath}\n{ex.GetExceptionAndStack()}");
         }
     }
 

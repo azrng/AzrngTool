@@ -13,6 +13,7 @@ internal sealed class Program
     public static void Main(string[] args)
     {
         RegisterAppDomainExceptionHandler();
+        RegisterUnobservedTaskExceptionHandler();
 
         try
         {
@@ -81,6 +82,16 @@ internal sealed class Program
             }
 
             LocalLogHelper.WriteMyLogs("未处理异常", exception.GetExceptionAndStack());
+        };
+    }
+
+    // 未观察的任务异常只在 GC 终结时浮出，默认静默丢失；标记已观察并留痕，用于发现被遗忘的后台任务错误
+    private static void RegisterUnobservedTaskExceptionHandler()
+    {
+        TaskScheduler.UnobservedTaskException += (_, e) =>
+        {
+            e.SetObserved();
+            LocalLogHelper.WriteMyLogs("未观察任务异常", e.Exception.GetExceptionAndStack());
         };
     }
 }

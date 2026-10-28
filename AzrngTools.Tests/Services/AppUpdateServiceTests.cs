@@ -2,6 +2,7 @@ using AzrngTools.Models;
 using AzrngTools.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.IO.Compression;
 using Xunit;
 
 namespace AzrngTools.Tests.Services;
@@ -71,6 +72,111 @@ public class AppUpdateServiceTests
                 Directory.Delete(staleDirectory, true);
             }
         }
+    }
+
+    [Fact]
+    public void ExtractArchiveWithCancellation_ExtractsNestedEntriesIntoDestination()
+    {
+        var tempRoot = CreateTempDirectory();
+        var archivePath = Path.Combine(tempRoot, "update.zip");
+        var destination = Path.Combine(tempRoot, "payload");
+        try
+        {
+            using (var fileStream = File.Create(archivePath))
+            using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create))
+            {
+                archive.CreateEntry("app/");
+                using (var writer = new StreamWriter(archive.CreateEntry("app/AzrngTools.dll").Open()))
+                {
+                    writer.Write("二进制占位");
+                }
+                using (var writer = new StreamWriter(archive.CreateEntry("说明.txt").Open()))
+                {
+                    writer.Write("中文内容");
+                }
+            }
+
+            AppUpdateService.ExtractArchiveWithCancellation(archivePath, destination, CancellationToken.None);
+
+            Assert.Equal("二进制占位", File.ReadAllText(Path.Combine(destination, "app", "AzrngTools.dll")));
+            Assert.Equal("中文内容", File.ReadAllText(Path.Combine(destination, "说明.txt")));
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ExtractArchiveWithCancellation_CanceledBeforeStart_ExtractsNothing()
+    {
+        var tempRoot = CreateTempDirectory();
+        var archivePath = Path.Combine(tempRoot, "update.zip");
+        var destination = Path.Combine(tempRoot, "payload");
+        try
+        {
+            using (var fileStream = File.Create(archivePath))
+            using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create))
+            {
+                using var writer = new StreamWriter(archive.CreateEntry("app/readme.txt").Open());
+                writer.Write("内容");
+            }
+
+            using var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.Cancel();
+
+            Assert.ThrowsAny<OperationCanceledException>(() =>
+                AppUpdateService.ExtractArchiveWithCancellation(archivePath, destination, cancellationTokenSource.Token));
+
+            // 取消发生在第一个条目解压前，不应产生任何半成品文件
+            Assert.False(Directory.Exists(destination));
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, true);
+            }
+        }
+    }
+
+    [Fact]
+    public void ExtractArchiveWithCancellation_PathTraversalEntry_ThrowsAndLeavesNothing()
+    {
+        var tempRoot = CreateTempDirectory();
+        var archivePath = Path.Combine(tempRoot, "update.zip");
+        var destination = Path.Combine(tempRoot, "payload");
+        try
+        {
+            using (var fileStream = File.Create(archivePath))
+            using (var archive = new ZipArchive(fileStream, ZipArchiveMode.Create))
+            {
+                archive.CreateEntry("../evil.txt");
+            }
+
+            Assert.Throws<IOException>(() =>
+                AppUpdateService.ExtractArchiveWithCancellation(archivePath, destination, CancellationToken.None));
+
+            // 越界条目必须被拒绝，不能写到目标目录之外
+            Assert.False(File.Exists(Path.Combine(tempRoot, "evil.txt")));
+        }
+        finally
+        {
+            if (Directory.Exists(tempRoot))
+            {
+                Directory.Delete(tempRoot, true);
+            }
+        }
+    }
+
+    private static string CreateTempDirectory()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "AzrngTools.Tests", "update-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(directory);
+        return directory;
     }
 
     private static AppUpdateService CreateService()

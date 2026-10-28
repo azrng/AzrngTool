@@ -10,15 +10,20 @@ public sealed partial class ThemePreferenceService : IThemePreferenceService
 {
     private const string ThemeSettingsFileName = "theme-settings.json";
     private readonly string _settingsFilePath;
+    private readonly object _writeLock = new();
 
     public ThemePreferenceService()
-    {
-        var appDataDirectory = Path.Combine(
+        : this(Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AzrngTools");
+            "AzrngTools"))
+    {
+    }
 
-        Directory.CreateDirectory(appDataDirectory);
-        _settingsFilePath = Path.Combine(appDataDirectory, ThemeSettingsFileName);
+    // 供测试注入独立目录，避免读写真实用户配置
+    internal ThemePreferenceService(string settingsDirectory)
+    {
+        Directory.CreateDirectory(settingsDirectory);
+        _settingsFilePath = Path.Combine(settingsDirectory, ThemeSettingsFileName);
     }
 
     public ThemeVariant LoadRequestedThemeVariant()
@@ -66,7 +71,28 @@ public sealed partial class ThemePreferenceService : IThemePreferenceService
 
         var json = JsonSerializer.Serialize(settings, AppThemeJsonContext.Default.ThemePreferenceSettings);
 
-        File.WriteAllText(_settingsFilePath, json);
+        // 主题切换事件在 UI 线程触发，写盘挪到线程池避免界面卡顿；快速连续切换时各次写入
+        // 由锁串行化，最终落盘内容与最后一次切换存在极小概率乱序，下次切换即自愈，
+        // 不值得为此引入排队机制
+        Task.Run(() => WriteSettingsAtomically(json));
+    }
+
+    private void WriteSettingsAtomically(string json)
+    {
+        try
+        {
+            lock (_writeLock)
+            {
+                // 先写临时文件再原子替换，写中途崩溃不会损坏已有设置（与项目其余持久化服务一致）
+                var tempFilePath = _settingsFilePath + ".tmp";
+                File.WriteAllText(tempFilePath, json);
+                File.Move(tempFilePath, _settingsFilePath, overwrite: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            LocalLogHelper.LogError($"保存主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+        }
     }
 
     private sealed class ThemePreferenceSettings

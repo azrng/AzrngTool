@@ -73,6 +73,7 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException)
         {
+            LocalLogHelper.LogError($"{SourceFormat} → {TargetFormat} 转换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             SetResult(false, ex.Message);
             _messageService.SendMessage("转换失败，请检查输入内容");
         }
@@ -96,6 +97,7 @@ public partial class JsonYamlXmlPageViewModel : ViewModelBase
         }
         catch (Exception ex) when (ex is FormatException or ArgumentException)
         {
+            LocalLogHelper.LogError($"{SourceFormat} 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             SetResult(false, ex.Message);
             _messageService.SendMessage("格式化失败，请检查输入内容");
         }

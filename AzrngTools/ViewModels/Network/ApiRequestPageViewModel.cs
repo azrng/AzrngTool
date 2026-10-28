@@ -314,7 +314,14 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
         RequestLoadingText = "正在取消请求...";
         StatusMessage = RequestLoadingText;
-        cancellationTokenSource.Cancel();
+        try
+        {
+            cancellationTokenSource.Cancel();
+        }
+        catch (ObjectDisposedException)
+        {
+            // 请求恰好在取引用与取消之间完成，CTS 已在发送流程的 finally 中释放，此时无需再取消
+        }
     }
 
     [RelayCommand]
