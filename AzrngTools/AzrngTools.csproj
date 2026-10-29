@@ -49,41 +49,46 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.1.1" />
+        <PackageReference Include="Avalonia" Version="12.1.4" />
         <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0" />
-        <PackageReference Include="Avalonia.Desktop" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.1">
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.4" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="Azrng.Core" Version="1.20.0" />
+        <PackageReference Include="Azrng.Core" Version="1.20.1" />
         <!-- 硬件指纹采集（硬件信息页）专用依赖，体积优化暂时移除；恢复时取消注释，
               并还原 HardwareInfoCacheService.CollectSnapshot 中的采集调用 -->
         <!-- <PackageReference Include="Common.Windows.Core" Version="0.0.6" /> -->
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.14" />
         <PackageReference Include="NJsonSchema" Version="11.6.1" />
         <PackageReference Include="Semi.Avalonia" Version="12.1.0.1">
             <TreatAsUsed>true</TreatAsUsed>
         </PackageReference>
         <PackageReference Include="Irihi.Ursa" Version="2.2.0" />
         <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="2.2.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.14" />
         <PackageReference Include="AzrngCommon.Security" Version="1.2.1" />
-        <PackageReference Include="GTranslate" Version="2.3.1" />
-        <PackageReference Include="Markdown.Avalonia" Version="12.0.0-a3" />
+        <PackageReference Include="GTranslate" Version="2.4.0" />
+        <PackageReference Include="Markdown.Avalonia" Version="12.0.2" />
         <PackageReference Include="YamlDotNet" Version="18.1.0" />
-        <PackageReference Include="NPOI" Version="2.8.0" />
+        <PackageReference Include="NPOI" Version="2.8.1" />
+<!-- 显式引用升级传递依赖版本，清除安全 advisory（Pkcs←PdfSharp 链、Xml←NPOI 链，10.0.10 均有 High 公告） -->
+<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
         <!-- DocumentFormat.OpenXml 已移除（约 8MB）：PDF 管理页 Word 导出改用 NPOI 自带的
              XWPF（NPOI.OOXML 程序集，数据库导出已在用 NPOI）；恢复时还原包引用并回退
              AsposePdfProcessingService.ExportPdfToWord -->
         <!-- <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" /> -->
         <PackageReference Include="PdfPig" Version="0.1.15" />
-        <PackageReference Include="PdfSharp" Version="6.2.4" />
+        <!-- PdfSharp 停在 6.2.4：6.5.0 起许可证从 MIT 变更为 AGPL-3.0-only（且需显式 SetAgplLicense 才能运行），
+     升级涉及 AGPL 义务，需用户拍板；7.0.0-preview 同为 AGPL -->
+<PackageReference Include="PdfSharp" Version="6.2.4" />
     </ItemGroup>
 
     <Target Name="RemoveNativeDebugSymbolsFromPublish"
