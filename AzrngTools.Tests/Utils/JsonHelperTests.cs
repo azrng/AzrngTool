@@ -46,7 +46,8 @@ public class JsonHelperTests
                             }
                             """;
 
-        Assert.Throws<JsonReaderException>(() => JsonHelper.JsonCompress(json));
+        // 实现已从 Newtonsoft 迁到 System.Text.Json，无效输入仍抛 JsonException 族异常（具体子类随实现变化）
+        Assert.ThrowsAny<System.Text.Json.JsonException>(() => JsonHelper.JsonCompress(json));
     }
 
     [Fact]

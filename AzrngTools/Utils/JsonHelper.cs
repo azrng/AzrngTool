@@ -23,14 +23,24 @@ namespace AzrngTools.Utils
             TypeInfoResolver = new DefaultJsonTypeInfoResolver()
         };
         /// <summary>
+        /// 大文本解析改走 System.Text.Json（实测 1MB 格式化比 Newtonsoft JToken 快数倍）；
+        /// 容忍注释与尾逗号，保持工具页对粘贴内容的宽容度
+        /// </summary>
+        private static readonly JsonDocumentOptions LenientJsonOptions = new()
+        {
+            CommentHandling = JsonCommentHandling.Skip,
+            AllowTrailingCommas = true,
+        };
+
+        /// <summary>
         /// Json格式化
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
         public static string JsonFormatter(string str)
         {
-            var token = JToken.Parse(str);
-            return token.ToString(Formatting.Indented);
+            using var document = JsonDocument.Parse(str, LenientJsonOptions);
+            return WriteJsonDocument(document, indented: true);
         }
 
         /// <summary>
@@ -40,8 +50,8 @@ namespace AzrngTools.Utils
         /// <returns></returns>
         public static string JsonCompress(string json)
         {
-            var token = JToken.Parse(json);
-            return token.ToString(Formatting.None);
+            using var document = JsonDocument.Parse(json, LenientJsonOptions);
+            return WriteJsonDocument(document, indented: false);
         }
 
         public static string EscapeJsonText(string text)
@@ -70,7 +80,7 @@ namespace AzrngTools.Utils
                     {
                         return JsonFormatter(stringValue);
                     }
-                    catch (Newtonsoft.Json.JsonException)
+                    catch (System.Text.Json.JsonException)
                     {
                         return stringValue;
                     }
@@ -118,14 +128,15 @@ namespace AzrngTools.Utils
         }
 
         /// <summary>
-        /// 基于 System.Text.Json 的 JSON 缩进格式化，不经过反射序列化，AOT 发布下可用
+        /// 用 Utf8JsonWriter 重写 JsonDocument：数字按原文回写、重复属性名保留，
+        /// 保证格式化结果对输入忠实（JsonNode 会合并重复键，故不用它做格式化）
         /// </summary>
-        public static string FormatJsonDocument(JsonDocument document)
+        private static string WriteJsonDocument(JsonDocument document, bool indented)
         {
             using var stream = new MemoryStream();
             using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions
                    {
-                       Indented = true,
+                       Indented = indented,
                        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
                    }))
             {
@@ -133,6 +144,14 @@ namespace AzrngTools.Utils
             }
 
             return Encoding.UTF8.GetString(stream.ToArray());
+        }
+
+        /// <summary>
+        /// 基于 System.Text.Json 的 JSON 缩进格式化，不经过反射序列化，AOT 发布下可用
+        /// </summary>
+        public static string FormatJsonDocument(JsonDocument document)
+        {
+            return WriteJsonDocument(document, indented: true);
         }
 
         private static bool TryParseJsonToken(string text, out JToken? token)
