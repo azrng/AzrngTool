@@ -22,7 +22,7 @@ AzrngTools 是面向开发与效率场景的 Windows 桌面工具箱（.NET 10 +
 | pdf | PDF 管理（页码分割、导出 Word） | [pdf/management.md](pdf/management.md) | in-review |
 | generation | 生成与加密工具组（GUID、HASH、HMAC、AES、DES、SM4、RSA、Json Schema、JSON 转 C#、密码生成） | [generation/tools.md](generation/tools.md) | in-review |
 | encode | 编码 / 解码工具组（Base64、URL、Unicode、Hex、繁简、JWT、Gzip、组合工作台） | [encode/tools.md](encode/tools.md) | in-review |
-| format | 格式化工具组（文本压缩、JSON、SQL、XML 转 HTML、JSON/YAML/XML 互转、正则、字数、人民币大写、MIME） | [format/tools.md](format/tools.md) | in-review |
+| format | 格式化工具组（文本压缩、JSON、SQL、XML 转 HTML、JSON/YAML/XML/ENV 互转、正则、字数、人民币大写、MIME） | [format/tools.md](format/tools.md) | in-review |
 | misc | 其他工具（Unix 时间戳、翻译） | [misc/tools.md](misc/tools.md) | in-review |
 | settings | 设置与应用管理（硬件信息、关于、自动更新、主题、常用入口） | [settings/app.md](settings/app.md) | in-review |
 | clipboard | 剪贴板历史管理（已暂缓，文档保留待恢复） | [clipboard/history.md](clipboard/history.md) | draft（暂缓） |

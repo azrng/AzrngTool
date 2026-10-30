@@ -135,18 +135,27 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
 
         using (var pdf = UglyToad.PdfPig.PdfDocument.Open(pdfPath))
         {
-            var totalPages = pdf.NumberOfPages;
-
-            for (int pageNum = 1; pageNum <= totalPages; pageNum++)
+            for (var pageNum = 1; pageNum <= pdf.NumberOfPages; pageNum++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var page = pdf.GetPage(pageNum);
-                var words = page.GetWords().ToList();
 
-                if (words.Count == 0)
+                IReadOnlyList<PdfLayoutBlock> blocks;
+                try
+                {
+                    blocks = PdfPageLayoutAnalyzer.Analyze(page);
+                }
+                catch (Exception ex)
+                {
+                    // 单页版面分析失败仅降级该页为纯文本，导出整体不失败
+                    LocalLogHelper.LogError($"Word 导出第 {pageNum} 页版面分析失败，按纯文本处理: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                    blocks = PdfPageLayoutAnalyzer.AnalyzeTextOnly(page);
+                }
+
+                if (blocks.Count == 0)
+                {
                     continue;
-
-                var lines = GroupWordsIntoLines(words);
+                }
 
                 if (pageNum > 1)
                 {
@@ -154,28 +163,19 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                     breakRun.AddBreak(BreakType.PAGE);
                 }
 
-                foreach (var line in lines)
+                foreach (var block in blocks)
                 {
-                    var lineText = SanitizeXmlText(string.Join(" ", line.Select(w => w.Text)));
-                    if (string.IsNullOrWhiteSpace(lineText))
-                        continue;
-
-                    var paragraph = doc.CreateParagraph();
-                    var run = paragraph.CreateRun();
-                    run.SetText(lineText);
-
-                    if (line.Count > 0)
+                    switch (block)
                     {
-                        var letters = line[0].Letters;
-                        if (letters.Count > 0)
-                        {
-                            var fontSize = letters[0].FontSize;
-                            if (fontSize > 0)
-                            {
-                                // NPOI FontSize 单位为磅（内部换算半磅写入 XML），PdfPig 字号也是磅
-                                run.FontSize = (int)fontSize;
-                            }
-                        }
+                        case PdfTextLineBlock textLine:
+                            WriteTextLine(doc, textLine);
+                            break;
+                        case PdfTableBlock tableBlock:
+                            WriteTable(doc, tableBlock);
+                            break;
+                        case PdfImageBlock imageBlock:
+                            WriteImage(doc, imageBlock);
+                            break;
                     }
                 }
             }
@@ -183,6 +183,105 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
 
         using var output = File.Create(outputPath);
         doc.Write(output);
+    }
+
+    /// <summary>
+    /// 段落行写出：相邻词按（加粗、字号）分组为 run，还原视觉样式；组间以空格衔接。
+    /// </summary>
+    private static void WriteTextLine(XWPFDocument doc, PdfTextLineBlock line)
+    {
+        var lineText = string.Join(" ", line.Words.Select(word => word.Text));
+        if (string.IsNullOrWhiteSpace(lineText))
+        {
+            return;
+        }
+
+        var groups = new List<(bool IsBold, int FontSize, string Text)>();
+        foreach (var word in line.Words)
+        {
+            var size = word.FontSize > 0 ? (int)Math.Round(word.FontSize) : 0;
+            var text = SanitizeXmlText(word.Text);
+            if (groups.Count > 0 && groups[^1].IsBold == word.IsBold && groups[^1].FontSize == size)
+            {
+                groups[^1] = (word.IsBold, size, groups[^1].Text + " " + text);
+            }
+            else
+            {
+                groups.Add((word.IsBold, size, text));
+            }
+        }
+
+        var paragraph = doc.CreateParagraph();
+        foreach (var group in groups)
+        {
+            var run = paragraph.CreateRun();
+            run.SetText(group.Text);
+            if (group.FontSize > 0)
+            {
+                // NPOI FontSize 单位为磅（内部换算半磅写入 XML），PdfPig 字号也是磅
+                run.FontSize = group.FontSize;
+            }
+
+            if (group.IsBold)
+            {
+                run.IsBold = true;
+            }
+        }
+    }
+
+    private static void WriteTable(XWPFDocument doc, PdfTableBlock tableBlock)
+    {
+        var grid = tableBlock.Grid;
+        var table = doc.CreateTable(grid.Rows, grid.Columns);
+        ApplyTableBorders(table);
+
+        for (var row = 0; row < grid.Rows; row++)
+        {
+            for (var column = 0; column < grid.Columns; column++)
+            {
+                var cell = table.GetRow(row).GetCell(column);
+                var lines = grid.CellTexts[row][column];
+                if (lines.Count == 0)
+                {
+                    continue;
+                }
+
+                // 新建单元格自带一个空段落，首行复用，其余行追加段落
+                var isFirstLine = true;
+                foreach (var lineText in lines)
+                {
+                    var paragraph = isFirstLine
+                        ? (XWPFParagraph)cell.Paragraphs[0]
+                        : cell.AddParagraph();
+                    isFirstLine = false;
+                    paragraph.CreateRun().SetText(SanitizeXmlText(lineText));
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 有线表格还原为带单线边框的 Word 表格（0.5pt 黑色，size 单位为八分之一磅）。
+    /// </summary>
+    private static void ApplyTableBorders(XWPFTable table)
+    {
+        table.SetTopBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+        table.SetBottomBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+        table.SetLeftBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+        table.SetRightBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+        table.SetInsideHBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+        table.SetInsideVBorder(XWPFTable.XWPFBorderType.SINGLE, 4, 0, "000000");
+    }
+
+    private static void WriteImage(XWPFDocument doc, PdfImageBlock imageBlock)
+    {
+        var paragraph = doc.CreateParagraph();
+        var run = paragraph.CreateRun();
+        // OOXML 长度单位 EMU：1 磅 = 12700 EMU
+        var widthEmu = (int)Math.Round(imageBlock.DisplayWidthPt * 12700);
+        var heightEmu = (int)Math.Round(imageBlock.DisplayHeightPt * 12700);
+        using var stream = new MemoryStream(imageBlock.JpegBytes);
+        run.AddPicture(stream, (int)PictureType.JPEG, $"image-{Guid.NewGuid():N}.jpg", widthEmu, heightEmu);
     }
 
     private static string SanitizeXmlText(string text)
@@ -205,46 +304,6 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
             }
         }
         return sb.ToString();
-    }
-
-    private static List<List<UglyToad.PdfPig.Content.Word>> GroupWordsIntoLines(List<UglyToad.PdfPig.Content.Word> words)
-    {
-        var lines = new List<List<UglyToad.PdfPig.Content.Word>>();
-
-        if (words.Count == 0)
-            return lines;
-
-        var sorted = words
-            .OrderByDescending(w => w.BoundingBox.Bottom)
-            .ThenBy(w => w.BoundingBox.Left)
-            .ToList();
-
-        var currentLine = new List<UglyToad.PdfPig.Content.Word> { sorted[0] };
-        var currentY = sorted[0].BoundingBox.Bottom;
-
-        for (int i = 1; i < sorted.Count; i++)
-        {
-            var word = sorted[i];
-            var yDiff = Math.Abs(word.BoundingBox.Bottom - currentY);
-
-            if (yDiff > 3.0)
-            {
-                currentLine.Sort((a, b) => a.BoundingBox.Left.CompareTo(b.BoundingBox.Left));
-                lines.Add(currentLine);
-                currentLine = new List<UglyToad.PdfPig.Content.Word>();
-                currentY = word.BoundingBox.Bottom;
-            }
-
-            currentLine.Add(word);
-        }
-
-        if (currentLine.Count > 0)
-        {
-            currentLine.Sort((a, b) => a.BoundingBox.Left.CompareTo(b.BoundingBox.Left));
-            lines.Add(currentLine);
-        }
-
-        return lines;
     }
 
     private static IReadOnlyList<string> SplitToSingleFile(

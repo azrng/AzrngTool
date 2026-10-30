@@ -9,5 +9,7 @@ public enum FormatLanguage
 
     Yaml,
 
-    Xml
+    Xml,
+
+    Env
 }
