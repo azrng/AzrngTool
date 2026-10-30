@@ -1,6 +1,7 @@
 using Azrng.Core.Helpers;
 using Azrng.Core.Results;
 using AzrngTools.Models.Pdf;
+using AzrngTools.Utils;
 using NPOI.XWPF.UserModel;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
@@ -28,6 +29,9 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
+                using var loadPerf = PerfLogScope.Start(
+                    "PDF元数据加载",
+                    $"{Path.GetFileName(filePath)} {PerfLogScope.DescribeSize(new FileInfo(filePath).Length)}");
                 using var document = PdfReader.Open(filePath, PdfDocumentOpenMode.Import);
                 var fileInfo = new FileInfo(filePath);
                 var summary = new PdfLoadedFileSummary(
@@ -68,6 +72,9 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                 }
 
                 cancellationToken.ThrowIfCancellationRequested();
+                using var splitPerf = PerfLogScope.Start(
+                    "PDF分割",
+                    $"{request.Pages.Count} 页 → {(request.Mode == PdfSplitMode.IndividualPages ? "逐页多文件" : "单文件")}");
                 using var source = PdfReader.Open(request.SourceFilePath, PdfDocumentOpenMode.Import);
                 ValidatePagesWithinDocument(request.Pages, source.PageCount);
 
@@ -131,6 +138,8 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
 
     private static void ExportPdfToWord(string pdfPath, string outputPath, CancellationToken cancellationToken)
     {
+        // 版面分析（表格线聚类、图片提取）在复杂真实文档上耗时未知，整链路计时留档
+        using var exportPerf = PerfLogScope.Start("PDF导出Word", Path.GetFileName(pdfPath));
         using var doc = new XWPFDocument();
 
         using (var pdf = UglyToad.PdfPig.PdfDocument.Open(pdfPath))

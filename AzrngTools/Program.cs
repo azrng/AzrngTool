@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia.Threading;
 using AzrngTools.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,12 @@ namespace AzrngTools;
 
 internal sealed class Program
 {
+    /// <summary>
+    /// 启动耗时锚点：静态字段初始化发生在 Main 执行前（进程内最早的托管代码之一），
+    /// 主窗口首次打开时由 MainWindow.OnWindowOpened 结算并写性能日志（T026 关 R2R 后启动变慢，需要实机数据跟踪）。
+    /// </summary>
+    internal static readonly Stopwatch StartupStopwatch = Stopwatch.StartNew();
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.

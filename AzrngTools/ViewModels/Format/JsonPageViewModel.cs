@@ -44,7 +44,10 @@ public partial class JsonPageViewModel : ViewModelBase
 
             // 大文本解析可能耗时明显，移出 UI 线程避免界面冻结
             var source = Original;
-            Original = await Task.Run(() => JsonHelper.JsonFormatter(source));
+            using (PerfLogScope.Start("JSON格式化", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                Original = await Task.Run(() => JsonHelper.JsonFormatter(source));
+            }
         }
         catch (Exception e)
         {
@@ -68,7 +71,10 @@ public partial class JsonPageViewModel : ViewModelBase
             }
 
             var source = Original;
-            Original = await Task.Run(() => JsonHelper.JsonCompress(source));
+            using (PerfLogScope.Start("JSON压缩", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                Original = await Task.Run(() => JsonHelper.JsonCompress(source));
+            }
         }
         catch (Exception e)
         {

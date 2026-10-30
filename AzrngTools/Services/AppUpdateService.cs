@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using AzrngTools.Models;
+using AzrngTools.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace AzrngTools.Services;
@@ -92,6 +93,8 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
 
         try
         {
+            // 下载与解压耗时留档（无条件记录）：静默更新链路的实机 E2E 仍待发版验证，慢点定位依赖这两条日志
+            var downloadStopwatch = Stopwatch.StartNew();
             await ExecuteWithCompatibilityRetryAsync(
                 async client =>
                 {
@@ -104,9 +107,13 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                     return true;
                 },
                 cancellationToken);
+            downloadStopwatch.Stop();
+            LocalLogHelper.WriteMyLogs("性能检测",
+                $"更新包下载 耗时 {downloadStopwatch.ElapsedMilliseconds}ms（{updateInfo.LatestVersion} {PerfLogScope.DescribeSize(new FileInfo(archivePath).Length)}）");
 
             // 更新包含整个应用（数百 MB、上千文件），解压/删除/移动是长耗时同步 IO，必须移出 UI 线程避免下载完成后窗口冻结；
             // 逐条目解压以在条目间隙响应取消，取消后由外层 catch 清理半成品 staging 目录
+            var extractStopwatch = Stopwatch.StartNew();
             await Task.Run(() =>
             {
                 ExtractArchiveWithCancellation(archivePath, extractDirectory, cancellationToken);
@@ -114,6 +121,9 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
                 Directory.Move(stagingRoot, preparedRoot);
             });
+            extractStopwatch.Stop();
+            LocalLogHelper.WriteMyLogs("性能检测",
+                $"更新包解压落位 耗时 {extractStopwatch.ElapsedMilliseconds}ms（{updateInfo.LatestVersion}）");
 
             var finalExtractDirectory = Path.Combine(preparedRoot, "payload");
             return new AppUpdatePreparedPackage

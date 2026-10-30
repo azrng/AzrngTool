@@ -40,7 +40,10 @@ public partial class SqlFormatPageViewModel : ViewModelBase
 
             // TSql 解析器逐 token 处理，大脚本耗时明显，移出 UI 线程避免界面冻结
             var source = OriginText;
-            OriginText = await Task.Run(() => source.SqlFormat());
+            using (PerfLogScope.Start("SQL格式化", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                OriginText = await Task.Run(() => source.SqlFormat());
+            }
         }
         catch (Exception ex)
         {
@@ -64,7 +67,10 @@ public partial class SqlFormatPageViewModel : ViewModelBase
             }
 
             var source = OriginText;
-            OriginText = await Task.Run(() => TSqlFormatHelper.CompressToString(source));
+            using (PerfLogScope.Start("SQL压缩", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                OriginText = await Task.Run(() => TSqlFormatHelper.CompressToString(source));
+            }
         }
         catch (Exception ex)
         {

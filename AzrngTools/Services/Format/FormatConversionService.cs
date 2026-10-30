@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using System.Xml;
 using System.Xml.Linq;
 using AzrngTools.Models.Format;
+using AzrngTools.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.RepresentationModel;
 
@@ -27,9 +28,11 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
     {
         if (from == to)
         {
+            // 同格式走 Format，由其埋点记录，避免双重计时
             return Format(source, from);
         }
 
+        using var perf = PerfLogScope.Start("格式互转", $"{from}→{to} 输入 {PerfLogScope.DescribeSize(source?.Length ?? 0)}");
         var root = ParseToJsonNode(source, from);
         return to switch
         {
@@ -43,6 +46,7 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
 
     public string Format(string source, FormatLanguage language)
     {
+        using var perf = PerfLogScope.Start("格式化", $"{language} 输入 {PerfLogScope.DescribeSize(source?.Length ?? 0)}");
         return language switch
         {
             FormatLanguage.Json => FormatJson(source),

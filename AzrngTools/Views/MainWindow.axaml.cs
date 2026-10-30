@@ -28,6 +28,14 @@ namespace AzrngTools.Views
 
         private void OnWindowOpened(object? sender, System.EventArgs e)
         {
+            // 启动耗时结算：只记首次打开（IsRunning 防重复），数据用于跟踪体积优化后的实机启动回归
+            if (Program.StartupStopwatch.IsRunning)
+            {
+                Program.StartupStopwatch.Stop();
+                LocalLogHelper.WriteMyLogs("性能检测",
+                    $"应用启动到主窗口打开耗时 {Program.StartupStopwatch.ElapsedMilliseconds}ms");
+            }
+
             // UrsaWindow 为无边框窗口，客户区从窗口物理顶端开始；Semi 主题把 Toast 定位在
             // 客户区顶部居中且 Margin=0，直接弹出会被窗口顶边和圆角裁掉，整体下移到标题栏
             // （52px，见 Styles/WindowDecorations.axaml 的 DefaultTitleBarHeight）以下显示

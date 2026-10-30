@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -76,18 +77,21 @@ public partial class RegexAnalysisViewModel : ViewModelBase
             var regex = BuildRegex();
 
             // 匹配与高亮构建可能耗时较长，移出 UI 线程执行，卡住时仅本次命令等待
-            var (highlightedText, matchSummary, groupDetails, matchCount) = await Task.Run(() =>
+            using (PerfLogScope.Start("正则匹配", $"文本 {PerfLogScope.DescribeSize(text.Length)}"))
             {
-                var matches = regex.Matches(text);
-                return (BuildHighlightedText(text, matches), BuildMatchSummary(matches),
-                        BuildGroupDetails(matches), matches.Count);
-            });
+                var (highlightedText, matchSummary, groupDetails, matchCount) = await Task.Run(() =>
+                {
+                    var matches = regex.Matches(text);
+                    return (BuildHighlightedText(text, matches), BuildMatchSummary(matches),
+                            BuildGroupDetails(matches), matches.Count);
+                });
 
-            HighlightedText = highlightedText;
-            MatchSummary = matchSummary;
-            GroupDetails = groupDetails;
+                HighlightedText = highlightedText;
+                MatchSummary = matchSummary;
+                GroupDetails = groupDetails;
 
-            _messageService.SendMessage($"匹配完成，共 {matchCount} 项");
+                _messageService.SendMessage($"匹配完成，共 {matchCount} 项");
+            }
         }
         catch (RegexMatchTimeoutException)
         {

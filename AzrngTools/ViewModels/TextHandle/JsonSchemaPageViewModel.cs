@@ -46,9 +46,12 @@ public partial class JsonSchemaPageViewModel : ViewModelBase
         try
         {
             var source = OriginText;
-            // NJsonSchema 基于反射、大样本明显耗时，移出 UI 线程避免点击后界面冻结
-            var schemaStr = await Task.Run(() => JsonSchema.FromSampleJson(source).ToJson());
-            SchemaData = JsonHelper.JsonFormatter(schemaStr);
+            using (PerfLogScope.Start("JSON Schema生成", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                // NJsonSchema 基于反射、大样本明显耗时，移出 UI 线程避免点击后界面冻结
+                var schemaStr = await Task.Run(() => JsonSchema.FromSampleJson(source).ToJson());
+                SchemaData = JsonHelper.JsonFormatter(schemaStr);
+            }
         }
         catch (Exception ex)
         {
