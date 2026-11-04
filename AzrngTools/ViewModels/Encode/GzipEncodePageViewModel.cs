@@ -45,13 +45,14 @@ public partial class GzipEncodePageViewModel : ViewModelBase
 
             // 压缩/解压是 CPU 密集操作，大文本下移出 UI 线程避免界面冻结
             var source = OriginalText;
+            using var perf = PerfLogScope.Start("Gzip 压缩/解压", $"输入 {PerfLogScope.DescribeSize(source.Length)}");
             ResultText = await Task.Run(() => isEncoding.Equals("true", StringComparison.CurrentCultureIgnoreCase)
                 ? CompressHelper.Compress(source)
                 : CompressHelper.Decompress(source));
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Gzip压缩/解压失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Gzip压缩/解压失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理异常：{ex.Message}");
         }
     }
@@ -84,7 +85,7 @@ public partial class GzipEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

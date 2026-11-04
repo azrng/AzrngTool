@@ -64,7 +64,7 @@ namespace AzrngTools.ViewModels.Setting
             }
             catch (Exception ex)
             {
-                LocalLogHelper.LogError($"获取硬件信息失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"获取硬件信息失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 _messageService.SendMessage($"异常：{ex.Message}");
             }
         }
@@ -89,7 +89,7 @@ namespace AzrngTools.ViewModels.Setting
             }
             catch (Exception ex)
             {
-                LocalLogHelper.LogError($"刷新硬件信息失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"刷新硬件信息失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 _messageService.SendMessage($"刷新失败：{ex.Message}");
             }
         }

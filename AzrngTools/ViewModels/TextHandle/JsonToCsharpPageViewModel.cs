@@ -59,6 +59,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
 
             var source = JsonInput;
             // 大 JSON 的解析与类生成可能耗时明显，移出 UI 线程避免点击后界面冻结
+            using var perf = PerfLogScope.Start("JSON 转 C#", $"输入 {PerfLogScope.DescribeSize(source.Length)}");
             var result = await Task.Run(() => BuildCsharpCode(
                 source,
                 new GenerationOptions
@@ -81,12 +82,12 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (JsonException ex)
         {
-            LocalLogHelper.LogError($"JSON 转 C# 解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"JSON 转 C# 解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"JSON 解析失败：{ex.Message}");
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"JSON 转 C# 转换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"JSON 转 C# 转换失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -119,7 +120,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制 C# 转换结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制 C# 转换结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }
@@ -136,6 +137,7 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
             }
 
             var source = JsonInput;
+            using var perf = PerfLogScope.Start("JSON 格式化（转C#页）", $"输入 {PerfLogScope.DescribeSize(source.Length)}");
             JsonInput = await Task.Run(() =>
             {
                 using var jsonDoc = JsonDocument.Parse(source);
@@ -144,12 +146,12 @@ public partial class JsonToCsharpPageViewModel : ViewModelBase
         }
         catch (JsonException ex)
         {
-            LocalLogHelper.LogError($"JSON 格式化解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"JSON 格式化解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"JSON 格式化失败：{ex.Message}");
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"JSON 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"JSON 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"格式化失败：{ex.Message}");
         }
     }

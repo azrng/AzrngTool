@@ -55,7 +55,7 @@ public partial class UnicodeEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Unicode编码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Unicode编码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"编码失败：{ex.Message}");
         }
     }
@@ -78,7 +78,7 @@ public partial class UnicodeEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Unicode解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Unicode解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"解码失败：{ex.Message}");
         }
     }
@@ -116,7 +116,7 @@ public partial class UnicodeEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

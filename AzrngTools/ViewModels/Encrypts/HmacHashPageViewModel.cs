@@ -73,6 +73,7 @@ public partial class HmacHashPageViewModel : ViewModelBase
 
         try
         {
+            using var perf = PerfLogScope.Start("HMAC 计算", $"输入 {PerfLogScope.DescribeSize(Original)}");
             Ciphertext = param switch
             {
                 "0" => Md5Helper.GetHmacMd5Hash(Original, Secret, (OutType)OutTypeValue),

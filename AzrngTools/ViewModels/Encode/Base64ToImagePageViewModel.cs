@@ -72,6 +72,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
                 base64 = base64[(base64.IndexOf(',') + 1)..];
             }
 
+            using var perf = PerfLogScope.Start("Base64 转图片", $"输入 {PerfLogScope.DescribeSize(base64.Length)}");
             ImageBytes = await Task.Run(() => Convert.FromBase64String(base64));
             using var stream = new MemoryStream(ImageBytes);
             PreviewImage = new Bitmap(stream);
@@ -84,7 +85,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Base64转图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Base64转图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             PreviewImage = null;
             ImageBytes = null;
             HasImage = false;
@@ -119,7 +120,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"粘贴失败：{ex.Message}");
         }
     }
@@ -178,7 +179,7 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"保存图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"保存图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"保存失败：{ex.Message}");
         }
     }

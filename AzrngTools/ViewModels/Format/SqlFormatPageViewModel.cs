@@ -47,7 +47,7 @@ public partial class SqlFormatPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"SQL格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"SQL格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }
@@ -74,7 +74,7 @@ public partial class SqlFormatPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"SQL压缩失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"SQL压缩失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }
@@ -97,7 +97,7 @@ public partial class SqlFormatPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"SQL转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"SQL转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{e.Message}");
         }
     }
@@ -120,7 +120,7 @@ public partial class SqlFormatPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"SQL去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"SQL去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }

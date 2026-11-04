@@ -522,7 +522,7 @@ public sealed partial class AppUpdateCoordinatorService : IAppUpdateCoordinatorS
         catch (Exception ex)
         {
             // 尽力而为的清理：目录可能被占用或只读，失败留痕即可，不中断更新流程
-            LocalLogHelper.WriteMyLogs("更新目录清理失败", $"{directoryPath}\n{ex.GetExceptionAndStack()}");
+            AppLog.WriteMyLogs("更新目录清理失败", $"{directoryPath}\n{ex.GetExceptionAndStack()}");
         }
     }
 

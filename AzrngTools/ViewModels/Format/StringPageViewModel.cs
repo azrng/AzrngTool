@@ -43,11 +43,14 @@ public partial class StringPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = StringHelper.CompressText(Original);
+            using (PerfLogScope.Start("字符串压缩", $"输入 {PerfLogScope.DescribeSize(Original.Length)}"))
+            {
+                Original = StringHelper.CompressText(Original);
+            }
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"字符串压缩失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"字符串压缩失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -70,7 +73,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"字符串转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"字符串转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -89,12 +92,15 @@ public partial class StringPageViewModel : ViewModelBase
                 return;
             }
 
-            Original = StringHelper.CompressText(Original);
-            Original = Original.Replace("\"", @"\""");
+            using (PerfLogScope.Start("字符串压缩转义", $"输入 {PerfLogScope.DescribeSize(Original.Length)}"))
+            {
+                Original = StringHelper.CompressText(Original);
+                Original = Original.Replace("\"", @"\""");
+            }
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"字符串压缩转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"字符串压缩转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"解析失败，请检查 ：{e.Message}");
         }
     }
@@ -117,7 +123,7 @@ public partial class StringPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"字符串去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"字符串去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }

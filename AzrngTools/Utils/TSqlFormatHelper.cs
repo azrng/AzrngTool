@@ -29,7 +29,7 @@ namespace AzrngTools.Utils
             }
             catch (Exception ex)
             {
-                LocalLogHelper.LogError($"SQL 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"SQL 格式化失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 result = strSql;
             }
 

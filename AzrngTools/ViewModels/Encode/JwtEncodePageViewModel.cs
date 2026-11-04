@@ -73,6 +73,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
 
         try
         {
+            using var perf = PerfLogScope.Start("JWT 解析", $"输入 {PerfLogScope.DescribeSize(value)}");
             if (value.IsNullOrWhiteSpace())
             {
                 HeaderText = string.Empty;
@@ -110,7 +111,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"JWT解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"JWT解析失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             HeaderText = string.Empty;
             PayloadText = string.Empty;
             NotifyParseWarning($"解析失败：{ex.Message}");
@@ -164,7 +165,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制Header失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制Header失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制 Header 失败：{ex.Message}");
         }
     }
@@ -190,7 +191,7 @@ public partial class JwtEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制Payload失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制Payload失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制 Payload 失败：{ex.Message}");
         }
     }

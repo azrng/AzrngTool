@@ -108,7 +108,7 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 },
                 cancellationToken);
             downloadStopwatch.Stop();
-            LocalLogHelper.WriteMyLogs("性能检测",
+            AppLog.WriteMyLogs("性能检测",
                 $"更新包下载 耗时 {downloadStopwatch.ElapsedMilliseconds}ms（{updateInfo.LatestVersion} {PerfLogScope.DescribeSize(new FileInfo(archivePath).Length)}）");
 
             // 更新包含整个应用（数百 MB、上千文件），解压/删除/移动是长耗时同步 IO，必须移出 UI 线程避免下载完成后窗口冻结；
@@ -122,7 +122,7 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 Directory.Move(stagingRoot, preparedRoot);
             });
             extractStopwatch.Stop();
-            LocalLogHelper.WriteMyLogs("性能检测",
+            AppLog.WriteMyLogs("性能检测",
                 $"更新包解压落位 耗时 {extractStopwatch.ElapsedMilliseconds}ms（{updateInfo.LatestVersion}）");
 
             var finalExtractDirectory = Path.Combine(preparedRoot, "payload");
@@ -452,7 +452,7 @@ Start-Process -FilePath $executablePath -WorkingDirectory $targetDirectory
         catch (Exception ex)
         {
             // 尽力而为的清理：目录可能被占用或只读，失败留痕即可，不中断更新流程
-            LocalLogHelper.WriteMyLogs("更新目录清理失败", $"{directoryPath}\n{ex.GetExceptionAndStack()}");
+            AppLog.WriteMyLogs("更新目录清理失败", $"{directoryPath}\n{ex.GetExceptionAndStack()}");
         }
     }
 

@@ -22,6 +22,10 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
     public async Task<ApiRequestExecutionResult> SendAsync(ApiRequestSnapshot request, CancellationToken cancellationToken)
     {
         var finalUrl = string.Empty;
+        var responseSizeBytes = 0L;
+
+        // 响应规模只有读完响应才知道，上下文延迟到落日志时求值；性能条目不落 URL（可能带 token）
+        using var perf = PerfLogScope.Start("API 请求", () => $"{request.Method.ToUpperInvariant()} 响应 {PerfLogScope.DescribeSize(responseSizeBytes)}");
 
         try
         {
@@ -41,11 +45,12 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
             var responseSnapshot = await Task.Run(async () =>
             {
                 var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                responseSizeBytes = response.Content.Headers.ContentLength ?? Encoding.UTF8.GetByteCount(content);
                 return new ApiResponseSnapshot
                 {
                     StatusCode = (int)response.StatusCode,
                     DurationMs = elapsedMilliseconds,
-                    SizeBytes = response.Content.Headers.ContentLength ?? Encoding.UTF8.GetByteCount(content),
+                    SizeBytes = responseSizeBytes,
                     Content = TryFormatJson(content),
                     FinalUrl = finalUrl,
                     RequestSummary = $"{request.Method.ToUpperInvariant()} {finalUrl}",
@@ -75,7 +80,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         }
         catch (Exception exception)
         {
-            LocalLogHelper.LogError($"HTTP 请求失败: {request.Method} {finalUrl}\n{exception.GetExceptionAndStack()}");
+            AppLog.LogError($"HTTP 请求失败: {request.Method} {finalUrl}\n{exception.GetExceptionAndStack()}");
             var effectiveUrl = string.IsNullOrWhiteSpace(finalUrl) ? request.Url : finalUrl;
             var failureResponse = new ApiResponseSnapshot
             {
@@ -223,7 +228,7 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"JSON 格式化失败: {ex.Message}");
+            AppLog.LogError($"JSON 格式化失败: {ex.Message}");
             return content;
         }
     }

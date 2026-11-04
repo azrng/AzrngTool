@@ -70,6 +70,7 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
     {
         try
         {
+            using var perf = PerfLogScope.Start("RSA 加解密", $"输入 {PerfLogScope.DescribeSize(Original)}");
             if (Original.IsNullOrWhiteSpace())
             {
                 _messageService.SendMessage("请输入要加密/解密的内容");
@@ -122,6 +123,7 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
         try
         {
             // RSA 密钥对生成典型耗时 100-500ms，移出 UI 线程
+            using var perf = PerfLogScope.Start("RSA 密钥生成");
             var keyTypeValue = RsaKeyTypeValue;
             var (publicKey, privateKey) = await Task.Run(() => keyTypeValue == (int)RSAKeyType.Xml
                 ? RsaHelper.ExportXmlRsaKey()

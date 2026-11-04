@@ -310,7 +310,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"{busyText}失败: {ex.GetExceptionAndStack()}");
+            AppLog.LogError($"{busyText}失败: {ex.GetExceptionAndStack()}");
             ShowFailure($"{busyText}失败：{ex.Message}");
         }
         finally

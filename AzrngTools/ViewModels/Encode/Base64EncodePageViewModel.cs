@@ -49,6 +49,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
                 return;
             }
 
+            using var perf = PerfLogScope.Start("Base64 编解码", $"输入 {PerfLogScope.DescribeSize(Original)}");
             if (encoding.Equals("true", StringComparison.CurrentCultureIgnoreCase))
             {
                 var bytes = Encoding.UTF8.GetBytes(Original);
@@ -62,7 +63,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Base64编码/解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Base64编码/解码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }
@@ -95,7 +96,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制结果失败：{ex.Message}");
         }
     }
@@ -118,7 +119,7 @@ public partial class Base64EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"从剪贴板粘贴失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"粘贴失败：{ex.Message}");
         }
     }

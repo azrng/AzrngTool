@@ -84,11 +84,12 @@ public partial class HexEncodePageViewModel : ViewModelBase
             var source = Original;
             var separator = Separator;
             // 大文本的编码转换移出 UI 线程，避免点击后界面冻结
+            using var perf = PerfLogScope.Start("Hex 字符串编码", $"输入 {PerfLogScope.DescribeSize(source.Length)}");
             HandleText = await Task.Run(() => BytesToHex(Encoding.UTF8.GetBytes(source), separator));
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"字符串转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"字符串转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -114,11 +115,12 @@ public partial class HexEncodePageViewModel : ViewModelBase
                 return;
             }
 
+            using var perf = PerfLogScope.Start("Hex 字符串解码", $"输入 {PerfLogScope.DescribeSize(hex.Length)}");
             HandleText = await Task.Run(() => Encoding.UTF8.GetString(Convert.FromHexString(hex)));
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"十六进制转字符串失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"十六进制转字符串失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -139,11 +141,12 @@ public partial class HexEncodePageViewModel : ViewModelBase
 
             var source = Original;
             var separator = Separator;
+            using var perf = PerfLogScope.Start("Hex 字节数组编码", $"输入 {PerfLogScope.DescribeSize(source.Length)}");
             HandleText = await Task.Run(() => BytesToHex(Encoding.UTF8.GetBytes(source), separator));
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"字节数组转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"字节数组转十六进制失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -170,6 +173,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
             }
 
             // 大十六进制串会生成超大逐字节文本，整体移到后台构建
+            using var perf = PerfLogScope.Start("Hex 字节数组解码", $"输入 {PerfLogScope.DescribeSize(hex.Length)}");
             HandleText = await Task.Run(() =>
             {
                 var bytes = Convert.FromHexString(hex);
@@ -184,7 +188,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"十六进制转字节数组失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"十六进制转字节数组失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -222,7 +226,7 @@ public partial class HexEncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

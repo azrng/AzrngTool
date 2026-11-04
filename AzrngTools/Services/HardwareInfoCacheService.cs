@@ -63,7 +63,7 @@ public sealed partial class HardwareInfoCacheService : IHardwareInfoCacheService
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"加载硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"加载硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return null;
         }
     }
@@ -86,12 +86,15 @@ public sealed partial class HardwareInfoCacheService : IHardwareInfoCacheService
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"保存硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"保存硬件信息缓存失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
         }
     }
 
     private static HardwareInfoSnapshot CollectSnapshot()
     {
+        // 真实采集单点埋点：GetHardwareInfo 未命中缓存与 RefreshHardwareInfo 都走这里，
+        // 恢复 WMI 采集后的秒级耗时可直接被性能日志捕捉
+        using var perf = PerfLogScope.Start("硬件信息采集");
         // 机器标识采集已随 Common.Windows.Core 包移除而停用（体积优化），恢复示例：
         // var cpuId = HardwareInfo.GetCpuId() ?? string.Empty;
         // var hardDiskId = HardwareInfo.GetMainDiskId() ?? string.Empty;

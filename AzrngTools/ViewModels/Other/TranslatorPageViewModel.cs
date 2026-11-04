@@ -60,6 +60,7 @@ public partial class TranslatorPageViewModel : ViewModelBase
         BusyText = "正在翻译...";
         try
         {
+            using var perf = PerfLogScope.Start("翻译请求", $"输入 {PerfLogScope.DescribeSize(OriginText)}");
             switch (TranslatorTypeIndex)
             {
                 case 0:
@@ -75,7 +76,7 @@ public partial class TranslatorPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"翻译处理失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"翻译处理失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{e.Message}");
         }
         finally

@@ -32,7 +32,7 @@ namespace AzrngTools.Views
             if (Program.StartupStopwatch.IsRunning)
             {
                 Program.StartupStopwatch.Stop();
-                LocalLogHelper.WriteMyLogs("性能检测",
+                AppLog.WriteMyLogs("性能检测",
                     $"应用启动到主窗口打开耗时 {Program.StartupStopwatch.ElapsedMilliseconds}ms");
             }
 

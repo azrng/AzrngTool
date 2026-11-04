@@ -61,7 +61,7 @@ public sealed class DebouncedActionDispatcher : IDisposable
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"DebouncedAction 执行失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"DebouncedAction 执行失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
         }
     }
 }

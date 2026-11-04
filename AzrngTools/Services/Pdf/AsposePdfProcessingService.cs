@@ -51,7 +51,7 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
             catch (Exception ex)
             {
                 var friendlyMessage = BuildFriendlyError("PDF 加载失败", ex);
-                LocalLogHelper.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
                 return PdfResultModel.Failure<PdfLoadedFileSummary>(friendlyMessage);
             }
         }, cancellationToken);
@@ -96,7 +96,7 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
             catch (Exception ex)
             {
                 var friendlyMessage = BuildFriendlyError("PDF 分割失败", ex);
-                LocalLogHelper.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
                 return PdfResultModel.Failure<PdfSplitResult>(friendlyMessage);
             }
         }, cancellationToken);
@@ -130,7 +130,7 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
             catch (Exception ex)
             {
                 var friendlyMessage = BuildFriendlyError("Word 导出失败", ex);
-                LocalLogHelper.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
                 return PdfResultModel.Failure<PdfWordExportResult>(friendlyMessage);
             }
         }, cancellationToken);
@@ -157,7 +157,7 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                 catch (Exception ex)
                 {
                     // 单页版面分析失败仅降级该页为纯文本，导出整体不失败
-                    LocalLogHelper.LogError($"Word 导出第 {pageNum} 页版面分析失败，按纯文本处理: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                    AppLog.LogError($"Word 导出第 {pageNum} 页版面分析失败，按纯文本处理: {ex.Message}\n{ex.GetExceptionAndStack()}");
                     blocks = PdfPageLayoutAnalyzer.AnalyzeTextOnly(page);
                 }
 

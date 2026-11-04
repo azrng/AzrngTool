@@ -55,7 +55,7 @@ public partial class JsonSchemaPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.WriteMyLogs("ERROR", $"生成json schema 出错：{ex.Message}");
+            AppLog.WriteMyLogs("ERROR", $"生成json schema 出错：{ex.Message}");
             _messageService.SendMessage(ex.Message);
         }
     }

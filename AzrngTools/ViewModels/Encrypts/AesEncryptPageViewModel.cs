@@ -126,6 +126,7 @@ namespace AzrngTools.ViewModels.Encrypts
 
             try
             {
+                using var perf = PerfLogScope.Start("AES 加解密", $"输入 {PerfLogScope.DescribeSize(Original)}");
                 if (isEncrypt.Equals("true"))
                 {
                     Ciphertext = AesHelper.Encrypt(Original, Secret, iv: Iv, cipherMode: (CipherMode)CipherModeIndex,

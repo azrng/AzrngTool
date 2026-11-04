@@ -69,11 +69,12 @@ namespace AzrngTools.ViewModels.Format
                 var xml = XmlContent;
                 var xslt = XsltContent;
                 // 样式表编译加转换对大 XML 是重活，移出 UI 线程避免点击后界面冻结
+                using var perf = PerfLogScope.Start("XML 转 HTML", $"输入 {PerfLogScope.DescribeSize(xml.Length)}");
                 HtmlContent = await Task.Run(() => TransformToHtml(xml, xslt));
             }
             catch (Exception ex)
             {
-                LocalLogHelper.LogError($"XML转HTML失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                AppLog.LogError($"XML转HTML失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
                 _messageService.SendMessage($"处理失败：{ex.Message}");
             }
         }

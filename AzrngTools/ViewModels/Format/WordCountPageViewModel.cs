@@ -112,6 +112,7 @@ public partial class WordCountPageViewModel : ViewModelBase
 
             var text = InputText;
             // 大文本多趟扫描有可感耗时，移出 UI 线程执行
+            using var perf = PerfLogScope.Start("字数统计", $"输入 {PerfLogScope.DescribeSize(text.Length)}");
             var counts = await Task.Run(() => CountStatistics(text));
 
             TotalCharacters = counts.TotalCharacters;
@@ -128,7 +129,7 @@ public partial class WordCountPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"字数统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"字数统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"统计失败：{ex.Message}");
         }
     }
@@ -271,7 +272,7 @@ public partial class WordCountPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制统计结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制统计结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

@@ -125,7 +125,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"密码生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"密码生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"生成失败：{ex.Message}");
         }
     }
@@ -173,7 +173,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"批量密码生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"批量密码生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"批量生成失败：{ex.Message}");
         }
     }
@@ -194,7 +194,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"随机数生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"随机数生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"生成失败：{ex.Message}");
         }
     }
@@ -218,7 +218,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"随机字符串生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"随机字符串生成失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"生成失败：{ex.Message}");
         }
     }
@@ -281,7 +281,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制密码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制密码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }
@@ -330,7 +330,7 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"批量复制密码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"批量复制密码失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

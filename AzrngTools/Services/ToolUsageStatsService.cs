@@ -125,7 +125,7 @@ public sealed partial class ToolUsageStatsService : IToolUsageStatsService, ISin
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"加载工具使用统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"加载工具使用统计失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return new ToolUsageStore();
         }
     }

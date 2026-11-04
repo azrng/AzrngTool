@@ -71,6 +71,7 @@ namespace AzrngTools.ViewModels.Encrypts
 
             try
             {
+                using var perf = PerfLogScope.Start("DES 加解密", $"输入 {PerfLogScope.DescribeSize(Original)}");
                 var flag = isEncrypt.Equals("true", StringComparison.CurrentCultureIgnoreCase);
 
                 // ecb模式 hax编码

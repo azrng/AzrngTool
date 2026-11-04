@@ -32,7 +32,7 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
             return Format(source, from);
         }
 
-        using var perf = PerfLogScope.Start("格式互转", $"{from}→{to} 输入 {PerfLogScope.DescribeSize(source?.Length ?? 0)}");
+        using var perf = PerfLogScope.Start("格式互转", $"{from}→{to} 输入 {PerfLogScope.DescribeSize(source)}");
         var root = ParseToJsonNode(source, from);
         return to switch
         {
@@ -46,7 +46,7 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
 
     public string Format(string source, FormatLanguage language)
     {
-        using var perf = PerfLogScope.Start("格式化", $"{language} 输入 {PerfLogScope.DescribeSize(source?.Length ?? 0)}");
+        using var perf = PerfLogScope.Start("格式化", $"{language} 输入 {PerfLogScope.DescribeSize(source)}");
         return language switch
         {
             FormatLanguage.Json => FormatJson(source),
@@ -59,6 +59,7 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
 
     public ConversionCheckResult Validate(string source, FormatLanguage language)
     {
+        using var perf = PerfLogScope.Start("格式校验", $"{language} 输入 {PerfLogScope.DescribeSize(source)}");
         try
         {
             ParseToJsonNode(source, language);

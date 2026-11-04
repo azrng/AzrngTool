@@ -335,7 +335,7 @@ internal static class PdfPageLayoutAnalyzer
                 continue;
             }
 
-            var bounds = image.Bounds;
+            var bounds = image.BoundingBox;
             yield return new PdfImageBlock(
                 raw.ToArray(),
                 bounds.Width,

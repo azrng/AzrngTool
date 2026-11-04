@@ -5,3 +5,4 @@ global using Azrng.Core.DependencyInjection;
 global using Azrng.Core.Extension;
 global using Azrng.Core.Helpers;
 global using AzrngTools.Models;
+global using AzrngTools.Utils;

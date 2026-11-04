@@ -120,7 +120,7 @@ public sealed partial class ApiRequestStoreService : IApiRequestStoreService, IS
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"加载接口调试历史记录失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"加载接口调试历史记录失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return new ApiRequestToolStore();
         }
     }

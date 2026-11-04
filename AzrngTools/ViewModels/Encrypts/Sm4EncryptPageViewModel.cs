@@ -66,6 +66,7 @@ public partial class Sm4EncryptPageViewModel : ViewModelBase
                 return;
             }
 
+            using var perf = PerfLogScope.Start("SM4 加解密", $"输入 {PerfLogScope.DescribeSize(Original)}");
             var outType = OutTypeValue == 0 ? OutType.Base64 : OutType.Hex;
             Ciphertext = isEncrypt.Equals("true")
                 ? Sm4Helper.Encrypt(Original, Secret, outType: outType)

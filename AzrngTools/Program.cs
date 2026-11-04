@@ -30,7 +30,7 @@ internal sealed class Program
         }
         catch (Exception ex)
         {
-            LocalLogHelper.WriteMyLogs("启动异常", ex.GetExceptionAndStack());
+            AppLog.WriteMyLogs("启动异常", ex.GetExceptionAndStack());
             throw;
         }
     }
@@ -60,7 +60,7 @@ internal sealed class Program
         }
         catch (Exception ex)
         {
-            LocalLogHelper.WriteMyLogs("退出时应用更新", ex.GetExceptionAndStack());
+            AppLog.WriteMyLogs("退出时应用更新", ex.GetExceptionAndStack());
         }
     }
 
@@ -75,7 +75,7 @@ internal sealed class Program
         Dispatcher.UIThread.UnhandledException += (_, e) =>
         {
             e.Handled = true;
-            LocalLogHelper.WriteMyLogs("UI线程未处理异常", e.Exception.GetExceptionAndStack());
+            AppLog.WriteMyLogs("UI线程未处理异常", e.Exception.GetExceptionAndStack());
         };
     }
 
@@ -88,7 +88,7 @@ internal sealed class Program
                 return;
             }
 
-            LocalLogHelper.WriteMyLogs("未处理异常", exception.GetExceptionAndStack());
+            AppLog.WriteMyLogs("未处理异常", exception.GetExceptionAndStack());
         };
     }
 
@@ -98,7 +98,7 @@ internal sealed class Program
         TaskScheduler.UnobservedTaskException += (_, e) =>
         {
             e.SetObserved();
-            LocalLogHelper.WriteMyLogs("未观察任务异常", e.Exception.GetExceptionAndStack());
+            AppLog.WriteMyLogs("未观察任务异常", e.Exception.GetExceptionAndStack());
         };
     }
 }

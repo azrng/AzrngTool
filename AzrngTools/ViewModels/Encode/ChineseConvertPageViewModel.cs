@@ -39,7 +39,7 @@ public partial class ChineseConvertPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"简体转繁体失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"简体转繁体失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -59,7 +59,7 @@ public partial class ChineseConvertPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"繁体转简体失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"繁体转简体失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"转换失败：{ex.Message}");
         }
     }
@@ -92,7 +92,7 @@ public partial class ChineseConvertPageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

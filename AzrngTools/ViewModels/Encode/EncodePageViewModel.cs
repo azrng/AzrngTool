@@ -49,7 +49,7 @@ public partial class EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"URL编码/解码处理失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"URL编码/解码处理失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理异常：{ex.Message}");
         }
     }
@@ -71,7 +71,7 @@ public partial class EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Unicode文本处理失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Unicode文本处理失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理异常：{ex.Message}");
         }
     }
@@ -104,7 +104,7 @@ public partial class EncodePageViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"复制结果失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"复制失败：{ex.Message}");
         }
     }

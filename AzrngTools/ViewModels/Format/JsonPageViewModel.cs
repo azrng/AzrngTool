@@ -51,7 +51,7 @@ public partial class JsonPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"Json格式化失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"Json格式化失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"Json解析失败，请检查 ：{e.Message}");
         }
     }
@@ -78,7 +78,7 @@ public partial class JsonPageViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"Json压缩失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"Json压缩失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"Json解析失败，请检查 ：{e.Message}");
         }
     }
@@ -98,11 +98,14 @@ public partial class JsonPageViewModel : ViewModelBase
             }
 
             var source = Original;
-            Original = await Task.Run(() => JsonHelper.EscapeJsonText(source));
+            using (PerfLogScope.Start("JSON 转义", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                Original = await Task.Run(() => JsonHelper.EscapeJsonText(source));
+            }
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"Json转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"Json转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             _messageService.SendMessage($"Json转义失败，请检查 ：{e.Message}");
         }
     }
@@ -122,11 +125,14 @@ public partial class JsonPageViewModel : ViewModelBase
             }
 
             var source = Original;
-            Original = await Task.Run(() => JsonHelper.EscapeJsonText(JsonHelper.JsonCompress(source)));
+            using (PerfLogScope.Start("JSON 转义压缩", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                Original = await Task.Run(() => JsonHelper.EscapeJsonText(JsonHelper.JsonCompress(source)));
+            }
         }
         catch (Exception e)
         {
-            LocalLogHelper.LogError($"Json压缩转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
+            AppLog.LogError($"Json压缩转义失败: {e.Message}\n{e.GetExceptionAndStack()}");
             if (IsLikelyEscapedJsonText(Original))
             {
                 _messageService.SendMessage("当前内容看起来已经是转义后的 JSON。请先点击“去除转义”还原，或直接使用当前结果。");
@@ -152,11 +158,14 @@ public partial class JsonPageViewModel : ViewModelBase
             }
 
             var source = Original;
-            Original = await Task.Run(() => JsonHelper.UnescapeJsonText(source));
+            using (PerfLogScope.Start("JSON 去转义", $"输入 {PerfLogScope.DescribeSize(source.Length)}"))
+            {
+                Original = await Task.Run(() => JsonHelper.UnescapeJsonText(source));
+            }
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"Json去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"Json去除转义失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             _messageService.SendMessage($"处理失败：{ex.Message}");
         }
     }

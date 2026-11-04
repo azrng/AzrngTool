@@ -51,7 +51,7 @@ public sealed partial class ThemePreferenceService : IThemePreferenceService
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"加载主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"加载主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
             return ThemeVariant.Default;
         }
     }
@@ -91,7 +91,7 @@ public sealed partial class ThemePreferenceService : IThemePreferenceService
         }
         catch (Exception ex)
         {
-            LocalLogHelper.LogError($"保存主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            AppLog.LogError($"保存主题偏好失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
         }
     }
 

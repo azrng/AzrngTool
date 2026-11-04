@@ -56,6 +56,7 @@ namespace AzrngTools.ViewModels.Encrypts
 
             try
             {
+                using var perf = PerfLogScope.Start("哈希计算", $"输入 {PerfLogScope.DescribeSize(Original)}");
                 Ciphertext = param switch
                 {
                     "0" => Md5Helper.GetMd5Hash(Original, outputType: (OutType)OutTypeValue),
