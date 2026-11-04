@@ -14,6 +14,7 @@
 | format | 格式化工具组 | [format/tools.md](format/tools.md) | in-review | `REQ-FORMAT-001` |
 | misc | 其他工具 | [misc/tools.md](misc/tools.md) | in-review | `REQ-MISC-001` |
 | settings | 设置与应用管理 | [settings/app.md](settings/app.md) | in-review | `REQ-SETTINGS-001` |
+| settings | 页面输入记忆存档 | [settings/page-input-archive.md](settings/page-input-archive.md) | draft | `REQ-SETTINGS-002` |
 | clipboard | 剪贴板历史管理（已暂缓，文档保留） | [clipboard/history.md](clipboard/history.md) | draft（暂缓） | `REQ-CLIPBOARD-001` |
 
 ## 状态说明
