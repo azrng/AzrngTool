@@ -31,7 +31,7 @@ public class PerformanceProbeTests
     public async Task JsonFormat_OneMegabyte()
     {
         var json = BuildLargeJson(itemCount: 6_000);
-        var viewModel = new JsonPageViewModel(new TestMessageService()) { Original = json };
+        var viewModel = new JsonPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { Original = json };
 
         await MeasureAsync("JSON格式化 1MB", async () =>
         {
@@ -48,7 +48,7 @@ public class PerformanceProbeTests
         var indented = System.Text.Json.JsonSerializer.Serialize(
             BuildLargeJsonObject(6_000),
             new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-        var viewModel = new JsonPageViewModel(new TestMessageService()) { Original = indented };
+        var viewModel = new JsonPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { Original = indented };
 
         await MeasureAsync("JSON压缩 1MB", async () =>
         {
@@ -63,7 +63,7 @@ public class PerformanceProbeTests
     public async Task JsonToCsharp_TwoThousandUniqueProperties()
     {
         var json = BuildNestedUniquePropertyJson(propertyCount: 2_000);
-        var viewModel = new JsonToCsharpPageViewModel(new TestMessageService()) { JsonInput = json };
+        var viewModel = new JsonToCsharpPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { JsonInput = json };
 
         await MeasureAsync("JSON转C# 2000独立属性", async () =>
         {
@@ -78,7 +78,7 @@ public class PerformanceProbeTests
     public async Task WordCount_FiveHundredKilobytes()
     {
         var text = BuildMixedLanguageText(blockCount: 1_500);
-        var viewModel = new WordCountPageViewModel(new TestMessageService()) { InputText = text };
+        var viewModel = new WordCountPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { InputText = text };
 
         await MeasureAsync("字数统计 500KB", async () =>
         {
@@ -93,7 +93,7 @@ public class PerformanceProbeTests
     public async Task HexEncodeDecode_OneMegabyte()
     {
         var original = BuildMixedLanguageText(blockCount: 3_000);
-        var viewModel = new HexEncodePageViewModel(new TestMessageService()) { Original = original };
+        var viewModel = new HexEncodePageViewModel(new TestMessageService(), TestPageInputStores.Create()) { Original = original };
 
         await MeasureAsync("十六进制编码 1MB", async () =>
         {
@@ -104,7 +104,7 @@ public class PerformanceProbeTests
         var encoded = viewModel.HandleText;
         Assert.NotEmpty(encoded);
 
-        var decodeViewModel = new HexEncodePageViewModel(new TestMessageService()) { Original = encoded };
+        var decodeViewModel = new HexEncodePageViewModel(new TestMessageService(), TestPageInputStores.Create()) { Original = encoded };
         await MeasureAsync("十六进制解码 2MB+", async () =>
         {
             decodeViewModel.Original = encoded;
@@ -119,7 +119,7 @@ public class PerformanceProbeTests
     {
         var messageService = new TestMessageService();
         var text = BuildEmailText(lineCount: 8_000);
-        var viewModel = new RegexAnalysisViewModel(messageService)
+        var viewModel = new RegexAnalysisViewModel(messageService, TestPageInputStores.Create())
         {
             RegexPattern = @"\b\w+@\w+\.\w+\b",
             TestText = text
@@ -140,7 +140,7 @@ public class PerformanceProbeTests
     public async Task ChineseConvert_ThreeHundredKilobytes()
     {
         var text = BuildChineseText(blockCount: 2_000);
-        var viewModel = new ChineseConvertPageViewModel(new TestMessageService()) { Original = text };
+        var viewModel = new ChineseConvertPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { Original = text };
 
         await MeasureAsync("繁简转换 300KB", () =>
         {
@@ -156,7 +156,7 @@ public class PerformanceProbeTests
     public async Task JsonToYaml_FourHundredKilobytes()
     {
         var json = BuildLargeJson(itemCount: 2_500);
-        var viewModel = new JsonYamlXmlPageViewModel(new FormatConversionService(), new TestMessageService())
+        var viewModel = new JsonYamlXmlPageViewModel(new FormatConversionService(), new TestMessageService(), TestPageInputStores.Create())
         {
             SourceFormat = FormatLanguage.Json,
             TargetFormat = FormatLanguage.Yaml,
@@ -176,7 +176,7 @@ public class PerformanceProbeTests
     public async Task SqlFormat_HundredKilobytes()
     {
         var sql = BuildLargeSql(tableCount: 120);
-        var viewModel = new SqlFormatPageViewModel(new TestMessageService()) { OriginText = sql };
+        var viewModel = new SqlFormatPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { OriginText = sql };
 
         await MeasureAsync("SQL格式化 100KB", async () =>
         {
@@ -191,7 +191,7 @@ public class PerformanceProbeTests
     public async Task JsonSchemaGeneration_TwoHundredKilobytes()
     {
         var json = BuildLargeJson(itemCount: 2_500);
-        var viewModel = new JsonSchemaPageViewModel(new TestMessageService()) { OriginText = json };
+        var viewModel = new JsonSchemaPageViewModel(new TestMessageService(), TestPageInputStores.Create()) { OriginText = json };
 
         await MeasureAsync("JSON Schema生成 200KB", async () =>
         {

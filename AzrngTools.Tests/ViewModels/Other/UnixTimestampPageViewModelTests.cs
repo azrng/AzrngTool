@@ -9,7 +9,7 @@ public class UnixTimestampPageViewModelTests
     public void TimestampToDateTimeSecondsCommand_ShouldNotifyWhenInputIsEmpty()
     {
         var messageService = new TestMessageService();
-        var viewModel = new UnixTimestampPageViewModel(messageService)
+        var viewModel = new UnixTimestampPageViewModel(messageService, TestPageInputStores.Create())
         {
             TimestampSeconds = string.Empty
         };
@@ -24,7 +24,7 @@ public class UnixTimestampPageViewModelTests
     public void TimestampToDateTimeSecondsCommand_ShouldConvertUnixTimestamp()
     {
         var messageService = new TestMessageService();
-        var viewModel = new UnixTimestampPageViewModel(messageService)
+        var viewModel = new UnixTimestampPageViewModel(messageService, TestPageInputStores.Create())
         {
             TimestampSeconds = "0"
         };
@@ -45,7 +45,7 @@ public class UnixTimestampPageViewModelTests
     public void DateTimeToTimestampCommand_ShouldUpdateTimestampOutputs()
     {
         var messageService = new TestMessageService();
-        var viewModel = new UnixTimestampPageViewModel(messageService);
+        var viewModel = new UnixTimestampPageViewModel(messageService, TestPageInputStores.Create());
         var target = DateTime.SpecifyKind(new DateTime(2024, 1, 2, 3, 4, 5), DateTimeKind.Local);
         var expectedUtc = target.ToUniversalTime();
         var unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -67,7 +67,7 @@ public class UnixTimestampPageViewModelTests
     public void TargetSelections_ShouldSyncTargetDateTime()
     {
         var messageService = new TestMessageService();
-        var viewModel = new UnixTimestampPageViewModel(messageService);
+        var viewModel = new UnixTimestampPageViewModel(messageService, TestPageInputStores.Create());
         var date = new DateTime(2024, 5, 6);
         var time = new TimeSpan(7, 8, 9);
 

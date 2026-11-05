@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using AzrngTools.Models.Network;
+using AzrngTools.Services;
 using AzrngTools.Services.Network;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
@@ -14,22 +15,31 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 {
     private static readonly TimeZoneInfo ShanghaiTimeZone = ResolveShanghaiTimeZone();
 
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "network-api-request";
+
     private readonly IApiRequestExecutionService _executionService;
     private readonly IApiRequestStoreService _storeService;
     private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
     private readonly object _requestLock = new();
     private readonly DebouncedActionDispatcher _historySearchDebouncer = new(TimeSpan.FromMilliseconds(200));
     private CancellationTokenSource? _requestCancellationTokenSource;
     private List<ApiRequestHistoryItemViewModel> _allHistoryItems = [];
 
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
     public ApiRequestPageViewModel(
         IApiRequestExecutionService executionService,
         IApiRequestStoreService storeService,
-        IMessageService messageService)
+        IMessageService messageService,
+        IPageInputStoreService pageInputStore)
     {
         _executionService = executionService;
         _storeService = storeService;
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
 
         HttpMethods =
         [
@@ -52,7 +62,12 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             new ApiRequestBodyModeOptionViewModel { Mode = ApiRequestBodyModes.FormData, DisplayName = "form-data" }
         ];
 
+        // 默认选项赋值有防护：联动链 SelectedBodyModeOption→SelectedBodyMode 会在 _isRestoring 期外提交快照，
+        // 默认值快照一旦入队，800ms 防抖后会覆盖上次会话存档（当前靠字段默认值相等侥幸不触发，显式防护杜绝）
+        _isRestoring = true;
         SelectedBodyModeOption = BodyModeOptions[0];
+        RestoreInputs();
+        _isRestoring = false;
         _ = InitializeAsync();
     }
 
@@ -199,6 +214,12 @@ public partial class ApiRequestPageViewModel : ViewModelBase
 
     partial void OnSelectedBodyModeChanged(string value)
     {
+        // 恢复期间保留下方选项联动，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         OnPropertyChanged(nameof(IsFormBodyMode));
         OnPropertyChanged(nameof(HasRawBodyEditor));
         OnPropertyChanged(nameof(RequestBodyPlaceholder));
@@ -207,6 +228,101 @@ public partial class ApiRequestPageViewModel : ViewModelBase
         if (match is not null && !ReferenceEquals(match, SelectedBodyModeOption))
         {
             SelectedBodyModeOption = match;
+        }
+    }
+
+    partial void OnRequestUrlChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnSelectedMethodChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIgnoreSslErrorsChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnSelectedConfigTabIndexChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    // 只保存请求配置输入；请求体、参数集合键值与历史记录相关状态不入存档
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(RequestUrl)] = PageInputValues.Encode(RequestUrl),
+            [nameof(SelectedMethod)] = PageInputValues.Encode(SelectedMethod),
+            [nameof(SelectedBodyMode)] = PageInputValues.Encode(SelectedBodyMode),
+            [nameof(IgnoreSslErrors)] = PageInputValues.Encode(IgnoreSslErrors),
+            [nameof(SelectedConfigTabIndex)] = PageInputValues.Encode(SelectedConfigTabIndex),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(RequestUrl), out var requestUrl) && requestUrl is not null)
+            {
+                RequestUrl = requestUrl;
+            }
+
+            if (saved.TryGetValue(nameof(SelectedMethod), out var selectedMethod) && selectedMethod is not null)
+            {
+                SelectedMethod = selectedMethod;
+            }
+
+            if (saved.TryGetValue(nameof(SelectedBodyMode), out var selectedBodyMode) && selectedBodyMode is not null)
+            {
+                SelectedBodyMode = selectedBodyMode;
+            }
+
+            if (saved.TryGetValue(nameof(IgnoreSslErrors), out var ignoreSslErrors))
+            {
+                IgnoreSslErrors = PageInputValues.DecodeBool(ignoreSslErrors, IgnoreSslErrors);
+            }
+
+            if (saved.TryGetValue(nameof(SelectedConfigTabIndex), out var selectedConfigTabIndex))
+            {
+                SelectedConfigTabIndex = PageInputValues.DecodeInt32(selectedConfigTabIndex, SelectedConfigTabIndex);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
         }
     }
 

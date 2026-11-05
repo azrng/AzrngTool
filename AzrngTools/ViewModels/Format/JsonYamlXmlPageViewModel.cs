@@ -1,4 +1,5 @@
 using AzrngTools.Models.Format;
+using AzrngTools.Services;
 using AzrngTools.Services.Format;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,13 +12,94 @@ namespace AzrngTools.ViewModels.Format;
 /// </summary>
 public partial class JsonYamlXmlPageViewModel : ViewModelBase
 {
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "format-json-yaml-xml";
+
     private readonly IFormatConversionService _conversionService;
     private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
 
-    public JsonYamlXmlPageViewModel(IFormatConversionService conversionService, IMessageService messageService)
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public JsonYamlXmlPageViewModel(IFormatConversionService conversionService, IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _conversionService = conversionService;
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
+        RestoreInputs();
+    }
+
+    partial void OnSourceTextChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnSourceFormatChanged(FormatLanguage value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnTargetFormatChanged(FormatLanguage value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(SourceText)] = PageInputValues.Encode(SourceText),
+            [nameof(SourceFormat)] = PageInputValues.Encode(SourceFormat),
+            [nameof(TargetFormat)] = PageInputValues.Encode(TargetFormat),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(SourceText), out var sourceText) && sourceText is not null)
+            {
+                SourceText = sourceText;
+            }
+
+            if (saved.TryGetValue(nameof(SourceFormat), out var sourceFormat))
+            {
+                SourceFormat = PageInputValues.DecodeEnum<FormatLanguage>(sourceFormat, SourceFormat);
+            }
+
+            if (saved.TryGetValue(nameof(TargetFormat), out var targetFormat))
+            {
+                TargetFormat = PageInputValues.DecodeEnum<FormatLanguage>(targetFormat, TargetFormat);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     [ObservableProperty]

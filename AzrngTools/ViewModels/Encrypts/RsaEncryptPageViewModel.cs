@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using Common.Security;
 using Common.Security.Enums;
@@ -16,13 +17,98 @@ public partial class RsaEncryptPageViewModel : ViewModelBase
     private readonly ILogger<RsaEncryptPageViewModel> _logger;
     private readonly IMessageService _messageService;
 
-    public RsaEncryptPageViewModel(ILogger<RsaEncryptPageViewModel> logger, IMessageService messageService)
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "encrypts-rsa";
+
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造期默认值赋值与恢复赋值都会触发 OnXxxChanged，置位跳过保存提交，避免默认值快照覆盖已有存档或恢复即回写
+    private bool _isRestoring;
+
+    public RsaEncryptPageViewModel(ILogger<RsaEncryptPageViewModel> logger, IMessageService messageService, IPageInputStoreService pageInputStore)
     {
+        _isRestoring = true;
         _logger = logger;
         _messageService = messageService;
 
         RsaKeyTypeValue = (int)RSAKeyType.PEM;
         OutTypeValue = (int)OutType.Base64;
+        _pageInputStore = pageInputStore;
+        RestoreInputs();
+        _isRestoring = false;
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            // PublicKey 与 PrivateKey 属敏感键，绝不写入存档
+            [nameof(Original)] = PageInputValues.Encode(Original),
+            [nameof(RsaKeyTypeValue)] = PageInputValues.Encode(RsaKeyTypeValue),
+            [nameof(OutTypeValue)] = PageInputValues.Encode(OutTypeValue),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(Original), out var original))
+            {
+                Original = original;
+            }
+
+            if (saved.TryGetValue(nameof(RsaKeyTypeValue), out var rsaKeyTypeValue))
+            {
+                RsaKeyTypeValue = PageInputValues.DecodeInt32(rsaKeyTypeValue, RsaKeyTypeValue);
+            }
+
+            if (saved.TryGetValue(nameof(OutTypeValue), out var outTypeValue))
+            {
+                OutTypeValue = PageInputValues.DecodeInt32(outTypeValue, OutTypeValue);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
+    }
+
+    partial void OnOriginalChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnRsaKeyTypeValueChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnOutTypeValueChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
     }
 
     #region 属性

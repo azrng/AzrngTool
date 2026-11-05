@@ -11,14 +11,26 @@ namespace AzrngTools.ViewModels.Other;
 /// </summary>
 public partial class TranslatorPageViewModel : ViewModelBase
 {
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "other-translator";
+
     private readonly ITranslationService _translationService;
     private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
 
-    public TranslatorPageViewModel(ITranslationService translationService, IMessageService messageService)
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public TranslatorPageViewModel(ITranslationService translationService, IMessageService messageService, IPageInputStoreService pageInputStore)
     {
-        TranslatorTypeIndex = 0;
         _translationService = translationService;
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
+        // 构造初始化赋值不属于用户输入，置位跳过保存提交，避免默认值快照在防抖落盘时覆盖已有存档
+        _isRestoring = true;
+        TranslatorTypeIndex = 0;
+        _isRestoring = false;
+        RestoreInputs();
     }
 
     /// <summary>
@@ -93,8 +105,60 @@ public partial class TranslatorPageViewModel : ViewModelBase
 
     partial void OnOriginTextChanged(string value)
     {
+        // 恢复期间保留下方命令可用态通知，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         OnPropertyChanged(nameof(CanTranslate));
         HandlerCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnTranslatorTypeIndexChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(OriginText)] = PageInputValues.Encode(OriginText),
+            [nameof(TranslatorTypeIndex)] = PageInputValues.Encode(TranslatorTypeIndex),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(OriginText), out var originText))
+            {
+                OriginText = originText;
+            }
+
+            if (saved.TryGetValue(nameof(TranslatorTypeIndex), out var translatorTypeIndex))
+            {
+                TranslatorTypeIndex = PageInputValues.DecodeInt32(translatorTypeIndex, TranslatorTypeIndex);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     partial void OnIsBusyChanged(bool value)

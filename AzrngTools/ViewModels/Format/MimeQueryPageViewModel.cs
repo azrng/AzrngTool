@@ -1,5 +1,6 @@
 #nullable disable
 using System.Text;
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -14,14 +15,63 @@ namespace AzrngTools.ViewModels.Format;
 /// </summary>
 public partial class MimeQueryPageViewModel : ViewModelBase
 {
-    private readonly IMessageService _messageService;
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "format-mime-query";
 
-    public MimeQueryPageViewModel(IMessageService messageService)
+    private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnSearchTextChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public MimeQueryPageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
         _searchText = string.Empty;
         _queryResult = string.Empty;
         InitializeMimeDatabase();
+        RestoreInputs();
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(SearchText)] = PageInputValues.Encode(SearchText),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(SearchText), out var searchText))
+            {
+                SearchText = searchText;
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     #region 属性

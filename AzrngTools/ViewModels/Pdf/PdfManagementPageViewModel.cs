@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using Azrng.Core.Results;
 using AzrngTools.Models.Pdf;
+using AzrngTools.Services;
 using AzrngTools.Services.Pdf;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,17 +13,30 @@ namespace AzrngTools.ViewModels.Pdf;
 
 public partial class PdfManagementPageViewModel : ViewModelBase
 {
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "pdf-management";
+
     private readonly IMessageService _messageService;
     private readonly IPdfProcessingService _pdfProcessingService;
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
 
     public PdfManagementPageViewModel(
         IPdfProcessingService pdfProcessingService,
-        IMessageService messageService)
+        IMessageService messageService,
+        IPageInputStoreService pageInputStore)
     {
         _pdfProcessingService = pdfProcessingService;
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
+        // 构造初始化赋值不属于用户输入，置位跳过保存提交，避免默认值快照在防抖落盘时覆盖已有存档
+        _isRestoring = true;
         PageRangeText = "1";
+        _isRestoring = false;
         StatusText = "请选择 PDF 文件";
+        RestoreInputs();
     }
 
     [ObservableProperty]
@@ -355,11 +369,23 @@ public partial class PdfManagementPageViewModel : ViewModelBase
 
     partial void OnPageRangeTextChanged(string value)
     {
+        // 恢复期间保留页码摘要通知，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         OnPropertyChanged(nameof(SelectedPageSummary));
     }
 
     partial void OnIsIndividualPagesModeChanged(bool value)
     {
+        // 恢复期间保留分割模式联动（此时 CurrentFile 尚为空，联动自动跳过），仅跳过保存提交
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         OnPropertyChanged(nameof(SplitModeText));
         if (CurrentFile is null)
         {
@@ -369,6 +395,75 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         SplitOutputPath = value
             ? Path.GetDirectoryName(CurrentFile.FilePath) ?? string.Empty
             : BuildDefaultSplitOutputPath(CurrentFile.FilePath);
+    }
+
+    partial void OnSplitOutputPathChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnWordOutputPathChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    // 只保存页码与输出路径配置；当前文件（CurrentFile）不入存档
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(PageRangeText)] = PageInputValues.Encode(PageRangeText),
+            [nameof(IsIndividualPagesMode)] = PageInputValues.Encode(IsIndividualPagesMode),
+            [nameof(SplitOutputPath)] = PageInputValues.Encode(SplitOutputPath),
+            [nameof(WordOutputPath)] = PageInputValues.Encode(WordOutputPath),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(PageRangeText), out var pageRangeText) && pageRangeText is not null)
+            {
+                PageRangeText = pageRangeText;
+            }
+
+            if (saved.TryGetValue(nameof(IsIndividualPagesMode), out var isIndividualPagesMode))
+            {
+                IsIndividualPagesMode = PageInputValues.DecodeBool(isIndividualPagesMode, IsIndividualPagesMode);
+            }
+
+            if (saved.TryGetValue(nameof(SplitOutputPath), out var splitOutputPath) && splitOutputPath is not null)
+            {
+                SplitOutputPath = splitOutputPath;
+            }
+
+            if (saved.TryGetValue(nameof(WordOutputPath), out var wordOutputPath) && wordOutputPath is not null)
+            {
+                WordOutputPath = wordOutputPath;
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     partial void OnIsBusyChanged(bool value)

@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -13,16 +14,145 @@ namespace AzrngTools.ViewModels.TextHandle;
 
 public partial class JsonToCsharpPageViewModel : ViewModelBase
 {
-    private readonly IMessageService _messageService;
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "generation-json-to-csharp";
 
-    public JsonToCsharpPageViewModel(IMessageService messageService)
+    private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public JsonToCsharpPageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
         _rootClassName = "RootObject";
         _nameSpace = "MyApplication.Models";
         _useNullableTypes = true;
         _usePascalCase = true;
         _generateProperties = true;
+        RestoreInputs();
+    }
+
+    partial void OnJsonInputChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnRootClassNameChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnNameSpaceChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnUseNullableTypesChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnUsePascalCaseChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnGeneratePropertiesChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(JsonInput)] = PageInputValues.Encode(JsonInput),
+            [nameof(RootClassName)] = PageInputValues.Encode(RootClassName),
+            [nameof(NameSpace)] = PageInputValues.Encode(NameSpace),
+            [nameof(UseNullableTypes)] = PageInputValues.Encode(UseNullableTypes),
+            [nameof(UsePascalCase)] = PageInputValues.Encode(UsePascalCase),
+            [nameof(GenerateProperties)] = PageInputValues.Encode(GenerateProperties),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(JsonInput), out var jsonInput))
+            {
+                JsonInput = jsonInput;
+            }
+
+            if (saved.TryGetValue(nameof(RootClassName), out var rootClassName))
+            {
+                RootClassName = rootClassName;
+            }
+
+            if (saved.TryGetValue(nameof(NameSpace), out var nameSpace))
+            {
+                NameSpace = nameSpace;
+            }
+
+            if (saved.TryGetValue(nameof(UseNullableTypes), out var useNullableTypes))
+            {
+                UseNullableTypes = PageInputValues.DecodeBool(useNullableTypes, UseNullableTypes);
+            }
+
+            if (saved.TryGetValue(nameof(UsePascalCase), out var usePascalCase))
+            {
+                UsePascalCase = PageInputValues.DecodeBool(usePascalCase, UsePascalCase);
+            }
+
+            if (saved.TryGetValue(nameof(GenerateProperties), out var generateProperties))
+            {
+                GenerateProperties = PageInputValues.DecodeBool(generateProperties, GenerateProperties);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     [ObservableProperty]

@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -16,14 +17,143 @@ public partial class RegexAnalysisViewModel : ViewModelBase
     // 用户输入的正则可能触发灾难性回溯，必须限时执行，避免无限占用线程
     private static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(2);
 
-    private readonly IMessageService _messageService;
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "format-regex";
 
-    public RegexAnalysisViewModel(IMessageService messageService)
+    private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public RegexAnalysisViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
         _regexPattern = @"\b\w+@\w+\.\w+\b";
         _testText = "test@example.com\nhello world\nfoo@bar.com";
         _replacementText = "[EMAIL]";
+        RestoreInputs();
+    }
+
+    partial void OnRegexPatternChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnTestTextChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnReplacementTextChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIgnoreCaseChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnMultilineChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnSinglelineChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(TestText)] = PageInputValues.Encode(TestText),
+            [nameof(RegexPattern)] = PageInputValues.Encode(RegexPattern),
+            [nameof(ReplacementText)] = PageInputValues.Encode(ReplacementText),
+            [nameof(IgnoreCase)] = PageInputValues.Encode(IgnoreCase),
+            [nameof(Multiline)] = PageInputValues.Encode(Multiline),
+            [nameof(Singleline)] = PageInputValues.Encode(Singleline),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(TestText), out var testText))
+            {
+                TestText = testText;
+            }
+
+            if (saved.TryGetValue(nameof(RegexPattern), out var regexPattern))
+            {
+                RegexPattern = regexPattern;
+            }
+
+            if (saved.TryGetValue(nameof(ReplacementText), out var replacementText))
+            {
+                ReplacementText = replacementText;
+            }
+
+            if (saved.TryGetValue(nameof(IgnoreCase), out var ignoreCase))
+            {
+                IgnoreCase = PageInputValues.DecodeBool(ignoreCase, IgnoreCase);
+            }
+
+            if (saved.TryGetValue(nameof(Multiline), out var multiline))
+            {
+                Multiline = PageInputValues.DecodeBool(multiline, Multiline);
+            }
+
+            if (saved.TryGetValue(nameof(Singleline), out var singleline))
+            {
+                Singleline = PageInputValues.DecodeBool(singleline, Singleline);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     [ObservableProperty]

@@ -1,5 +1,6 @@
 #nullable disable
 using Azrng.Core.Helpers;
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -14,11 +15,19 @@ namespace AzrngTools.ViewModels.TextHandle;
 /// </summary>
 public partial class PasswordGeneratorPageViewModel : ViewModelBase
 {
-    private readonly IMessageService _messageService;
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "generation-password";
 
-    public PasswordGeneratorPageViewModel(IMessageService messageService)
+    private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public PasswordGeneratorPageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
         _passwordLength = 16;
         _includeNumbers = true;
         _includeLowercase = true;
@@ -26,6 +35,128 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
         _includeSpecialChars = false;
         _generatedPasswords = new System.Collections.ObjectModel.ObservableCollection<string>();
         _batchCount = 1;
+        RestoreInputs();
+    }
+
+    partial void OnPasswordLengthChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnBatchCountChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIncludeNumbersChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIncludeLowercaseChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIncludeUppercaseChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnIncludeSpecialCharsChanged(bool value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    // 只保存生成选项；生成结果（GeneratedPassword、GeneratedPasswords、PasswordStrength）不入存档
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(PasswordLength)] = PageInputValues.Encode(PasswordLength),
+            [nameof(BatchCount)] = PageInputValues.Encode(BatchCount),
+            [nameof(IncludeNumbers)] = PageInputValues.Encode(IncludeNumbers),
+            [nameof(IncludeLowercase)] = PageInputValues.Encode(IncludeLowercase),
+            [nameof(IncludeUppercase)] = PageInputValues.Encode(IncludeUppercase),
+            [nameof(IncludeSpecialChars)] = PageInputValues.Encode(IncludeSpecialChars),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(PasswordLength), out var passwordLength))
+            {
+                PasswordLength = PageInputValues.DecodeInt32(passwordLength, PasswordLength);
+            }
+
+            if (saved.TryGetValue(nameof(BatchCount), out var batchCount))
+            {
+                BatchCount = PageInputValues.DecodeInt32(batchCount, BatchCount);
+            }
+
+            if (saved.TryGetValue(nameof(IncludeNumbers), out var includeNumbers))
+            {
+                IncludeNumbers = PageInputValues.DecodeBool(includeNumbers, IncludeNumbers);
+            }
+
+            if (saved.TryGetValue(nameof(IncludeLowercase), out var includeLowercase))
+            {
+                IncludeLowercase = PageInputValues.DecodeBool(includeLowercase, IncludeLowercase);
+            }
+
+            if (saved.TryGetValue(nameof(IncludeUppercase), out var includeUppercase))
+            {
+                IncludeUppercase = PageInputValues.DecodeBool(includeUppercase, IncludeUppercase);
+            }
+
+            if (saved.TryGetValue(nameof(IncludeSpecialChars), out var includeSpecialChars))
+            {
+                IncludeSpecialChars = PageInputValues.DecodeBool(includeSpecialChars, IncludeSpecialChars);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     #region 属性

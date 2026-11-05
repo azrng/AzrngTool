@@ -9,7 +9,7 @@ public class JsonPageViewModelTests
     public async Task ReplaceEscapeCommand_ShouldFormatEscapedJson()
     {
         var messageService = new TestMessageService();
-        var viewModel = new JsonPageViewModel(messageService)
+        var viewModel = new JsonPageViewModel(messageService, TestPageInputStores.Create())
         {
             Original = """{\"name\":\"Azrng\",\"enabled\":true}"""
         };
@@ -25,7 +25,7 @@ public class JsonPageViewModelTests
     {
         var messageService = new TestMessageService();
         const string original = "{\\\"name\\\":\\q}";
-        var viewModel = new JsonPageViewModel(messageService)
+        var viewModel = new JsonPageViewModel(messageService, TestPageInputStores.Create())
         {
             Original = original
         };
@@ -41,7 +41,7 @@ public class JsonPageViewModelTests
     public void CompressJsonCommand_ShouldNotifyWhenInputIsEmpty()
     {
         var messageService = new TestMessageService();
-        var viewModel = new JsonPageViewModel(messageService)
+        var viewModel = new JsonPageViewModel(messageService, TestPageInputStores.Create())
         {
             Original = string.Empty
         };
@@ -57,7 +57,7 @@ public class JsonPageViewModelTests
     {
         var messageService = new TestMessageService();
         const string original = """{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\"}""";
-        var viewModel = new JsonPageViewModel(messageService)
+        var viewModel = new JsonPageViewModel(messageService, TestPageInputStores.Create())
         {
             Original = original
         };

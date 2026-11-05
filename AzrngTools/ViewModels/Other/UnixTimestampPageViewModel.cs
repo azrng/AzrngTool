@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -13,18 +14,30 @@ namespace AzrngTools.ViewModels.Other;
 /// </summary>
 public partial class UnixTimestampPageViewModel : ViewModelBase
 {
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "other-unix-timestamp";
+
     private readonly IMessageService _messageService;
+    private readonly IPageInputStoreService _pageInputStore;
     private bool _syncingTargetSelection;
 
-    public UnixTimestampPageViewModel(IMessageService messageService)
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public UnixTimestampPageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
+        // 构造初始化赋值不属于用户输入，置位跳过保存提交，避免默认值快照在防抖落盘时覆盖已有存档
+        _isRestoring = true;
         RefreshCurrentTimestampValues();
         TargetDateTime = DateTime.Now;
         UpdateTargetTimestampOutputs(TargetDateTime);
         TimestampSeconds = TargetTimestampSeconds;
         TimestampMilliseconds = TargetTimestampMilliseconds;
         ConversionResult = string.Empty;
+        _isRestoring = false;
+        RestoreInputs();
     }
 
     #region 属性
@@ -64,8 +77,34 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
 
     #endregion
 
+    partial void OnTimestampSecondsChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnTimestampMillisecondsChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
     partial void OnTargetDateTimeChanged(DateTime value)
     {
+        // 恢复期间保留时间戳输出与日期时间选择联动，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         UpdateTargetTimestampOutputs(value);
 
         if (_syncingTargetSelection)
@@ -81,6 +120,12 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
 
     partial void OnTargetDateSelectionChanged(DateTime? value)
     {
+        // 恢复期间保留日期选择联动，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         if (_syncingTargetSelection || value is null)
         {
             return;
@@ -93,6 +138,12 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
 
     partial void OnTargetTimeSelectionChanged(TimeSpan? value)
     {
+        // 恢复期间保留时间选择联动，仅跳过保存提交避免恢复即回写
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         if (_syncingTargetSelection || value is null)
         {
             return;
@@ -101,6 +152,67 @@ public partial class UnixTimestampPageViewModel : ViewModelBase
         _syncingTargetSelection = true;
         TargetDateTime = TargetDateTime.Date + value.Value;
         _syncingTargetSelection = false;
+    }
+
+    // TargetTimeSelection 为 TimeSpan?，无现成编解码，按 ticks 经 Encode(long)/DecodeInt64 存取
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(TimestampSeconds)] = PageInputValues.Encode(TimestampSeconds),
+            [nameof(TimestampMilliseconds)] = PageInputValues.Encode(TimestampMilliseconds),
+            [nameof(TargetDateTime)] = PageInputValues.Encode(TargetDateTime),
+            [nameof(TargetDateSelection)] = TargetDateSelection.HasValue ? PageInputValues.Encode(TargetDateSelection.Value) : null,
+            [nameof(TargetTimeSelection)] = TargetTimeSelection.HasValue ? PageInputValues.Encode(TargetTimeSelection.Value.Ticks) : null,
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(TimestampSeconds), out var timestampSeconds))
+            {
+                TimestampSeconds = timestampSeconds;
+            }
+
+            if (saved.TryGetValue(nameof(TimestampMilliseconds), out var timestampMilliseconds))
+            {
+                TimestampMilliseconds = timestampMilliseconds;
+            }
+
+            // 先恢复 TargetDateTime 触发既有联动同步两个选择，再按存档值覆盖可空选择
+            if (saved.TryGetValue(nameof(TargetDateTime), out var targetDateTime))
+            {
+                TargetDateTime = PageInputValues.DecodeDateTime(targetDateTime, TargetDateTime);
+            }
+
+            if (saved.TryGetValue(nameof(TargetDateSelection), out var targetDateSelection))
+            {
+                // 键存在但值为 null 时按可空默认（null）处理
+                TargetDateSelection = targetDateSelection is null
+                    ? null
+                    : PageInputValues.DecodeDateTime(targetDateSelection, TargetDateSelection ?? TargetDateTime.Date);
+            }
+
+            if (saved.TryGetValue(nameof(TargetTimeSelection), out var targetTimeSelection))
+            {
+                TargetTimeSelection = targetTimeSelection is null
+                    ? null
+                    : TimeSpan.FromTicks(PageInputValues.DecodeInt64(targetTimeSelection, (TargetTimeSelection ?? TimeSpan.Zero).Ticks));
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     private void RefreshCurrentTimestampValues()

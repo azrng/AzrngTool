@@ -11,7 +11,7 @@ public class TranslatorPageViewModelTests
     {
         var service = new FakeTranslationService();
         var messageService = new TestMessageService();
-        var viewModel = new TranslatorPageViewModel(service, messageService);
+        var viewModel = new TranslatorPageViewModel(service, messageService, TestPageInputStores.Create());
 
         await viewModel.HandlerCommand.ExecuteAsync(null);
 
@@ -24,7 +24,7 @@ public class TranslatorPageViewModelTests
     public async Task HandlerCommand_ShouldTranslateAndResetBusyState()
     {
         var service = new FakeTranslationService();
-        var viewModel = new TranslatorPageViewModel(service, new TestMessageService())
+        var viewModel = new TranslatorPageViewModel(service, new TestMessageService(), TestPageInputStores.Create())
         {
             OriginText = "你好"
         };

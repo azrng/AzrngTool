@@ -3,7 +3,7 @@ doc_id: CON-SETTINGS-001
 doc_type: contract
 module: settings
 feature: page-input-archive
-status: draft
+status: superseded
 last_updated: 2026-11-05
 related:
   - doc/requirements/settings/page-input-archive.md
@@ -12,8 +12,10 @@ related:
 
 # 页面输入存档文件契约草案（CON-SETTINGS-001）
 
-- 来源路径（落地后最终事实来源）：`AzrngTools/Services/PageInputStoreService.cs`
-- 状态：draft（阶段 0 草案，实现落地后标记 superseded）
+- 来源路径（最终事实来源）：`AzrngTools/Services/PageInputStoreService.cs`
+- 状态：superseded（T038 已落地，结构以代码为准；下方草案保留作历史记录）
+
+> 变更记录：2026-11-05 实现落地。与草案一致：version/updatedAt/inputs 三段结构、camelCase 序列化（源生成）、标量字符串编码、敏感键不落盘、单值 2,000,000 字符截断、损坏整页兜底。
 
 ## 存档文件
 

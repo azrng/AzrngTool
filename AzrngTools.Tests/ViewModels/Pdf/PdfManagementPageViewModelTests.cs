@@ -11,7 +11,7 @@ public class PdfManagementPageViewModelTests
     [Fact]
     public void Constructor_ShouldDisableOperationsBeforeFileLoaded()
     {
-        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), new TestMessageService());
+        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), new TestMessageService(), TestPageInputStores.Create());
 
         Assert.False(viewModel.HasFile);
         Assert.False(viewModel.CanOperate);
@@ -22,7 +22,7 @@ public class PdfManagementPageViewModelTests
     public async Task LoadPdfAsync_ShouldEnableOperationsAfterFileLoaded()
     {
         var messageService = new TestMessageService();
-        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), messageService);
+        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), messageService, TestPageInputStores.Create());
 
         await viewModel.LoadPdfAsync("C:\\tmp\\demo.pdf");
 
@@ -44,7 +44,7 @@ public class PdfManagementPageViewModelTests
         {
             ReturnSuccessfulNullMetadata = true
         };
-        var viewModel = new PdfManagementPageViewModel(service, messageService);
+        var viewModel = new PdfManagementPageViewModel(service, messageService, TestPageInputStores.Create());
 
         await viewModel.LoadPdfAsync("C:\\tmp\\demo.pdf");
 
@@ -59,7 +59,7 @@ public class PdfManagementPageViewModelTests
     public async Task SplitPdfCommand_ShouldNotifyWhenNoOutputPathSelected()
     {
         var messageService = new TestMessageService();
-        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), messageService)
+        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), messageService, TestPageInputStores.Create())
         {
             CurrentFile = new PdfLoadedFileSummary("C:\\tmp\\demo.pdf", "demo.pdf", 1024, 3, true, "评估模式"),
             PageRangeText = "1-2",
@@ -79,7 +79,7 @@ public class PdfManagementPageViewModelTests
         {
             Delay = TimeSpan.FromMilliseconds(100)
         };
-        var viewModel = new PdfManagementPageViewModel(service, new TestMessageService())
+        var viewModel = new PdfManagementPageViewModel(service, new TestMessageService(), TestPageInputStores.Create())
         {
             CurrentFile = new PdfLoadedFileSummary("C:\\tmp\\demo.pdf", "demo.pdf", 1024, 3, false, "授权已加载"),
             WordOutputPath = "C:\\tmp\\demo.docx"

@@ -28,7 +28,7 @@ doc/
 | format | 格式化工具组（9 页） | [tools](requirements/format/tools.md) | [tools](design/format/tools.md) | 以代码为准 | in-review |
 | misc | 其他工具（时间戳 / 翻译） | [tools](requirements/misc/tools.md) | [tools](design/misc/tools.md) | 以代码为准 | in-review |
 | settings | 设置与应用管理（硬件 / 关于 / 更新 / 主题） | [app](requirements/settings/app.md) | [app](design/settings/app.md) | 以代码为准 | in-review |
-| settings | 页面输入记忆存档（工具页输入与选项重启恢复） | [page-input-archive](requirements/settings/page-input-archive.md) | [page-input-archive](design/settings/page-input-archive.md) | [CON-SETTINGS-001](contracts/settings/page-input-archive.md)（draft） | draft |
+| settings | 页面输入记忆存档（工具页输入与选项重启恢复） | [page-input-archive](requirements/settings/page-input-archive.md) | [page-input-archive](design/settings/page-input-archive.md) | 以代码为准（CON-SETTINGS-001 superseded） | approved |
 | clipboard | 剪贴板历史管理（已暂缓，文档保留） | [history](requirements/clipboard/history.md) | [history](design/clipboard/history.md) | `CON-CLIPBOARD-001`（draft） | draft（暂缓） |
 
 ## 状态说明

@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,11 +15,76 @@ namespace AzrngTools.ViewModels.Format
     /// </summary>
     public partial class XmlToHtmlPageViewModel : ViewModelBase
     {
-        private readonly IMessageService _messageService;
+        /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+        private const string PageId = "format-xml-to-html";
 
-        public XmlToHtmlPageViewModel(IMessageService messageService)
+        private readonly IMessageService _messageService;
+        private readonly IPageInputStoreService _pageInputStore;
+
+        // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+        private bool _isRestoring;
+
+        public XmlToHtmlPageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
         {
             _messageService = messageService;
+            _pageInputStore = pageInputStore;
+            RestoreInputs();
+        }
+
+        partial void OnXmlContentChanged(string value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnXsltContentChanged(string value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        private void SaveInputs()
+        {
+            _pageInputStore.Save(PageId, new Dictionary<string, string?>
+            {
+                [nameof(XmlContent)] = PageInputValues.Encode(XmlContent),
+                [nameof(XsltContent)] = PageInputValues.Encode(XsltContent),
+            });
+        }
+
+        private void RestoreInputs()
+        {
+            var saved = _pageInputStore.TryLoad(PageId);
+            if (saved.Count == 0)
+            {
+                return;
+            }
+
+            _isRestoring = true;
+            try
+            {
+                if (saved.TryGetValue(nameof(XmlContent), out var xmlContent))
+                {
+                    XmlContent = xmlContent;
+                }
+
+                if (saved.TryGetValue(nameof(XsltContent), out var xsltContent))
+                {
+                    XsltContent = xsltContent;
+                }
+            }
+            finally
+            {
+                _isRestoring = false;
+            }
         }
 
         /// <summary>

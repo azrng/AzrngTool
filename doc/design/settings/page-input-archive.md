@@ -3,7 +3,7 @@ doc_id: DES-SETTINGS-002
 doc_type: design
 module: settings
 feature: page-input-archive
-status: draft
+status: approved
 last_updated: 2026-11-05
 related:
   - doc/requirements/settings/page-input-archive.md

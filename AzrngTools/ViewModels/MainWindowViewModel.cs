@@ -26,6 +26,9 @@ namespace AzrngTools.ViewModels;
 /// </summary>
 public partial class MainWindowViewModel : ViewModelBase
 {
+    /// <summary>主窗口会话存档的页面标识：上次打开页面与侧栏折叠状态（DES-SETTINGS-002）。</summary>
+    private const string PageId = "main-window";
+
     private const int MaxCommonEntryCount = 3;
 
     private static readonly Type[] DefaultCommonToolTypes =
@@ -38,6 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IThemePreferenceService _themePreferenceService;
     private readonly IToolUsageStatsService _toolUsageStatsService;
+    private readonly IPageInputStoreService _pageInputStore;
     private readonly Dictionary<string, MenuBar> _toolMenuLookup = new(StringComparer.Ordinal);
     private readonly Dictionary<string, bool> _groupExpansionStates = new(StringComparer.Ordinal);
     // 搜索防抖：避免每个按键都全量克隆重建菜单集合
@@ -47,6 +51,9 @@ public partial class MainWindowViewModel : ViewModelBase
     /// 页面 ViewModel 缓存：同一工具页复用同一实例，避免每次切换重建整个页面对象图导致卡顿。
     /// </summary>
     private readonly Dictionary<Type, object> _pageCache = new();
+
+    // 启动恢复完成前不提交会话存档：ctor 的初始首页选中不得覆盖上次会话记录
+    private bool _sessionSaveEnabled;
 
     private List<MenuBar> _allRootMenus = [];
     private List<MenuBar> _allGroupMenus = [];
@@ -58,11 +65,13 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel(
         IServiceProvider serviceProvider,
         IToolUsageStatsService toolUsageStatsService,
-        IThemePreferenceService themePreferenceService)
+        IThemePreferenceService themePreferenceService,
+        IPageInputStoreService pageInputStore)
     {
         _serviceProvider = serviceProvider;
         _toolUsageStatsService = toolUsageStatsService;
         _themePreferenceService = themePreferenceService;
+        _pageInputStore = pageInputStore;
 
         CreateMenuBars();
         BuildToolLookup();
@@ -255,6 +264,7 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(SidebarWidth));
         OnPropertyChanged(nameof(SidebarToggleIconPath));
+        SaveSessionInputs();
     }
 
     [RelayCommand]
@@ -336,6 +346,8 @@ public partial class MainWindowViewModel : ViewModelBase
 
     partial void OnSelectedListItemChanged(MenuBar? value)
     {
+        SaveSessionInputs();
+
         if (value?.MenuType is null)
         {
             return;
@@ -354,22 +366,53 @@ public partial class MainWindowViewModel : ViewModelBase
 
         CurrentPage = page;
         UpdatePageHeader(value);
+    }
 
-        // 常用入口功能暂未启用，注释使用记录与重建逻辑
-        // if (_suppressUsageTracking || value.MenuType == typeof(OverviewPageViewModel))
-        // {
-        //     return;
-        // }
-        //
-        // var currentKey = GetMenuKey(value);
-        // if (currentKey == _lastRecordedMenuKey)
-        // {
-        //     return;
-        // }
-        //
-        // _toolUsageStatsService.RecordToolUsage(currentKey, value.Title);
-        // _lastRecordedMenuKey = currentKey;
-        // SetSelectionRefreshSilently();
+    /// <summary>
+    /// 恢复上次会话：主窗口打开后由视图层调用，按存档回到上次打开的工具页并还原侧栏折叠状态。
+    /// 查不到存档或页面已不存在（改名/移除）时保持默认首页。
+    /// </summary>
+    public void RestoreLastSession()
+    {
+        try
+        {
+            var saved = _pageInputStore.TryLoad(PageId);
+            if (saved.TryGetValue(nameof(IsSidebarCollapsed), out var collapsed))
+            {
+                IsSidebarCollapsed = PageInputValues.DecodeBool(collapsed, IsSidebarCollapsed);
+            }
+
+            if (saved.TryGetValue(nameof(SelectedListItem), out var menuKey)
+                && !string.IsNullOrWhiteSpace(menuKey)
+                && _toolMenuLookup.TryGetValue(menuKey, out var menu)
+                && menu.MenuType != typeof(OverviewPageViewModel))
+            {
+                // 直接复用菜单注册表实例，触发与手动点击一致的导航链路
+                SelectedListItem = menu;
+            }
+        }
+        finally
+        {
+            // 恢复完成才放行存档提交：期间赋值触发的 OnChanged 不回写，之后由用户操作正常提交
+            _sessionSaveEnabled = true;
+        }
+    }
+
+    /// <summary>提交主窗口会话存档：记录侧栏折叠与当前选中页（MenuType 全名作稳定标识）。</summary>
+    private void SaveSessionInputs()
+    {
+        if (!_sessionSaveEnabled)
+        {
+            return;
+        }
+
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(IsSidebarCollapsed)] = PageInputValues.Encode(IsSidebarCollapsed),
+            [nameof(SelectedListItem)] = SelectedListItem?.MenuType is null
+                ? null
+                : GetMenuKey(SelectedListItem),
+        });
     }
 
     // 常用入口功能暂未启用，以下方法暂不使用

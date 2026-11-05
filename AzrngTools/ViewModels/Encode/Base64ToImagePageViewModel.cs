@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -18,10 +19,50 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
 {
     private readonly IMessageService _messageService;
 
-    public Base64ToImagePageViewModel(IMessageService messageService)
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "encode-base64-to-image";
+
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnBase64StringChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public Base64ToImagePageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
         _base64String = string.Empty;
+        _pageInputStore = pageInputStore;
+        RestoreInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            [nameof(Base64String)] = PageInputValues.Encode(Base64String),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(Base64String), out var base64String))
+            {
+                Base64String = base64String;
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     #region 属性
@@ -51,6 +92,16 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
     private bool _hasImage;
 
     #endregion
+
+    partial void OnBase64StringChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
 
     /// <summary>
     /// 转换为图片

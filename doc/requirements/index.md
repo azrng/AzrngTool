@@ -9,7 +9,7 @@ AzrngTools 是面向开发与效率场景的 Windows 桌面工具箱（.NET 10 +
 ## 通用约束
 
 - 单机本地使用：除翻译与更新检查外，工具能力均本地完成，不引入账号与权限体系。
-- 隐私优先：加解密、编码转换等涉敏输入不出本机；页面输入记忆（`REQ-SETTINGS-002`，draft 待确认）落地后，工具页仅将非敏感输入存本机应用数据目录，密钥 / 令牌 / 凭证类字段不落盘。
+- 隐私优先：加解密、编码转换等涉敏输入不出本机；页面输入记忆（`REQ-SETTINGS-002`，已确认落地）仅将非敏感输入存本机应用数据目录，密钥 / 令牌 / 凭证类字段不落盘。
 - AOT 兼容：发布采用 Native AOT 单文件；依赖运行时代码生成的能力需明确提示不可用。
 - 界面遵循 `design-system.yaml` 与 `Styles/` 设计 token 约定。
 
@@ -25,7 +25,7 @@ AzrngTools 是面向开发与效率场景的 Windows 桌面工具箱（.NET 10 +
 | format | 格式化工具组（文本压缩、JSON、SQL、XML 转 HTML、JSON/YAML/XML/ENV 互转、正则、字数、人民币大写、MIME） | [format/tools.md](format/tools.md) | in-review |
 | misc | 其他工具（Unix 时间戳、翻译） | [misc/tools.md](misc/tools.md) | in-review |
 | settings | 设置与应用管理（硬件信息、关于、自动更新、主题、常用入口） | [settings/app.md](settings/app.md) | in-review |
-| settings | 页面输入记忆存档（工具页输入与选项重启恢复、敏感字段排除） | [settings/page-input-archive.md](settings/page-input-archive.md) | draft |
+| settings | 页面输入记忆存档（工具页输入与选项重启恢复、敏感字段排除） | [settings/page-input-archive.md](settings/page-input-archive.md) | approved |
 | clipboard | 剪贴板历史管理（已暂缓，文档保留待恢复） | [clipboard/history.md](clipboard/history.md) | draft（暂缓） |
 
 > 首页概览与侧栏导航属于应用框架，不单独立需求文档，见 `doc/design/architecture.md`。

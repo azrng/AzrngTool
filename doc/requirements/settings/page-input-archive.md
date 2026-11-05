@@ -3,7 +3,7 @@ doc_id: REQ-SETTINGS-002
 doc_type: requirement
 module: settings
 feature: page-input-archive
-status: draft
+status: approved
 last_updated: 2026-11-05
 related:
   - doc/design/settings/page-input-archive.md

@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using Common.Security;
 using Common.Security.Enums;
@@ -16,13 +17,82 @@ public partial class HmacHashPageViewModel : ViewModelBase
     private readonly IMessageService _messageService;
     private readonly ILogger<HmacHashPageViewModel> _logger;
 
-    public HmacHashPageViewModel(IMessageService messageService, ILogger<HmacHashPageViewModel> logger)
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "encrypts-hmac";
+
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造期默认值赋值与恢复赋值都会触发 OnXxxChanged，置位跳过保存提交，避免默认值快照覆盖已有存档或恢复即回写
+    private bool _isRestoring;
+
+    public HmacHashPageViewModel(IMessageService messageService, ILogger<HmacHashPageViewModel> logger, IPageInputStoreService pageInputStore)
     {
+        _isRestoring = true;
         _messageService = messageService;
         _logger = logger;
 
         OutTypeValue = (int)OutType.Hex;
         Secret = Guid.NewGuid().ToString("N");
+        _pageInputStore = pageInputStore;
+        RestoreInputs();
+        _isRestoring = false;
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            // Secret 属敏感键，绝不写入存档
+            [nameof(Original)] = PageInputValues.Encode(Original),
+            [nameof(OutTypeValue)] = PageInputValues.Encode(OutTypeValue),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(Original), out var original))
+            {
+                Original = original;
+            }
+
+            if (saved.TryGetValue(nameof(OutTypeValue), out var outTypeValue))
+            {
+                OutTypeValue = PageInputValues.DecodeInt32(outTypeValue, OutTypeValue);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
+    }
+
+    partial void OnOriginalChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnOutTypeValueChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
     }
 
     #region 属性

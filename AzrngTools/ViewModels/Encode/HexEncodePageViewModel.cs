@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils;
 using AzrngTools.Utils.Events;
 using Avalonia.Controls;
@@ -16,9 +17,63 @@ public partial class HexEncodePageViewModel : ViewModelBase
 {
     private readonly IMessageService _messageService;
 
-    public HexEncodePageViewModel(IMessageService messageService)
+    /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+    private const string PageId = "encode-hex";
+
+    private readonly IPageInputStoreService _pageInputStore;
+
+    // 构造恢复期间的属性赋值会再次触发 OnXxxChanged，置位跳过保存提交避免恢复即回写
+    private bool _isRestoring;
+
+    public HexEncodePageViewModel(IMessageService messageService, IPageInputStoreService pageInputStore)
     {
         _messageService = messageService;
+        _pageInputStore = pageInputStore;
+        RestoreInputs();
+    }
+
+    private void SaveInputs()
+    {
+        _pageInputStore.Save(PageId, new Dictionary<string, string?>
+        {
+            // Separator 由 SeparatorIndex 派生，只存索引即可还原
+            [nameof(Original)] = PageInputValues.Encode(Original),
+            [nameof(EncodeFormat)] = PageInputValues.Encode(EncodeFormat),
+            [nameof(SeparatorIndex)] = PageInputValues.Encode(SeparatorIndex),
+        });
+    }
+
+    private void RestoreInputs()
+    {
+        var saved = _pageInputStore.TryLoad(PageId);
+        if (saved.Count == 0)
+        {
+            return;
+        }
+
+        _isRestoring = true;
+        try
+        {
+            if (saved.TryGetValue(nameof(Original), out var original))
+            {
+                Original = original;
+            }
+
+            if (saved.TryGetValue(nameof(EncodeFormat), out var encodeFormat))
+            {
+                EncodeFormat = PageInputValues.DecodeInt32(encodeFormat, EncodeFormat);
+            }
+
+            // SeparatorIndex 恢复会触发 OnSeparatorIndexChanged 派生出 Separator
+            if (saved.TryGetValue(nameof(SeparatorIndex), out var separatorIndex))
+            {
+                SeparatorIndex = PageInputValues.DecodeInt32(separatorIndex, SeparatorIndex);
+            }
+        }
+        finally
+        {
+            _isRestoring = false;
+        }
     }
 
     #region 属性
@@ -53,8 +108,34 @@ public partial class HexEncodePageViewModel : ViewModelBase
     [ObservableProperty]
     private int _separatorIndex;
 
+    partial void OnOriginalChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnEncodeFormatChanged(int value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
     partial void OnSeparatorIndexChanged(int value)
     {
+        // 恢复赋值期间只跳过存档提交，派生 Separator 的原逻辑仍要执行
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+
         Separator = value switch
         {
             0 => " ",

@@ -1,4 +1,5 @@
 #nullable disable
+using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using Common.Security;
 using Common.Security.Enums;
@@ -17,8 +18,17 @@ namespace AzrngTools.ViewModels.Encrypts
         private readonly IMessageService _messageService;
         private readonly ILogger<DesEncryptPageViewModel> _logger;
 
-        public AesEncryptPageViewModel(IMessageService messageService, ILogger<DesEncryptPageViewModel> logger)
+        /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
+        private const string PageId = "encrypts-aes";
+
+        private readonly IPageInputStoreService _pageInputStore;
+
+        // 构造期默认值赋值与恢复赋值都会触发 OnXxxChanged，置位跳过保存提交，避免默认值快照覆盖已有存档或恢复即回写
+        private bool _isRestoring;
+
+        public AesEncryptPageViewModel(IMessageService messageService, ILogger<DesEncryptPageViewModel> logger, IPageInputStoreService pageInputStore)
         {
+            _isRestoring = true;
             InputOriginalTypeIndex = (int)SecretType.Text;
             OutTypeIndex = (int)OutType.Base64;
             SecretTypeIndex = (int)SecretType.Text;
@@ -28,6 +38,130 @@ namespace AzrngTools.ViewModels.Encrypts
 
             _messageService = messageService;
             _logger = logger;
+            _pageInputStore = pageInputStore;
+            RestoreInputs();
+            _isRestoring = false;
+        }
+
+        private void SaveInputs()
+        {
+            _pageInputStore.Save(PageId, new Dictionary<string, string?>
+            {
+                // Secret 与 Iv 属敏感键，绝不写入存档
+                [nameof(Original)] = PageInputValues.Encode(Original),
+                [nameof(InputOriginalTypeIndex)] = PageInputValues.Encode(InputOriginalTypeIndex),
+                [nameof(SecretTypeIndex)] = PageInputValues.Encode(SecretTypeIndex),
+                [nameof(OutTypeIndex)] = PageInputValues.Encode(OutTypeIndex),
+                [nameof(CipherModeIndex)] = PageInputValues.Encode(CipherModeIndex),
+                [nameof(PaddingModeIndex)] = PageInputValues.Encode(PaddingModeIndex),
+            });
+        }
+
+        private void RestoreInputs()
+        {
+            var saved = _pageInputStore.TryLoad(PageId);
+            if (saved.Count == 0)
+            {
+                return;
+            }
+
+            _isRestoring = true;
+            try
+            {
+                if (saved.TryGetValue(nameof(Original), out var original))
+                {
+                    Original = original;
+                }
+
+                if (saved.TryGetValue(nameof(InputOriginalTypeIndex), out var inputOriginalTypeIndex))
+                {
+                    InputOriginalTypeIndex = PageInputValues.DecodeInt32(inputOriginalTypeIndex, InputOriginalTypeIndex);
+                }
+
+                if (saved.TryGetValue(nameof(SecretTypeIndex), out var secretTypeIndex))
+                {
+                    SecretTypeIndex = PageInputValues.DecodeInt32(secretTypeIndex, SecretTypeIndex);
+                }
+
+                if (saved.TryGetValue(nameof(OutTypeIndex), out var outTypeIndex))
+                {
+                    OutTypeIndex = PageInputValues.DecodeInt32(outTypeIndex, OutTypeIndex);
+                }
+
+                if (saved.TryGetValue(nameof(CipherModeIndex), out var cipherModeIndex))
+                {
+                    CipherModeIndex = PageInputValues.DecodeInt32(cipherModeIndex, CipherModeIndex);
+                }
+
+                if (saved.TryGetValue(nameof(PaddingModeIndex), out var paddingModeIndex))
+                {
+                    PaddingModeIndex = PageInputValues.DecodeInt32(paddingModeIndex, PaddingModeIndex);
+                }
+            }
+            finally
+            {
+                _isRestoring = false;
+            }
+        }
+
+        partial void OnOriginalChanged(string value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnInputOriginalTypeIndexChanged(int value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnSecretTypeIndexChanged(int value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnOutTypeIndexChanged(int value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnCipherModeIndexChanged(int value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
+        }
+
+        partial void OnPaddingModeIndexChanged(int value)
+        {
+            if (_isRestoring)
+            {
+                return;
+            }
+
+            SaveInputs();
         }
 
         #region 属性

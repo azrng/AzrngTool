@@ -36,6 +36,12 @@ namespace AzrngTools.Views
                     $"应用启动到主窗口打开耗时 {Program.StartupStopwatch.ElapsedMilliseconds}ms");
             }
 
+            // 恢复上次会话：回到上次打开的工具页并还原侧栏折叠状态（页面输入记忆由各页 VM 构造时自行恢复）
+            if (DataContext is MainWindowViewModel mainViewModel)
+            {
+                mainViewModel.RestoreLastSession();
+            }
+
             // UrsaWindow 为无边框窗口，客户区从窗口物理顶端开始；Semi 主题把 Toast 定位在
             // 客户区顶部居中且 Margin=0，直接弹出会被窗口顶边和圆角裁掉，整体下移到标题栏
             // （52px，见 Styles/WindowDecorations.axaml 的 DefaultTitleBarHeight）以下显示
