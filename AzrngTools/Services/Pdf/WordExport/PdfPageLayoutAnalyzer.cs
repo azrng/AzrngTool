@@ -1,5 +1,8 @@
+using AzrngTools.Utils;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Core;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.PageSegmenter;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.ReadingOrderDetector;
 
 namespace AzrngTools.Services.Pdf;
 
@@ -25,7 +28,7 @@ internal sealed record PdfTableBlock(PdfTableGrid Grid, double Top) : PdfLayoutB
 internal sealed record PdfTableGrid(int Rows, int Columns, IReadOnlyList<IReadOnlyList<IReadOnlyList<string>>> CellTexts);
 
 /// <summary>
-/// PDF 页面版面分析：把词、表格线与图片整理成按 y 序排列的版面块。
+/// PDF 页面版面分析：把词、表格线与图片整理成版面块，文本行按阅读顺序排列。
 /// 只依赖 PdfPig 公开 API（直线段通过子路径包围盒退化识别，线段命令本身为私有类型无法直接读取）。
 /// </summary>
 internal static class PdfPageLayoutAnalyzer
@@ -44,7 +47,8 @@ internal static class PdfPageLayoutAnalyzer
 
     public static IReadOnlyList<PdfLayoutBlock> Analyze(Page page)
     {
-        var words = page.GetWords().Select(ToLayoutWord).ToList();
+        var rawWords = page.GetWords().ToList();
+        var words = rawWords.Select(ToLayoutWord).ToList();
         var tables = DetectTables(page, words);
         var blocks = new List<PdfLayoutBlock>();
 
@@ -59,10 +63,11 @@ internal static class PdfPageLayoutAnalyzer
             .SelectMany(cellWords => cellWords)
             .ToHashSet();
 
-        blocks.AddRange(BuildTextLineBlocks(page, words.Where(word => !consumed.Contains(word)).ToList()));
+        var textLines = SegmentIntoReadingOrderLines(page, rawWords, words, consumed);
+        blocks.AddRange(textLines);
         blocks.AddRange(ExtractImages(page));
 
-        return blocks.OrderBy(block => block.Top).ToList();
+        return MergeBlocksByReadingOrder(blocks, textLines);
     }
 
     /// <summary>
@@ -72,6 +77,110 @@ internal static class PdfPageLayoutAnalyzer
     {
         var words = page.GetWords().Select(ToLayoutWord).ToList();
         return BuildTextLineBlocks(page, words).ToList();
+    }
+
+    /// <summary>
+    /// 栏感知文本分块：RecursiveXYCut 递归切分避免双栏/多栏同基线词并成一行，
+    /// UnsupervisedReadingOrderDetector 输出按栏阅读顺序；失败时回退既有基线聚类平铺路径（单栏行为）。
+    /// </summary>
+    private static List<PdfTextLineBlock> SegmentIntoReadingOrderLines(
+        Page page,
+        List<Word> rawWords,
+        List<PdfLayoutWord> layoutWords,
+        HashSet<PdfLayoutWord> consumed)
+    {
+        var layoutByRaw = new Dictionary<Word, PdfLayoutWord>(rawWords.Count);
+        var remaining = new List<PdfLayoutWord>(rawWords.Count);
+        for (var i = 0; i < rawWords.Count; i++)
+        {
+            layoutByRaw[rawWords[i]] = layoutWords[i];
+            if (!consumed.Contains(layoutWords[i]))
+            {
+                remaining.Add(layoutWords[i]);
+            }
+        }
+
+        if (remaining.Count == 0)
+        {
+            return [];
+        }
+
+        try
+        {
+            var segmenter = new RecursiveXYCut(new RecursiveXYCut.RecursiveXYCutOptions
+            {
+                // 块最小宽度取页宽 1/10：该值含义是"投影块达到此宽度才允许其后切分"，
+                // 官方双栏用例的页宽 1/3 只覆盖半页宽栏；窄栏（侧栏/简报 60pt 级）会被漏切回串行。
+                // 切分过细无害——块随后由 UnsupervisedReadingOrderDetector 按栏序重排，漏切才是致命场景。
+                MinimumWidth = page.Width / 10.0,
+            });
+            var orderedBlocks = UnsupervisedReadingOrderDetector.Instance
+                .Get(segmenter.GetBlocks(rawWords.Where(raw => !consumed.Contains(layoutByRaw[raw]))))
+                .ToList();
+
+            var lines = new List<PdfTextLineBlock>();
+            foreach (var block in orderedBlocks)
+            {
+                foreach (var line in block.TextLines)
+                {
+                    var lineWords = new List<PdfLayoutWord>();
+                    foreach (var raw in line.Words)
+                    {
+                        if (layoutByRaw.TryGetValue(raw, out var layout))
+                        {
+                            lineWords.Add(layout);
+                        }
+                    }
+
+                    if (lineWords.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    SortLineLeftToRight(lineWords);
+                    // PDF y 轴向上：行底边 y 越大越靠页面上方
+                    var lineBottom = lineWords.Max(word => word.BoundingBox.Bottom);
+                    lines.Add(new PdfTextLineBlock(lineWords, page.Height - lineBottom));
+                }
+            }
+
+            return lines;
+        }
+        catch (Exception ex)
+        {
+            AppLog.LogError($"PDF 版面分栏分析失败，回退单栏行聚类: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            return BuildTextLineBlocks(page, remaining).ToList();
+        }
+    }
+
+    /// <summary>
+    /// 文本行按阅读顺序作骨架；表格与图片按 Top 几何插入骨架（首个 Top 更大的文本行之前，无则追加末尾），
+    /// 避免整体按 Top 排序把分栏阅读顺序重新打散。
+    /// </summary>
+    private static IReadOnlyList<PdfLayoutBlock> MergeBlocksByReadingOrder(
+        List<PdfLayoutBlock> blocks,
+        List<PdfTextLineBlock> textLines)
+    {
+        if (textLines.Count == 0)
+        {
+            return blocks.OrderBy(block => block.Top).ToList();
+        }
+
+        var result = new List<PdfLayoutBlock>(textLines);
+        foreach (var block in blocks.Where(candidate => candidate is not PdfTextLineBlock).OrderBy(candidate => candidate.Top))
+        {
+            var insertIndex = result.FindIndex(existing => existing is PdfTextLineBlock line && line.Top > block.Top);
+            if (insertIndex >= 0)
+            {
+                result.Insert(insertIndex, block);
+            }
+            else
+            {
+                result.Add(block);
+            }
+        }
+
+        return result;
     }
 
     private static PdfLayoutWord ToLayoutWord(Word word)

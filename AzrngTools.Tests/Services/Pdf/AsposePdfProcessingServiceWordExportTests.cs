@@ -147,6 +147,34 @@ public class AsposePdfProcessingServiceWordExportTests
         }
     }
 
+    [Fact]
+    public async Task WordExport_TwoColumnPdf_ShouldPreserveColumnReadingOrder()
+    {
+        var tempDirectory = CreateTempDirectory();
+
+        try
+        {
+            var sourcePdf = Path.Combine(tempDirectory, "twocolumn.pdf");
+            WordExportFixtureBuilder.CreateTwoColumnPdf(sourcePdf);
+            var outputDocx = Path.Combine(tempDirectory, "twocolumn.docx");
+
+            var result = await _service.ExportWordAsync(new PdfWordExportRequest(sourcePdf, outputDocx));
+
+            Assert.True(result.IsSuccess, result.Message);
+            using var document = new XWPFDocument(File.OpenRead(outputDocx));
+            var texts = document.Paragraphs.Select(paragraph => paragraph.Text).ToList();
+
+            // 左栏三行读完再读右栏；修复前同基线跨栏词会被并成一行（如"左栏第一行 右栏第一行"）
+            Assert.Equal(
+                new[] { "左栏第一行", "左栏第二行", "左栏第三行", "右栏第一行", "右栏第二行", "右栏第三行" },
+                texts);
+        }
+        finally
+        {
+            Directory.Delete(tempDirectory, true);
+        }
+    }
+
     private static string CreateTempDirectory()
     {
         var tempDirectory = Path.Combine(Path.GetTempPath(), "AzrngToolsWordExportTests", Guid.NewGuid().ToString("N"));

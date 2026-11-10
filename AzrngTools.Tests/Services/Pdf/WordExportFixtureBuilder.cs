@@ -89,6 +89,26 @@ internal static class WordExportFixtureBuilder
         document.Save(path);
     }
 
+    /// <summary>
+    /// 生成双栏单页 PDF：左右两栏各三行且基线对齐，用于验证阅读顺序不被跨栏串行破坏。
+    /// </summary>
+    public static void CreateTwoColumnPdf(string path)
+    {
+        var document = new PdfSharp.Pdf.PdfDocument();
+        var page = document.AddPage();
+        using var graphics = XGraphics.FromPdfPage(page);
+
+        var font = new XFont("DengXian", 12);
+        graphics.DrawString("左栏第一行", font, XBrushes.Black, 40, 80);
+        graphics.DrawString("左栏第二行", font, XBrushes.Black, 40, 110);
+        graphics.DrawString("左栏第三行", font, XBrushes.Black, 40, 140);
+        graphics.DrawString("右栏第一行", font, XBrushes.Black, 320, 80);
+        graphics.DrawString("右栏第二行", font, XBrushes.Black, 320, 110);
+        graphics.DrawString("右栏第三行", font, XBrushes.Black, 320, 140);
+
+        document.Save(path);
+    }
+
     public static void CreateJpeg(string path)
     {
         using var bitmap = new SKBitmap(64, 64);
