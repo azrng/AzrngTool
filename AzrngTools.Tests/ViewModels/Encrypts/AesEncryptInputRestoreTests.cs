@@ -22,7 +22,7 @@ public class AesEncryptInputRestoreTests
         {
             var store = new PageInputStoreService(directory);
             var first = new AesEncryptPageViewModel(
-                new TestMessageService(), NullLogger<DesEncryptPageViewModel>.Instance, store);
+                new TestMessageService(), NullLogger<AesEncryptPageViewModel>.Instance, store);
             first.Original = "待加密的原文";
             first.OutTypeIndex = (int)OutType.Hex;
             first.CipherModeIndex = (int)CipherMode.CBC;
@@ -30,7 +30,7 @@ public class AesEncryptInputRestoreTests
 
             // 页面实例经 _pageCache 缓存复用，这里用新实例模拟应用重启后首次进入页面
             var second = new AesEncryptPageViewModel(
-                new TestMessageService(), NullLogger<DesEncryptPageViewModel>.Instance, store);
+                new TestMessageService(), NullLogger<AesEncryptPageViewModel>.Instance, store);
 
             Assert.Equal("待加密的原文", second.Original);
             Assert.Equal((int)OutType.Hex, second.OutTypeIndex);
@@ -50,7 +50,7 @@ public class AesEncryptInputRestoreTests
         {
             var store = new PageInputStoreService(directory);
             var viewModel = new AesEncryptPageViewModel(
-                new TestMessageService(), NullLogger<DesEncryptPageViewModel>.Instance, store);
+                new TestMessageService(), NullLogger<AesEncryptPageViewModel>.Instance, store);
             viewModel.Original = "敏感键排除验证";
             viewModel.Secret = "不应落盘的密钥";
             viewModel.Iv = "不应落盘的IV向量";
@@ -91,7 +91,7 @@ public class AesEncryptInputRestoreTests
             store.FlushPendingPagesForTests();
 
             var viewModel = new AesEncryptPageViewModel(
-                new TestMessageService(), NullLogger<DesEncryptPageViewModel>.Instance, store);
+                new TestMessageService(), NullLogger<AesEncryptPageViewModel>.Instance, store);
             Assert.Equal("已存档内容", viewModel.Original);
             Assert.Equal(2, viewModel.OutTypeIndex);
 

@@ -166,7 +166,8 @@ public partial class SqlFormatPageViewModel : ViewModelBase
                 return;
             }
 
-            OriginText = OriginText.Replace(@"\""", "\"").Replace("\\n", "");
+            // 与转义方向对称：\n 还原为真实换行而非整段删除
+            OriginText = OriginText.Replace(@"\""", "\"").Replace("\\n", "\n");
         }
         catch (Exception ex)
         {

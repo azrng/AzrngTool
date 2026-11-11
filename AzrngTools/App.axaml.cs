@@ -91,9 +91,11 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = Services.GetRequiredService<MainWindow>();
+            // 退出即取消后台更新链路：流式下载不受 HttpClient.Timeout 约束，必须显式取消才能及时结束
+            desktop.Exit += (_, _) => AppLifetimeCts.Cancel();
         }
 
-        _ = Services.GetRequiredService<IAppUpdateCoordinatorService>().EnsureStartupCheckAsync();
+        _ = Services.GetRequiredService<IAppUpdateCoordinatorService>().EnsureStartupCheckAsync(AppLifetimeCts.Token);
 
         base.OnFrameworkInitializationCompleted();
     }
@@ -109,6 +111,11 @@ public partial class App : Application
     public static WindowNotificationManager? NotificationPage { get; set; }
 
     /// <summary>
+    /// 应用生命周期取消令牌源：退出时取消后台自动更新等长任务链路
+    /// </summary>
+    internal static readonly CancellationTokenSource AppLifetimeCts = new();
+
+    /// <summary>
     /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
     /// </summary>
     public IServiceProvider Services { get; }
@@ -116,9 +123,19 @@ public partial class App : Application
     /// <summary>
     /// Configures the services for the application.
     /// </summary>
-    private static IServiceProvider ConfigureServices()
+    private IServiceProvider ConfigureServices()
     {
         var services = new ServiceCollection();
+        ConfigureServices(services);
+        return services.BuildServiceProvider();
+    }
+
+    /// <summary>
+    /// 服务集合装配；声明为虚方法供测试覆写——CaptureApp 在其上追加注册，
+    /// 把持久化服务替换为临时目录实现，避免测试读写真实用户数据目录
+    /// </summary>
+    protected virtual void ConfigureServices(ServiceCollection services)
+    {
         services.AddLogging(builder => { builder.AddConsole(); });
 
         services.AddSingleton<MainWindow>();
@@ -191,7 +208,5 @@ public partial class App : Application
         services.AddTransient<MarkdownPageViewModel>();
         services.AddTransient<AboutPageViewModel>();
         services.AddTransient<HardwarePageViewModel>();
-
-        return services.BuildServiceProvider();
     }
 }

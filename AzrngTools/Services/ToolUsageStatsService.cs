@@ -23,8 +23,14 @@ public sealed partial class ToolUsageStatsService : IToolUsageStatsService, ISin
     private ToolUsageStore _store;
 
     public ToolUsageStatsService()
+        : this(GetStoreFilePath())
     {
-        _filePath = GetStoreFilePath();
+    }
+
+    /// <summary>测试钩子：指定存档文件路径，避免测试读写真实用户目录（与 PageInputStoreService 同模式）。</summary>
+    internal ToolUsageStatsService(string filePath)
+    {
+        _filePath = filePath;
         _store = LoadStore();
         _saveTimer = new Timer(DebounceIntervalMs) { AutoReset = false };
         _saveTimer.Elapsed += (_, _) => FlushIfNeeded();

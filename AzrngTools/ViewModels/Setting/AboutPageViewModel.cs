@@ -1,3 +1,4 @@
+using AzrngTools;
 using AzrngTools.Services;
 using AzrngTools.Utils.Events;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -50,7 +51,8 @@ public partial class AboutPageViewModel : ViewModelBase
     [RelayCommand]
     private async Task PrimaryUpdateActionAsync()
     {
-        await _appUpdateCoordinatorService.ExecutePrimaryActionAsync();
+        // 手动更新动作也绑定应用生命周期令牌，退出时与自动链路一并取消
+        await _appUpdateCoordinatorService.ExecutePrimaryActionAsync(App.AppLifetimeCts.Token);
         RefreshFromCoordinator();
     }
 

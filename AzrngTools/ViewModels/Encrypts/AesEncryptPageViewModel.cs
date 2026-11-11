@@ -16,7 +16,7 @@ namespace AzrngTools.ViewModels.Encrypts
     public partial class AesEncryptPageViewModel : ViewModelBase
     {
         private readonly IMessageService _messageService;
-        private readonly ILogger<DesEncryptPageViewModel> _logger;
+        private readonly ILogger<AesEncryptPageViewModel> _logger;
 
         /// <summary>输入记忆存档的页面标识（DES-SETTINGS-002 接入清单）。</summary>
         private const string PageId = "encrypts-aes";
@@ -26,7 +26,7 @@ namespace AzrngTools.ViewModels.Encrypts
         // 构造期默认值赋值与恢复赋值都会触发 OnXxxChanged，置位跳过保存提交，避免默认值快照覆盖已有存档或恢复即回写
         private bool _isRestoring;
 
-        public AesEncryptPageViewModel(IMessageService messageService, ILogger<DesEncryptPageViewModel> logger, IPageInputStoreService pageInputStore)
+        public AesEncryptPageViewModel(IMessageService messageService, ILogger<AesEncryptPageViewModel> logger, IPageInputStoreService pageInputStore)
         {
             _isRestoring = true;
             InputOriginalTypeIndex = (int)SecretType.Text;

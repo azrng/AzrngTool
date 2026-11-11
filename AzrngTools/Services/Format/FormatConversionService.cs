@@ -123,7 +123,8 @@ public sealed class FormatConversionService : IFormatConversionService, ISinglet
     {
         try
         {
-            return JsonNode.Parse(source)!.ToJsonString(IndentedJsonOptions);
+            // 字面量 "null" 经 Parse 返回 null 引用，与 Convert 一致回退为文本 "null"，避免 NRE
+            return JsonNode.Parse(source)?.ToJsonString(IndentedJsonOptions) ?? "null";
         }
         catch (JsonException ex)
         {

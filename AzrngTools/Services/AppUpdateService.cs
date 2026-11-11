@@ -16,6 +16,11 @@ namespace AzrngTools.Services;
 
 public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDependency
 {
+    /// <summary>
+    /// 下载+解压整链路预算上限：数百 MB 更新包在低速网络下仍需数分钟，预算只拦截真正停滞的链路。
+    /// </summary>
+    private static readonly TimeSpan DownloadBudget = TimeSpan.FromMinutes(30);
+
     private readonly IAppInfoService _appInfoService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<AppUpdateService> _logger;
@@ -91,6 +96,12 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
         Directory.CreateDirectory(stagingRoot);
         Directory.CreateDirectory(extractDirectory);
 
+        // 流式下载（ResponseHeadersRead）的响应体不受 HttpClient.Timeout 约束，网络停滞时会永久挂起
+        // 并占住协调器操作锁，锁死手动与自动全部更新入口；给下载+解压整链路设预算上限，
+        // 兼容模式重试共用同一预算，到期转译为 TimeoutException 走调用方既有失败分支
+        using var budgetCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        budgetCts.CancelAfter(DownloadBudget);
+
         try
         {
             // 下载与解压耗时留档（无条件记录）：静默更新链路的实机 E2E 仍待发版验证，慢点定位依赖这两条日志
@@ -99,14 +110,14 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 async client =>
                 {
                     using var response = await client.GetAsync(updateInfo.DownloadUrl,
-                        HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+                        HttpCompletionOption.ResponseHeadersRead, budgetCts.Token);
                     response.EnsureSuccessStatusCode();
 
                     await using var targetStream = File.Create(archivePath);
-                    await response.Content.CopyToAsync(targetStream, cancellationToken);
+                    await response.Content.CopyToAsync(targetStream, budgetCts.Token);
                     return true;
                 },
-                cancellationToken);
+                budgetCts.Token);
             downloadStopwatch.Stop();
             AppLog.WriteMyLogs("性能检测",
                 $"更新包下载 耗时 {downloadStopwatch.ElapsedMilliseconds}ms（{updateInfo.LatestVersion} {PerfLogScope.DescribeSize(new FileInfo(archivePath).Length)}）");
@@ -116,7 +127,7 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
             var extractStopwatch = Stopwatch.StartNew();
             await Task.Run(() =>
             {
-                ExtractArchiveWithCancellation(archivePath, extractDirectory, cancellationToken);
+                ExtractArchiveWithCancellation(archivePath, extractDirectory, budgetCts.Token);
                 TryDeleteDirectory(preparedRoot);
                 Directory.CreateDirectory(Path.GetDirectoryName(preparedRoot)!);
                 Directory.Move(stagingRoot, preparedRoot);
@@ -134,6 +145,13 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
                 PayloadDirectory = ResolvePayloadDirectory(finalExtractDirectory),
                 DownloadedAt = DateTimeOffset.UtcNow
             };
+        }
+        catch (OperationCanceledException) when (budgetCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
+        {
+            // 预算到期而非外部取消：转译为 TimeoutException，让调用方按普通失败提示（真取消仍原样上抛）
+            TryDeleteDirectory(stagingRoot);
+            throw new TimeoutException(
+                $"更新包下载或解压超出预算时间（约 {DownloadBudget.TotalMinutes} 分钟），已中止，请检查网络环境后重试。");
         }
         catch
         {
@@ -315,12 +333,13 @@ public sealed partial class AppUpdateService : IAppUpdateService, ISingletonDepe
 
     private static bool IsSslRelatedException(Exception exception)
     {
+        // 只认 TLS 握手类失败（老系统证书/协议协商问题，兼容客户端才有机会救）：
+        // 任意 HttpRequestException/IOException（断网、磁盘满、文件占用等本地或网络故障）
+        // 不再触发兼容重试，避免本地 IO 错误引起数百 MB 更新包整包重下
         return exception is AuthenticationException
-               || exception is IOException
-               || exception is HttpRequestException
+               || exception is HttpRequestException { HttpRequestError: HttpRequestError.SecureConnectionError }
                || exception.InnerException is not null && IsSslRelatedException(exception.InnerException)
-               || exception is AggregateException aggregate && aggregate.InnerExceptions.Any(IsSslRelatedException)
-               || exception is not null && exception.Message.Contains("SSL", StringComparison.OrdinalIgnoreCase);
+               || exception is AggregateException aggregate && aggregate.InnerExceptions.Any(IsSslRelatedException);
     }
 
     /// <summary>

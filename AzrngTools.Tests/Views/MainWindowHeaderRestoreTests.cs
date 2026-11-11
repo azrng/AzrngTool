@@ -22,6 +22,23 @@ internal sealed class CaptureApp : AzrngTools.App
             desktop.MainWindow = Services.GetRequiredService<global::AzrngTools.Views.MainWindow>();
         }
     }
+
+    // 持久化服务替换为临时目录实例：真实服务指向 %LOCALAPPDATA%\AzrngTools，
+    // window.Show() 触发会话恢复会读取用户存档，恢复后的属性变动还会回写，
+    // 测试必须隔离以免结果随开发机数据漂移并污染用户配置
+    protected override void ConfigureServices(ServiceCollection services)
+    {
+        base.ConfigureServices(services);
+
+        var storageRoot = Path.Combine(Path.GetTempPath(), "AzrngTools.Tests",
+            "main-window-header-" + Guid.NewGuid().ToString("N"));
+        services.AddSingleton<AzrngTools.Services.IThemePreferenceService>(
+            new AzrngTools.Services.ThemePreferenceService(storageRoot));
+        services.AddSingleton<AzrngTools.Services.IPageInputStoreService>(
+            new AzrngTools.Services.PageInputStoreService(storageRoot));
+        services.AddSingleton<AzrngTools.Services.IToolUsageStatsService>(
+            new AzrngTools.Services.ToolUsageStatsService(Path.Combine(storageRoot, "tool-usage-stats.json")));
+    }
 }
 
 // 头部还原回归：旧版两行标题 + 标语的结构与高度断言（T029 UrsaWindow 标题栏 52px 改造）

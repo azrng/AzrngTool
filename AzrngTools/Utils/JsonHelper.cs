@@ -168,6 +168,8 @@ namespace AzrngTools.Utils
             }
         }
 
+        // 注意：反斜杠与双引号必须有意识地"不转义"——本方法契约是输入已是 JSON 字符串转义体
+        // （去除转义页的主场景），仅需补外层引号；若在此转义会把主场景输入二次转义导致解码损坏
         private static string BuildJsonStringLiteral(string text)
         {
             var builder = new StringBuilder(text.Length + 2);

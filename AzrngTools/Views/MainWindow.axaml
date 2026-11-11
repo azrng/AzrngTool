@@ -121,7 +121,7 @@
                             PlaceholderText="搜索工具 / 分组..." />
                         <Button
                             Grid.Column="1"
-                            Classes="iconButton sidebarToggleButton"
+                            Classes="iconButton"
                             Command="{Binding ToggleSidebarCommand}"
                             HorizontalAlignment="Right"
                             ToolTip.Tip="切换侧栏">
@@ -161,25 +161,6 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-
-                    <!-- 常用入口功能暂未启用 -->
-                    <!-- <TextBlock
-                        Grid.Row="2"
-                        Classes="sidebar-section-caption"
-                        Text="常用入口" />
-
-                    <ListBox
-                        Grid.Row="3"
-                        Classes="shell-nav"
-                        ItemsSource="{Binding RootMenuItems}"
-                        SelectedItem="{Binding SelectedListItem, Mode=OneWay}"
-                        SelectionChanged="OnCommonListBoxSelectionChanged">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Classes="nav-item-text" Text="{Binding Title}" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox> -->
 
                     <TextBlock
                         Grid.Row="4"

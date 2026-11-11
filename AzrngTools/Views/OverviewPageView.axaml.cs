@@ -30,12 +30,12 @@ namespace AzrngTools.Views
             }
 
             // 通知默认右上角贴窗口物理顶边弹出，在无边框的 UrsaWindow 上会与标题栏窗口按钮
-            // 重叠并被圆角裁剪，整体下移避开标题栏（默认高 32）
+            // 重叠并被圆角裁剪，下移量与 MainWindow 的 Toast 保持一致（标题栏默认高 52）
             _manager = new WindowNotificationManager(topLevel)
             {
                 MaxItems = 3,
                 Position = NotificationPosition.TopRight,
-                Margin = new Avalonia.Thickness(0, 40, 8, 0),
+                Margin = new Avalonia.Thickness(0, 60, 8, 0),
             };
             App.NotificationPage = _manager;
         }

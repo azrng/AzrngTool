@@ -60,15 +60,6 @@ namespace AzrngTools.Views
             ToastService.ClearManager();
         }
 
-        private void OnCommonListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ListBox { SelectedItem: MenuBar menu } && DataContext is MainWindowViewModel vm)
-            {
-                if (!ReferenceEquals(vm.SelectedListItem, menu))
-                    vm.SelectMenuCommand.Execute(menu);
-            }
-        }
-
         private ListBox? _lastNavListBox;
 
         private void OnGroupListBoxSelectionChanged(object? sender, SelectionChangedEventArgs e)

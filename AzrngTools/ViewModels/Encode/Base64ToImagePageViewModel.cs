@@ -126,7 +126,11 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
             using var perf = PerfLogScope.Start("Base64 转图片", $"输入 {PerfLogScope.DescribeSize(base64.Length)}");
             ImageBytes = await Task.Run(() => Convert.FromBase64String(base64));
             using var stream = new MemoryStream(ImageBytes);
-            PreviewImage = new Bitmap(stream);
+            // Bitmap 持有非托管内存，替换前先释放旧图，避免连续转换时内存持续堆积
+            var newImage = new Bitmap(stream);
+            var oldImage = PreviewImage;
+            PreviewImage = newImage;
+            oldImage?.Dispose();
             HasImage = ImageBytes is { Length: > 0 };
 
             if (HasImage)
@@ -137,7 +141,9 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
         catch (Exception ex)
         {
             AppLog.LogError($"Base64转图片失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            var failedOld = PreviewImage;
             PreviewImage = null;
+            failedOld?.Dispose();
             ImageBytes = null;
             HasImage = false;
             _messageService.SendMessage($"转换失败：{ex.Message}");
@@ -183,7 +189,9 @@ public partial class Base64ToImagePageViewModel : ViewModelBase
     private void Clear()
     {
         Base64String = string.Empty;
+        var oldImage = PreviewImage;
         PreviewImage = null;
+        oldImage?.Dispose();
         ImageBytes = null;
         HasImage = false;
     }
