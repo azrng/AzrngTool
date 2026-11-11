@@ -126,13 +126,15 @@ public partial class GzipEncodePageViewModel : ViewModelBase
                 return;
             }
 
-            var topLevel = GetTopLevel();
-            if (topLevel?.Clipboard is not null)
+            // SetTextAsync 回报真实写入结果：剪贴板不可用/被占用时不再提示"已复制"
+            if (await ClipboardHelper.SetTextAsync(GetTopLevel(), ResultText))
             {
-                await ClipboardHelper.SetTextAsync(topLevel, ResultText);
+                _messageService.SendMessage("已复制到剪贴板");
             }
-
-            _messageService.SendMessage("已复制到剪贴板");
+            else
+            {
+                _messageService.SendMessage("复制失败：剪贴板不可用");
+            }
         }
         catch (Exception ex)
         {

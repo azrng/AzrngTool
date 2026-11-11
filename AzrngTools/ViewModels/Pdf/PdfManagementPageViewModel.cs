@@ -72,6 +72,11 @@ public partial class PdfManagementPageViewModel : ViewModelBase
 
     public bool CanOperate => HasFile && !IsBusy;
 
+    /// <summary>
+    /// 空闲态可执行(选择文件与清空不依赖已加载文件),供命令 CanExecute 绑定驱动按钮禁用
+    /// </summary>
+    private bool CanExecuteWhileIdle() => !IsBusy;
+
     public string FileName => CurrentFile?.FileName ?? "未选择 PDF";
 
     public string FilePath => CurrentFile?.FilePath ?? string.Empty;
@@ -98,7 +103,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
 
     public string SplitModeText => IsIndividualPagesMode ? "逐页导出" : "合并为单个 PDF";
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExecuteWhileIdle))]
     private async Task ChoosePdfFile()
     {
         if (IsBusy)
@@ -133,7 +138,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         await LoadPdfAsync(filePath);
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOperate))]
     private async Task ChooseSplitOutput()
     {
         if (!CanOperate)
@@ -175,7 +180,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         SplitOutputPath = file?.Path.LocalPath ?? SplitOutputPath;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOperate))]
     private async Task ChooseWordOutput()
     {
         if (!CanOperate)
@@ -205,7 +210,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         WordOutputPath = file?.Path.LocalPath ?? WordOutputPath;
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOperate))]
     private async Task SplitPdf()
     {
         if (!CanOperate || CurrentFile is null)
@@ -244,7 +249,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         });
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOperate))]
     private async Task ExportWord()
     {
         if (!CanOperate || CurrentFile is null)
@@ -267,7 +272,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         });
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanExecuteWhileIdle))]
     private void Clear()
     {
         if (IsBusy)

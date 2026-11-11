@@ -403,12 +403,15 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
                 return;
             }
 
-            var topLevel = GetTopLevel();
-            if (topLevel != null)
+            // SetTextAsync 回报真实写入结果：剪贴板不可用/被占用时不再提示"已复制"
+            if (await ClipboardHelper.SetTextAsync(GetTopLevel(), GeneratedPassword))
             {
-                await ClipboardHelper.SetTextAsync(topLevel, GeneratedPassword);
+                _messageService.SendMessage("已复制到剪贴板");
             }
-            _messageService.SendMessage("已复制到剪贴板");
+            else
+            {
+                _messageService.SendMessage("复制失败：剪贴板不可用");
+            }
         }
         catch (Exception ex)
         {
@@ -452,12 +455,15 @@ public partial class PasswordGeneratorPageViewModel : ViewModelBase
             }
 
             var allPasswords = string.Join("\n", GeneratedPasswords);
-            var topLevel = GetTopLevel();
-            if (topLevel != null)
+            // SetTextAsync 回报真实写入结果：剪贴板不可用/被占用时不再提示"已复制"
+            if (await ClipboardHelper.SetTextAsync(GetTopLevel(), allPasswords))
             {
-                await ClipboardHelper.SetTextAsync(topLevel, allPasswords);
+                _messageService.SendMessage($"已复制 {GeneratedPasswords.Count} 个密码到剪贴板");
             }
-            _messageService.SendMessage($"已复制 {GeneratedPasswords.Count} 个密码到剪贴板");
+            else
+            {
+                _messageService.SendMessage("复制失败：剪贴板不可用");
+            }
         }
         catch (Exception ex)
         {

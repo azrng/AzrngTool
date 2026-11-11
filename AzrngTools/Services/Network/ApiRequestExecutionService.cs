@@ -37,19 +37,20 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
             ApplyHeaders(message, request.Headers);
 
             var stopwatch = Stopwatch.StartNew();
-            using var response = await client.SendAsync(message, cancellationToken);
-            stopwatch.Stop();
+            // ResponseHeadersRead 避免 HttpClient 在返回响应前把整个响应体读进内存,由下方带上限流式读取接管
+            using var response = await client.SendAsync(message, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
-            var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
             // 响应体读取与 JSON 美化对大响应是秒级重活，移到线程池执行，避免回 UI 线程造成窗口冻结
             var responseSnapshot = await Task.Run(async () =>
             {
-                var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                responseSizeBytes = response.Content.Headers.ContentLength ?? Encoding.UTF8.GetByteCount(content);
+                var (content, totalBytes) = await ReadBodyWithCapAsync(response, cancellationToken);
+                // ResponseHeadersRead 模式下 SendAsync 返回只代表收到响应头,耗时须读完响应体才结算(原语义为整请求耗时)
+                stopwatch.Stop();
+                responseSizeBytes = totalBytes;
                 return new ApiResponseSnapshot
                 {
                     StatusCode = (int)response.StatusCode,
-                    DurationMs = elapsedMilliseconds,
+                    DurationMs = stopwatch.ElapsedMilliseconds,
                     SizeBytes = responseSizeBytes,
                     Content = TryFormatJson(content),
                     FinalUrl = finalUrl,
@@ -208,6 +209,46 @@ public sealed class ApiRequestExecutionService : IApiRequestExecutionService, IT
 
     // 响应体超过 1MB 时跳过自动 JSON 美化：全量解析加重排的 CPU 与内存代价过高，直接展示原文
     private const int AutoFormatJsonMaxLength = 1024 * 1024;
+
+    // 响应体读取上限(字符)：流式读取达到上限即丢弃剩余流,防止无界大响应(数百 MB)整体进内存;
+    // 取 VM 展示截断阈值(1M 字符)的 4 倍,保证 UI 侧"响应体过大已截断"提示语义不变
+    private const int MaxResponseBodyChars = 4 * 1024 * 1024;
+
+    /// <summary>
+    /// 流式读取响应体,最多读取 <see cref="MaxResponseBodyChars"/> 个 UTF-8 字符,超出部分直接丢弃。
+    /// 返回(截断后内容, 字节数)。Content-Length 已知时字节数取响应头;
+    /// 否则取已读内容实际字节数(chunked 且超限时为下限)。
+    /// </summary>
+    private static async Task<(string Content, long SizeBytes)> ReadBodyWithCapAsync(
+        HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+
+        var builder = new StringBuilder();
+        var buffer = new char[64 * 1024];
+        while (builder.Length < MaxResponseBodyChars)
+        {
+            var room = Math.Min(buffer.Length, MaxResponseBodyChars - builder.Length);
+            var read = await reader.ReadAsync(buffer.AsMemory(0, room), cancellationToken);
+            if (read <= 0)
+            {
+                break;
+            }
+
+            builder.Append(buffer, 0, read);
+        }
+
+        var content = builder.ToString();
+        // 截断点可能把 UTF-16 代理对劈开,剥离孤立高代理项避免下游序列化/渲染出现乱码
+        if (content.Length > 0 && char.IsHighSurrogate(content[^1]))
+        {
+            content = content[..^1];
+        }
+
+        var sizeBytes = response.Content.Headers.ContentLength ?? Encoding.UTF8.GetByteCount(content);
+        return (content, sizeBytes);
+    }
 
     private static string TryFormatJson(string content)
     {

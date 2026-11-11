@@ -550,8 +550,23 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             return;
         }
 
-        await ClipboardHelper.SetTextAsync(GetTopLevel(), ResponseBodyText);
-        _messageService.SendMessage("响应体已复制到剪贴板。");
+        try
+        {
+            // SetTextAsync 回报真实写入结果：剪贴板不可用/被占用时不再提示"已复制"
+            if (await ClipboardHelper.SetTextAsync(GetTopLevel(), ResponseBodyText))
+            {
+                _messageService.SendMessage("响应体已复制到剪贴板。");
+            }
+            else
+            {
+                _messageService.SendMessage("复制失败：剪贴板不可用。");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLog.LogError($"复制响应体失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            _messageService.SendMessage($"复制失败：{ex.Message}");
+        }
     }
 
     [RelayCommand]
@@ -563,8 +578,23 @@ public partial class ApiRequestPageViewModel : ViewModelBase
             return;
         }
 
-        await ClipboardHelper.SetTextAsync(GetTopLevel(), ResponseHeadersText);
-        _messageService.SendMessage("响应头已复制到剪贴板。");
+        try
+        {
+            // SetTextAsync 回报真实写入结果：剪贴板不可用/被占用时不再提示"已复制"
+            if (await ClipboardHelper.SetTextAsync(GetTopLevel(), ResponseHeadersText))
+            {
+                _messageService.SendMessage("响应头已复制到剪贴板。");
+            }
+            else
+            {
+                _messageService.SendMessage("复制失败：剪贴板不可用。");
+            }
+        }
+        catch (Exception ex)
+        {
+            AppLog.LogError($"复制响应头失败: {ex.Message}\n{ex.GetExceptionAndStack()}");
+            _messageService.SendMessage($"复制失败：{ex.Message}");
+        }
     }
 
     private ApiRequestSnapshot BuildRequestSnapshot()
