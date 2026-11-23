@@ -1,4 +1,6 @@
 using AzrngTools.Utils;
+// 模块命名空间 AzrngTools.Models.Word/Services.Word 会遮蔽 PdfPig 的 Content.Word 类型，别名显式还原
+using PdfWord = UglyToad.PdfPig.Content.Word;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Core;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.PageSegmenter;
@@ -85,11 +87,11 @@ internal static class PdfPageLayoutAnalyzer
     /// </summary>
     private static List<PdfTextLineBlock> SegmentIntoReadingOrderLines(
         Page page,
-        List<Word> rawWords,
+        List<PdfWord> rawWords,
         List<PdfLayoutWord> layoutWords,
         HashSet<PdfLayoutWord> consumed)
     {
-        var layoutByRaw = new Dictionary<Word, PdfLayoutWord>(rawWords.Count);
+        var layoutByRaw = new Dictionary<PdfWord, PdfLayoutWord>(rawWords.Count);
         var remaining = new List<PdfLayoutWord>(rawWords.Count);
         for (var i = 0; i < rawWords.Count; i++)
         {
@@ -183,7 +185,7 @@ internal static class PdfPageLayoutAnalyzer
         return result;
     }
 
-    private static PdfLayoutWord ToLayoutWord(Word word)
+    private static PdfLayoutWord ToLayoutWord(PdfWord word)
     {
         var letters = word.Letters;
         var firstLetter = letters.Count > 0 ? letters[0] : null;

@@ -9,6 +9,7 @@
 | database | 数据库工作台界面重设计 | [database/workbench.md](database/workbench.md) | in-review | `REQ-DATABASE-001` |
 | network | 接口调试 | [network/api-debug.md](network/api-debug.md) | in-review | `REQ-NETWORK-001` |
 | pdf | PDF 管理 | [pdf/management.md](pdf/management.md) | in-review | `REQ-PDF-001` |
+| word | Word 转 Markdown | [word/to-markdown.md](word/to-markdown.md) | in-review | `REQ-WORD-001` |
 | generation | 生成与加密工具组 | [generation/tools.md](generation/tools.md) | in-review | `REQ-GENERATION-001` |
 | encode | 编码 / 解码工具组 | [encode/tools.md](encode/tools.md) | in-review | `REQ-ENCODE-001` |
 | format | 格式化工具组 | [format/tools.md](format/tools.md) | in-review | `REQ-FORMAT-001` |

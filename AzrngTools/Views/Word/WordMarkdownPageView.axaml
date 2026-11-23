@@ -1,0 +1,146 @@
+<UserControl
+    d:DesignHeight="860"
+    d:DesignWidth="1240"
+    mc:Ignorable="d"
+    x:Class="AzrngTools.Views.Word.WordMarkdownPageView"
+    x:DataType="vm:WordMarkdownPageViewModel"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AzrngTools.ViewModels.Word"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- 工具页统一布局：无页面标题卡，工作区直接撑满视口 -->
+    <Grid Margin="{StaticResource Thickness.15}" RowDefinitions="*" MinHeight="0">
+        <Grid Grid.Row="0" ColumnDefinitions="0.9*,1.1*" ColumnSpacing="{StaticResource Space.12}" MinHeight="0">
+            <Grid Grid.Column="0" RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.12}" MinHeight="0">
+                <Border Grid.Row="0" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <StackPanel Spacing="{StaticResource Space.4}">
+                                <TextBlock Classes="section-title" Text="Word 文件" />
+                                <TextBlock Classes="section-copy" Text="载入 .docx 后配置输出，转换全程在本机完成。" />
+                            </StackPanel>
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChooseWordFileCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={x:Static BoolConverters.Not}}"
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M5 4H19V20H5V4ZM8 8H16M8 12H16M8 16H13" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择 Word" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft">
+                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.8}">
+                                <TextBlock Classes="section-title" Text="{Binding FileName}" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="1" Classes="section-copy" Text="{Binding FilePath}" TextWrapping="Wrap" />
+                                <WrapPanel Grid.Row="2" Classes="tool-actions">
+                                    <Border Classes="badge-pill compact">
+                                        <TextBlock Classes="badge-text" Text="{Binding FileSizeText}" />
+                                    </Border>
+                                    <Border Classes="badge-pill compact">
+                                        <TextBlock Classes="badge-text" Text="{Binding ImageModeText}" />
+                                    </Border>
+                                </WrapPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="1" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="导出设置" />
+                            <TextBlock Classes="section-copy" Text="图片默认导出到 md 同级的同名 .assets 目录并用相对路径引用。" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <TextBox
+                                IsReadOnly="True"
+                                PlaceholderText="请选择 Markdown 输出文件"
+                                Text="{Binding OutputPath}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChooseOutputCommand}"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <CheckBox
+                            Grid.Row="2"
+                            Content="导出图片到 .assets 目录（关闭则忽略全部图片）"
+                            IsChecked="{Binding ExportImages}"
+                            IsEnabled="{Binding CanOperate}" />
+
+                        <WrapPanel Grid.Row="3" Classes="tool-actions">
+                            <Button
+                                Command="{Binding ConvertCommand}"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="开始转换" />
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                Command="{Binding ClearCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={x:Static BoolConverters.Not}}"
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M5 7H19M9 7V5H15V7M8 10V17M12 10V17M16 10V17M7 7L8 20H16L17 7" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="清空当前" />
+                                </StackPanel>
+                            </Button>
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="2" Classes="tool-card-roomy" MinHeight="0">
+                    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="{StaticResource Space.10}" MinHeight="0">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="处理状态" />
+                            <TextBlock Classes="section-copy" Text="{Binding StatusText}" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border Grid.Row="1" Classes="tool-card-soft" IsVisible="{Binding IsBusy}">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="{StaticResource Space.10}">
+                                <ProgressBar Width="32" Height="18" IsIndeterminate="True" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Classes="section-copy" Text="{Binding BusyText}" VerticalAlignment="Center" />
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="2" Classes="tool-card-soft" IsVisible="{Binding HasLastResult}" MinHeight="0">
+                            <TextBlock Classes="section-copy" Text="{Binding LastResultText}" TextWrapping="Wrap" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Column="1" Classes="tool-card-roomy" MinHeight="0">
+                <Grid MinHeight="0" RowDefinitions="Auto,*" RowSpacing="{StaticResource Space.10}">
+                    <TextBlock
+                        Grid.Row="0"
+                        Classes="section-copy"
+                        Text="Markdown 预览（源文本）"
+                        VerticalAlignment="Center" />
+
+                    <TextBox
+                        Grid.Row="1"
+                        AcceptsReturn="True"
+                        Classes="Standard"
+                        IsReadOnly="True"
+                        MinHeight="0"
+                        PlaceholderText="转换完成后此处显示 Markdown 源文本"
+                        Text="{Binding PreviewText}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

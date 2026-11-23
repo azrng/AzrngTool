@@ -23,6 +23,7 @@ doc/
 | database | 数据库工作台 | [workbench](requirements/database/workbench.md) | [workbench](design/database/workbench.md) | 以代码为准 | in-review |
 | network | 接口调试 | [api-debug](requirements/network/api-debug.md) | [api-debug](design/network/api-debug.md) | 以代码为准 | in-review |
 | pdf | PDF 管理（分割 / 转 Word） | [management](requirements/pdf/management.md) | [management](design/pdf/management.md) | 以代码为准 | in-review |
+| word | Word 转 Markdown（docx → md，图片导出） | [to-markdown](requirements/word/to-markdown.md) | [to-markdown](design/word/to-markdown.md) | 以代码为准 | in-review |
 | generation | 生成与加密工具组（10 页） | [tools](requirements/generation/tools.md) | [tools](design/generation/tools.md) | 以代码为准 | in-review |
 | encode | 编码 / 解码工具组（9 页） | [tools](requirements/encode/tools.md) | [tools](design/encode/tools.md) | 以代码为准 | in-review |
 | format | 格式化工具组（9 页） | [tools](requirements/format/tools.md) | [tools](design/format/tools.md) | 以代码为准 | in-review |

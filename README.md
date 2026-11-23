@@ -25,6 +25,7 @@ AzrngTools 是一个基于 Avalonia 的桌面工具箱应用，聚焦开发与�
 ## 功能模块
 - 数据库工作台：集成 `DbTools / SmartSQL.UI` 子项目，提供连接管理、数据库树浏览、表/视图/存储过程详情与文档导出
 - 网络与接口：提供接口调试工作台，支持请求配置、抽屉式历史侧栏、完整请求 URL 回显、请求中取消与本地历史记录
+- 文档工具：PDF 管理（页码分割、导出 Word）、Word 转 Markdown（标题层级 / 表格 / 列表 / 超链接，图片可导出到同名 `.assets` 目录并使用相对引用）
 - 编码工具：Base64、URL、Unicode、Hex、JWT、Gzip、繁简转换等
 - 加密工具：AES、DES、SM4、RSA、Hash、HMAC
 - 格式化工具：JSON、SQL、XML、正则、字数统计、MIME 查询等
@@ -50,6 +51,9 @@ dotnet run --project AzrngTools\AzrngTools.csproj
 
 ### PDF 管理依赖
 - PDF 管理功能使用 NuGet 包 `PdfPig`（UglyToad.PdfPig）解析 PDF，无本地 DLL 依赖，也无需授权文件
+
+### Word 转 Markdown 依赖
+- 转换内核使用 NuGet 包 `DocSharp.Docx`（MIT 许可，约 +0.9MB），按 `styles.xml` 的 `w:name` 解析标题样式，中文版 Word 生成的本地化数字 styleId 也能正确映射标题层级；仅支持 `.docx`，旧版 `.doc` 需先在 Word 中另存
 
 ### 本地发布
 - 双击根目录 `Publish.bat`：自包含单文件发布到 `dist` 目录（运行时与原生库全部嵌入 exe，目标机器无需安装 .NET）

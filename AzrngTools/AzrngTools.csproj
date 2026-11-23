@@ -89,6 +89,9 @@
         <!-- PdfSharp 停在 6.2.4：6.5.0 起许可证从 MIT 变更为 AGPL-3.0-only（且需显式 SetAgplLicense 才能运行），
      升级涉及 AGPL 义务，需用户拍板；7.0.0-preview 同为 AGPL -->
 <PackageReference Include="PdfSharp" Version="6.5.0" />
+        <!-- Word 转 Markdown 转换内核（DES-WORD-001）：DocSharp 按 styles.xml 的 w:name 解析标题样式，
+             中文版 Word 的本地化数字 styleId 也能正确映射 # 层级；体积约 +0.9MB，无外部进程与授权 -->
+        <PackageReference Include="DocSharp.Docx" Version="0.21.0" />
     </ItemGroup>
 
     <Target Name="RemoveNativeDebugSymbolsFromPublish" AfterTargets="ComputeResolvedFilesToPublishList" Condition="'$(Configuration)' == 'Release'">

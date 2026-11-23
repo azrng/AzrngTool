@@ -14,6 +14,7 @@ using AzrngTools.ViewModels.Other;
 using AzrngTools.ViewModels.Pdf;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
+using AzrngTools.ViewModels.Word;
 using AzrngTools.Views;
 using AzrngTools.Views.Encode;
 using AzrngTools.Views.Encrypts;
@@ -23,6 +24,7 @@ using AzrngTools.Views.Other;
 using AzrngTools.Views.Pdf;
 using AzrngTools.Views.Setting;
 using AzrngTools.Views.TextHandle;
+using AzrngTools.Views.Word;
 using GTranslate.Translators;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,6 +47,7 @@ public partial class App : Application
         ViewLocator.Register<OverviewPageViewModel, OverviewPageView>();
         ViewLocator.Register<ApiRequestPageViewModel, ApiRequestPageView>();
         ViewLocator.Register<PdfManagementPageViewModel, PdfManagementPageView>();
+        ViewLocator.Register<WordMarkdownPageViewModel, WordMarkdownPageView>();
 
         ViewLocator.Register<HashPageViewModel, HashPageView>();
         ViewLocator.Register<AesEncryptPageViewModel, AesEncryptPageView>();
@@ -170,6 +173,7 @@ public partial class App : Application
         services.AddTransient<OverviewPageViewModel>();
         services.AddTransient<ApiRequestPageViewModel>();
         services.AddTransient<PdfManagementPageViewModel>();
+        services.AddTransient<WordMarkdownPageViewModel>();
 
         services.AddTransient<HashPageViewModel>();
         services.AddTransient<AesEncryptPageViewModel>();

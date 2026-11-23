@@ -15,6 +15,7 @@ using AzrngTools.ViewModels.Other;
 using AzrngTools.ViewModels.Pdf;
 using AzrngTools.ViewModels.Setting;
 using AzrngTools.ViewModels.TextHandle;
+using AzrngTools.ViewModels.Word;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
@@ -160,7 +161,8 @@ public partial class MainWindowViewModel : ViewModelBase
                 Title = "文档工具",
                 Child =
                 [
-                    new MenuBar("PDF管理", typeof(PdfManagementPageViewModel))
+                    new MenuBar("PDF管理", typeof(PdfManagementPageViewModel)),
+                    new MenuBar("Word转Markdown", typeof(WordMarkdownPageViewModel))
                 ]
             },
             new MenuBar
