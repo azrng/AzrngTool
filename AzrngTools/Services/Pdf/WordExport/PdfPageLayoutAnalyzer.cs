@@ -9,9 +9,19 @@ using UglyToad.PdfPig.DocumentLayoutAnalysis.ReadingOrderDetector;
 namespace AzrngTools.Services.Pdf;
 
 /// <summary>
-/// Word 导出的词级版面信息：字号 / 加粗 / 位置，供写出时还原。
+/// 版面导出的词级版面信息：字号 / 加粗 / 斜体 / 位置，供写出时还原；
+/// FirstLetter 保留原始字母引用，供结构标签标题按引用匹配归属。
 /// </summary>
-internal sealed record PdfLayoutWord(string Text, bool IsBold, double FontSize, PdfRectangle BoundingBox);
+internal sealed record PdfLayoutWord(string Text, bool IsBold, bool IsItalic, double FontSize, PdfRectangle BoundingBox, Letter? FirstLetter = null);
+
+/// <summary>
+/// 版面导出的图片编码格式：JPEG 原始流直通，其余可解码滤镜统一转 PNG。
+/// </summary>
+internal enum PdfImageFormat
+{
+    Jpeg,
+    Png
+}
 
 /// <summary>
 /// Word 导出的版面块：段落行、有线表格或图片，统一按 Top（距页顶距离）升序写出。
@@ -20,7 +30,7 @@ internal abstract record PdfLayoutBlock(double Top);
 
 internal sealed record PdfTextLineBlock(IReadOnlyList<PdfLayoutWord> Words, double Top) : PdfLayoutBlock(Top);
 
-internal sealed record PdfImageBlock(byte[] JpegBytes, double DisplayWidthPt, double DisplayHeightPt, double Top) : PdfLayoutBlock(Top);
+internal sealed record PdfImageBlock(byte[] Bytes, PdfImageFormat Format, double DisplayWidthPt, double DisplayHeightPt, double Top) : PdfLayoutBlock(Top);
 
 internal sealed record PdfTableBlock(PdfTableGrid Grid, double Top) : PdfLayoutBlock(Top);
 
@@ -192,8 +202,10 @@ internal static class PdfPageLayoutAnalyzer
         return new PdfLayoutWord(
             word.Text,
             firstLetter?.FontDetails?.IsBold == true,
+            firstLetter?.FontDetails?.IsItalic == true,
             firstLetter?.FontSize ?? 0,
-            word.BoundingBox);
+            word.BoundingBox,
+            firstLetter);
     }
 
     private static IEnumerable<PdfTextLineBlock> BuildTextLineBlocks(Page page, List<PdfLayoutWord> words)
@@ -433,25 +445,30 @@ internal static class PdfPageLayoutAnalyzer
     #region 图片提取
 
     /// <summary>
-    /// 提取页面位图图片：仅嵌入 JPEG（DCTDecode 直通流，FFD8 头），
-    /// 其余滤镜（Flate 原始像素、JPX、CCITT）无法可靠解码，跳过。
+    /// 提取页面位图图片：JPEG（DCTDecode 直通流，FFD8 头）原样保留；
+    /// 其余滤镜经 TryGetPng 解码转 PNG（不支持 JPEG 与 JPX/CCITT 等不可解码滤镜，跳过并写日志）。
     /// </summary>
     private static IEnumerable<PdfImageBlock> ExtractImages(Page page)
     {
         foreach (var image in page.GetImages())
         {
             var raw = image.RawMemory;
-            if (raw.Length < 3 || raw.Span[0] != 0xFF || raw.Span[1] != 0xD8)
+            var bounds = image.BoundingBox;
+            var top = page.Height - bounds.Top;
+            if (raw.Length >= 2 && raw.Span[0] == 0xFF && raw.Span[1] == 0xD8)
             {
+                yield return new PdfImageBlock(raw.ToArray(), PdfImageFormat.Jpeg, bounds.Width, bounds.Height, top);
                 continue;
             }
 
-            var bounds = image.BoundingBox;
-            yield return new PdfImageBlock(
-                raw.ToArray(),
-                bounds.Width,
-                bounds.Height,
-                page.Height - bounds.Top);
+            if (image.TryGetPng(out var pngBytes))
+            {
+                yield return new PdfImageBlock(pngBytes, PdfImageFormat.Png, bounds.Width, bounds.Height, top);
+            }
+            else
+            {
+                AppLog.LogError($"PDF 图片不可解码（滤镜或色彩空间不受支持），已跳过，页码 {page.Number}，尺寸 {bounds.Width:F0}x{bounds.Height:F0}pt");
+            }
         }
     }
 

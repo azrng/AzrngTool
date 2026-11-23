@@ -9,7 +9,7 @@
 - Azrng.Core（结果包装、依赖注入标记接口、帮助类）
 
 ## 功能模块
-- 文档工具：PDF 管理（页码分割、导出 Word）、Word 转 Markdown（标题层级 / 表格 / 列表 / 超链接，图片导出到同名 `.assets` 目录）
+- 文档工具：PDF 管理（页码分割、导出 Word、导出 Markdown）、Word 转 Markdown（标题层级 / 表格 / 列表 / 超链接，图片导出到同名 `.assets` 目录）
 - 网络与接口：接口调试工作台（请求配置、历史侧栏、完整 URL 回显、请求取消）
 - 生成类工具：GUID、HASH、HMAC、AES、DES、SM4、RSA、Json Schema、JSON 转 C# 实体类、密码生成器
 - 编码/解码类工具：BASE64 文本、Base64 转图片、URL、Unicode、十六进制、繁简体、JWT 解码、Gzip、组合编码解码工作台

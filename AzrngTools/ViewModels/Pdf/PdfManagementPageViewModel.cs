@@ -34,6 +34,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         // 构造初始化赋值不属于用户输入，置位跳过保存提交，避免默认值快照在防抖落盘时覆盖已有存档
         _isRestoring = true;
         PageRangeText = "1";
+        ExportMdImages = true;
         _isRestoring = false;
         StatusText = "请选择 PDF 文件";
         RestoreInputs();
@@ -53,6 +54,13 @@ public partial class PdfManagementPageViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _wordOutputPath = string.Empty;
+
+    [ObservableProperty]
+    private string _markdownOutputPath = string.Empty;
+
+    /// <summary>是否导出图片到 md 同级 .assets 目录（关闭则忽略全部图片）。</summary>
+    [ObservableProperty]
+    private bool _exportMdImages;
 
     [ObservableProperty]
     private bool _isBusy;
@@ -211,6 +219,66 @@ public partial class PdfManagementPageViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanOperate))]
+    private async Task ChooseMarkdownOutput()
+    {
+        if (!CanOperate)
+        {
+            return;
+        }
+
+        var topLevel = GetTopLevel();
+        if (topLevel?.StorageProvider is null)
+        {
+            _messageService.SendMessage("无法打开输出路径选择器");
+            return;
+        }
+
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "导出 Markdown 文件",
+            DefaultExtension = "md",
+            SuggestedFileName = BuildSuggestedMarkdownFileName(),
+            FileTypeChoices =
+            [
+                new FilePickerFileType("Markdown 文件") { Patterns = ["*.md"] },
+                FilePickerFileTypes.All
+            ]
+        });
+
+        MarkdownOutputPath = file?.Path.LocalPath ?? MarkdownOutputPath;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOperate))]
+    private async Task ExportMarkdown()
+    {
+        if (!CanOperate || CurrentFile is null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(MarkdownOutputPath))
+        {
+            ShowFailure("请选择 Markdown 输出文件");
+            return;
+        }
+
+        await RunBusyAsync("正在导出 Markdown...", async () =>
+        {
+            var result = await _pdfProcessingService.ExportMarkdownAsync(new PdfMarkdownExportRequest(
+                CurrentFile.FilePath,
+                MarkdownOutputPath,
+                ExportMdImages));
+            HandleResult(result, value =>
+            {
+                var imageSummary = value.ExportedImageCount > 0
+                    ? $"，导出图片 {value.ExportedImageCount} 张"
+                    : "，未导出图片";
+                return $"Markdown 导出完成：{value.OutputFilePath}（标题 {value.HeadingCount} 个{imageSummary}）";
+            });
+        });
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOperate))]
     private async Task SplitPdf()
     {
         if (!CanOperate || CurrentFile is null)
@@ -284,6 +352,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         PageRangeText = "1";
         SplitOutputPath = string.Empty;
         WordOutputPath = string.Empty;
+        MarkdownOutputPath = string.Empty;
         LastResultText = string.Empty;
         StatusText = "请选择 PDF 文件";
     }
@@ -312,6 +381,7 @@ public partial class PdfManagementPageViewModel : ViewModelBase
             PageRangeText = loadedFile.PageCount <= 0 ? string.Empty : $"1-{loadedFile.PageCount}";
             SplitOutputPath = BuildDefaultSplitOutputPath(loadedFile.FilePath);
             WordOutputPath = BuildDefaultWordOutputPath(loadedFile.FilePath);
+            MarkdownOutputPath = BuildDefaultMarkdownOutputPath(loadedFile.FilePath);
             LastResultText = string.Empty;
             StatusText = result.Message ?? "PDF 加载完成";
             _messageService.SendMessage(StatusText);
@@ -422,6 +492,24 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         SaveInputs();
     }
 
+    partial void OnMarkdownOutputPathChanged(string value)
+    {
+        if (_isRestoring)
+        {
+            return;
+        }
+
+        SaveInputs();
+    }
+
+    partial void OnExportMdImagesChanged(bool value)
+    {
+        if (!_isRestoring)
+        {
+            SaveInputs();
+        }
+    }
+
     // 只保存页码与输出路径配置；当前文件（CurrentFile）不入存档
     private void SaveInputs()
     {
@@ -431,6 +519,8 @@ public partial class PdfManagementPageViewModel : ViewModelBase
             [nameof(IsIndividualPagesMode)] = PageInputValues.Encode(IsIndividualPagesMode),
             [nameof(SplitOutputPath)] = PageInputValues.Encode(SplitOutputPath),
             [nameof(WordOutputPath)] = PageInputValues.Encode(WordOutputPath),
+            [nameof(MarkdownOutputPath)] = PageInputValues.Encode(MarkdownOutputPath),
+            [nameof(ExportMdImages)] = PageInputValues.Encode(ExportMdImages),
         });
     }
 
@@ -464,6 +554,16 @@ public partial class PdfManagementPageViewModel : ViewModelBase
             {
                 WordOutputPath = wordOutputPath;
             }
+
+            if (saved.TryGetValue(nameof(MarkdownOutputPath), out var markdownOutputPath) && markdownOutputPath is not null)
+            {
+                MarkdownOutputPath = markdownOutputPath;
+            }
+
+            if (saved.TryGetValue(nameof(ExportMdImages), out var exportMdImages))
+            {
+                ExportMdImages = PageInputValues.DecodeBool(exportMdImages, ExportMdImages);
+            }
         }
         finally
         {
@@ -487,8 +587,10 @@ public partial class PdfManagementPageViewModel : ViewModelBase
         ChoosePdfFileCommand.NotifyCanExecuteChanged();
         ChooseSplitOutputCommand.NotifyCanExecuteChanged();
         ChooseWordOutputCommand.NotifyCanExecuteChanged();
+        ChooseMarkdownOutputCommand.NotifyCanExecuteChanged();
         SplitPdfCommand.NotifyCanExecuteChanged();
         ExportWordCommand.NotifyCanExecuteChanged();
+        ExportMarkdownCommand.NotifyCanExecuteChanged();
         ClearCommand.NotifyCanExecuteChanged();
     }
 
@@ -506,6 +608,13 @@ public partial class PdfManagementPageViewModel : ViewModelBase
             : $"{Path.GetFileNameWithoutExtension(CurrentFile.FileName)}.docx";
     }
 
+    private string BuildSuggestedMarkdownFileName()
+    {
+        return CurrentFile is null
+            ? "export.md"
+            : $"{Path.GetFileNameWithoutExtension(CurrentFile.FileName)}.md";
+    }
+
     private static string BuildDefaultSplitOutputPath(string sourceFilePath)
     {
         var directory = Path.GetDirectoryName(sourceFilePath) ?? string.Empty;
@@ -517,6 +626,13 @@ public partial class PdfManagementPageViewModel : ViewModelBase
     {
         var directory = Path.GetDirectoryName(sourceFilePath) ?? string.Empty;
         var fileName = $"{Path.GetFileNameWithoutExtension(sourceFilePath)}.docx";
+        return Path.Combine(directory, fileName);
+    }
+
+    private static string BuildDefaultMarkdownOutputPath(string sourceFilePath)
+    {
+        var directory = Path.GetDirectoryName(sourceFilePath) ?? string.Empty;
+        var fileName = $"{Path.GetFileNameWithoutExtension(sourceFilePath)}.md";
         return Path.Combine(directory, fileName);
     }
 

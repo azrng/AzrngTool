@@ -39,6 +39,9 @@ internal static class WordExportFixtureBuilder
 {
     static WordExportFixtureBuilder()
     {
+        // PdfSharp 6.5.0 起 MIT 变更为 AGPL-3.0，构造 PdfDocument 前必须显式接受 license
+        //（义务口径见 AzrngTools.csproj 中的版本注释）；不设置时全部 PdfSharp fixture 用例抛 PdfSharpLicenseException
+        PdfSharp.PdfSharpLicense.SetAgplLicense();
         GlobalFontSettings.FontResolver = TestFontResolver.Instance;
     }
 
@@ -117,5 +120,31 @@ internal static class WordExportFixtureBuilder
         using var data = image.Encode(SKEncodedImageFormat.Jpeg, 90);
         using var stream = File.OpenWrite(path);
         data.SaveTo(stream);
+    }
+
+    /// <summary>
+    /// 生成不透明 PNG 图片（经 PDF 嵌入后为非 JPEG 滤镜，验证 TryGetPng 解码路径）。
+    /// </summary>
+    public static void CreatePng(string path)
+    {
+        using var bitmap = new SKBitmap(48, 48);
+        bitmap.Erase(SKColors.IndianRed);
+        using var image = SKImage.FromBitmap(bitmap);
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        using var stream = File.OpenWrite(path);
+        data.SaveTo(stream);
+    }
+
+    /// <summary>
+    /// 生成仅含一张图片、无任何文本的单页 PDF（图片型/扫描件判定用例）。
+    /// </summary>
+    public static void CreateImageOnlyPdf(string path, string imagePath)
+    {
+        var document = new PdfSharp.Pdf.PdfDocument();
+        var page = document.AddPage();
+        using var graphics = XGraphics.FromPdfPage(page);
+        using var image = XImage.FromFile(imagePath);
+        graphics.DrawImage(image, 40, 40, 300, 300);
+        document.Save(path);
     }
 }

@@ -20,6 +20,7 @@ AzrngTools 是面向开发与效率场景的 Windows 桌面工具箱（.NET 10 +
 | database | 数据库工作台（连接、对象浏览、SQL、导出、代码生成） | [database/workbench.md](database/workbench.md) | in-review |
 | network | 接口调试（请求配置、发送取消、历史） | [network/api-debug.md](network/api-debug.md) | in-review |
 | pdf | PDF 管理（页码分割、导出 Word） | [pdf/management.md](pdf/management.md) | in-review |
+| pdf | PDF 导出 Markdown（标题三级判定、GFM 表格、图片导出、图片型拒绝） | [pdf/to-markdown.md](pdf/to-markdown.md) | in-review |
 | word | Word 转 Markdown（docx → md，图片导出） | [word/to-markdown.md](word/to-markdown.md) | in-review |
 | generation | 生成与加密工具组（GUID、HASH、HMAC、AES、DES、SM4、RSA、Json Schema、JSON 转 C#、密码生成） | [generation/tools.md](generation/tools.md) | in-review |
 | encode | 编码 / 解码工具组（Base64、URL、Unicode、Hex、繁简、JWT、Gzip、组合工作台） | [encode/tools.md](encode/tools.md) | in-review |

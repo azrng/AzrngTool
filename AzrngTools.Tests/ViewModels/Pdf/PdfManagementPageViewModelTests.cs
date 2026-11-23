@@ -32,6 +32,8 @@ public class PdfManagementPageViewModelTests
         Assert.Equal("1-3", viewModel.PageRangeText);
         Assert.Equal("C:\\tmp\\demo_split.pdf", viewModel.SplitOutputPath);
         Assert.Equal("C:\\tmp\\demo.docx", viewModel.WordOutputPath);
+        Assert.Equal("C:\\tmp\\demo.md", viewModel.MarkdownOutputPath);
+        Assert.True(viewModel.ExportMdImages);
         Assert.Contains("已加载 PDF", viewModel.StatusText);
         Assert.Contains(messageService.Messages, message => message.Message.Contains("已加载 PDF"));
     }
@@ -97,6 +99,38 @@ public class PdfManagementPageViewModelTests
         Assert.Contains("Word 导出完成", viewModel.LastResultText);
     }
 
+    [Fact]
+    public async Task ExportMarkdownCommand_ShouldNotifyWhenNoOutputPathSelected()
+    {
+        var messageService = new TestMessageService();
+        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), messageService, TestPageInputStores.Create())
+        {
+            CurrentFile = new PdfLoadedFileSummary("C:\\tmp\\demo.pdf", "demo.pdf", 1024, 3, true, "评估模式"),
+            MarkdownOutputPath = string.Empty
+        };
+
+        await viewModel.ExportMarkdownCommand.ExecuteAsync(null);
+
+        Assert.Single(messageService.Messages);
+        Assert.Equal("请选择 Markdown 输出文件", messageService.Messages[0].Message);
+    }
+
+    [Fact]
+    public async Task ExportMarkdownCommand_ShouldReportStatisticsOnSuccess()
+    {
+        var viewModel = new PdfManagementPageViewModel(new FakePdfProcessingService(), new TestMessageService(), TestPageInputStores.Create())
+        {
+            CurrentFile = new PdfLoadedFileSummary("C:\\tmp\\demo.pdf", "demo.pdf", 1024, 3, false, "授权已加载"),
+            MarkdownOutputPath = "C:\\tmp\\demo.md"
+        };
+
+        await viewModel.ExportMarkdownCommand.ExecuteAsync(null);
+
+        Assert.Contains("Markdown 导出完成", viewModel.LastResultText);
+        Assert.Contains("标题 2 个", viewModel.LastResultText);
+        Assert.Contains("导出图片 1 张", viewModel.LastResultText);
+    }
+
     private sealed class FakePdfProcessingService : IPdfProcessingService
     {
         public TimeSpan Delay { get; set; }
@@ -141,6 +175,14 @@ public class PdfManagementPageViewModelTests
         {
             await DelayIfNeeded(cancellationToken);
             return ResultModel<PdfWordExportResult>.Success(new PdfWordExportResult(request.OutputFilePath, IsEvaluationMode));
+        }
+
+        public async Task<IResultModel<PdfMarkdownExportResult>> ExportMarkdownAsync(
+            PdfMarkdownExportRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            await DelayIfNeeded(cancellationToken);
+            return ResultModel<PdfMarkdownExportResult>.Success(new PdfMarkdownExportResult(request.OutputFilePath, 2, 1));
         }
 
         private async Task DelayIfNeeded(CancellationToken cancellationToken)

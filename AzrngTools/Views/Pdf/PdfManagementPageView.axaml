@@ -107,7 +107,7 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
+            <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.12}">
                 <Border Grid.Row="0" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
@@ -185,6 +185,50 @@
                 </Border>
 
                 <Border Grid.Row="2" Classes="tool-card-roomy">
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="{StaticResource Space.10}">
+                        <StackPanel Spacing="{StaticResource Space.4}">
+                            <TextBlock Classes="section-title" Text="导出 Markdown" />
+                            <TextBlock Classes="section-copy" Text="将 PDF 文本内容导出为 .md，图片型（扫描件）PDF 将提示无法转换。" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="{StaticResource Space.10}">
+                            <TextBox
+                                IsReadOnly="True"
+                                PlaceholderText="请选择 Markdown 输出文件"
+                                Text="{Binding MarkdownOutputPath}" />
+                            <Button
+                                Grid.Column="1"
+                                Command="{Binding ChooseMarkdownOutputCommand}"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource OutlineButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M12 4V20M4 12H20" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="选择" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <CheckBox
+                            Grid.Row="2"
+                            Content="导出图片到 .assets 目录"
+                            IsChecked="{Binding ExportMdImages}"
+                            IsEnabled="{Binding CanOperate}" />
+
+                        <WrapPanel Grid.Row="3" Classes="tool-actions">
+                            <Button
+                                Command="{Binding ExportMarkdownCommand}"
+                                IsEnabled="{Binding CanOperate}"
+                                Theme="{DynamicResource SolidButton}">
+                                <StackPanel Orientation="Horizontal" Spacing="{StaticResource Space.6}">
+                                    <PathIcon Data="M6 3H15L19 7V21H6V3ZM15 3V7H19M9 12H16M9 16H16" Height="{StaticResource Layout.Icon.Sm}" Width="{StaticResource Layout.Icon.Sm}" />
+                                    <TextBlock Text="开始转换" />
+                                </StackPanel>
+                            </Button>
+                        </WrapPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Row="3" Classes="tool-card-roomy">
                     <Grid RowDefinitions="Auto,Auto" RowSpacing="{StaticResource Space.10}">
                         <StackPanel Spacing="{StaticResource Space.4}">
                             <TextBlock Classes="section-title" Text="快捷操作" />

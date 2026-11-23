@@ -1,10 +1,14 @@
 using Azrng.Core.Helpers;
 using Azrng.Core.Results;
 using AzrngTools.Models.Pdf;
+using AzrngTools.Services.Pdf.MarkdownExport;
 using AzrngTools.Utils;
 using NPOI.XWPF.UserModel;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.Outline;
+using UglyToad.PdfPig.Outline.Destinations;
 
 namespace AzrngTools.Services.Pdf;
 
@@ -134,6 +138,230 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
                 return PdfResultModel.Failure<PdfWordExportResult>(friendlyMessage);
             }
         }, cancellationToken);
+    }
+
+    public Task<IResultModel<PdfMarkdownExportResult>> ExportMarkdownAsync(
+        PdfMarkdownExportRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.Run(() =>
+        {
+            try
+            {
+                var validationError = ValidateMarkdownExportRequest(request);
+                if (validationError is not null)
+                {
+                    return PdfResultModel.Failure<PdfMarkdownExportResult>(validationError);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+                EnsureOutputDirectory(request.OutputFilePath);
+                return ExportPdfToMarkdown(request, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                return PdfResultModel.Failure<PdfMarkdownExportResult>("Markdown 导出已取消");
+            }
+            catch (Exception ex)
+            {
+                var friendlyMessage = BuildFriendlyError("Markdown 导出失败", ex);
+                AppLog.LogError($"{friendlyMessage}\n{ex.GetExceptionAndStack()}");
+                return PdfResultModel.Failure<PdfMarkdownExportResult>(friendlyMessage);
+            }
+        }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Markdown 导出内核：图片型判定、逐页版面分析、图片落盘与组装写出。
+    /// </summary>
+    private static IResultModel<PdfMarkdownExportResult> ExportPdfToMarkdown(
+        PdfMarkdownExportRequest request,
+        CancellationToken cancellationToken)
+    {
+        // 版面分析（表格线聚类、图片提取）在复杂真实文档上耗时未知，整链路计时留档
+        using var exportPerf = PerfLogScope.Start("PDF导出Markdown", Path.GetFileName(request.SourceFilePath));
+        var assetsDirectoryName = $"{Path.GetFileNameWithoutExtension(request.OutputFilePath)}.assets";
+        var outputDirectory = Path.GetDirectoryName(request.OutputFilePath) ?? string.Empty;
+        var assetsDirectory = Path.Combine(outputDirectory, assetsDirectoryName);
+
+        using var pdf = UglyToad.PdfPig.PdfDocument.Open(request.SourceFilePath);
+
+        // 图片型判定：平均每页字母数低于阈值视为扫描件/图片型内容，转换前拒绝、不产生任何输出
+        var letterCount = 0;
+        for (var pageNumber = 1; pageNumber <= pdf.NumberOfPages; pageNumber++)
+        {
+            letterCount += pdf.GetPage(pageNumber).Letters.Count;
+        }
+
+        if (pdf.NumberOfPages > 0 &&
+            letterCount < pdf.NumberOfPages * PdfMarkdownComposer.ImageOnlyLettersPerPageThreshold)
+        {
+            return PdfResultModel.Failure<PdfMarkdownExportResult>("该 PDF 无可提取文本（图片型/扫描件内容），暂不支持转换为 Markdown");
+        }
+
+        var bookmarksByPage = CollectHeadingBookmarks(pdf);
+        var pageInputs = new List<PdfPageComposeInput>(pdf.NumberOfPages);
+        var exportedImageCount = 0;
+
+        for (var pageNumber = 1; pageNumber <= pdf.NumberOfPages; pageNumber++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var page = pdf.GetPage(pageNumber);
+
+            IReadOnlyList<PdfLayoutBlock> blocks;
+            try
+            {
+                blocks = PdfPageLayoutAnalyzer.Analyze(page);
+            }
+            catch (Exception ex)
+            {
+                // 单页版面分析失败仅降级该页为纯文本，导出整体不失败
+                AppLog.LogError($"Markdown 导出第 {pageNumber} 页版面分析失败，按纯文本处理: {ex.Message}\n{ex.GetExceptionAndStack()}");
+                blocks = PdfPageLayoutAnalyzer.AnalyzeTextOnly(page);
+            }
+
+            var imageRefs = new List<PdfMarkdownImageRef>();
+            if (request.ExportImages)
+            {
+                foreach (var block in blocks.OfType<PdfImageBlock>())
+                {
+                    var extension = block.Format == PdfImageFormat.Png ? "png" : "jpg";
+                    var fileName = $"img-{++exportedImageCount}.{extension}";
+                    // DocSharp 口径一致：只在确实有图片落盘时才创建 assets 目录
+                    if (!Directory.Exists(assetsDirectory))
+                    {
+                        Directory.CreateDirectory(assetsDirectory);
+                    }
+
+                    File.WriteAllBytes(Path.Combine(assetsDirectory, fileName), block.Bytes);
+                    imageRefs.Add(new PdfMarkdownImageRef(block, $"{assetsDirectoryName}/{fileName}"));
+                }
+            }
+
+            // 书签 Top 是 PDF 用户空间 y（自页底），版面行 Top 是距页顶距离，先统一口径再锚定
+            var pageBookmarks = bookmarksByPage.GetValueOrDefault(pageNumber) ?? [];
+            var convertedBookmarks = pageBookmarks
+                .Select(bookmark => bookmark with { Top = bookmark.Top.HasValue ? page.Height - bookmark.Top.Value : null })
+                .ToList();
+
+            pageInputs.Add(new PdfPageComposeInput(
+                blocks,
+                page.GetHyperlinks().ToList(),
+                convertedBookmarks,
+                CollectTaggedHeadings(page),
+                imageRefs));
+        }
+
+        var composeResult = PdfMarkdownComposer.Compose(pageInputs);
+        File.WriteAllText(request.OutputFilePath, composeResult.Markdown);
+
+        var result = new PdfMarkdownExportResult(request.OutputFilePath, composeResult.HeadingCount, exportedImageCount);
+        return PdfResultModel.Success(
+            result,
+            $"Markdown 导出完成：{request.OutputFilePath}（标题 {result.HeadingCount} 个，图片 {result.ExportedImageCount} 张）");
+    }
+
+    /// <summary>
+    /// 收集大纲书签并按页锚定：层级 0 起算，Top 取目标纵坐标原始值（PDF 用户空间自页底 y，
+    /// 交由逐页处理转换成距页顶口径）；无坐标书签不参与标题命中，落到结构标签或字号判定。
+    /// </summary>
+    private static Dictionary<int, List<PdfHeadingBookmark>> CollectHeadingBookmarks(UglyToad.PdfPig.PdfDocument pdf)
+    {
+        var result = new Dictionary<int, List<PdfHeadingBookmark>>();
+        if (!pdf.TryGetBookmarks(out var bookmarks))
+        {
+            return result;
+        }
+
+        void Walk(IEnumerable<BookmarkNode> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                if (node is DocumentBookmarkNode documentNode && documentNode.PageNumber >= 1)
+                {
+                    double? top = null;
+                    var destination = documentNode.Destination;
+                    if (destination is not null && !destination.Coordinates.Equals(ExplicitDestinationCoordinates.Empty))
+                    {
+                        top = destination.Coordinates.Top;
+                    }
+
+                    if (!result.TryGetValue(documentNode.PageNumber, out var list))
+                    {
+                        list = [];
+                        result[documentNode.PageNumber] = list;
+                    }
+
+                    list.Add(new PdfHeadingBookmark(node.Level, top));
+                }
+
+                if (node.Children.Count > 0)
+                {
+                    Walk(node.Children);
+                }
+            }
+        }
+
+        Walk(bookmarks.Roots);
+        return result;
+    }
+
+    /// <summary>
+    /// 收集页面 H1~H6 结构标签标题：递归展开标记内容树并聚合后代字母供行首字母引用匹配。
+    /// PdfPig 的 AddLetter 只写入最内层 BMC，结构标签正文常在内层子元素中，仅用元素自带 Letters 会漏配。
+    /// </summary>
+    private static List<PdfTaggedHeading> CollectTaggedHeadings(Page page)
+    {
+        var headings = new List<PdfTaggedHeading>();
+
+        List<Letter> Walk(IReadOnlyList<MarkedContentElement> elements)
+        {
+            var letters = new List<Letter>();
+            foreach (var element in elements)
+            {
+                if (element.IsArtifact)
+                {
+                    // artifact（页眉页脚等装饰内容）不参与标题归属
+                    continue;
+                }
+
+                var ownLetters = element.Letters.ToList();
+                var childLetters = Walk(element.Children);
+                letters.AddRange(ownLetters);
+                letters.AddRange(childLetters);
+
+                if (element.Tag.Length == 2 && element.Tag[0] == 'H' && char.IsAsciiDigit(element.Tag[1]))
+                {
+                    headings.Add(new PdfTaggedHeading(element.Tag[1] - '0', ownLetters.Concat(childLetters).ToList()));
+                }
+            }
+
+            return letters;
+        }
+
+        Walk(page.GetMarkedContents());
+        return headings;
+    }
+
+    private static string? ValidateMarkdownExportRequest(PdfMarkdownExportRequest request)
+    {
+        var sourceError = ValidateSourcePdf(request.SourceFilePath);
+        if (sourceError is not null)
+        {
+            return sourceError;
+        }
+
+        if (string.IsNullOrWhiteSpace(request.OutputFilePath))
+        {
+            return "请选择 Markdown 输出文件";
+        }
+
+        if (!string.Equals(Path.GetExtension(request.OutputFilePath), ".md", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Markdown 输出文件扩展名必须为 .md";
+        }
+
+        return null;
     }
 
     private static void ExportPdfToWord(string pdfPath, string outputPath, CancellationToken cancellationToken)
@@ -289,8 +517,10 @@ public sealed class AsposePdfProcessingService : IPdfProcessingService, ITransie
         // OOXML 长度单位 EMU：1 磅 = 12700 EMU
         var widthEmu = (int)Math.Round(imageBlock.DisplayWidthPt * 12700);
         var heightEmu = (int)Math.Round(imageBlock.DisplayHeightPt * 12700);
-        using var stream = new MemoryStream(imageBlock.JpegBytes);
-        run.AddPicture(stream, (int)PictureType.JPEG, $"image-{Guid.NewGuid():N}.jpg", widthEmu, heightEmu);
+        var pictureType = imageBlock.Format == PdfImageFormat.Png ? PictureType.PNG : PictureType.JPEG;
+        var extension = imageBlock.Format == PdfImageFormat.Png ? "png" : "jpg";
+        using var stream = new MemoryStream(imageBlock.Bytes);
+        run.AddPicture(stream, (int)pictureType, $"image-{Guid.NewGuid():N}.{extension}", widthEmu, heightEmu);
     }
 
     private static string SanitizeXmlText(string text)

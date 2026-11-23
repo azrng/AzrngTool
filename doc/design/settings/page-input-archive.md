@@ -90,7 +90,7 @@ pageId 命名 `<分组>-<页面>` kebab-case，与文件名一致；键名用属
 | network-api-request | RequestUrl; SelectedMethod; SelectedBodyMode; IgnoreSslErrors; SelectedConfigTabIndex | RequestBody; Headers/Query/Form 的 Name/Value 集合 |
 | other-translator | OriginText; TranslatorTypeIndex | — |
 | other-unix-timestamp | TimestampSeconds; Milliseconds; TargetDateTime; TargetDateSelection; TargetTimeSelection | — |
-| pdf-management | PageRangeText; IsIndividualPagesMode; SplitOutputPath; WordOutputPath | CurrentFile |
+| pdf-management | PageRangeText; IsIndividualPagesMode; SplitOutputPath; WordOutputPath; MarkdownOutputPath; ExportMdImages | CurrentFile |
 | texthandle-markdown | MdText | — |
 | main-window | SelectedListItem（页面标识）; IsSidebarCollapsed | SearchKeyword |
 
