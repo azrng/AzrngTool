@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/SolutionFolder/">
+    <File Path="Publish.bat" />
+    <File Path="publish.ps1" />
+    <File Path="VERSION" />
+  </Folder>
+  <Project Path="AzrngTools.Tests/AzrngTools.Tests.csproj" />
+  <Project Path="AzrngTools/AzrngTools.csproj" />
+</Solution>
