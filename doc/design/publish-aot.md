@@ -49,4 +49,4 @@
 ## 相关文档
 
 - `architecture.md`：跨模块架构与发布链路现状。
-- `README.md`「本地发布」「GitHub Actions 自动发布」：命令与版本号规则。
+- `README.md`「快速开始」「版本与发布」：发布命令与版本号规则。
