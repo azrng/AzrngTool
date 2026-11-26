@@ -59,6 +59,9 @@ public class AsposePdfProcessingServiceTests
 
     private static void CreateSamplePdf(string path)
     {
+        // PdfSharp 6.5.0（AGPL）构造 PdfDocument 前必须显式接受 license，
+        // 与 WordExportFixtureBuilder 保持同一义务口径
+        PdfSharp.PdfSharpLicense.SetAgplLicense();
         using var document = new PdfDocument();
         document.AddPage();
         document.AddPage();

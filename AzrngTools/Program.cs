@@ -22,6 +22,10 @@ internal sealed class Program
         RegisterAppDomainExceptionHandler();
         RegisterUnobservedTaskExceptionHandler();
 
+        // PdfSharp 6.5.0 起许可证为 AGPL-3.0-only：构造任何 PdfDocument 前必须显式接受，
+        // 否则 PDF 管理页上传/分割在运行时抛 PdfSharpLicenseException（AGPL 义务已经用户确认接受）
+        PdfSharp.PdfSharpLicense.SetAgplLicense();
+
         try
         {
             BuildAvaloniaApp()

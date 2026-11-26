@@ -86,8 +86,8 @@
              AsposePdfProcessingService.ExportPdfToWord -->
         <!-- <PackageReference Include="DocumentFormat.OpenXml" Version="3.5.1" /> -->
         <PackageReference Include="PdfPig" Version="0.1.16" />
-        <!-- PdfSharp 停在 6.2.4：6.5.0 起许可证从 MIT 变更为 AGPL-3.0-only（且需显式 SetAgplLicense 才能运行），
-     升级涉及 AGPL 义务，需用户拍板；7.0.0-preview 同为 AGPL -->
+        <!-- PdfSharp 6.5.0 起许可证为 AGPL-3.0-only，需在启动时调用 PdfSharpLicense.SetAgplLicense()
+             （见 Program.Main）；AGPL 义务已经用户确认接受（2026-11-26），对外分发须遵守开源义务 -->
 <PackageReference Include="PdfSharp" Version="6.5.0" />
         <!-- Word 转 Markdown 转换内核（DES-WORD-001）：DocSharp 按 styles.xml 的 w:name 解析标题样式，
              中文版 Word 的本地化数字 styleId 也能正确映射 # 层级；体积约 +0.9MB，无外部进程与授权 -->
